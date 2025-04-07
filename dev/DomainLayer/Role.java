@@ -1,16 +1,17 @@
 package DomainLayer;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Role {
     private long id;
     private String name;
-    private Set<Permission> permissions; // maybe Set will be a better option..
+    private Set<String> permissions; // maybe Set will be a better option..
 
-    public Role(long id, String name, Set<Permission> permissions) {
+    public Role(long id, String name, Set<String> permissions) {
         this.id = id;
         this.name = name;
-        this.permissions = permissions;
+        this.permissions = new HashSet<>(permissions);
     }
 
     public long getId() {
@@ -29,11 +30,11 @@ public class Role {
         this.name = name;
     }
 
-    public Set<Permission> getPermissions() {
+    public Set<String> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
+    public void setPermissions(Set<String> permissions) {
         this.permissions = permissions;
     }
 }

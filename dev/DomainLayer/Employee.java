@@ -1,6 +1,9 @@
 package DomainLayer;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class Employee {
@@ -9,7 +12,7 @@ public class Employee {
     private String firstName;
     private String lastName;
     private long salary;
-    private TermsOfEmployment termsOfEmployment;
+    private Map<String, Object> termsOfEmployment;
     private Set<Role> roles;
     private LocalDate startOfEmployment;
     private boolean isActive;
@@ -17,14 +20,14 @@ public class Employee {
     private LocalDate updateDate;
 
 
-    public Employee(long employeeId, long israeliId, String firstName, String lastName, long salary, TermsOfEmployment termsOfEmployment, Set<Role> roles, LocalDate startOfEmployment, boolean isActive, LocalDate creationDate, LocalDate updateDate) {
+    public Employee(long employeeId, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, Set<Role> roles, LocalDate startOfEmployment, boolean isActive, LocalDate creationDate, LocalDate updateDate) {
         this.employeeId = employeeId;
         IsraeliId = israeliId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.salary = salary;
         this.termsOfEmployment = termsOfEmployment;
-        this.roles = roles;
+        this.roles = new HashSet<>(roles);
         this.startOfEmployment = startOfEmployment;
         this.isActive = isActive;
         this.creationDate = creationDate; //??
@@ -71,11 +74,11 @@ public class Employee {
         this.salary = salary;
     }
 
-    public TermsOfEmployment getTermsOfEmployment() {
+    public Map<String, Object> getTermsOfEmployment() {
         return termsOfEmployment;
     }
 
-    public void setTermsOfEmployment(TermsOfEmployment termsOfEmployment) {
+    public void setTermsOfEmployment(Map<String, Object> termsOfEmployment) {
         this.termsOfEmployment = termsOfEmployment;
     }
 

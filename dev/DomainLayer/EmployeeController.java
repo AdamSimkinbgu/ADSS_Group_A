@@ -1,6 +1,8 @@
 package DomainLayer;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class EmployeeController {
@@ -8,7 +10,7 @@ public class EmployeeController {
     private final AuthorisationController authorisationController;
 
     public EmployeeController(Set<Employee> employees , AuthorisationController authorisationController) {
-        this.employees = employees;
+        this.employees = new HashSet<>(employees);
         this.authorisationController = authorisationController;
     }
 
@@ -34,7 +36,7 @@ public class EmployeeController {
      * @param startOfEmployment
      * @return True if the employee was created successfully, false if the employee already exists
      */
-    public boolean createEmployee(long doneBy ,long israeliId, String firstName, String lastName, long salary, TermsOfEmployment termsOfEmployment, Set<Role> roles, LocalDate startOfEmployment) {
+    public boolean createEmployee(long doneBy ,long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, Set<Role> roles, LocalDate startOfEmployment) {
         // Permission handling
         String PERMISSION_REQUIRED = "CREATE_EMPLOYEE";
         Employee doneByEmployee = getEmployeeByIsraeliId(doneBy);
@@ -79,7 +81,7 @@ public class EmployeeController {
      * @param active
      * @return True if the employee was updated successfully, false if the employee does not exist
      */
-    public boolean updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, TermsOfEmployment termsOfEmployment, boolean active) {
+    public boolean updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, boolean active) {
         // // Permission handling
         String PERMISSION_REQUIRED = "UPDATE_EMPLOYEE";
         Employee doneByEmployee = getEmployeeByIsraeliId(doneBy);
@@ -156,7 +158,7 @@ public class EmployeeController {
         // Check if employee has the required permission
         return employee.getRoles().stream()
                 .flatMap(role -> role.getPermissions().stream())
-                .anyMatch(perm -> perm.getName().equals(permission)); // Permission not found
+                .anyMatch(perm -> perm.equals(permission)); // Permission not found
     }
 
     public boolean addRoleToEmployee(long doneBy, long israeliId, String roleName) {
@@ -180,9 +182,39 @@ public class EmployeeController {
         if (role == null) {
             throw new RuntimeException("Role not found"); // Role not found
         }
+        // Check if employee already has the role
+        if (employee.getRoles().stream().anyMatch(r -> r.getName().equals(roleName))) {
+            throw new RuntimeException("Employee already has this role"); // Employee already has this role
+        }
 
         // add role to employee
         employee.getRoles().add(role);
+        return true;
+    }
+    public boolean removeRoleFromEmployee(long doneBy, long israeliId, String roleName) {
+        // Permission handling
+        String PERMISSION_REQUIRED = "REMOVE_ROLE_FROM_EMPLOYEE";
+        Employee doneByEmployee = getEmployeeByIsraeliId(doneBy);
+        if (doneByEmployee == null) {
+            throw new RuntimeException("Employee not found");
+        }
+        if (!isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED)) {
+            throw new RuntimeException("User does not have permission to remove role from employee"); // User does not have permission
+        }
+
+        // Check if employee exists
+        Employee employee = employees.stream().filter(e -> e.getIsraeliId() == israeliId).findFirst().orElse(null);
+        if (employee == null) {
+            throw new RuntimeException("Employee not found"); // Employee not found
+        }
+        // Check if role exists
+        Role role = authorisationController.getRoleByName(roleName);
+        if (role == null) {
+            throw new RuntimeException("Role not found"); // Role not found
+        }
+
+        // remove role from employee
+        employee.getRoles().remove(role);
         return true;
     }
 }

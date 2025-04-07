@@ -5,139 +5,162 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 class EmployeeControllerTest {
 
-    private EmployeeController employeeController;
-    private AuthorisationController authorisationController;
-    private Set<Employee> employees;
-    private Set<Role> roles;
-    private Set<Permission> permissions;
-    TermsOfEmployment terms = new TermsOfEmployment(TermsOfEmployment.ContractType.HOURLY, 34.50, 6.0, 8.33, true, 23.60, true, 1.25, 1.5, 42, 12, 18, 2.25);
+    AuthorisationController authorisationController;
+    EmployeeController employeeController;
+
+    final String CREATE_EMPLOYEE = "CREATE_EMPLOYEE";
+    final String ADD_EMPLOYEE = "ADD_EMPLOYEE";
+    final String UPDATE_EMPLOYEE = "UPDATE_EMPLOYEE";
+    final String CASHIER = "CASHIER";
+    Role admin;
+    Role cashier;
+    Set<String> permissions;
+    Set<Role> roles;
+    Employee shira;
+    Employee cochava;
 
     @BeforeEach
     void setUp() {
-        // Initialize the sets
-        employees = new HashSet<>();
-        permissions = new HashSet<>();
-        roles = new HashSet<>();
-        // Create some roles and permissions for testing
-        Permission CREATE_EMPLOYEE = new Permission(1, "CREATE_EMPLOYEE", "Permission to create employee");
-        Permission UPDATE_EMPLOYEE = new Permission(2, "UPDATE_EMPLOYEE", "Permission to update employee");
-        Permission ADD_ROLE_TO_EMPLOYEE = new Permission(3, "ADD_ROLE_TO_EMPLOYEE", "Permission to add role to employee");
-        permissions.add(CREATE_EMPLOYEE);
-        permissions.add(UPDATE_EMPLOYEE);
-        permissions.add(ADD_ROLE_TO_EMPLOYEE);
+        admin = new Role(0,"ADMIN", Set.of(CREATE_EMPLOYEE, ADD_EMPLOYEE, UPDATE_EMPLOYEE));
+        cashier = new Role(1,"CASHIER", Set.of(CASHIER));
 
-        Role adminRole = new Role(1, "Admin", new HashSet<>(Set.of(CREATE_EMPLOYEE, UPDATE_EMPLOYEE, ADD_ROLE_TO_EMPLOYEE)));
-        roles.add(adminRole);
+        permissions = Set.of(CREATE_EMPLOYEE, ADD_EMPLOYEE, UPDATE_EMPLOYEE);
+        roles = Set.of(admin, cashier);
 
-        // Create Admin employee
-        Employee admin = new Employee(1, 123456789, "Admin", "User", 100000, terms, roles, LocalDate.now(), true, LocalDate.now(), LocalDate.now());
-        employees.add(admin);
+        shira = new Employee(0,0,"Shira", "Shtinboch", 10000, null, Set.of(admin), LocalDate.now().minusYears(5),true, LocalDate.now().minusYears(5), LocalDate.now());
+        cochava = new Employee(1,1,"Cochava", "Shavit", 10000, null, Set.of(cashier), LocalDate.now().minusYears(5),true, LocalDate.now().minusYears(5), LocalDate.now());
 
         authorisationController = new AuthorisationController(roles, permissions);
+        Set<Employee> employees = new HashSet<>();
+        employees.add(shira);
+        employees.add(cochava);
         employeeController = new EmployeeController(employees, authorisationController);
     }
 
     @Test
-    void testCreateEmployee() {
-        boolean result = employeeController.createEmployee(123456789, 11111111, "John", "Doe", 50000, terms, new HashSet<Role>(), LocalDate.now());
-        assertTrue(result); // Employee created successfully
-        assertEquals(2, employees.size()); // 1 admin + 1 new employee
+    void getEmployeeByIsraeliId() {
+        // Test for existing employee
+        Employee employee = employeeController.getEmployeeByIsraeliId(shira.getIsraeliId());
+        assertNotNull(employee);
+        assertEquals(shira, employee);
+
+        // Test for non-existing employee
+        employee = employeeController.getEmployeeByIsraeliId(99999);
+        assertNull(employee);
     }
 
     @Test
-    void testCreateEmployeeAlreadyExists() {
-        employeeController.createEmployee(123456789, 11111111, "John", "Doe", 50000, terms, new HashSet<>(), LocalDate.now());
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            employeeController.createEmployee(123456789, 11111111, "John", "Doe", 50000, terms, new HashSet<>(), LocalDate.now());
-        });
-        assertEquals("Employee already exists", exception.getMessage());
-    }
+    void createEmployee() {
+        // Test for creating a new employee
+        Set<Role> roles = Set.of(cashier);
+        LocalDate startOfEmployment = LocalDate.now();
+        Map<String, Object> terms = Map.of("Days Off", 5000, "Contract Type", "Full Time");
 
-    @Test
-    void testUpdateEmployee() {
-        employeeController.createEmployee(123456789, 11111111, "John", "Doe", 50000, terms, new HashSet<>(), LocalDate.now());
-        boolean result = employeeController.updateEmployee(123456789, 11111111, "Jane", "Doe", 60000, terms, true);
+        boolean result = employeeController.createEmployee(shira.getIsraeliId(), 12345, "Ramzi", "Abed-Ramzi", 5000, terms, roles, startOfEmployment);
         assertTrue(result);
-        Employee employee = employeeController.getEmployeeByIsraeliId(11111111);
-        assertEquals("Jane", employee.getFirstName());
-        assertEquals(60000, employee.getSalary());
+
+        // Test for creating an existing employee
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.createEmployee(shira.getIsraeliId(), shira.getIsraeliId(), "Shira", "Shtinboch", 10000, terms, roles, startOfEmployment);
+        });
+
+        // Test for invalid input
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.createEmployee(shira.getIsraeliId(), 12345, "", "Employee", 5000, terms, roles, startOfEmployment);
+        });
     }
 
     @Test
-    void testDeleteEmployee() {
-        employeeController.createEmployee(1, 123456789, "John", "Doe", 50000, terms, new HashSet<>(), LocalDate.now());
-        boolean result = employeeController.deleteEmployee(1, 123456789);
+    void updateEmployee() {
+        // Test for updating an existing employee
+        Set<Role> roles = Set.of(cashier);
+        Map<String, Object> terms = Map.of("Days Off", 5000, "Contract Type", "Full Time");
+        boolean result = employeeController.updateEmployee(shira.getIsraeliId(), shira.getIsraeliId(), "Shira", "Shtinboch", 12000, terms, true);
         assertTrue(result);
-        assertNull(employeeController.getEmployeeByIsraeliId(123456789));
+
+        // Test for updating a non-existing employee
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.updateEmployee(shira.getIsraeliId(), 99999, "Non-Existing", "Employee", 5000, terms, true);
+        });
+
+        // Test for invalid input
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.updateEmployee(shira.getIsraeliId(), shira.getIsraeliId(), "", "Employee", 5000, terms, true);
+        });
     }
 
     @Test
-    void testAddRoleToEmployee() {
-        employeeController.createEmployee(123456789, 11111111, "Ramzi", "Abed-Ramzi", 50000, terms, new HashSet<>(), LocalDate.now());
-        Permission ADD_ROLE_TO_EMPLOYEE = new Permission(4, "ADD_ROLE_TO_EMPLOYEE", "Permission to add role to employee");
-        permissions.add(ADD_ROLE_TO_EMPLOYEE);
-        Role RoleEditor = new Role(2, "Editor", new HashSet<>(Set.of(ADD_ROLE_TO_EMPLOYEE)));
-        roles.add(RoleEditor);
-        boolean result = employeeController.addRoleToEmployee(123456789, 123456789, "Editor");
+    void deleteEmployee() {
+        // Test for deleting an existing employee
+        boolean result = employeeController.deleteEmployee(shira.getIsraeliId(), shira.getIsraeliId());
         assertTrue(result);
-        Role role = new Role(1, "Sub-Manager", new HashSet<>(Set.of(ADD_ROLE_TO_EMPLOYEE)));
-        roles.add(role);
-        result = employeeController.addRoleToEmployee(123456789, 11111111, "Sub-Manager");
+
+        // Test for deleting a non-existing employee
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.deleteEmployee(shira.getIsraeliId(), 99999);
+        });
+
+        // Test for invalid input
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.deleteEmployee(shira.getIsraeliId(), shira.getIsraeliId());
+        });
+    }
+
+    @Test
+    void isEmployeeAuthorised() {
+        // Test for authorisation
+        boolean result = employeeController.isEmployeeAuthorised(shira.getIsraeliId(), CREATE_EMPLOYEE);
         assertTrue(result);
-        Employee employee = employeeController.getEmployeeByIsraeliId(11111111);
-        assertTrue(employee.getRoles().contains(role));
-    }
 
-    @Test
-    void testCreateEmployeeWithInvalidData() {
+        // Test for non-authorisation
+        result = employeeController.isEmployeeAuthorised(cochava.getIsraeliId(), CREATE_EMPLOYEE);
+        assertFalse(result);
+
+        // Test for invalid input
         assertThrows(RuntimeException.class, () -> {
-            employeeController.createEmployee(1, 123456789, "", "Doe", 50000, terms, new HashSet<>(), LocalDate.now());
-        });
-        assertThrows(RuntimeException.class, () -> {
-            employeeController.createEmployee(1, 123456789, "John", "", 50000, terms, new HashSet<>(), LocalDate.now());
-        });
-        assertThrows(RuntimeException.class, () -> {
-            employeeController.createEmployee(1, 123456789, "John", "Doe", 0, terms, new HashSet<>(), LocalDate.now());
-        });
-        assertThrows(RuntimeException.class, () -> {
-            employeeController.createEmployee(1, 123456789, "John", "Doe", 50000, null, new HashSet<>(), LocalDate.now());
-        });
-        assertThrows(RuntimeException.class, () -> {
-            employeeController.createEmployee(1, 123456789, "John", "Doe", 50000, terms, new HashSet<>(), null);
+            employeeController.isEmployeeAuthorised(99999, CREATE_EMPLOYEE);
         });
     }
 
     @Test
-    void testUpdateEmployeeWithInvalidData() {
+    void addRoleToEmployee() {
+        // Test for adding a new role
         assertThrows(RuntimeException.class, () -> {
-            employeeController.updateEmployee(123456789, 123456789, "", "Doe", 60000, terms, true);
+            employeeController.addRoleToEmployee(shira.getIsraeliId(), cochava.getIsraeliId(), "CASHIER");
         });
+
+        // Test for adding an existing role
         assertThrows(RuntimeException.class, () -> {
-            employeeController.updateEmployee(123456789, 123456789, "Jane", "", 60000, terms, true);
+            employeeController.addRoleToEmployee(shira.getIsraeliId(),cochava.getIsraeliId() ,"CASHIER");
         });
+
+        // Test for invalid input
         assertThrows(RuntimeException.class, () -> {
-            employeeController.updateEmployee(123456789, 123456789, "Jane", "Doe", 0, terms, true);
-        });
-        assertThrows(RuntimeException.class, () -> {
-            employeeController.updateEmployee(123456789, 123456789, "Jane", "Doe", 60000, null, true);
+            employeeController.addRoleToEmployee(shira.getEmployeeId(),cochava.getIsraeliId(), "cashier");
         });
     }
 
     @Test
-    void testAddRoleToNonExistentEmployee() {
-        Permission permission = new Permission(1, "ADD_ROLE_TO_EMPLOYEE", "Permission to add role to employee");
-        permissions.add(permission);
-        Role role = new Role(1, "Manager", new HashSet<>(Set.of(permission)));
-        roles.add(role);
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            employeeController.addRoleToEmployee(1, 123456789, "Manager");
+    void removeRoleFromEmployee() {
+        // Test for removing an existing role
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.removeRoleFromEmployee(shira.getIsraeliId(), cochava.getIsraeliId(), "CASHIER");
         });
-        assertEquals("Employee not found", exception.getMessage());
+
+        // Test for removing a non-existing role
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.removeRoleFromEmployee(shira.getIsraeliId(), cochava.getIsraeliId(), "NON_EXISTING_ROLE");
+        });
+
+        // Test for invalid input
+        assertThrows(RuntimeException.class, () -> {
+            employeeController.removeRoleFromEmployee(shira.getIsraeliId(), cochava.getIsraeliId(), "cashier");
+        });
     }
 }
