@@ -1,10 +1,11 @@
 package Service;
 
 public class ProductService {
-    int productId;
+    final int productId;
     String productName;
     String manufacturerName;
-    int minimalAmout;
+    int minimalAmoutStore;
+    int minimalAmoutStock;
     float productPrice;
 
 
@@ -14,6 +15,27 @@ public class ProductService {
     String wareHouseShelf;
     /////////
 
+    public int getproductId() { return productId;}
+    public String getproductName() { return productName;}
+    public String getmanufacturerName() { return manufacturerName;}
+    public int getminimalAmoutStore() { return minimalAmoutStore;}
+    public int getminimalAmoutStock() { return minimalAmoutStock;}
+    public float getproductPrice() { return productPrice;}
+    public String getstoreShalf() { return storeShalf;}
+    public String getwareHouseShelf() { return wareHouseShelf;}
 
+    public ProductService(int pID,String pName,String MfName, int MAStore, int MAStock, float PPrice,String SShalf,String WHShelf){
+        productId = pID;
+        productName = pName;
+        manufacturerName = MfName;
+        minimalAmoutStore = MAStore;
+        minimalAmoutStock = MAStock;
+        productPrice = PPrice;
+        storeShalf = SShalf;
+        wareHouseShelf = WHShelf;
+    }
+    public ProductService(ProductDomain, int otherID){
+        //TO DO
+    }
 
 }
