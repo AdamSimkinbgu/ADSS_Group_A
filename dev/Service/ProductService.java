@@ -1,5 +1,7 @@
 package Service;
 
+import Domain.ProductDomain;
+
 public class ProductService {
     final int productId;
     String productName;
@@ -34,8 +36,8 @@ public class ProductService {
         storeShalf = SShalf;
         wareHouseShelf = WHShelf;
     }
-    public ProductService(ProductDomain, int otherID){
-        //TO DO
+    public ProductService(ProductDomain other){
+        //todo
     }
 
 }

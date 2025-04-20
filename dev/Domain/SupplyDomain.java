@@ -25,4 +25,12 @@ public class SupplyDomain {
     public Date getExpierDate() {
         return expierDate;
     }
+
+    public SupplyDomain(int Id,int qw, int qs, int qb, Date ex){
+        id=Id;
+        quantityWarehouse = qw;
+        quantityStore = qs;
+        quantityBad = qb;
+        expierDate = ex;
+    }
 }

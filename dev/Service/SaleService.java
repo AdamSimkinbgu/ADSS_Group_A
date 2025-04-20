@@ -5,20 +5,27 @@ import java.util.HashMap;
 
 public class SaleService {
     int saleID;
-    int price;
-    Date saleTime;
-    HashMap<String,Integer> products; //// hashmap(saleID,saleQuantity) ////
+    int salePrice;
+    final Date saleTime;
+    HashMap<Integer,Integer> products; //// hashmap(saleID,saleQuantity) ////
 
     public int getSaleID() {
         return saleID;
     }
-    public int getPrice() {
-        return price;
+    public int getSalePrice() {
+        return salePrice;
     }
     public Date getSaleTime() {
         return saleTime;
     }
-    public HashMap<String, Integer> getProducts() {
+    public HashMap<Integer, Integer> getProducts() {
         return products;
+    }
+
+    public SaleService(int id, int price, Date saleT, HashMap<Integer,Integer> prod){
+        saleID = id;
+        salePrice = price;
+        saleTime = saleT;
+        products = new HashMap<>(prod);
     }
 }
