@@ -4,23 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Domain/DicountDomain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/BadReport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/CurrentInventoryReport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/DiscountService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/ProductService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/ReportServise.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/SaleService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/SupplyReport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Service/SupplyService.java" afterDir="false" />
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="start the skeliton">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/ProductService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +75,15 @@
       <option name="presentableId" value="Default" />
       <updated>1742720480414</updated>
     </task>
+    <task id="LOCAL-00001" summary="start the skeliton">
+      <option name="closed" value="true" />
+      <created>1745152622012</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1745152622012</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -93,10 +91,26 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="206641649_315057323" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="start the skeliton" />
+    <option name="LAST_COMMIT_MESSAGE" value="start the skeliton" />
   </component>
 </project>
