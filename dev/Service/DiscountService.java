@@ -1,7 +1,10 @@
 package Service;
 
+import java.util.Date;
+import java.util.List;
+
 public class DiscountService {
-    List<int> items; /// list of items for the discount ///
+    List<Integer> items; /// list of items for the discount ///
     int percent;
     Date startDate;
     Date endDate;

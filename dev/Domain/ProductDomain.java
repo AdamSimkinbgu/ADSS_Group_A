@@ -1,5 +1,7 @@
 package Domain;
 
+import java.util.List;
+
 public class ProductDomain {
     private int productID;
     private String productName;
