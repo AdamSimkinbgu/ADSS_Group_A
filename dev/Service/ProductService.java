@@ -37,7 +37,15 @@ public class ProductService {
         wareHouseShelf = WHShelf;
     }
     public ProductService(ProductDomain other){
-        //todo
+        productId = other.getproductID();
+        productName = other.getproductName();
+        productPrice = other.getproductPrice1unit();
+        manufacturerName = other.getmanufactuerName();
+        minimalAmoutStock = other.getminimalAmountStock();
+        minimalAmoutStore = other.getminimalAmountStore();
+
+        storeShalf = getstoreShalf();
+        wareHouseShelf = getwareHouseShelf();
     }
 
 }
