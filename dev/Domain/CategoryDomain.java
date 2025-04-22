@@ -17,4 +17,17 @@ public class CategoryDomain {
         productLs = new ArrayList<>();
         subCategoryLs = new ArrayList<>();
     }
+
+    public boolean Isin(String itme){
+        return True;
+        //todo
+    }
+
+    public boolean Isin(int itmeID){
+        return True;
+        //todo
+    }
+
+
+
 }

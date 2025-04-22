@@ -52,6 +52,11 @@ public class MainDomain {
         //todo
     }
 
+    public String GetCurrentInventoryReport(){
+        return "";
+        //todo
+    }
+
     /*
     * Move Product to a new shelf
     *

@@ -33,4 +33,27 @@ public class SupplyDomain {
         quantityBad = qb;
         expierDate = ex;
     }
+
+    // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setQuantityWarehouse(int quantityWarehouse) {
+        this.quantityWarehouse = quantityWarehouse;
+    }
+
+    public void setQuantityStore(int quantityStore) {
+        this.quantityStore = quantityStore;
+    }
+
+    public void setQuantityBad(int quantityBad) {
+        this.quantityBad = quantityBad;
+    }
+
+    public void setExpierDate(Date expierDate) {
+        this.expierDate = expierDate;
+    }
+
+
 }

@@ -52,4 +52,51 @@ public class ProductDomain {
         storeShelf = SShalf;
         wareHouseShelf = WHShelf;
     }
+
+    //setters 
+    public void setwareHouseShelf(Position wareHouseShelf) {
+        this.wareHouseShelf = wareHouseShelf;
+    }
+
+    public void setstoreShelf(Position storeShelf) {
+        this.storeShelf = storeShelf;
+    }
+
+    public void setminimalAmountStore(int minimalAmountStore){
+        this.minimalAmountStore = minimalAmountStore;
+    }
+
+    public void setminimalAmountStock(int minimalAmountStock){
+        this.minimalAmountStock = minimalAmountStock;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+
+    public void AddSupply(SupplyDomain supply){
+        //todo
+    }
+
+    public void MoveSupply(Position ItemPosition){
+        //todo
+    }
+
+    public String GetMissing(){
+        return ""
+        //todo
+    }
+
+    public String GetBads(){
+        return ""
+        //todo
+    }
+
+    public String GetCurrentInventory(){
+        return ""
+        //todo
+    }
+
+    
+    
 }
