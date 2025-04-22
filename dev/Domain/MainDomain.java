@@ -3,7 +3,9 @@ package Domain;
 
 import type.Position;
 
+import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,7 +32,9 @@ public class MainDomain {
         //todo
     }
 
-    public void UpdateInventoryRestock(SupplyDomain spd, int pId){
+    public void UpdateInventoryRestock(int pId, int quantity, ChronoLocalDate ex){
+        SupplyDomain sd = new SupplyDomain(supplyCounter++,quantity,ex);
+        prodMap.get(pId).AddSupply(sd);
         //todo
     }
 
@@ -39,8 +43,19 @@ public class MainDomain {
     }
 
     public String GetMissingReport(){
-        return "";
-        //todo
+        StringBuilder ret = new StringBuilder("=====Missing/Bad Report=====\n");
+
+        for (ProductDomain p : prodMap.values()) {
+            int badnum = p.GetBads();
+            if (badnum > 0) {
+                ret.append(p.getproductName())
+                        .append(": ")
+                        .append(badnum)
+                        .append(" \n");
+            }
+        }
+        return ret.toString();
+        //todo check if working
     }
 
     /*

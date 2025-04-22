@@ -2,6 +2,7 @@ package Service;
 
 import Domain.SupplyDomain;
 
+import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 
 
@@ -10,7 +11,7 @@ public class SupplyService {
     final int productID;
     int quantityWarehouse;
     int quantityStore;
-    final Date expireDate;
+    final ChronoLocalDate expireDate;
     int quantityBad;
 
     public int getSupplyID() {
@@ -28,11 +29,11 @@ public class SupplyService {
     public int getQuantityBad() {
         return quantityBad;
     }
-    public Date getExpireDate() {
+    public ChronoLocalDate getExpireDate() {
         return expireDate;
     }
 
-    public SupplyService(int id,int pId,int qW, int qS,int qB,Date ex){
+    public SupplyService(int id,int pId,int qW, int qS,int qB,ChronoLocalDate ex){
         supplyID = id;
         productID = pId;
         quantityWarehouse = qW;

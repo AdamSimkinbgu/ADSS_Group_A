@@ -1,13 +1,15 @@
 package Domain;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+
 
 public class SupplyDomain {
 
     private int id;
     private int quantityWarehouse;
     private int quantityStore;
-    private Date expierDate;
+    private ChronoLocalDate expierDate;
     private int quantityBad;
 
     public int getId() {
@@ -20,17 +22,18 @@ public class SupplyDomain {
         return quantityStore;
     }
     public int getQuantityBad() {
+        IsEx();
         return quantityBad;
     }
-    public Date getExpierDate() {
+    public ChronoLocalDate getExpierDate() {
         return expierDate;
     }
 
-    public SupplyDomain(int Id,int qw, int qs, int qb, Date ex){
+    public SupplyDomain(int Id,int qw, ChronoLocalDate ex){
         id=Id;
         quantityWarehouse = qw;
-        quantityStore = qs;
-        quantityBad = qb;
+        quantityStore = 0;
+        quantityBad = 0;
         expierDate = ex;
     }
 
@@ -51,9 +54,18 @@ public class SupplyDomain {
         this.quantityBad = quantityBad;
     }
 
-    public void setExpierDate(Date expierDate) {
+    public void setExpierDate(ChronoLocalDate expierDate) {
         this.expierDate = expierDate;
     }
 
-
+    public boolean IsEx(){
+        if(LocalDate.now().isAfter(expierDate)) {
+            quantityBad += quantityWarehouse;
+            quantityBad += quantityStore;
+            quantityWarehouse = 0;
+            quantityStore = 0;
+        }
+        if(quantityWarehouse == 0 && quantityStore ==0)return true;
+        return false;
+    }
 }
