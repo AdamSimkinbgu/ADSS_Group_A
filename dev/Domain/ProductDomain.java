@@ -82,18 +82,18 @@ public class ProductDomain {
         //todo
     }
 
-    public String GetMissing(){
-        return ""
+    public int GetMissing(){
+        return 0;
         //todo
     }
 
-    public String GetBads(){
-        return ""
+    public int GetBads(){
+        return 0;
         //todo
     }
 
     public String GetCurrentInventory(){
-        return ""
+        return "";
         //todo
     }
 

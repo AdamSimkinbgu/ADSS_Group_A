@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainDomain {
+    private int productCounter;
+    private int supplyCounter;
     private HashMap<Integer, ProductDomain> prodMap;
     private List<DiscountDomain> activeDisLst;
     private List<DiscountDomain> pastDisLst;
@@ -15,6 +17,8 @@ public class MainDomain {
     private List<CategoryDomain> categoryLst;
 
     public MainDomain() {
+        productCounter = 0;
+        supplyCounter = 0;
         prodMap = new HashMap<>();
         activeDisLst = new ArrayList<>();
         pastDisLst = new ArrayList<>();
@@ -82,4 +86,12 @@ public class MainDomain {
     }
 
 
+
+    public void AddDiscount(){
+        //todo
+    }
+
+    public void AddCategory(){
+        //todo
+    }
 }
