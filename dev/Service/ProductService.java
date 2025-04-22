@@ -1,6 +1,7 @@
 package Service;
 
 import Domain.ProductDomain;
+import type.Position;
 
 public class ProductService {
     final int productId;
@@ -9,13 +10,9 @@ public class ProductService {
     int minimalAmoutStore;
     int minimalAmoutStock;
     float productPrice;
+    Position storeShalf;
+    Position wareHouseShelf;
 
-
-    //to change
-    ////////
-    String storeShalf;
-    String wareHouseShelf;
-    /////////
 
     public int getproductId() { return productId;}
     public String getproductName() { return productName;}
@@ -23,10 +20,10 @@ public class ProductService {
     public int getminimalAmoutStore() { return minimalAmoutStore;}
     public int getminimalAmoutStock() { return minimalAmoutStock;}
     public float getproductPrice() { return productPrice;}
-    public String getstoreShalf() { return storeShalf;}
-    public String getwareHouseShelf() { return wareHouseShelf;}
+    public Position getstoreShalf() { return storeShalf;}
+    public Position getwareHouseShelf() { return wareHouseShelf;}
 
-    public ProductService(int pID,String pName,String MfName, int MAStore, int MAStock, float PPrice,String SShalf,String WHShelf){
+    public ProductService(int pID,String pName,String MfName, int MAStore, int MAStock, float PPrice,Position SShalf,Position WHShelf){
         productId = pID;
         productName = pName;
         manufacturerName = MfName;

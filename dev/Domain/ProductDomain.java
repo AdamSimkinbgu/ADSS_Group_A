@@ -1,5 +1,7 @@
 package Domain;
 
+import type.Position;
+
 import java.util.List;
 
 public class ProductDomain {
@@ -9,8 +11,8 @@ public class ProductDomain {
     private int minimalAmountStore;
     private int minimalAmountStock;
     private float productPrice1unit;
-    private String wareHouseShelf;
-    private String storeShelf;
+    private Position wareHouseShelf;
+    private Position storeShelf;
     private List<SupplyDomain> supplyList; //// list of supplies ////
 
 
@@ -32,15 +34,15 @@ public class ProductDomain {
     public float getproductPrice1unit() {
         return productPrice1unit;
     }
-    public String getstoreShelf() {
+    public Position getstoreShelf() {
         return storeShelf;
     }
-    public String getwareHouseShelf() {
+    public Position getwareHouseShelf() {
         return wareHouseShelf;
     }
 
 
-    public ProductDomain(int pID, String pName, String MfName, int MAStore, int MAStock, float PPrice, String SShalf, String WHShelf) {
+    public ProductDomain(int pID, String pName, String MfName, int MAStore, int MAStock, float PPrice, Position SShalf, Position WHShelf) {
         productID = pID;
         productName = pName;
         manufactuerName = MfName;
