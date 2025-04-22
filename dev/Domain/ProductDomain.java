@@ -4,6 +4,8 @@ import type.Position;
 
 import java.util.List;
 
+import java.time.LocalDate;
+
 public class ProductDomain {
     private int productID;
     private String productName;
@@ -75,7 +77,7 @@ public class ProductDomain {
 
 
     public void AddSupply(SupplyDomain supply){
-        //todo
+        supplyList.add(supply)
     }
 
     public void MoveSupply(Position ItemPosition){
@@ -83,14 +85,22 @@ public class ProductDomain {
     }
 
     public int GetMissing(){
-        return 0;
+        int TotalInStore = 0;
+        for (SupplyDomain supply: supplyList){
+            TotalInStore += supply.getQuantityStore
+            TotalInStore += supply.getQuantityWarehouse
+            }
         //todo
     }
 
     public int GetBads(){
-        return 0;
-        //todo
-    }
+        int Totalbad = 0;
+        for (SupplyDomain supply: supplyList){
+            Totalbad += supply.getQuantityBad
+            }
+        return Totalbad
+        }
+    
 
     public String GetCurrentInventory(){
         return "";
@@ -98,5 +108,5 @@ public class ProductDomain {
     }
 
     
-    
+
 }
