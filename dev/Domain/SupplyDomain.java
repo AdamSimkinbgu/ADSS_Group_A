@@ -58,6 +58,9 @@ public class SupplyDomain {
         this.expierDate = expierDate;
     }
 
+    /*
+    * check if the expaer date is due and move all supply to bad if it does
+    * */
     public boolean IsEx(){
         if(LocalDate.now().isAfter(expierDate)) {
             quantityBad += quantityWarehouse;
@@ -67,5 +70,19 @@ public class SupplyDomain {
         }
         if(quantityWarehouse == 0 && quantityStore ==0)return true;
         return false;
+    }
+
+    public int restock(int quantity){
+        if(quantity <= quantityWarehouse){
+            quantityWarehouse -= quantity;
+            quantityStore +=quantity;
+            return 0;
+        }
+        else{
+            quantity -=quantityWarehouse;
+            quantityStore += quantityWarehouse;
+            quantityWarehouse = 0;
+            return quantity;
+        }
     }
 }

@@ -5,7 +5,6 @@ import type.Position;
 
 import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,15 +41,16 @@ public class MainDomain {
         //todo
     }
 
+    //v
     public String GetMissingReport(){
-        StringBuilder ret = new StringBuilder("=====Missing/Bad Report=====\n");
-
+        StringBuilder ret = new StringBuilder("=====Missing Report=====\n");
+        int missNum = 0;
         for (ProductDomain p : prodMap.values()) {
-            int badnum = p.GetBads();
-            if (badnum > 0) {
+            missNum = p.GetMissing();
+            if (missNum > 0) {
                 ret.append(p.getproductName())
                         .append(": ")
-                        .append(badnum)
+                        .append(missNum)
                         .append(" \n");
             }
         }
@@ -66,9 +66,21 @@ public class MainDomain {
         //todo
     }
 
+    //v
     public String GetBadReport(){
-        return "";
-        //todo
+        StringBuilder ret = new StringBuilder("=====Bad Report=====\n");
+        int badNum = 0;
+        for (ProductDomain p : prodMap.values()) {
+            badNum = p.GetBads();
+            if (badNum > 0) {
+                ret.append(p.getproductName())
+                        .append(": ")
+                        .append(badNum)
+                        .append(" \n");
+            }
+        }
+        return ret.toString();
+        //todo check if working
     }
 
     public String GetCurrentInventoryReport(){
@@ -99,8 +111,6 @@ public class MainDomain {
         return "";
         //todo
     }
-
-
 
     public void AddDiscount(){
         //todo

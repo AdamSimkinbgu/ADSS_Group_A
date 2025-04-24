@@ -22,11 +22,11 @@ public class SaleDomain {
         return itemLs;
     }
 
-    public SaleDomain(int id,int price,Date time,HashMap<Integer,Integer> itms){
+    public SaleDomain(int id,int price,Date time,HashMap<Integer,Integer> items){
         saleID = id;
-        salePrice = price;
+        salePrice = 0;
         saleTime = time;
-        itemLs = new HashMap<>(itms);
+        itemLs = new HashMap<>(items);
     }
 }
 

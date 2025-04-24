@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="starting func">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="fix prod">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/DiscountDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/DiscountDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +162,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745345798314</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="fix prod">
+      <option name="closed" value="true" />
+      <created>1745508359206</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1745508359206</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -192,6 +205,7 @@
     <MESSAGE value="stafe" />
     <MESSAGE value="small change" />
     <MESSAGE value="starting func" />
-    <option name="LAST_COMMIT_MESSAGE" value="starting func" />
+    <MESSAGE value="fix prod" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix prod" />
   </component>
 </project>
