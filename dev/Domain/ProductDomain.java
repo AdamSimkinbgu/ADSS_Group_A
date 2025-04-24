@@ -4,6 +4,8 @@ import type.Position;
 
 import java.util.List;
 
+import java.util.Comparator;
+
 import java.time.LocalDate;
 
 public class ProductDomain {
@@ -78,9 +80,10 @@ public class ProductDomain {
 
     public void AddSupply(SupplyDomain supply){
         supplyList.add(supply);
+        supplyList.sort(Comparator.comparing(SupplyDomain::getExpierDate));
     }
 
-    public void reStock(Position ItemPosition){
+    public void reStock(){
         int all_supp_instore = 0;
         for (SupplyDomain supply: supplyList){
             supply.IsEx();
@@ -93,6 +96,10 @@ public class ProductDomain {
                 if(quant == 0)break;
             }
         }
+    }
+
+    public void moveProudct(Position Position){
+        //todo
     }
 
 
@@ -121,19 +128,14 @@ public class ProductDomain {
     public String GetCurrentInventory(){
         int totalInStore = 0;
         int totalInWarehouse = 0;
-        String all_curr_inv = "";
         for (SupplyDomain supply : supplyList) {
             totalInStore += supply.getQuantityStore();
             totalInWarehouse += supply.getQuantityWarehouse();
-            all_curr_inv += "Product: " + getproductName() + " (ID: " + getproductID() + ")\n"
+        }
+        return "Product: " + getproductName() + " (ID: " + getproductID() + ")\n"
                 + "In Store: " + totalInStore + "\n"
                 + "In Warehouse: " + totalInWarehouse + "\n"
                 + "Bad Units: " + GetBads() + "\n"
                 + "Missing from Store: " + GetMissing() + "\n";
-        }
-        return all_curr_inv;
-
-    
-
     }
 }
