@@ -1,6 +1,6 @@
 package Domain;
 
-import javax.lang.model.type.NullType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +12,11 @@ public class CategoryDomain {
 
     public String getName() {
         return name;
+    }
+    public float getDiscunt(){
+        if(disDom ==)
+            return 0;
+        return disDom.getpercent();
     }
 
     public CategoryDomain(String catName){
@@ -26,18 +31,22 @@ public class CategoryDomain {
         }
         else{
             for(CategoryDomain c : subCategoryLs){
-                if(c.Isin(item) == true)return true;
+                if(c.Isin(item))return true;
             }
             return false;
         }
-        //todo
+        //todo check
     }
 
     public boolean Isin(int itemID){
-        for(){
-
+        for(Integer pd: productLs){
+            if(pd == itemID)return true;
         }
-        //todo
+        for(CategoryDomain c : subCategoryLs){
+            if(c.Isin(itemID))return true;
+        }
+        return false;
+        //todo check
     }
 
 

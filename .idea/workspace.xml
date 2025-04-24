@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="fix prod">
-      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="fix prod2">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +60,7 @@
   "keyToString": {
     "Application.Main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging 206641649__315057323",
+    "git-widget-placeholder": "206641649__315057323",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A"
   }
@@ -204,7 +205,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745511991682</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="fix prod2">
+      <option name="closed" value="true" />
+      <created>1745512691067</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1745512691067</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -218,7 +227,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="206641649_315057323" />
+                        <option value="origin/206641649_315057323" />
                       </list>
                     </value>
                   </entry>
@@ -240,6 +249,7 @@
     <MESSAGE value="small change" />
     <MESSAGE value="starting func" />
     <MESSAGE value="fix prod" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix prod" />
+    <MESSAGE value="fix prod2" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix prod2" />
   </component>
 </project>
