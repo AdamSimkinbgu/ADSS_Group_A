@@ -77,7 +77,7 @@ public class ProductDomain {
 
 
     public void AddSupply(SupplyDomain supply){
-        supplyList.add(supply)
+        supplyList.add(supply);
     }
 
     public void MoveSupply(Position ItemPosition){
@@ -87,18 +87,22 @@ public class ProductDomain {
     public int GetMissing(){
         int TotalInStore = 0;
         for (SupplyDomain supply: supplyList){
-            TotalInStore += supply.getQuantityStore
-            TotalInStore += supply.getQuantityWarehouse
+            TotalInStore += supply.getQuantityStore();
+            TotalInStore += supply.getQuantityWarehouse();
             }
+        if(TotalInStore < minimalAmountStock){
+            return minimalAmountStore - TotalInStore;
+        }
+        else return 0;
         //todo
     }
 
     public int GetBads(){
         int Totalbad = 0;
         for (SupplyDomain supply: supplyList){
-            Totalbad += supply.getQuantityBad
+            Totalbad += supply.getQuantityBad();
             }
-        return Totalbad
+        return Totalbad;
         }
     
 
