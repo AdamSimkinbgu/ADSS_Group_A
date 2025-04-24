@@ -80,9 +80,24 @@ public class ProductDomain {
         supplyList.add(supply);
     }
 
-    public void MoveSupply(Position ItemPosition){
-        //todo
+    public void reStock(Position ItemPosition){
+        int all_supp_instore = 0;
+        for (SupplyDomain supply: supplyList){
+            suplly.IsEx();
+            all_supp_instore += suplly.getquantityStore();
+        }
+        if (all_supp_instore < minimalAmountStore){
+            suplly.setQuantityWarehouse((-(2*minimalAmountStore)))
+            supplly.setQuantityStore(2*minimalAmountStore)
+
+            }
+            
+            
+
+        }
     }
+
+    
 
     public int GetMissing(){
         int TotalInStore = 0;
@@ -103,13 +118,24 @@ public class ProductDomain {
             Totalbad += supply.getQuantityBad();
             }
         return Totalbad;
+        //todo restock
         }
     
 
     public String GetCurrentInventory(){
-        return "";
-        //todo
-    }
+        int totalInStore = 0;
+        int totalInWarehouse = 0;
+        String all_curr_inv = "";
+        for (SupplyDomain supply : supplyList) {
+            totalInStore += supply.getQuantityStore();
+            totalInWarehouse += supply.getQuantityWarehouse();
+            all_curr_inv += "Product: " + getproductName() + " (ID: " + getproductID() + ")\n"
+                + "In Store: " + totalInStore + "\n"
+                + "In Warehouse: " + totalInWarehouse + "\n"
+                + "Bad Units: " + GetBads() + "\n"
+                + "Missing from Store: " + GetMissing() + "\n";
+        }
+        return all_curr_inv;
 
     
 
