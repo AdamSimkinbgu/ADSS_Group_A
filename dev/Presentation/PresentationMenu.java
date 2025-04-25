@@ -54,6 +54,7 @@ public class PresentationMenu {
                 case 8:
                     break;
                 case 9:
+                    MoveProduct();
                     return;
                 case 0:
                     break;
@@ -233,7 +234,31 @@ public class PresentationMenu {
     }
 
     private void AddToCategory(){
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("Enter the name of the category: ");
+        String catName = scanner.nextLine();
+
+
+        System.out.println("To add product press 1 and to sub-category press 2");
+        int pOrc = scanner.nextInt();
+        scanner.nextLine();
+
+        if(pOrc == 1){
+            System.out.println("Enter product id:");
+            int pId = scanner.nextInt();
+            scanner.nextLine();
+
+            String response = ms.AddToCategory(catName,pId);
+            System.out.println(response);
+        } else if (pOrc == 2) {
+            System.out.println("Enter the name of the category: ");
+            String subCatName = scanner.nextLine();
+
+            String response = ms.AddToCategory(catName,subCatName);
+            System.out.println(response);
+        }
+        else System.out.println("Invalid input");
     }
 
     private void MoveProduct(){
@@ -251,13 +276,32 @@ public class PresentationMenu {
         int sOrw = scanner.nextInt();
         scanner.nextLine();
 
-        if(sOrw == 1){
+        System.out.println("new line");
+        int newL = scanner.nextInt();
+        scanner.nextLine();
+        if(newL < 0){
+            System.out.println("Invalid line ");
+            return;
+        }
 
-        } else if (sOrw == 2) {
+        System.out.println("new shelf");
+        int newS = scanner.nextInt();
+        scanner.nextLine();
+        if(newS < 0){
+            System.out.println("Invalid shelf");
+            return;
+        }
 
-        }else {
+        Position newp = new Position(newL,newS);
+        boolean flag = true;
+        if (sOrw == 2) {
+            flag = false;
+        } else if(sOrw != 1) {
             System.out.println("Invalid input");
         }
 
+
+        String response = ms.MoveProduct(pId,flag,newp);
+        System.out.println(response);
     }
 }

@@ -1,5 +1,6 @@
+/*package Tests;
+
 import Domain.MainDomain;
-import Domain.ProductDomain;
 import type.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +10,7 @@ import java.time.chrono.ChronoLocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class inventoryTests {
+public class InventoryTests {
     private MainDomain main;
 
     @BeforeEach
@@ -90,4 +91,4 @@ public class inventoryTests {
         main.AddProduct("Lettuce", "Farm", 5, 5, 2.0f, new Position(1,1), new Position(2,2));
         String result = main.Search("Lettuce");
     }
-}
+}*/

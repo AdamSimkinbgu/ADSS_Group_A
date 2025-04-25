@@ -26,7 +26,7 @@ public class CategoryDomain {
     }
 
     public boolean Isin(String item){
-        if(item == name){
+        if(item.equals(name)){
             return true;
         }
         else{
@@ -49,6 +49,28 @@ public class CategoryDomain {
         //todo check
     }
 
+    public void InsertPID(String catName, int pid){
+        if(catName.equals(name))productLs.add(pid);
+        else {
+            for(CategoryDomain c :subCategoryLs){
+                if(c.Isin(catName)){
+                    c.InsertPID(catName,pid);
+                    return;
+                }
+            }
+        }
+    }
 
+    public void InsertSub(String catName,CategoryDomain subCat){
+        if(catName.equals(name))subCategoryLs.add(subCat);
+        else {
+            for(CategoryDomain c :subCategoryLs){
+                if(c.Isin(catName)){
+                    c.InsertSub(catName,subCat);
+                    return;
+                }
+            }
+        }
+    }
 
 }

@@ -103,6 +103,7 @@ public class MainDomain {
         //todo
     }
 
+    //VVVVVV
     /*
     * Move Product to a new shelf
     *
@@ -111,7 +112,10 @@ public class MainDomain {
     * @param newP the new shelf
     * */
     public void MoveProduct(int pId, boolean SOrW, Position newP){
-        //todo
+        if(!prodMap.containsKey(pId))throw new IllegalArgumentException("pId invalid");
+
+        prodMap.get(pId).moveProudct(SOrW, newP);
+
     }
 
     /*
@@ -138,5 +142,23 @@ public class MainDomain {
         }
         categoryLst.add(new CategoryDomain(newName));
         int i =0;
+    }
+
+    public void AddToCategory(String catName,int pId){
+
+        if(!prodMap.containsKey(pId))throw new IllegalArgumentException("invalid product id");
+
+        for(CategoryDomain c : categoryLst){
+            if(c.Isin(catName)){
+                c.InsertPID(catName,pId);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("There is no category by that name");
+
+    }
+
+    public void AddToCategory(String catName,String subCat){
+
     }
 }

@@ -7,8 +7,6 @@ import java.util.List;
 
 import java.util.Comparator;
 
-import java.time.LocalDate;
-
 public class ProductDomain {
     private int productID;
     private String productName;
@@ -63,15 +61,12 @@ public class ProductDomain {
     public void setwareHouseShelf(Position wareHouseShelf) {
         this.wareHouseShelf = wareHouseShelf;
     }
-
     public void setstoreShelf(Position storeShelf) {
         this.storeShelf = storeShelf;
     }
-
     public void setminimalAmountStore(int minimalAmountStore){
         this.minimalAmountStore = minimalAmountStore;
     }
-
     public void setminimalAmountStock(int minimalAmountStock){
         this.minimalAmountStock = minimalAmountStock;
     }
@@ -85,7 +80,7 @@ public class ProductDomain {
         supplyList.sort(Comparator.comparing(SupplyDomain::getExpierDate));
     }
 
-    public void reStock(){
+    public void reStockStore(){
         int all_supp_instore = 0;
         for (SupplyDomain supply: supplyList){
             supply.IsEx();
@@ -100,21 +95,24 @@ public class ProductDomain {
         }
     }
 
-    public void moveProudct(Position Position){
-        //todo
+    public void moveProudct(boolean sOrW, Position newP){
+        if(sOrW)storeShelf = newP;
+        else wareHouseShelf = newP;
     }
-
 
     public int GetMissing(){
         int TotalInStore = 0;
+        int ret = 0;
         for (SupplyDomain supply: supplyList){
             TotalInStore += supply.getQuantityStore();
             TotalInStore += supply.getQuantityWarehouse();
             }
         if(TotalInStore < minimalAmountStock){
-            return minimalAmountStock - TotalInStore;
+            ret = minimalAmountStock - TotalInStore;
         }
-        else return 0;
+
+        reStockStore();
+        return ret;
         //todo
     }
 
@@ -123,6 +121,7 @@ public class ProductDomain {
         for (SupplyDomain supply: supplyList){
             Totalbad += supply.getQuantityBad();
             }
+        reStockStore();
         return Totalbad;
         }
     

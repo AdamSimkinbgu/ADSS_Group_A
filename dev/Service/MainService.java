@@ -56,4 +56,35 @@ public class MainService {
             return "Failed to crate category:" + e.getMessage();
         }
     }
+
+    public String AddToCategory(String catName, int pId){
+        try{
+            md.AddToCategory(catName,pId);
+            return "Item added to category" + catName;
+        }catch (IllegalArgumentException e){
+            return "Failed to add item to the category: " + e.getMessage();
+        }
+        //todo
+    }
+
+    public String AddToCategory(String catName, String subCat){
+        try{
+            md.AddToCategory(catName,subCat);
+            return "sub-category added to category" + catName;
+        }catch (IllegalArgumentException e){
+            return "Failed to add item to the category: " + e.getMessage();
+        }
+        //todo
+    }
+
+    public String MoveProduct(int pid , boolean SOW, Position p){
+        try{
+            md.MoveProduct(pid,SOW,p);
+            return "Product moved successfully";
+        }catch (IllegalArgumentException e){
+            return "Failed to move product: " + e.getMessage();
+        }
+    }
+
+
 }

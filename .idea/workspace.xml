@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="supply">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="Add category">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Tests/InventoryTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Tests/InventoryTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -254,7 +256,23 @@
       <option name="project" value="LOCAL" />
       <updated>1745581864232</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Add category">
+      <option name="closed" value="true" />
+      <created>1745590992338</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1745590992338</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Add category">
+      <option name="closed" value="true" />
+      <created>1745591029115</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1745591029115</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -268,7 +286,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="206641649_315057323" />
+                        <option value="origin/206641649_315057323" />
                       </list>
                     </value>
                   </entry>
@@ -295,17 +313,7 @@
     <MESSAGE value="starting menu" />
     <MESSAGE value="supply service" />
     <MESSAGE value="supply" />
-    <option name="LAST_COMMIT_MESSAGE" value="supply" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Domain/MainDomain.java</url>
-          <line>138</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Add category" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add category" />
   </component>
 </project>
