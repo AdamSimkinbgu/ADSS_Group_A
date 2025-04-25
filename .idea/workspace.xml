@@ -4,12 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="starting menu">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="supply service">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ADSS_Group_A.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ADSS_Group_A.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/ProductService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Service/SupplyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/SupplyService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,14 +67,14 @@
   "keyToString": {
     "Application.Main.executor": "Debug",
     "Downloaded.Files.Path.Enabled": "true",
-    "Repository.Attach.Annotations": "true",
+    "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "true",
     "Repository.Attach.Sources": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "206641649__315057323",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A",
-    "project.structure.last.edited": "Modules",
+    "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.1370432",
     "project.structure.side.proportion": "0.19431715"
   }
@@ -239,7 +243,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745576634168</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="supply service">
+      <option name="closed" value="true" />
+      <created>1745578376045</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1745578376047</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -278,25 +290,21 @@
     <MESSAGE value="fix prod2" />
     <MESSAGE value="hi" />
     <MESSAGE value="starting menu" />
-    <option name="LAST_COMMIT_MESSAGE" value="starting menu" />
+    <MESSAGE value="supply service" />
+    <option name="LAST_COMMIT_MESSAGE" value="supply service" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/dev/Domain/MainDomain.java</url>
-          <line>37</line>
-          <option name="timeStamp" value="10" />
+          <line>45</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Service/MainService.java</url>
-          <line>19</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Presentation/PresentationMenu.java</url>
-          <line>151</line>
-          <option name="timeStamp" value="16" />
+          <url>file://$PROJECT_DIR$/dev/Domain/MainDomain.java</url>
+          <line>49</line>
+          <option name="timeStamp" value="26" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

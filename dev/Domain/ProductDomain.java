@@ -2,6 +2,7 @@ package Domain;
 
 import type.Position;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Comparator;
@@ -55,6 +56,7 @@ public class ProductDomain {
         productPrice1unit = PPrice;
         storeShelf = SShalf;
         wareHouseShelf = WHShelf;
+        supplyList = new ArrayList<>();
     }
 
     //setters 

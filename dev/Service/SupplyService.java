@@ -43,7 +43,6 @@ public class SupplyService {
         quantityBad = 0;
         expireDate = ex;
     }
-
     public SupplyService(SupplyDomain other , int otherId){
         supplyID = other.getId();
         productID = otherId;

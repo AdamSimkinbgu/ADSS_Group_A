@@ -28,6 +28,9 @@ public class MainDomain {
     }
 
     public void InventoryInitialization(){
+        ProductDomain p = new ProductDomain(productCounter,"Milk","Tara",8,20,(float)7.5,new Position(3,7),new Position(4,5));
+        prodMap.put(productCounter,p);
+        productCounter++;
         //todo
     }
 
@@ -40,6 +43,9 @@ public class MainDomain {
     }
 
     public void UpdateInventoryRestock(int pId, int quantity, ChronoLocalDate ex){
+        if(!prodMap.containsKey(pId)){
+            throw new IllegalArgumentException("no product with this ip");
+        }
         SupplyDomain sd = new SupplyDomain(supplyCounter++,quantity,ex);
         prodMap.get(pId).AddSupply(sd);
         //todo

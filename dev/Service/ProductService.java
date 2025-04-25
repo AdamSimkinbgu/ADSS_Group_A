@@ -10,7 +10,7 @@ public class ProductService {
     int minimalAmoutStore;
     int minimalAmoutStock;
     float productPrice;
-    Position storeShalf;
+    Position storeShelf;
     Position wareHouseShelf;
 
 
@@ -20,7 +20,7 @@ public class ProductService {
     public int getminimalAmoutStore() { return minimalAmoutStore;}
     public int getminimalAmoutStock() { return minimalAmoutStock;}
     public float getproductPrice() { return productPrice;}
-    public Position getstoreShalf() { return storeShalf;}
+    public Position getstoreShalf() { return storeShelf;}
     public Position getwareHouseShelf() { return wareHouseShelf;}
 
     public ProductService(){}
@@ -32,7 +32,7 @@ public class ProductService {
         minimalAmoutStore = MAStore;
         minimalAmoutStock = MAStock;
         productPrice = PPrice;
-        storeShalf = SShalf;
+        storeShelf = SShalf;
         wareHouseShelf = WHShelf;
     }
     public ProductService(ProductDomain other){
@@ -43,7 +43,7 @@ public class ProductService {
         minimalAmoutStock = other.getminimalAmountStock();
         minimalAmoutStore = other.getminimalAmountStore();
 
-        storeShalf = getstoreShalf();
+        storeShelf = getstoreShalf();
         wareHouseShelf = getwareHouseShelf();
     }
 

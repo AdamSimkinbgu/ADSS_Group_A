@@ -3,12 +3,15 @@ package Presentation;
 import Service.MainService;
 import Service.ProductService;
 import Service.SupplyService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import type.Position;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 
 
 
@@ -20,6 +23,7 @@ public class PresentationMenu {
     public PresentationMenu(){
         ms = new MainService();
         om = new ObjectMapper();
+        om.registerModule(new JavaTimeModule());
     }
 
     public void Menu(){
@@ -142,6 +146,7 @@ public class PresentationMenu {
             System.out.println("Invalid shelf ");
             return;
         }
+        scanner.nextLine();//clean the input buffer
 
         Position wp = new Position(wLane,wShelf);
 
@@ -172,12 +177,13 @@ public class PresentationMenu {
         }
 
         //get Quantity
-        System.out.println("Enter quantity name: ");
+        System.out.println("Enter quantity: ");
         int quantity = scanner.nextInt();
         if(quantity < 0){
             System.out.println("Invalid quantity");
             return;
         }
+        scanner.nextLine();//clean the input buffer
 
 
         //expire date
@@ -186,19 +192,21 @@ public class PresentationMenu {
         try {
             LocalDate date = LocalDate.parse(input, formatter);
             if(LocalDate.now().isAfter(date)){
-                System.out.println("Invalid date");
+                System.out.println("Date is in the past. Please enter a valid future date.");
                 return;
             }
             SupplyService newSup = new SupplyService(pId,quantity,date);
 
-            String message = om.writeValueAsString(newSup);
-            String response = ms.AddSupply(message);
+            String response = ms.AddSupply(newSup.getProductID(),newSup.getQuantityWarehouse(),newSup.getExpireDate());
             System.out.println(response);
 
+        //}catch (JsonProcessingException e) {
+           // System.out.println("Failed to convert supply to JSON: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Invalid date format!");
-            return;
+
         }
+        return;
 
     }
 }
