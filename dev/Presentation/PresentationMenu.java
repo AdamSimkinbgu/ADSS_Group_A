@@ -46,8 +46,10 @@ public class PresentationMenu {
                 case 5:
                     break;
                 case 6:
+                    AddNewCategory();
                     break;
                 case 7:
+                    AddToCategory();
                     break;
                 case 8:
                     break;
@@ -55,6 +57,13 @@ public class PresentationMenu {
                     return;
                 case 0:
                     break;
+                case 10:
+                    break;
+                case 11:
+                    break;
+
+
+
             }
         }
     }
@@ -68,10 +77,12 @@ public class PresentationMenu {
         System.out.println("2. Add Supply");
         System.out.println("3. Add Sale");
         System.out.println("5. Add Discount");
-        System.out.println("6. Report Bad Product");
-        System.out.println("7. Move Product");
-        System.out.println("8. Get Bad Product Report");
-        System.out.println("9. Get Missing Report For Restock");
+        System.out.println("6. Add New Category");
+        System.out.println("7. Add To Category");
+        System.out.println("8. Report Bad Product");
+        System.out.println("9. Move Product");
+        System.out.println("10. Get Bad Product Report");
+        System.out.println("11. Get Missing Report For Restock");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
 
@@ -207,6 +218,46 @@ public class PresentationMenu {
 
         }
         return;
+
+    }
+
+    private void AddNewCategory(){
+        Scanner scanner = new Scanner(System.in);
+
+        //get name
+        System.out.println("Enter category name: ");
+        String name = scanner.nextLine();
+
+        String response = ms.AddNewCategory(name);
+        System.out.println(response);
+    }
+
+    private void AddToCategory(){
+
+    }
+
+    private void MoveProduct(){
+        Scanner scanner = new Scanner(System.in);
+
+        //get id
+        System.out.println("Enter product id: ");
+        int pId = scanner.nextInt();
+        if(pId < 0){
+            System.out.println("Invalid id ");
+            return;
+        }
+
+        System.out.println("To move in store press 1 and to move in warehouse press 2");
+        int sOrw = scanner.nextInt();
+        scanner.nextLine();
+
+        if(sOrw == 1){
+
+        } else if (sOrw == 2) {
+
+        }else {
+            System.out.println("Invalid input");
+        }
 
     }
 }

@@ -34,6 +34,7 @@ public class MainDomain {
         //todo
     }
 
+    //VVVVVV
     public void AddProduct(String pName,String MfName, int MAStore, int MAStock, float Price,Position SShalf,Position WHShelf){
         for(ProductDomain p: prodMap.values()){
             if(p.getproductName().equals(pName))throw new IllegalArgumentException("Product name alredy in stock");
@@ -41,7 +42,7 @@ public class MainDomain {
         prodMap.put(productCounter,new ProductDomain(productCounter,pName,MfName,MAStore,MAStock,Price,SShalf,WHShelf));
 
     }
-
+    //VVVVVV
     public void UpdateInventoryRestock(int pId, int quantity, ChronoLocalDate ex){
         if(!prodMap.containsKey(pId)){
             throw new IllegalArgumentException("no product with this ip");
@@ -130,7 +131,12 @@ public class MainDomain {
         //todo
     }
 
-    public void AddCategory(){
-        //todo
+    //VVVVVV
+    public void AddCategory(String newName){
+        for(CategoryDomain c : categoryLst){
+            if(c.getName().equals(newName))throw new IllegalArgumentException("Name already used.");
+        }
+        categoryLst.add(new CategoryDomain(newName));
+        int i =0;
     }
 }

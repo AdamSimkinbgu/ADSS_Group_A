@@ -47,4 +47,13 @@ public class MainService {
             return "Error converting JSON to product at service: " + e.getMessage();
         }
     }
+
+    public String AddNewCategory(String name){
+        try{
+            md.AddCategory(name);
+            return "category crated successfully";
+        }catch (IllegalArgumentException e){
+            return "Failed to crate category:" + e.getMessage();
+        }
+    }
 }

@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="supply service">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="supply">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ADSS_Group_A.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ADSS_Group_A.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Service/SupplyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/SupplyService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -251,7 +246,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745578376047</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="supply">
+      <option name="closed" value="true" />
+      <created>1745581864230</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1745581864232</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -265,7 +268,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/206641649_315057323" />
+                        <option value="206641649_315057323" />
                       </list>
                     </value>
                   </entry>
@@ -291,20 +294,16 @@
     <MESSAGE value="hi" />
     <MESSAGE value="starting menu" />
     <MESSAGE value="supply service" />
-    <option name="LAST_COMMIT_MESSAGE" value="supply service" />
+    <MESSAGE value="supply" />
+    <option name="LAST_COMMIT_MESSAGE" value="supply" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/dev/Domain/MainDomain.java</url>
-          <line>45</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Domain/MainDomain.java</url>
-          <line>49</line>
-          <option name="timeStamp" value="26" />
+          <line>138</line>
+          <option name="timeStamp" value="27" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
