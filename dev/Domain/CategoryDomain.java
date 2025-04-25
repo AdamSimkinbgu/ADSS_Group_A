@@ -14,9 +14,9 @@ public class CategoryDomain {
         return name;
     }
     public float getDiscunt(){
-        if(disDom ==)
+        //if(disDom ==)
             return 0;
-        return disDom.getpercent();
+        //return disDom.getpercent();
     }
 
     public CategoryDomain(String catName){

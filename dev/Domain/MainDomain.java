@@ -31,6 +31,13 @@ public class MainDomain {
         //todo
     }
 
+    public void AddProduct(String pName,String MfName, int MAStore, int MAStock, float Price,Position SShalf,Position WHShelf){
+        for(ProductDomain p: prodMap.values()){
+            if(p.getproductName().equals(pName))throw new IllegalArgumentException("Product name alredy in stock");
+        }
+        prodMap.put(productCounter,new ProductDomain(productCounter,pName,MfName,MAStore,MAStock,Price,SShalf,WHShelf));
+    }
+
     public void UpdateInventoryRestock(int pId, int quantity, ChronoLocalDate ex){
         SupplyDomain sd = new SupplyDomain(supplyCounter++,quantity,ex);
         prodMap.get(pId).AddSupply(sd);

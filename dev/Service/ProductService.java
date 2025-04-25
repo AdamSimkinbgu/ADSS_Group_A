@@ -23,8 +23,8 @@ public class ProductService {
     public Position getstoreShalf() { return storeShalf;}
     public Position getwareHouseShelf() { return wareHouseShelf;}
 
-    public ProductService(int pID,String pName,String MfName, int MAStore, int MAStock, float PPrice,Position SShalf,Position WHShelf){
-        productId = pID;
+    public ProductService(String pName,String MfName, int MAStore, int MAStock, float PPrice,Position SShalf,Position WHShelf){
+        productId = 0;
         productName = pName;
         manufacturerName = MfName;
         minimalAmoutStore = MAStore;
