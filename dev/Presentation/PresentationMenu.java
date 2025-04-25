@@ -2,6 +2,7 @@ package Presentation;
 
 import Service.MainService;
 import Service.ProductService;
+import Service.SupplyService;
 import type.Position;
 
 import java.time.LocalDate;
@@ -135,10 +136,10 @@ public class PresentationMenu {
             return;
         }
 
-        System.out.println("Enter warehouse lane: ");
+        System.out.println("Enter warehouse shelf: ");
         int wShelf = scanner.nextInt();
         if(wShelf < 0){
-            System.out.println("Invalid lane ");
+            System.out.println("Invalid shelf ");
             return;
         }
 
@@ -188,6 +189,11 @@ public class PresentationMenu {
                 System.out.println("Invalid date");
                 return;
             }
+            SupplyService newSup = new SupplyService(pId,quantity,date);
+
+            String message = om.writeValueAsString(newSup);
+            String response = ms.AddSupply(message);
+            System.out.println(response);
 
         } catch (Exception e) {
             System.out.println("Invalid date format!");

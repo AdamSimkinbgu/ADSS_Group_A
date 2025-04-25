@@ -4,7 +4,7 @@ import Domain.ProductDomain;
 import type.Position;
 
 public class ProductService {
-    final int productId;
+    int productId;
     String productName;
     String manufacturerName;
     int minimalAmoutStore;
@@ -22,6 +22,8 @@ public class ProductService {
     public float getproductPrice() { return productPrice;}
     public Position getstoreShalf() { return storeShalf;}
     public Position getwareHouseShelf() { return wareHouseShelf;}
+
+    public ProductService(){}
 
     public ProductService(String pName,String MfName, int MAStore, int MAStock, float PPrice,Position SShalf,Position WHShelf){
         productId = 0;

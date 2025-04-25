@@ -8,10 +8,10 @@ import java.util.Date;
 
 public class SupplyService {
     int supplyID;
-    final int productID;
+    int productID;
     int quantityWarehouse;
     int quantityStore;
-    final ChronoLocalDate expireDate;
+    ChronoLocalDate expireDate;
     int quantityBad;
 
     public int getSupplyID() {
@@ -33,12 +33,14 @@ public class SupplyService {
         return expireDate;
     }
 
-    public SupplyService(int id,int pId,int qW, int qS,int qB,ChronoLocalDate ex){
+    public SupplyService(){}
+
+    public SupplyService(int id,int qW,ChronoLocalDate ex){
         supplyID = id;
-        productID = pId;
+        productID = 0;
         quantityWarehouse = qW;
-        quantityStore = qS;
-        quantityBad = qB;
+        quantityStore = 0;
+        quantityBad = 0;
         expireDate = ex;
     }
 

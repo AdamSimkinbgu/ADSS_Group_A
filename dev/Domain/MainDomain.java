@@ -36,6 +36,7 @@ public class MainDomain {
             if(p.getproductName().equals(pName))throw new IllegalArgumentException("Product name alredy in stock");
         }
         prodMap.put(productCounter,new ProductDomain(productCounter,pName,MfName,MAStore,MAStock,Price,SShalf,WHShelf));
+
     }
 
     public void UpdateInventoryRestock(int pId, int quantity, ChronoLocalDate ex){

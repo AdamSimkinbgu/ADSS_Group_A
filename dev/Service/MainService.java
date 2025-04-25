@@ -25,7 +25,21 @@ public class MainService {
             return e.getMessage();
         }
         catch (Exception e){
-            return "Error converting JSON to product: " + e.getMessage();
+            return "Error converting JSON to product at service: " + e.getMessage();
+        }
+    }
+
+    public String AddSupply(String json){
+        try{
+            SupplyService sup = om.readValue(json,SupplyService.class);
+            md.UpdateInventoryRestock(sup.getProductID(), sup.getQuantityWarehouse(), sup.getExpireDate());
+            return "Product added successfully.";
+        }
+        catch (IllegalArgumentException e){
+            return e.getMessage();
+        }
+        catch (Exception e){
+            return "Error converting JSON to product at service: " + e.getMessage();
         }
     }
 }
