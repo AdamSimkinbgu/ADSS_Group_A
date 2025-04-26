@@ -88,5 +88,14 @@ public class InventoryTests {
         assertTrue(p.getproductName().contains("Cucumber"));
     }
 
+    @Test
+    public void testAddProductWithNegativeQuantityThrowsException() {
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        main.AddProduct("Orange", "Farm", -5, 10, 3.0f, new Position(1,1), new Position(2,2));
+    });
+    assertTrue(exception.getMessage().contains("Invalid quantity"));
+    }
+
+
 
 }
