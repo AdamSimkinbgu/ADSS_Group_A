@@ -20,6 +20,8 @@ public class OrderItem {
         this.discount = discount;
         this.finalPrice = finalPrice;
     }
+    public OrderItem() {
+    }
 
     @JsonProperty("itemId")
     public String getItemId() {
