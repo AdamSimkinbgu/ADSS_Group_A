@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import DomainLayer.AgreementFacade;
 import PresentationLayer.Controllers.AgreementController;
 import PresentationLayer.Controllers.OrderController;
 import PresentationLayer.Controllers.SupplierController;
@@ -59,7 +60,7 @@ public class AppCLI implements View {
    public AppCLI(String dataPath) {
       // Initialize controllers
       this.ordersController = new OrderController(this, new OrderService());
-      this.agreementsController = new AgreementController(this, new AgreementService());
+      this.agreementsController = new AgreementController(this, new AgreementService(new AgreementFacade()));
       this.suppliersController = new SupplierController(this, new SupplierService(new SupplierFacade()));
       this.systemController = new SystemController(dataPath, new SystemService(), this);
       moduleSelection.put(CMD_MAIN, () -> System.out.println("Returning to the main menu..."));
