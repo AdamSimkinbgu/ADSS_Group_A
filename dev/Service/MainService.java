@@ -25,7 +25,9 @@ public class MainService {
     public String AddProduct(String message ){
         try{
             ProductService p = om.readValue(message,ProductService.class);
-            int pId = md.AddProduct(p.productName,p.manufacturerName,p.minimalAmoutStore,p.minimalAmoutStock,p.productPrice,p.storeShelf,p.wareHouseShelf);
+            Position sS = new Position(p.storeLine,p.storeShelf);
+            Position whS = new Position(p.wareHouseLane,p.wareHouseShelf);
+            int pId = md.AddProduct(p.productName,p.manufacturerName,p.minimalAmoutStore,p.minimalAmoutStock,p.productPrice,sS,whS);
             return "Product added successfully. \nproduct id:"+pId;
         }
         catch (IllegalArgumentException e){
@@ -135,5 +137,20 @@ public class MainService {
 
     public String BadReport(){
         return md.GetBadReport();
+    }
+
+    public String Search(int pId){
+        try {
+            ProductService p = new ProductService(md.Search(pId));
+            return om.writeValueAsString(p);
+        }catch (IllegalArgumentException e){
+            return "Search failed: " + e.getMessage();
+        }catch (Exception e){
+            return e.getMessage();
+        }
+    }
+
+    public String GetcurrentReport(){
+        return md.GetCurrentInventoryReport();
     }
 }

@@ -168,4 +168,19 @@ public class ProductDomain {
                 + "Bad Units: " + GetBads() + "\n"
                 + "Missing from Store: " + GetMissing() + "\n";
     }
+
+    public int getQuantity(){
+        int ret = 0;
+        for(SupplyDomain s: supplyList){
+            ret += s.getQuantityStore();
+            ret += s.getQuantityWarehouse();
+        }
+        return ret;
+    }
+
+    public int getBadQantity(){
+        int ret = 0;
+        for(SupplyDomain s: supplyList)ret += s.getQuantityBad();
+        return ret;
+    }
 }

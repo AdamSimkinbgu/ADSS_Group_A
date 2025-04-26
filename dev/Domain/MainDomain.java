@@ -122,7 +122,7 @@ public class MainDomain {
             }
         }
         return ret.toString();
-        //todo check if working
+
     }
 
     //VVVVVV
@@ -156,12 +156,21 @@ public class MainDomain {
             }
         }
         return ret.toString();
-        //todo check if working
+
     }
 
     public String GetCurrentInventoryReport(){
-        return "";
-        //todo
+        StringBuilder table = new StringBuilder();
+
+
+        table.append("=====Current Inventory Report=====\n");
+        table.append(String.format("%-15s %-10s %-10s%n", "Id", "Name", "Quantity"));
+        table.append("----------------------------------------\n");
+        for (ProductDomain p:prodMap.values()){
+            table.append(String.format("%-15d %-10s %-10d%n", p.getproductID(), p.getproductName(), p.getQuantity()));
+        }
+        return table.toString();
+
     }
 
     //VVVVVV
@@ -179,11 +188,14 @@ public class MainDomain {
 
     }
 
+    //VVVVVV
     /*
     * Search by Product id number
     * */
-    public String Search(int pId){
-        return "";
+    public ProductDomain Search(int pId){
+        if(!prodMap.containsKey(pId))throw new IllegalArgumentException("Invalid product id");
+
+        return prodMap.get(pId);
         //todo
     }
 

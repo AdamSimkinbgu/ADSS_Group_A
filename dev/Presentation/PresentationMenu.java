@@ -59,16 +59,19 @@ public class PresentationMenu {
                     MoveProduct();
                     break;
                 case 9:
-                    BadReport();
+                    Search();
                     break;
                 case 0:
                     return;
                 case 10:
-                    MissingReport();
+                    InvintoryReport();
                     break;
                 case 11:
+                    MissingReport();
                     break;
-
+                case 12:
+                    BadReport();
+                    break;
 
 
             }
@@ -171,7 +174,7 @@ public class PresentationMenu {
 
         Position wp = new Position(wLane,wShelf);
 
-        ProductService newProd = new ProductService(name,manName,minAStore,minAStock,price,sp,wp);
+        ProductService newProd = new ProductService(name,manName,minAStore,minAStock,price,srShelf,srLane,wShelf,wLane);
 
 
         try {
@@ -441,11 +444,43 @@ public class PresentationMenu {
         System.out.println(response);
     }
 
+    //VVVVVVVV
     private void MissingReport(){
         System.out.println(ms.MissingReport());
     }
 
+    //VVVVVVVV
     private void BadReport(){
         System.out.println( ms.BadReport());
+    }
+
+    private void InvintoryReport(){
+        System.out.println(ms.GetcurrentReport());
+    }
+
+    private void Search(){
+        Scanner scanner = new Scanner(System.in);
+        //get id
+        System.out.println("Enter product id: ");
+        int pId = scanner.nextInt();
+        if(pId < 0){
+            System.out.println("Invalid id ");
+            return;
+        }
+
+        String response = ms.Search(pId);
+        try{
+            ProductService p = om.readValue(response,ProductService.class);
+            System.out.println("=====Product Report=====");
+            System.out.println("Product name\t" +p.getproductName());
+            System.out.println("Product id\t" +p.getproductId());
+            System.out.println("Product price\t" +p.getproductPrice());
+            System.out.println("Product quantity\t" +p.getQuantity());
+            System.out.println("Product bad quantity\t" +p.getBadQuantity());
+
+
+        }catch (Exception e){
+            System.out.println(response+ e.getMessage());
+        }
     }
 }
