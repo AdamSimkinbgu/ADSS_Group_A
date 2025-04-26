@@ -2,6 +2,7 @@ package DomainLayer;
 
 import java.util.*;
 
+import DomainLayer.Classes.Supplier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**

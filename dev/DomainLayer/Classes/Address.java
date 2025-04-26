@@ -1,4 +1,4 @@
-package DomainLayer;
+package DomainLayer.Classes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

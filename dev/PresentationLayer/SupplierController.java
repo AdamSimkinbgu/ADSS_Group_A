@@ -1,9 +1,8 @@
 package PresentationLayer;
 
-import java.security.Provider.Service;
 import java.util.List;
 
-import DomainLayer.Supplier;
+import DomainLayer.Classes.Supplier;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 

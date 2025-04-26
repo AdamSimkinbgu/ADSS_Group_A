@@ -1,7 +1,7 @@
 package PresentationLayer;
 
 import java.util.List;
-import DomainLayer.Order;
+import DomainLayer.Classes.Order;
 import ServiceLayer.OrderService;
 
 /**

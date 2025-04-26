@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
-import DomainLayer.Order;
+import DomainLayer.Classes.Order;
 
 public class OrderService implements IService {
    private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();

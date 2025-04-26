@@ -3,7 +3,7 @@ package ServiceLayer.DTOs;
 import java.util.List;
 
 import DomainLayer.Address;
-import DomainLayer.PaymentDetails;
+import DomainLayer.Classes.PaymentDetails;
 
 public class SupplierDTO {
         private String name;

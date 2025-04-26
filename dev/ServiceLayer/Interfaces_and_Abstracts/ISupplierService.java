@@ -3,8 +3,7 @@ package ServiceLayer.Interfaces_and_Abstracts;
 import java.util.List;
 import java.util.UUID;
 
-import DomainLayer.Supplier;
-import DomainLayer.SupplierProduct;
+import DomainLayer.Classes.SupplierProduct;
 
 /**
  * Service interface for Supplier-related operations.

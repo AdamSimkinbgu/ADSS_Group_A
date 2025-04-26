@@ -1,6 +1,9 @@
 
-package DomainLayer;
+package DomainLayer.Classes;
 
+import DomainLayer.Address;
+import DomainLayer.Agreement;
+import DomainLayer.ContactInfo;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
