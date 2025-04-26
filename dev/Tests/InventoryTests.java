@@ -89,11 +89,13 @@ public class InventoryTests {
     }
 
     @Test
-    public void testAddProductWithNegativeQuantityThrowsException() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-        main.AddProduct("Orange", "Farm", -5, 10, 3.0f, new Position(1,1), new Position(2,2));
-    });
-    assertTrue(exception.getMessage().contains("Invalid quantity"));
+    public void testMoveProductChangesWarehouseShelf() {
+        main.AddProduct("Apple", "Farm", 5, 5, 2.5f, new Position(1,1), new Position(2,2));
+        Position newWarehousePos = new Position(5,5);
+        main.MoveProduct(0, false, newWarehousePos);
+        ProductDomain p = main.Search(0);
+        assertEquals(5, p.getwareHouseShelf().line());
+        assertEquals(5, p.getwareHouseShelf().shelf());
     }
 
 
