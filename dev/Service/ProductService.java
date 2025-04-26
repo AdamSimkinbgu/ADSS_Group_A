@@ -38,7 +38,7 @@ public class ProductService {
     public ProductService(ProductDomain other){
         productId = other.getproductID();
         productName = other.getproductName();
-        productPrice = other.getproductPrice1unit();
+        productPrice = other.getproductPrice();
         manufacturerName = other.getmanufactuerName();
         minimalAmoutStock = other.getminimalAmountStock();
         minimalAmoutStore = other.getminimalAmountStore();

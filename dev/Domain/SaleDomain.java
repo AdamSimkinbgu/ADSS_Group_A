@@ -1,32 +1,41 @@
 package Domain;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 
 public class SaleDomain {
     private HashMap<Integer,Integer> itemLs;   ////items<product id , quantity>
     int saleID;
-    private int salePrice;
-    private Date saleTime;
+    private float salePrice;
+    private LocalDate saleTime;
 
     public int getSaleID() {
         return saleID;
     }
-    public int getPrice() {
+    public float getPrice() {
         return salePrice;
     }
-    public Date getSaleTime() {
+    public LocalDate getSaleTime() {
         return saleTime;
     }
     public HashMap<Integer, Integer> getItemLs() {
         return itemLs;
     }
 
-    public SaleDomain(int id,int price,Date time,HashMap<Integer,Integer> items){
-        saleID = id;
+    public SaleDomain(HashMap<Integer,Integer> items){
+        saleID = 0;
         salePrice = 0;
-        saleTime = time;
+        saleTime = LocalDate.now();
         itemLs = new HashMap<>(items);
+    }
+
+    public void setSaleID(int saleID) {
+        this.saleID = saleID;
+    }
+
+    public void setSalePrice(float salePrice) {
+        this.salePrice = salePrice;
     }
 }
 

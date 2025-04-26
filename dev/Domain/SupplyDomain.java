@@ -41,19 +41,15 @@ public class SupplyDomain {
     public void setId(int id) {
         this.id = id;
     }
-
     public void setQuantityWarehouse(int quantityWarehouse) {
         this.quantityWarehouse = quantityWarehouse;
     }
-
     public void setQuantityStore(int quantityStore) {
         this.quantityStore = quantityStore;
     }
-
     public void setQuantityBad(int quantityBad) {
         this.quantityBad = quantityBad;
     }
-
     public void setExpierDate(ChronoLocalDate expierDate) {
         this.expierDate = expierDate;
     }
@@ -70,6 +66,18 @@ public class SupplyDomain {
         }
         if(quantityWarehouse == 0 && quantityStore ==0)return true;
         return false;
+    }
+
+    public int Buy(int quantity){
+        if(quantity < quantityStore){
+            quantityStore -= quantity;
+            return 0;
+        }
+        else {
+            quantity -= quantityStore;
+            quantityStore = 0;
+            return quantity;
+        }
     }
 
     public int restock(int quantity){

@@ -3,6 +3,7 @@ package Domain;
 
 import type.Position;
 
+import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,37 +12,69 @@ import java.util.List;
 public class MainDomain {
     private int productCounter;
     private int supplyCounter;
+    private int saleCounter;
     private HashMap<Integer, ProductDomain> prodMap;
-    private List<DiscountDomain> activeDisLst;
-    private List<DiscountDomain> pastDisLst;
+    private List<DiscountDomain> disLst;
     private List<SaleDomain> saleLst;
     private List<CategoryDomain> categoryLst;
 
     public MainDomain() {
         productCounter = 0;
         supplyCounter = 0;
+        saleCounter = 0;
         prodMap = new HashMap<>();
-        activeDisLst = new ArrayList<>();
-        pastDisLst = new ArrayList<>();
+        disLst = new ArrayList<>();
         saleLst = new ArrayList<>();
         categoryLst = new ArrayList<>();
     }
 
     public void InventoryInitialization(){
-        ProductDomain p = new ProductDomain(productCounter,"Milk","Tara",8,20,(float)7.5,new Position(3,7),new Position(4,5));
+        ProductDomain p = new ProductDomain(productCounter,"Milk 3%","Tara",8,20,(float)7.5,new Position(3,7),new Position(4,5));
         prodMap.put(productCounter,p);
         productCounter++;
+
+        p = new ProductDomain(productCounter,"ChokiMilk","Tara",5,20,(float)17.5,new Position(3,6),new Position(4,6));
+        prodMap.put(productCounter,p);
+        productCounter++;
+
+        p = new ProductDomain(productCounter,"Gauda 4%","Tnuva",5,25,(float)37.9,new Position(2,6),new Position(3,6));
+        prodMap.put(productCounter,p);
+        productCounter++;
+
+        p = new ProductDomain(productCounter,"Hameck","Tnuva",5,25,(float)25.9,new Position(2,7),new Position(3,3));
+        prodMap.put(productCounter,p);
+        productCounter++;
+
+        AddCategory("Milk Product");
+        AddCategory("Cheese");
+        AddCategory("Milk Drink");
+
+        AddToCategory("Milk Product","Cheese");
+        AddToCategory("Milk Product","Milk Drink");
+
+        AddToCategory("Milk Drink",0);
+        AddToCategory("Milk Drink",1);
+        AddToCategory("Cheese",2);
+        AddToCategory("Cheese",3);
+
+        UpdateInventoryRestock(0,70,LocalDate.of(2029,11,11));
+        UpdateInventoryRestock(2,70,LocalDate.of(2029,11,11));
+        UpdateInventoryRestock(3,70,LocalDate.of(2029,11,11));
+        UpdateInventoryRestock(1,70,LocalDate.of(2029,11,11));
+
         //todo
     }
 
     //VVVVVV
-    public void AddProduct(String pName,String MfName, int MAStore, int MAStock, float Price,Position SShalf,Position WHShelf){
+    public int AddProduct(String pName,String MfName, int MAStore, int MAStock, float Price,Position SShalf,Position WHShelf){
         for(ProductDomain p: prodMap.values()){
             if(p.getproductName().equals(pName))throw new IllegalArgumentException("Product name alredy in stock");
         }
         prodMap.put(productCounter,new ProductDomain(productCounter,pName,MfName,MAStore,MAStock,Price,SShalf,WHShelf));
-
+        productCounter++;
+        return productCounter - 1;
     }
+
     //VVVVVV
     public void UpdateInventoryRestock(int pId, int quantity, ChronoLocalDate ex){
         if(!prodMap.containsKey(pId)){
@@ -52,8 +85,25 @@ public class MainDomain {
         //todo
     }
 
-    public void UpdateInventorySale(SaleDomain sld){
-        //todo
+    //VVVVVV
+    public SaleDomain UpdateInventorySale(SaleDomain s){
+        for(Integer pIg : s.getItemLs().keySet())if(!prodMap.containsKey(pIg))throw new IllegalArgumentException("invalid product id");
+
+
+        float discount = 0;
+        float price = 0;
+        for(Integer pIg : s.getItemLs().keySet()){
+            discount = 0;
+            for(CategoryDomain c: categoryLst)discount += c.getDiscount(pIg);
+            //price += product price after discount * number of sed product
+            price += prodMap.get(pIg).getproductPrice1unit(discount) * s.getItemLs().get(pIg);
+            prodMap.get(pIg).Buy(s.getItemLs().get(pIg));
+        }
+
+        s.setSalePrice(price);
+        s.setSaleID(saleCounter++);
+        saleLst.add(s);
+        return s;
     }
 
     //v
@@ -78,7 +128,9 @@ public class MainDomain {
     *
     * */
     public void AddBadProduct(int pId,int quantity){
-        //todo
+        if(!prodMap.containsKey(pId))throw new IllegalArgumentException("invalid product id");
+
+        prodMap.get(pId).ReportBad(quantity);
     }
 
     //v
@@ -114,7 +166,7 @@ public class MainDomain {
     public void MoveProduct(int pId, boolean SOrW, Position newP){
         if(!prodMap.containsKey(pId))throw new IllegalArgumentException("pId invalid");
 
-        prodMap.get(pId).moveProudct(SOrW, newP);
+        prodMap.get(pId).moveProduct(SOrW, newP);
 
     }
 
@@ -126,13 +178,28 @@ public class MainDomain {
         //todo
     }
 
-    public String Search(String name){
-        return "";
-        //todo
+    //VVVVVV
+    public void AddDiscount(int pId, float percent, LocalDate time){
+        if(!prodMap.containsKey(pId))throw new IllegalArgumentException("pId invalid");
+
+        DiscountDomain d = new DiscountDomain(percent,time);
+        prodMap.get(pId).AddDiscount(d);
+        disLst.add(d);
     }
 
-    public void AddDiscount(){
-        //todo
+    //VVVVVV
+    public void AddDiscount(String name, float percent, LocalDate time){
+
+        DiscountDomain d = new DiscountDomain(percent,time);
+
+        for(CategoryDomain c: categoryLst){
+            if(c.Isin(name)){
+                c.AddDiscount(d,name);
+                disLst.add(d);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("No category by that name");
     }
 
     //VVVVVV
@@ -144,6 +211,7 @@ public class MainDomain {
         int i =0;
     }
 
+    //VVVVVV
     public void AddToCategory(String catName,int pId){
 
         if(!prodMap.containsKey(pId))throw new IllegalArgumentException("invalid product id");
@@ -159,6 +227,29 @@ public class MainDomain {
     }
 
     public void AddToCategory(String catName,String subCat){
+        boolean flag = false;
+        CategoryDomain sub = new CategoryDomain("");
+        for(CategoryDomain c : categoryLst){
+            if(c.Isin(subCat)){
+                flag = true;
+                if(c.getName().equals(subCat)){
+                    sub = c;
+                    categoryLst.remove(c);
+                }else {
+                    sub = c.remove(subCat);
+                }
+                break;
+            }
+        }
+        if(!flag)throw new IllegalArgumentException("There is no category by that name");
 
+
+        for(CategoryDomain c : categoryLst){
+            if(c.Isin(catName)){
+                c.InsertSub(catName,sub);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("There is no category by that name");
     }
 }

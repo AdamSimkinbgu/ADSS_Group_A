@@ -2,6 +2,7 @@ package Domain;
 
 import type.Position;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class ProductDomain {
     private float productPrice1unit;
     private Position wareHouseShelf;
     private Position storeShelf;
+    private DiscountDomain discount;
     private List<SupplyDomain> supplyList; //// list of supplies ////
 
 
@@ -34,7 +36,7 @@ public class ProductDomain {
     public int getminimalAmountStock() {
         return minimalAmountStock;
     }
-    public float getproductPrice1unit() {
+    public float getproductPrice(){
         return productPrice1unit;
     }
     public Position getstoreShelf() {
@@ -43,7 +45,7 @@ public class ProductDomain {
     public Position getwareHouseShelf() {
         return wareHouseShelf;
     }
-
+    public DiscountDomain getDiscount(){return discount;}
 
     public ProductDomain(int pID, String pName, String MfName, int MAStore, int MAStock, float PPrice, Position SShalf, Position WHShelf) {
         productID = pID;
@@ -95,7 +97,7 @@ public class ProductDomain {
         }
     }
 
-    public void moveProudct(boolean sOrW, Position newP){
+    public void moveProduct(boolean sOrW, Position newP){
         if(sOrW)storeShelf = newP;
         else wareHouseShelf = newP;
     }
@@ -123,8 +125,31 @@ public class ProductDomain {
             }
         reStockStore();
         return Totalbad;
+    }
+
+    public void AddDiscount(DiscountDomain d){
+        discount = d;
+    }
+
+    public float getproductPrice1unit(float dis) {
+        if(discount != null && discount.getdiscountEnd().isAfter(LocalDate.now()))dis += discount.getpercent();
+        return productPrice1unit*(1-dis);
+    }
+
+    public void Buy(int quantity){
+        reStockStore();
+        for(SupplyDomain s: supplyList){
+            if (quantity == 0)return;
+            quantity = s.Buy(quantity);
         }
-    
+        if(quantity != 0 )throw new IllegalArgumentException("not enough product to complete the sale");
+
+        reStockStore();
+    }
+
+    public void ReportBad(int quantity){
+
+    }
 
     public String GetCurrentInventory(){
         int totalInStore = 0;

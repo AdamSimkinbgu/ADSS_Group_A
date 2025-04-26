@@ -1,6 +1,7 @@
 package Domain;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,10 +14,12 @@ public class CategoryDomain {
     public String getName() {
         return name;
     }
-    public float getDiscunt(){
-        //if(disDom ==)
-            return 0;
-        //return disDom.getpercent();
+    public float getDiscount(Integer pId){
+        float dis = 0;
+        if(!this.Isin(pId))return dis;
+        if(productLs.contains(pId)&& disDom != null && disDom.getdiscountEnd().isAfter(LocalDate.now()))dis += disDom.getpercent();
+        for(CategoryDomain c :subCategoryLs)dis +=c.getDiscount(pId);
+        return dis;
     }
 
     public CategoryDomain(String catName){
@@ -73,4 +76,29 @@ public class CategoryDomain {
         }
     }
 
+    public CategoryDomain remove(String subName){
+        for(CategoryDomain c :subCategoryLs){
+            if(c.getName().equals(subName)){
+                subCategoryLs.remove(c);
+                return c;
+            }
+            else if (c.Isin(subName))return c.remove(subName);
+        }
+        throw new IllegalArgumentException("There is no category by that name");
+    }
+
+    public void AddDiscount(DiscountDomain d, String catName){
+        if(name.equals(catName)){
+            disDom = d;
+            return;
+        }
+        for (CategoryDomain c:subCategoryLs){
+            if(c.Isin(catName)){
+                c.AddDiscount(d,catName);
+                return;
+            }
+        }
+        return;
+
+    }
 }

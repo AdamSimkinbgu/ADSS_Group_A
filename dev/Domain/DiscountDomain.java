@@ -1,22 +1,24 @@
 package Domain;
 
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 
 public class DiscountDomain {
     private float percent;
-    private Date discountEnd;
-    private Date discountStart;
+    private LocalDate discountEnd;
+    private LocalDate discountStart;
 
 
 
     public float getpercent() { return percent;}
-    public Date getdiscountStart() { return discountStart;}
-    public Date getdiscountEnd() { return discountEnd;}
+    public LocalDate getdiscountStart() { return discountStart;}
+    public LocalDate getdiscountEnd() { return discountEnd;}
 
 
-    public DiscountDomain(float disPercent, Date sDate, Date eDate){
+    public DiscountDomain(float disPercent, LocalDate eDate){
         percent = disPercent;
-        discountStart = sDate;
+        discountStart = LocalDate.now();
         discountEnd = eDate;
     }
 

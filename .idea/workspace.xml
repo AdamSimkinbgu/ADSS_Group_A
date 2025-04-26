@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="Add category">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="move p">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/CategoryDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/DiscountDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/DiscountDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SaleDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Tests/InventoryTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Tests/InventoryTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/ProductService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Service/SaleService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/SaleService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +54,9 @@
     </favorite-branches>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -60,22 +68,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Debug",
-    "Downloaded.Files.Path.Enabled": "true",
-    "Repository.Attach.Annotations": "false",
-    "Repository.Attach.JavaDocs": "true",
-    "Repository.Attach.Sources": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "206641649__315057323",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.1370432",
-    "project.structure.side.proportion": "0.19431715"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Debug&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;true&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;206641649__315057323&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.1370432&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.19431715&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\moshe\OneDrive\Desktop\לימודים גבוהים\סימסטר ו\ניתוצ\project\ADSS_Group_A" />
@@ -272,7 +280,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745591029115</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="move p">
+      <option name="closed" value="true" />
+      <created>1745604886565</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1745604886565</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -314,6 +330,7 @@
     <MESSAGE value="supply service" />
     <MESSAGE value="supply" />
     <MESSAGE value="Add category" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add category" />
+    <MESSAGE value="move p" />
+    <option name="LAST_COMMIT_MESSAGE" value="move p" />
   </component>
 </project>
