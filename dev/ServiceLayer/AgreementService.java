@@ -46,7 +46,6 @@ public class AgreementService extends  BaseService implements IService {
    }
 
 
-
    private String updateAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {

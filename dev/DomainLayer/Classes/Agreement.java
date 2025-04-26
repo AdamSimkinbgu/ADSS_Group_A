@@ -16,23 +16,26 @@ import java.util.UUID;
 /**
  * Entity representing a contract (Agreement) with a Supplier.
  *
- * SUP-REQ-09: שמירת פרטי ההסכם
- * SUP-REQ-10: הקצאת מזהה עולה אוטומטית
  */
+
 public class Agreement implements Serializable {
-    private static final long serialVersionUID = 1L;
 
     private UUID agreementId;
     private UUID supplierId;
     private String supplierName;
-    private boolean valid;               // האם החוזה בתוקף
-    private boolean selfSupply;           // האם הספק מספק בעצמו
-    private List<WeekofDay> supplyDays;   // ימי אספקה קבועים
+    private boolean valid;
+    private boolean selfSupply;
+    private List<WeekofDay> supplyDays;
     private LocalDate agreementStartDate;
     private LocalDate agreementEndDate;
-    private List<Product> supplyProducts; // מוצרים הכלולים בחוזה
-    private List<BillofQuantitiesItem> billOfQuantities; // פרטי כתב כמויות (BoQ)
+    private List<BillofQuantitiesItem> billOfQuantities;
     private boolean hasFixedSupplyDays;
+
+    public Agreement() {
+        this.agreementId = UUID.randomUUID();
+        this.supplyDays = new ArrayList<>();
+        this.billOfQuantities = new ArrayList<>();
+    }
 
     /**
      * JSON constructor for Jackson.
@@ -46,7 +49,6 @@ public class Agreement implements Serializable {
             @JsonProperty("supplyDays") List<WeekofDay> supplyDays,
             @JsonProperty("agreementStartDate") LocalDate agreementStartDate,
             @JsonProperty("agreementEndDate") LocalDate agreementEndDate,
-            @JsonProperty("supplyProducts") List<Product> supplyProducts,
             @JsonProperty("hasFixedSupplyDays") boolean hasFixedSupplyDays
     ) {
         this.agreementId = UUID.randomUUID();
@@ -57,7 +59,6 @@ public class Agreement implements Serializable {
         this.supplyDays = supplyDays != null ? new ArrayList<>(supplyDays) : new ArrayList<>();
         this.agreementStartDate = agreementStartDate;
         this.agreementEndDate = agreementEndDate;
-        this.supplyProducts = supplyProducts != null ? new ArrayList<>(supplyProducts) : new ArrayList<>();
         this.hasFixedSupplyDays = hasFixedSupplyDays;
         this.billOfQuantities = new ArrayList<>();
     }
@@ -74,7 +75,6 @@ public class Agreement implements Serializable {
     public List<WeekofDay> getSupplyDays() { return supplyDays; }
     public LocalDate getAgreementStartDate() { return agreementStartDate; }
     public LocalDate getAgreementEndDate() { return agreementEndDate; }
-    public List<Product> getSupplyProducts() { return supplyProducts; }
     public List<BillofQuantitiesItem> getBillOfQuantities() { return billOfQuantities; }
     public boolean hasFixedSupplyDays() { return hasFixedSupplyDays; }
 
@@ -88,7 +88,6 @@ public class Agreement implements Serializable {
     public void setSupplyDays(List<WeekofDay> supplyDays) { this.supplyDays = supplyDays; }
     public void setAgreementStartDate(LocalDate agreementStartDate) { this.agreementStartDate = agreementStartDate; }
     public void setAgreementEndDate(LocalDate agreementEndDate) { this.agreementEndDate = agreementEndDate; }
-    public void setSupplyProducts(List<Product> supplyProducts) { this.supplyProducts = supplyProducts; }
     public void setHasFixedSupplyDays(boolean hasFixedSupplyDays) { this.hasFixedSupplyDays = hasFixedSupplyDays; }
     public void setBillOfQuantities(List<BillofQuantitiesItem> billOfQuantities) { this.billOfQuantities = billOfQuantities; }
 

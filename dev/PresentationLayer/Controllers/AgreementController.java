@@ -40,7 +40,7 @@ public class AgreementController extends AbstractController {
    public void createAgreement() {
       view.showMessage("Creating a new agreement...");
       List<String> params = view.readParameters(
-              "Please enter agreement details: supplierId-supplierName-valid-selfSupply-supplyDays(comma-separated)-agreementStartDate-agreementEndDate-hasFixedSupplyDays-supplyProducts(JSON array)"
+              "Please enter agreement details: supplierId-supplierName-valid-selfSupply-supplyDays(comma separated)-agreementStartDate-agreementEndDate-hasFixedSupplyDays-supplyProducts(JSON array)"
       );
       String agrJson = fuseClassAttributesAndParametersToJson(Agreement.class, params);
       view.dispatchResponse(
@@ -48,7 +48,6 @@ public class AgreementController extends AbstractController {
               Agreement.class
       );
    }
-
 
    public void updateAgreement() {
       view.showMessage("Updating an existing agreement...");
