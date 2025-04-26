@@ -1,0 +1,71 @@
+// AgreementService.java
+package ServiceLayer;
+
+import java.util.HashMap;
+import java.util.function.Function;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ServiceLayer.Interfaces_and_Abstracts.IService;
+import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
+import DomainLayer.Agreement;
+
+public class AgreementService implements IService {
+   private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
+   private final ObjectMapper objectMapper = new ObjectMapper();
+
+   public AgreementService() {
+      serviceFunctions.put("addAgreement", this::addAgreement);
+      serviceFunctions.put("updateAgreement", this::updateAgreement);
+      serviceFunctions.put("removeAgreement", this::removeAgreement);
+      serviceFunctions.put("getAgreement", this::getAgreement);
+      serviceFunctions.put("?", this::commandDoesNotExist);
+   }
+
+   @Override
+   public String execute(String serviceOption, String data) {
+      Function<String, String> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
+      return fn.apply(data);
+   }
+
+   private String addAgreement(String json) {
+      ServiceResponse<Agreement> resp = new ServiceResponse<>(null, "Not implemented yet");
+      try {
+         return objectMapper.writeValueAsString(resp);
+      } catch (JsonProcessingException e) {
+         return "{\"value\":null,\"error\":\"Serialization error\"}";
+      }
+   }
+
+   private String updateAgreement(String json) {
+      ServiceResponse<Agreement> resp = new ServiceResponse<>(null, "Not implemented yet");
+      try {
+         return objectMapper.writeValueAsString(resp);
+      } catch (JsonProcessingException e) {
+         return "{\"value\":null,\"error\":\"Serialization error\"}";
+      }
+   }
+
+   private String removeAgreement(String json) {
+      ServiceResponse<Boolean> resp = new ServiceResponse<>(false, "Not implemented yet");
+      try {
+         return objectMapper.writeValueAsString(resp);
+      } catch (JsonProcessingException e) {
+         return "{\"value\":null,\"error\":\"Serialization error\"}";
+      }
+   }
+
+   private String getAgreement(String json) {
+      ServiceResponse<Agreement> resp = new ServiceResponse<>(null, "Not implemented yet");
+      try {
+         return objectMapper.writeValueAsString(resp);
+      } catch (JsonProcessingException e) {
+         return "{\"value\":null,\"error\":\"Serialization error\"}";
+      }
+   }
+
+   private String commandDoesNotExist(String data) {
+      return "{\"value\":null,\"error\":\"Command does not exist\"}";
+   }
+}
