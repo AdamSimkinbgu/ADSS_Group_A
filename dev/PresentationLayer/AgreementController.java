@@ -1,7 +1,7 @@
 package PresentationLayer;
 
 import java.util.List;
-import DomainLayer.Agreement;
+import DomainLayer.Classes.Agreement;
 import ServiceLayer.AgreementService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
