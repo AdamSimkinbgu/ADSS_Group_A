@@ -1,6 +1,8 @@
 package PresentationLayer.Controllers;
 
 import java.util.List;
+import java.util.UUID;
+
 import DomainLayer.Classes.Agreement;
 import PresentationLayer.AbstractController;
 import PresentationLayer.View;
@@ -17,30 +19,36 @@ public class AgreementController extends AbstractController {
       controllerMenuOptions.put("2", this::updateAgreement);
       controllerMenuOptions.put("3", this::deleteAgreement);
       controllerMenuOptions.put("4", this::viewAgreement);
-      controllerMenuOptions.put("5", () -> System.out.println("Returning to the main menu..."));
+      controllerMenuOptions.put("5", this::listAllAgreements);
+      controllerMenuOptions.put("6", () -> System.out.println("Returning to the main menu..."));
       controllerMenuOptions.put("?", () -> System.out.println("Invalid choice. Please try again."));
    }
 
    @Override
    public List<String> showMenu() {
       return List.of(
-            "Please choose an option:",
-            "Create Agreement",
-            "Update Agreement",
-            "Delete Agreement",
-            "View Agreement",
-            "Back to Main Menu");
+              "Please choose an option:",
+              "Create Agreement",
+              "Update Agreement",
+              "Delete Agreement",
+              "View Agreement",
+              "List All Agreements",
+              "Back to Main Menu"
+      );
    }
 
    public void createAgreement() {
       view.showMessage("Creating a new agreement...");
       List<String> params = view.readParameters(
-            "Please enter agreement details: <field1>-<field2>-...");
-      String json = fuseClassAttributesAndParametersToJson(Agreement.class, params);
+              "Please enter agreement details: supplierId-supplierName-valid-selfSupply-supplyDays(comma-separated)-agreementStartDate-agreementEndDate-hasFixedSupplyDays-supplyProducts(JSON array)"
+      );
+      String agrJson = fuseClassAttributesAndParametersToJson(Agreement.class, params);
       view.dispatchResponse(
-            handleModuleCommand("addAgreement", json),
-            Agreement.class);
+              handleModuleCommand("addAgreement", agrJson),
+              Agreement.class
+      );
    }
+
 
    public void updateAgreement() {
       view.showMessage("Updating an existing agreement...");
@@ -73,5 +81,13 @@ public class AgreementController extends AbstractController {
       view.dispatchResponse(
             handleModuleCommand("getAgreement", id),
             Agreement.class);
+   }
+
+   public void listAllAgreements() {
+      view.showMessage("Listing all agreements...");
+      view.dispatchResponse(
+              handleModuleCommand("listAllAgreements", ""),
+              Agreement[].class
+      );
    }
 }
