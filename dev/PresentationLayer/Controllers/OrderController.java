@@ -1,10 +1,16 @@
 package PresentationLayer.Controllers;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import DomainLayer.Classes.Order;
 import PresentationLayer.AbstractController;
 import PresentationLayer.View;
 import ServiceLayer.OrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Controller for Order-related commands.
@@ -36,13 +42,62 @@ public class OrderController extends AbstractController {
    }
 
    public void createOrder() {
-      view.showMessage("Creating a new order...");
-      List<String> params = view.readParameters(
-            "Please enter order details: <field1>-<field2>-...");
-      String json = fuseClassAttributesAndParametersToJson(Order.class, params);
-      view.dispatchResponse(
-            handleModuleCommand("addOrder", json),
-            Order.class);
+      view.showMessage("Enter supplier ID:");
+      String supplierId = view.readLine().trim();
+      view.showMessage("Enter supplier name:");
+      String supplierName = view.readLine().trim();
+      view.showMessage("Enter supplier address:");
+      String supplierAddress = view.readLine().trim();
+      view.showMessage("Enter contact phone:");
+      String contactPhone = view.readLine().trim();
+
+      view.showMessage("How many items in this order?");
+      int itemCount = Integer.parseInt(view.readLine().trim());
+      List<Map<String,Object>> items = new ArrayList<>(itemCount);
+
+      for (int i = 1; i <= itemCount; i++) {
+         view.showMessage("=== Item " + i + " ===");
+         view.showMessage("Item ID:");
+         String itemId = view.readLine().trim();
+         view.showMessage("Item name:");
+         String itemName = view.readLine().trim();
+         view.showMessage("Quantity:");
+         int quantity = Integer.parseInt(view.readLine().trim());
+         view.showMessage("List price:");
+         double price = Double.parseDouble(view.readLine().trim());
+         view.showMessage("Discount (as percent, e.g. 10 for 10%):");
+         double discount = Double.parseDouble(view.readLine().trim());
+         // חישוב מחיר סופי
+         double finalPrice = price - (price * discount / 100.0);
+
+         Map<String,Object> itemMap = new LinkedHashMap<>();
+         itemMap.put("itemId", itemId);
+         itemMap.put("itemName", itemName);
+         itemMap.put("quantity", quantity);
+         itemMap.put("price", price);
+         itemMap.put("discount", discount);
+         itemMap.put("finalPrice", finalPrice);
+         items.add(itemMap);
+      }
+
+      Map<String,Object> orderMap = new LinkedHashMap<>();
+      orderMap.put("supplierName", supplierName);
+      orderMap.put("supplierId", supplierId);
+      orderMap.put("supplierAddress", supplierAddress);
+      orderMap.put("orderDate", LocalDateTime.now().toString());
+      orderMap.put("contactPhone", contactPhone);
+      orderMap.put("orderStatus", null);
+      orderMap.put("orderItems", items);
+
+      String json;
+      try {
+         json = mapper.writeValueAsString(orderMap);
+      } catch (JsonProcessingException e) {
+         view.showError("Failed to serialize order JSON: " + e.getMessage());
+         return;
+      }
+      String response = handleModuleCommand("addOrder", json);
+      view.dispatchResponse(response, Order.class);
    }
 
    public void updateOrder() {
@@ -56,9 +111,8 @@ public class OrderController extends AbstractController {
       String updateJson = String.format(
             "{\"orderId\":\"%s\", \"%s\":\"%s\"}",
             id, field, value);
-      view.dispatchResponse(
-            handleModuleCommand("updateOrder", updateJson),
-            Order.class);
+      String response = handleModuleCommand("updateOrder", updateJson);
+      view.dispatchResponse(response, Order.class);
    }
 
    public void deleteOrder() {

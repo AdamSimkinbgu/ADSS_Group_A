@@ -1,7 +1,8 @@
 package DomainLayer;
 
 import DomainLayer.Classes.Order;
-import DomainLayer.SupplierFacade;
+import DomainLayer.Classes.Supplier;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.*;
 
@@ -15,14 +16,36 @@ public class OrderFacade {
         this.supplierFacade = supplierFacade;
     }
 
-    public Order createOrder(Order order) {
-        // לוודא שהספק קיים ב-SupplierFacade
-        if (supplierFacade.getSupplier("{\"supplierId\":\"" + order.getSupplierId() + "\"}").isEmpty()) {
-            throw new IllegalArgumentException("Supplier not found with id: " + order.getSupplierId());
+    public Order createOrder(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> tempMap = mapper.readValue(json, Map.class);
+            String supplierIdStr = (String) tempMap.get("supplierId");
+            String contactPhone = (String) tempMap.get("contactPhone");
+            String orderItemsStr = (String) tempMap.get("orderItems");
+
+            if (supplierIdStr == null) {
+                throw new IllegalArgumentException("Supplier ID is missing from the order JSON.");
+            }
+            UUID supplierId = UUID.fromString(supplierIdStr);
+            Supplier supplier = supplierFacade.getSupplier(supplierIdStr)
+                    .orElseThrow(() -> new IllegalArgumentException("Supplier not found with id: " + supplierId));
+            String newJson = String.format(
+                    "{\"supplierId\":\"%s\",\"supplierName\":\"%s\",\"supplierAddress\":\"%s\",\"contactPhone\":\"%s\",\"orderItems\":%s}",
+                    supplier.getSupplierId().toString(),
+                    supplier.getName(),
+                    supplier.getAddress(),
+                    contactPhone,
+                    orderItemsStr
+            );
+            Order order = mapper.readValue(newJson, Order.class);
+            orders.put(order.getOrderId(), order);
+            return order;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create order: " + e.getMessage(), e);
         }
 
-        orders.put(order.getOrderId(), order);
-        return order;
     }
 
     public Order getOrder(UUID orderId) {
