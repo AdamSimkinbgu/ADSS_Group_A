@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="adss_v01:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="reports">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="search">
+      <change afterPath="$PROJECT_DIR$/dev/META-INF/MANIFEST.MF" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/init commit" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,24 +64,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Debug&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;206641649__315057323&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.1370432&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.19431715&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Debug",
+    "Downloaded.Files.Path.Enabled": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "true",
+    "Repository.Attach.Sources": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "206641649__315057323",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A/release",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.1370432",
+    "project.structure.side.proportion": "0.19431715"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\moshe\OneDrive\Desktop\לימודים גבוהים\סימסטר ו\ניתוצ\project\ADSS_Group_A\release" />
       <recent name="C:\Users\moshe\OneDrive\Desktop\לימודים גבוהים\סימסטר ו\ניתוצ\project\ADSS_Group_A" />
     </key>
   </component>
@@ -300,7 +301,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745684598056</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="search">
+      <option name="closed" value="true" />
+      <created>1745694354518</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1745694354518</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -345,6 +354,7 @@
     <MESSAGE value="move p" />
     <MESSAGE value="sale and discount" />
     <MESSAGE value="reports" />
-    <option name="LAST_COMMIT_MESSAGE" value="reports" />
+    <MESSAGE value="search" />
+    <option name="LAST_COMMIT_MESSAGE" value="search" />
   </component>
 </project>
