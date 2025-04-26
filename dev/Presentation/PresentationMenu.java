@@ -454,10 +454,12 @@ public class PresentationMenu {
         System.out.println( ms.BadReport());
     }
 
+    //VVVVVVVV
     private void InvintoryReport(){
         System.out.println(ms.GetcurrentReport());
     }
 
+    //VVVVVVVV
     private void Search(){
         Scanner scanner = new Scanner(System.in);
         //get id

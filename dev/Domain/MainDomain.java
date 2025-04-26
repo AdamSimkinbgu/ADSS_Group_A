@@ -113,7 +113,7 @@ public class MainDomain {
         for (ProductDomain p : prodMap.values()) {
             missNum = p.GetMissing();
             if (missNum > 0) {
-                ret.append(p.getproductName())
+                ret.append(p.getproductID())
                         .append(", ")
                         .append(p.getmanufactuerName())
                         .append(": ")
@@ -247,6 +247,7 @@ public class MainDomain {
 
     }
 
+    //VVVVVV
     public void AddToCategory(String catName,String subCat){
         boolean flag = false;
         CategoryDomain sub = new CategoryDomain("");
