@@ -147,8 +147,12 @@ public class ProductDomain {
         reStockStore();
     }
 
-    public void ReportBad(int quantity){
-
+    public int ReportBad(int quantity){
+        for(SupplyDomain s:supplyList){
+            if(quantity == 0)break;
+            quantity = s.Report(quantity);
+        }
+        return GetMissing();
     }
 
     public String GetCurrentInventory(){

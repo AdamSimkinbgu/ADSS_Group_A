@@ -59,11 +59,12 @@ public class PresentationMenu {
                     MoveProduct();
                     break;
                 case 9:
-
+                    BadReport();
                     break;
                 case 0:
                     return;
                 case 10:
+                    MissingReport();
                     break;
                 case 11:
                     break;
@@ -87,8 +88,10 @@ public class PresentationMenu {
         System.out.println("6. Add To Category");
         System.out.println("7. Report Bad Product");
         System.out.println("8. Move Product");
-        System.out.println("9. Get Bad Product Report");
-        System.out.println("10. Get Missing Report For Restock");
+        System.out.println("9. Search For Product");
+        System.out.println("10. Get Current Inventory Report For Restock");
+        System.out.println("11. Get Missing Report For Restock");
+        System.out.println("12. Get Bad Product Report");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
 
@@ -413,6 +416,7 @@ public class PresentationMenu {
 
     }
 
+    //VVVVVVVV
     private void AddBadProduct(){
         Scanner scanner = new Scanner(System.in);
 
@@ -435,5 +439,13 @@ public class PresentationMenu {
 
         String response = ms.AddBadProduct(pId,quantity);
         System.out.println(response);
+    }
+
+    private void MissingReport(){
+        System.out.println(ms.MissingReport());
+    }
+
+    private void BadReport(){
+        System.out.println( ms.BadReport());
     }
 }

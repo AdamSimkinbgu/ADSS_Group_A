@@ -123,10 +123,17 @@ public class MainService {
 
     public String AddBadProduct(int pId, int quantity){
         try{
-            md.AddBadProduct(pId,quantity);
-            return "";
+            return md.AddBadProduct(pId,quantity);
         }catch (IllegalArgumentException e){
             return "Failed to report bad product: " + e.getMessage();
         }
+    }
+
+    public String MissingReport(){
+        return md.GetMissingReport();
+    }
+
+    public String BadReport(){
+        return md.GetBadReport();
     }
 }

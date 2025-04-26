@@ -106,7 +106,7 @@ public class MainDomain {
         return s;
     }
 
-    //v
+    //VVVVVV
     public String GetMissingReport(){
         StringBuilder ret = new StringBuilder("=====Missing Report=====\n");
         int missNum = 0;
@@ -114,6 +114,8 @@ public class MainDomain {
             missNum = p.GetMissing();
             if (missNum > 0) {
                 ret.append(p.getproductName())
+                        .append(", ")
+                        .append(p.getmanufactuerName())
                         .append(": ")
                         .append(missNum)
                         .append(" \n");
@@ -123,17 +125,22 @@ public class MainDomain {
         //todo check if working
     }
 
+    //VVVVVV
     /*
     * report a bad product
     *
     * */
-    public void AddBadProduct(int pId,int quantity){
+    public String AddBadProduct(int pId,int quantity){
         if(!prodMap.containsKey(pId))throw new IllegalArgumentException("invalid product id");
 
-        prodMap.get(pId).ReportBad(quantity);
+        int missing = prodMap.get(pId).ReportBad(quantity);
+        if(missing > 0){
+            return "Bad Product Reported \nWarning!!! minimal amount retched";
+        }
+        else return "Bad Product Reported";
     }
 
-    //v
+    //VVVVVV
     public String GetBadReport(){
         StringBuilder ret = new StringBuilder("=====Bad Report=====\n");
         int badNum = 0;
@@ -141,6 +148,8 @@ public class MainDomain {
             badNum = p.GetBads();
             if (badNum > 0) {
                 ret.append(p.getproductName())
+                        .append(", ")
+                        .append(p.getmanufactuerName())
                         .append(": ")
                         .append(badNum)
                         .append(" \n");

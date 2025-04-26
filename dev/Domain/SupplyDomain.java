@@ -93,4 +93,27 @@ public class SupplyDomain {
             return quantity;
         }
     }
+
+    public int Report(int quantity){
+        if(quantity < quantityWarehouse){
+            quantityWarehouse -= quantity;
+            quantityBad += quantity;
+            return 0;
+        }
+        else {
+            quantity -= quantityWarehouse;
+            quantityBad += quantityWarehouse;
+            quantityWarehouse = 0;
+            if(quantity < quantityStore){
+                quantityStore -= quantity;
+                quantityBad += quantity;
+                return 0;
+            }else {
+                quantity -= quantityStore;
+                quantityBad +=quantityStore;
+                quantityStore = 0;
+                return quantity;
+            }
+        }
+    }
 }
