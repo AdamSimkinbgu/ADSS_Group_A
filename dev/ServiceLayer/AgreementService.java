@@ -2,6 +2,7 @@
 package ServiceLayer;
 
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.function.Function;
 
 import DomainLayer.AgreementFacade;
@@ -34,15 +35,17 @@ public class AgreementService extends  BaseService implements IService {
    }
 
    private String addAgreement(String json) {
-      ServiceResponse<Boolean> resp; // = new ServiceResponse<>(null, "Not implemented yet");
+      ServiceResponse<UUID> resp;
       try {
-         boolean res = facade.addAgreement(json);
-         resp = new ServiceResponse<>(res,"");
+         UUID id = facade.createAgreement(json);
+         resp = new ServiceResponse<>(id, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
       return serialize(resp);
    }
+
+
 
    private String updateAgreement(String json) {
       ServiceResponse<Agreement> resp;
@@ -54,6 +57,8 @@ public class AgreementService extends  BaseService implements IService {
       }
       return serialize(resp);
    }
+
+
    private String removeAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {
