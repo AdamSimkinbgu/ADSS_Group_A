@@ -1,9 +1,10 @@
-package PresentationLayer;
+package PresentationLayer.Controllers;
 
 import java.util.List;
 import DomainLayer.Classes.Agreement;
+import PresentationLayer.AbstractController;
+import PresentationLayer.View;
 import ServiceLayer.AgreementService;
-import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 /**
  * Controller for Agreement-related commands.
