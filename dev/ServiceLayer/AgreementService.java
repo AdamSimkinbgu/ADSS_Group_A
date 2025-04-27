@@ -2,8 +2,11 @@
 package ServiceLayer;
 
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.function.Function;
 
+import DomainLayer.AgreementFacade;
+import DomainLayer.Classes.Supplier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -11,11 +14,13 @@ import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import DomainLayer.Classes.Agreement;
 
-public class AgreementService implements IService {
+public class AgreementService extends  BaseService implements IService {
    private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
    private final ObjectMapper objectMapper = new ObjectMapper();
+   private final  AgreementFacade facade;
 
-   public AgreementService() {
+   public AgreementService(AgreementFacade agreementFacade) {
+      facade = agreementFacade;
       serviceFunctions.put("addAgreement", this::addAgreement);
       serviceFunctions.put("updateAgreement", this::updateAgreement);
       serviceFunctions.put("removeAgreement", this::removeAgreement);
@@ -30,42 +35,52 @@ public class AgreementService implements IService {
    }
 
    private String addAgreement(String json) {
-      ServiceResponse<Agreement> resp = new ServiceResponse<>(null, "Not implemented yet");
+      ServiceResponse<UUID> resp;
       try {
-         return objectMapper.writeValueAsString(resp);
-      } catch (JsonProcessingException e) {
-         return "{\"value\":null,\"error\":\"Serialization error\"}";
+         UUID id = facade.createAgreement(json);
+         resp = new ServiceResponse<>(id, "");
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(null, e.getMessage());
       }
+      return serialize(resp);
    }
+
 
    private String updateAgreement(String json) {
-      ServiceResponse<Agreement> resp = new ServiceResponse<>(null, "Not implemented yet");
+      ServiceResponse<Agreement> resp;
       try {
-         return objectMapper.writeValueAsString(resp);
-      } catch (JsonProcessingException e) {
-         return "{\"value\":null,\"error\":\"Serialization error\"}";
+         // TODO: implement update logic
+         resp = new ServiceResponse<>(null, "Not implemented yet");
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(null, e.getMessage());
       }
+      return serialize(resp);
    }
 
+
    private String removeAgreement(String json) {
-      ServiceResponse<Boolean> resp = new ServiceResponse<>(false, "Not implemented yet");
+      ServiceResponse<Agreement> resp;
       try {
-         return objectMapper.writeValueAsString(resp);
-      } catch (JsonProcessingException e) {
-         return "{\"value\":null,\"error\":\"Serialization error\"}";
+         // TODO: implement update logic
+         resp = new ServiceResponse<>(null, "Not implemented yet");
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(null, e.getMessage());
       }
+      return serialize(resp);
    }
 
    private String getAgreement(String json) {
-      ServiceResponse<Agreement> resp = new ServiceResponse<>(null, "Not implemented yet");
+      ServiceResponse<Agreement> resp;
       try {
-         return objectMapper.writeValueAsString(resp);
-      } catch (JsonProcessingException e) {
-         return "{\"value\":null,\"error\":\"Serialization error\"}";
+         // TODO: implement update logic
+         resp = new ServiceResponse<>(null, "Not implemented yet");
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(null, e.getMessage());
       }
+      return serialize(resp);
    }
 
-   private String commandDoesNotExist(String data) {
-      return "{\"value\":null,\"error\":\"Command does not exist\"}";
-   }
+//   private String commandDoesNotExist(String data) {
+//      return "{\"value\":null,\"error\":\"Command does not exist\"}";
+//   }
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import DomainLayer.Classes.Supplier;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 /**
  * Facade for managing Supplier entities in memory.
@@ -19,7 +20,7 @@ public class SupplierFacade {
          suppliers.put(sup.getSupplierId(), sup);
 
          return true;
-      } catch (com.fasterxml.jackson.databind.exc.MismatchedInputException e) {
+      } catch (MismatchedInputException e) {
          // this will show you exactly which JSON field was unexpected or
          // couldn’t map to the constructor
          System.err.println("JSON parse error: " + e.getOriginalMessage());
@@ -35,7 +36,7 @@ public class SupplierFacade {
    /**
     * Removes a supplier by its id.
     *
-    * @param id the UUID of the supplier to remove
+    * @param json  the UUID of the supplier to remove
     * @return true if the supplier existed and was removed, false otherwise
     */
    public boolean removeSupplier(String json) {
@@ -72,7 +73,7 @@ public class SupplierFacade {
    /**
     * Retrieves a supplier by its id.
     *
-    * @param id the UUID of the supplier
+    * @param jsonOfID the UUID of the supplier
     * @return an Optional containing the Supplier if found, or empty if not found
     */
    public Optional<Supplier> getSupplier(String jsonOfID) {
