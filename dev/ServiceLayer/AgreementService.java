@@ -4,6 +4,7 @@ package ServiceLayer;
 import java.util.HashMap;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.AgreementFacade;
@@ -36,22 +37,33 @@ public class AgreementService extends BaseService implements IService {
 
    private String addAgreement(String json) {
       ServiceResponse<Boolean> resp;
-      Supplier thatOneSupplier;
       try {
-         thatOneSupplier = supplierFacade.getSupplier(objectMapper.readValue(json, ObjectNode.class).toString());
-         // exists so add the name to the json
-         json = injectKeyValueOnJsonString(json, "supplierName", thatOneSupplier.getName());
-         System.out.println("Supplier exists: " + thatOneSupplier);
-         System.out.println("JSON after injection: " + json);
-      } catch (Exception e) {
-         return serialize(new ServiceResponse<>(null, "supplierId not found or bad format"));
-      }
+         ObjectNode root = (ObjectNode) objectMapper.readTree(json);
+         String supplierId = root.path("supplierId").asText(null);
+         if (supplierId == null) {
+            throw new IllegalArgumentException("supplierId is missing");
+         }
 
-      try {
-         agreementFacade.createAgreement(json);
+         String lookup = objectMapper.createObjectNode()
+               .put("supplierId", supplierId).toString();
+         Supplier sup = supplierFacade.getSupplier(lookup);
+         if (sup == null) {
+            resp = new ServiceResponse<>(false,
+                  "No supplier found with ID: " + supplierId);
+            return serialize(resp);
+         }
+
+         root.put("supplierName", sup.getName());
+         agreementFacade.createAgreement(root.toString());
          resp = new ServiceResponse<>(true, "");
-      } catch (Exception e) {
+      } catch (JsonProcessingException e) {
+         resp = new ServiceResponse<>(false,
+               "Invalid JSON payload: " + e.getOriginalMessage());
+      } catch (IllegalArgumentException e) {
          resp = new ServiceResponse<>(false, e.getMessage());
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(false,
+               "Failed to create agreement: " + e.getMessage());
       }
       return serialize(resp);
    }
@@ -68,12 +80,18 @@ public class AgreementService extends BaseService implements IService {
    }
 
    private String removeAgreement(String json) {
-      ServiceResponse<Agreement> resp;
+      ServiceResponse<Boolean> resp;
       try {
-         // TODO: implement update logic
-         resp = new ServiceResponse<>(null, "Not implemented yet");
+         boolean deleted = agreementFacade.removeAgreement(json);
+         if (deleted) {
+            resp = new ServiceResponse<>(true, "");
+         } else {
+            resp = new ServiceResponse<>(false, "No agreement with ID: " + json);
+         }
+      } catch (IllegalArgumentException e) {
+         resp = new ServiceResponse<>(false, "Invalid Agreement ID format: " + json);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = new ServiceResponse<>(false, e.getMessage());
       }
       return serialize(resp);
    }
@@ -81,8 +99,14 @@ public class AgreementService extends BaseService implements IService {
    private String getAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {
-         // TODO: implement update logic
-         resp = new ServiceResponse<>(null, "Not implemented yet");
+         Agreement agreement = agreementFacade.getAgreement(json);
+         if (agreement != null) {
+            resp = new ServiceResponse<>(agreement, "");
+         } else {
+            resp = new ServiceResponse<>(null, "No agreement with ID: " + json);
+         }
+      } catch (IllegalArgumentException e) {
+         resp = new ServiceResponse<>(null, "Invalid Agreement ID format: " + json);
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }

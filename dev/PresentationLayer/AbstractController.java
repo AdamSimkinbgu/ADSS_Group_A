@@ -15,8 +15,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import ServiceLayer.Interfaces_and_Abstracts.IService;
 
@@ -43,6 +44,9 @@ public abstract class AbstractController {
       this.view = view;
       this.service = service;
       this.implemented = false;
+      mapper.registerModule(new JavaTimeModule());
+      // serialize/deserialize dates as ISO-strings, not timestamps
+      mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
       controllerMenuOptions.put("?", () -> {
          System.out.println("Invalid choice. Please try again.");
       });
@@ -163,5 +167,10 @@ public abstract class AbstractController {
          }
       }
       return best;
+   }
+
+   protected boolean requestBoolean(String message) {
+      String input = view.readLine(message);
+      return Boolean.parseBoolean(input);
    }
 }

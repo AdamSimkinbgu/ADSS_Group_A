@@ -13,6 +13,7 @@ public class SupplierFacade {
 
    public void addSupplier(String json) {
       try {
+
          Supplier sup = mapper.readValue(json, Supplier.class);
          suppliers.put(sup.getSupplierId(), sup);
       } catch (MismatchedInputException e) {
@@ -105,5 +106,9 @@ public class SupplierFacade {
          throw new RuntimeException("Supplier JSON parse failed", e);
       }
 
+   }
+
+   public List<Supplier> getSuppliersWithFullDetail() {
+      return new ArrayList<>(suppliers.values());
    }
 }

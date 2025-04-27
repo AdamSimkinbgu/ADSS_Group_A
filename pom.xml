@@ -27,7 +27,11 @@
       <artifactId>jackson-annotations</artifactId>
       <version>2.15.2</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.15.2</version>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -44,16 +48,17 @@
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
       <version>RELEASE</version>
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
-    <!-- compile sources in dev/ -->
+    <!-- compile Java sources under dev/ -->
     <sourceDirectory>${project.basedir}/dev</sourceDirectory>
+
+    <!-- plugin definitions -->
     <plugins>
-      <!-- compile Java 17 -->
+      <!-- compiler plugin for Java 17 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -64,7 +69,7 @@
         </configuration>
       </plugin>
 
-      <!-- shade all dependencies into one jar, overwrite main artifact -->
+      <!-- shade plugin: produces a single executable jar with dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -88,8 +93,9 @@
         </executions>
       </plugin>
 
-      <!-- ensure Main-Class for plain jar as well (optional) -->
+      <!-- jar plugin to set Main-Class (optional if shading) -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.2.2</version>
         <configuration>
@@ -101,5 +107,20 @@
         </configuration>
       </plugin>
     </plugins>
+
+    <!-- resource configuration: include JSON files under dev/ -->
+    <resources>
+      <!-- standard resources directory -->
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <!-- include any JSON from dev/ into the jar -->
+      <resource>
+        <directory>${project.basedir}/dev</directory>
+        <includes>
+          <include>**/*.json</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 </project>

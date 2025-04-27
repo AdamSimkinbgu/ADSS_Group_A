@@ -1,0 +1,62 @@
+{
+   "suppliers": [
+     {
+       "name": "Supplier A",
+       "taxNumber": "111-111-111",
+       "address": { "street": "1 Alpha St", "city": "Alpha City", "buildingNumber": "1" },
+       "paymentDetails": { "bankAccountNumber": "0001", "paymentMethod": "BANK_TRANSFER", "paymentTerm": "N30" },
+       "contacts": [],
+       "products": [],
+       "agreements": []
+     },
+     {
+       "name": "Supplier B",
+       "taxNumber": "222-222-222",
+       "address": { "street": "2 Beta Ave", "city": "Beta Town", "buildingNumber": "2" },
+       "paymentDetails": { "bankAccountNumber": "0002", "paymentMethod": "CREDIT_CARD", "paymentTerm": "N60" },
+       "contacts": [],
+       "products": [],
+       "agreements": []
+     },
+     {
+       "name": "Supplier C",
+       "taxNumber": "333-333-333",
+       "address": { "street": "3 Gamma Rd", "city": "Gamma Village", "buildingNumber": "3" },
+       "paymentDetails": { "bankAccountNumber": "0003", "paymentMethod": "CASH_ON_DELIVERY", "paymentTerm": "COD" },
+       "contacts": [],
+       "products": [],
+       "agreements": []
+     }
+   ],
+ 
+   "agreements": [
+     {
+       "supplierId": "11111111-1111-1111-1111-111111111111",
+       "supplierName": "Supplier A",
+       "selfSupply": false,
+       "supplyDays": ["MONDAY", "WEDNESDAY", "FRIDAY"],
+       "agreementStartDate": "2025-01-01",
+       "agreementEndDate": "2025-06-30",
+       "hasFixedSupplyDays": true
+     },
+     {
+       "supplierId": "22222222-2222-2222-2222-222222222222",
+       "supplierName": "Supplier B",
+       "selfSupply": true,
+       "supplyDays": [],
+       "agreementStartDate": "2025-02-15",
+       "agreementEndDate": "2025-12-31",
+       "hasFixedSupplyDays": false
+     },
+     {
+       "supplierId": "33333333-3333-3333-3333-333333333333",
+       "supplierName": "Supplier C",
+       "selfSupply": false,
+       "supplyDays": ["TUESDAY", "THURSDAY"],
+       "agreementStartDate": "2025-03-01",
+       "agreementEndDate": "2025-09-30",
+       "hasFixedSupplyDays": true
+     }
+   ]
+ }
+ 

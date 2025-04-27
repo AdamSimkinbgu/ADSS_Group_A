@@ -52,7 +52,7 @@ public class AgreementController extends AbstractController {
       ObjectNode payload = mapper.createObjectNode();
       String supplierId = view.readLine("Supplier ID:");
       payload.put("supplierId", supplierId);
-      String selfSupply = view.readLine("Self Supply (true/false):");
+      Boolean selfSupply = requestBoolean("Is this a self-supply agreement (true/false):");
       payload.put("selfSupply", selfSupply);
 
       ArrayNode daysArray = payload.putArray("supplyDays");
@@ -65,7 +65,7 @@ public class AgreementController extends AbstractController {
             askForFutureOrTodayDate("Enter agreement start date").toString());
       payload.put("agreementEndDate",
             askForFutureOrTodayDate("Enter agreement end date").toString());
-      String hasFixedSupplyDays = view.readLine("Has fixed supply days (true/false):");
+      Boolean hasFixedSupplyDays = requestBoolean("Does this agreement have fixed supply days (true/false):");
       payload.put("hasFixedSupplyDays", hasFixedSupplyDays);
       String response = handleModuleCommand("addAgreement", payload.toString());
       view.dispatchResponse(response, Agreement.class);
