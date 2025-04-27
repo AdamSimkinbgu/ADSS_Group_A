@@ -3,6 +3,8 @@ package ServiceLayer;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,37 +41,44 @@ public class SystemService extends BaseService implements IService {
       return fn.apply(data);
    }
 
-   private String loadData(String unused) {
+   private String loadData(String ignored) {
       ServiceResponse<String> resp;
-      try (InputStream in = getClass()
-            .getResourceAsStream("/data.json")) {
-
-         if (in == null) {
+      try (InputStream in = getClass().getResourceAsStream("/data.json")) {
+         if (in == null)
             throw new IllegalStateException("data.json not on classpath");
-         }
 
-         // parse the whole file
          JsonNode root = objectMapper.readTree(in);
 
-         // 1) load suppliers first
-         for (JsonNode supNode : root.withArray("suppliers")) {
-            String supJson = supNode.toString();
-            supplierFacade.addSupplier(supJson);
+         // 1) load all suppliers and keep their IDs
+
+         for (JsonNode s : root.withArray("suppliers")) {
+            supplierFacade.addSupplier(s.toString());
          }
 
-         // 2) then load agreements
-         for (JsonNode agrNode : root.withArray("agreements")) {
-            String agrJson = agrNode.toString();
-            // inject supplierName if needed:
-            String sid = agrNode.get("supplierId").asText();
+         List<UUID> supplierIds = supplierFacade.getSuppliersWithFullDetail()
+               .stream().map(Supplier::getSupplierId).toList();
+
+         int i = 0;
+         // 2) load all agreements
+         for (JsonNode a : root.withArray("agreements")) {
+            // extract supplierId
+            String sid = supplierIds.get(i++).toString();
             Supplier sup = supplierFacade.getSupplier(
                   "{\"supplierId\":\"" + sid + "\"}");
-            ObjectNode tree = (ObjectNode) agrNode;
-            tree.put("supplierName", sup.getName());
-            agreementFacade.createAgreement(tree.toString());
+            if (sup == null) {
+               throw new IllegalStateException("No supplier for ID: " + sid);
+            }
+
+            // inject the name
+            ObjectNode copy = ((ObjectNode) a).deepCopy();
+            copy.put("supplierName", sup.getName());
+
+            // create in the facade
+            agreementFacade.createAgreement(copy.toString());
          }
 
-         resp = new ServiceResponse<>("Data loaded", "");
+         resp = new ServiceResponse<>("Data loaded successfully", "");
+
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, "Load failed: " + e.getMessage());
       }

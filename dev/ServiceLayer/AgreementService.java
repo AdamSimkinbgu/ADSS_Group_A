@@ -2,6 +2,7 @@
 package ServiceLayer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +27,7 @@ public class AgreementService extends BaseService implements IService {
       serviceFunctions.put("updateAgreement", this::updateAgreement);
       serviceFunctions.put("removeAgreement", this::removeAgreement);
       serviceFunctions.put("getAgreement", this::getAgreement);
+      serviceFunctions.put("getAllAgreements", this::getAllAgreements);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -107,6 +109,17 @@ public class AgreementService extends BaseService implements IService {
          }
       } catch (IllegalArgumentException e) {
          resp = new ServiceResponse<>(null, "Invalid Agreement ID format: " + json);
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(null, e.getMessage());
+      }
+      return serialize(resp);
+   }
+
+   private String getAllAgreements(String json) {
+      ServiceResponse<List<Agreement>> resp;
+      try {
+         List<Agreement> agreements = agreementFacade.getAgreementsWithFullDetail();
+         resp = new ServiceResponse<>(agreements, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }

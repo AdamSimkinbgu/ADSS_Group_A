@@ -55,8 +55,12 @@ public class Supplier implements Serializable {
       return supplierId;
    }
 
-   public void setSupplierId(UUID supplierId) {
-      this.supplierId = supplierId;
+   public void setSupplierId(String supplierId) {
+      try {
+         this.supplierId = UUID.fromString(supplierId);
+      } catch (IllegalArgumentException e) {
+         throw new IllegalArgumentException("Invalid UUID format: " + supplierId, e);
+      }
    }
 
    public String getName() {

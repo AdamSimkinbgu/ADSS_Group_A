@@ -3,8 +3,11 @@ package DomainLayer;
 import java.util.*;
 
 import DomainLayer.Classes.Supplier;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SupplierFacade {
    // In-memory map of suppliers by their UUID
@@ -13,8 +16,19 @@ public class SupplierFacade {
 
    public void addSupplier(String json) {
       try {
+         // Parse into tree so we can extract supplierId if present:
+         ObjectNode root = (ObjectNode) mapper.readTree(json);
+         System.out.println("Loading supplier: " + root);
+         // Pull out supplierId (if it exists), or null otherwise
+         JsonNode idNode = root.remove("supplierId");
+         UUID id = idNode != null
+               ? UUID.fromString(idNode.asText())
+               : null;
+         System.out.println("Supplier ID: " + id);
+         // Bind the rest into your normal constructor
+         Supplier sup = mapper.treeToValue(root, Supplier.class);
 
-         Supplier sup = mapper.readValue(json, Supplier.class);
+         // Store
          suppliers.put(sup.getSupplierId(), sup);
       } catch (MismatchedInputException e) {
          // this will show you exactly which JSON field was unexpected or
@@ -83,15 +97,6 @@ public class SupplierFacade {
          // e.printStackTrace();
          throw new RuntimeException("Supplier JSON parse failed", e);
       }
-   }
-
-   /**
-    * Lists all suppliers.
-    *
-    * @return a list of all Supplier entities
-    */
-   public List<Supplier> listSuppliers() {
-      return new ArrayList<>(suppliers.values());
    }
 
    public boolean supplierExists(String json) {

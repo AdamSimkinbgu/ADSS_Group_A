@@ -35,9 +35,9 @@ public class OrderService extends BaseService implements IService {
    private String addOrder(String json) {
       ServiceResponse<Order> resp;
       try {
-
-         Order createdOrder = orderFacade.createOrder(json);
-         resp = new ServiceResponse<>(createdOrder, "");
+         return new ServiceResponse<String>(null, "Sorry, this method is not implemented yet.").toString();
+         // Order createdOrder = orderFacade.createOrder(json);
+         // resp = new ServiceResponse<>(createdOrder, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
@@ -56,7 +56,6 @@ public class OrderService extends BaseService implements IService {
       return serialize(resp);
    }
 
-
    private String removeOrder(String json) {
       ServiceResponse<Boolean> resp;
       try {
@@ -68,7 +67,6 @@ public class OrderService extends BaseService implements IService {
       }
       return serialize(resp);
    }
-
 
    private String getOrder(String json) {
       ServiceResponse<Order> resp;

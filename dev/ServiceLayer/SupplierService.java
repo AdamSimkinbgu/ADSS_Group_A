@@ -99,7 +99,7 @@ public class SupplierService extends BaseService implements IService {
    private String getAllSuppliers(String id) {
       ServiceResponse<Map<String, String>> resp;
       try {
-         List<Supplier> suppliers = facade.listSuppliers();
+         List<Supplier> suppliers = facade.getSuppliersWithFullDetail();
          Map<String, String> suppliersMap = new HashMap<>();
          for (Supplier supplier : suppliers) {
             suppliersMap.put(supplier.getSupplierId().toString(), supplier.getName());
