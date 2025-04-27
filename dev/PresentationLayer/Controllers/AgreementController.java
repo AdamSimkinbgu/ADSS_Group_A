@@ -1,7 +1,8 @@
 package PresentationLayer.Controllers;
 
 import java.util.List;
-import java.util.UUID;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.Classes.Agreement;
 import PresentationLayer.AbstractController;
@@ -27,26 +28,22 @@ public class AgreementController extends AbstractController {
    @Override
    public List<String> showMenu() {
       return List.of(
-              "Please choose an option:",
-              "Create Agreement",
-              "Update Agreement",
-              "Delete Agreement",
-              "View Agreement",
-              "List All Agreements",
-              "Back to Main Menu"
-      );
+            "Please choose an option:",
+            "Create Agreement",
+            "Update Agreement",
+            "Delete Agreement",
+            "View Agreement",
+            "List All Agreements",
+            "Back to Main Menu");
    }
 
    public void createAgreement() {
-      view.showMessage("Creating a new agreement...");
-      List<String> params = view.readParameters(
-              "Please enter agreement details: supplierId-supplierName-valid-selfSupply-supplyDays(comma separated)-agreementStartDate-agreementEndDate-hasFixedSupplyDays-supplyProducts(JSON array)"
-      );
-      String agrJson = fuseClassAttributesAndParametersToJson(Agreement.class, params);
-      view.dispatchResponse(
-              handleModuleCommand("addAgreement", agrJson),
-              Agreement.class
-      );
+      view.showMessage("Creating a new agreement... Please enter the following details:");
+      ObjectNode payload = mapper.createObjectNode();
+      String supplierId = view.readLine("Supplier ID:");
+
+      payload.put("supplierId", supplierId);
+
    }
 
    public void updateAgreement() {
@@ -85,8 +82,7 @@ public class AgreementController extends AbstractController {
    public void listAllAgreements() {
       view.showMessage("Listing all agreements...");
       view.dispatchResponse(
-              handleModuleCommand("listAllAgreements", ""),
-              Agreement[].class
-      );
+            handleModuleCommand("listAllAgreements", ""),
+            Agreement[].class);
    }
 }

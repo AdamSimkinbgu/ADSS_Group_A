@@ -6,21 +6,19 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import DomainLayer.AgreementFacade;
-import DomainLayer.Classes.Supplier;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import DomainLayer.Classes.Agreement;
 
-public class AgreementService extends  BaseService implements IService {
+public class AgreementService extends BaseService implements IService {
    private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
-   private final ObjectMapper objectMapper = new ObjectMapper();
-   private final  AgreementFacade facade;
+   private final AgreementFacade agreementFacade;
+   private final SupplierFacade supplierFacade;
 
-   public AgreementService(AgreementFacade agreementFacade) {
-      facade = agreementFacade;
+   public AgreementService(AgreementFacade agreementFacade, SupplierFacade supplierFacade) {
+      this.agreementFacade = agreementFacade;
+      this.supplierFacade = supplierFacade;
       serviceFunctions.put("addAgreement", this::addAgreement);
       serviceFunctions.put("updateAgreement", this::updateAgreement);
       serviceFunctions.put("removeAgreement", this::removeAgreement);
@@ -37,14 +35,13 @@ public class AgreementService extends  BaseService implements IService {
    private String addAgreement(String json) {
       ServiceResponse<UUID> resp;
       try {
-         UUID id = facade.createAgreement(json);
+         UUID id = agreementFacade.createAgreement(json);
          resp = new ServiceResponse<>(id, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
       return serialize(resp);
    }
-
 
    private String updateAgreement(String json) {
       ServiceResponse<Agreement> resp;
@@ -56,7 +53,6 @@ public class AgreementService extends  BaseService implements IService {
       }
       return serialize(resp);
    }
-
 
    private String removeAgreement(String json) {
       ServiceResponse<Agreement> resp;
@@ -80,7 +76,7 @@ public class AgreementService extends  BaseService implements IService {
       return serialize(resp);
    }
 
-//   private String commandDoesNotExist(String data) {
-//      return "{\"value\":null,\"error\":\"Command does not exist\"}";
-//   }
+   // private String commandDoesNotExist(String data) {
+   // return "{\"value\":null,\"error\":\"Command does not exist\"}";
+   // }
 }

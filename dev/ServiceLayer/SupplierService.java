@@ -1,7 +1,9 @@
 package ServiceLayer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import DomainLayer.Classes.Supplier;
@@ -23,6 +25,7 @@ public class SupplierService extends BaseService implements IService {
       serviceFunctions.put("updateSupplier", this::updateSupplier);
       serviceFunctions.put("removeSupplier", this::removeSupplier);
       serviceFunctions.put("getSupplierDetails", this::getSupplierDetails);
+      serviceFunctions.put("getAllSuppliers", this::getAllSuppliers);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -32,13 +35,22 @@ public class SupplierService extends BaseService implements IService {
       return fn.apply(data);
    }
 
+   // example function
    private String addSupplier(String creationJson) {
+      // make sure json is good
+      ServiceResponse<Boolean> pre = validateBinding(creationJson, Supplier.class);
+      // if not, return jackson error message
+      if (pre.getValue() == null || !pre.getValue()) {
+         return serialize(pre);
+      }
+
+      // use facade to try and add supplier
       ServiceResponse<Boolean> resp;
       try {
-         boolean res = facade.addSupplier(creationJson);
-         resp = new ServiceResponse<>(res, "");
+         boolean success = facade.addSupplier(creationJson);
+         resp = new ServiceResponse<>(success, "");
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = new ServiceResponse<>(false, e.getMessage());
       }
       return serialize(resp);
    }
@@ -72,8 +84,27 @@ public class SupplierService extends BaseService implements IService {
    private String getSupplierDetails(String id) {
       ServiceResponse<Supplier> resp;
       try {
-         // TODO: implement retrieval logic
-         resp = new ServiceResponse<>(null, "Not implemented yet");
+         Supplier supplier = facade.getSupplier(id);
+         if (supplier != null) {
+            resp = new ServiceResponse<>(supplier, "");
+         } else {
+            resp = new ServiceResponse<>(null, "No supplier with ID: " + id);
+         }
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(null, e.getMessage());
+      }
+      return serialize(resp);
+   }
+
+   private String getAllSuppliers(String id) {
+      ServiceResponse<Map<String, String>> resp;
+      try {
+         List<Supplier> suppliers = facade.listSuppliers();
+         Map<String, String> suppliersMap = new HashMap<>();
+         for (Supplier supplier : suppliers) {
+            suppliersMap.put(supplier.getSupplierId().toString(), supplier.getName());
+         }
+         resp = new ServiceResponse<>(suppliersMap, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }

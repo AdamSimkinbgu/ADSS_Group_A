@@ -1,18 +1,14 @@
 package DomainLayer;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import DomainLayer.Classes.Agreement;
-import DomainLayer.Enums.WeekofDay;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-
 
 public class AgreementFacade {
     private final Map<UUID, Agreement> agreements = new HashMap<>();
     private final ObjectMapper mapper = new ObjectMapper();
-
 
     /**
      * Create and store a new Agreement from JSON.
@@ -38,6 +34,7 @@ public class AgreementFacade {
 
     /**
      * Removes an existing Agreement by its UUID string.
+     * 
      * @param id UUID string of the Agreement
      * @return true if removed successfully
      */
@@ -52,6 +49,7 @@ public class AgreementFacade {
 
     /**
      * Updates an existing Agreement via JSON merge.
+     * 
      * @param partialJson JSON with fields to update (must include agreementId)
      * @return updated Agreement instance
      */
@@ -87,6 +85,3 @@ public class AgreementFacade {
         return new HashMap<>(agreements);
     }
 }
-
-
-

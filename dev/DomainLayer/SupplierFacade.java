@@ -36,7 +36,7 @@ public class SupplierFacade {
    /**
     * Removes a supplier by its id.
     *
-    * @param json  the UUID of the supplier to remove
+    * @param json the UUID of the supplier to remove
     * @return true if the supplier existed and was removed, false otherwise
     */
    public boolean removeSupplier(String json) {
@@ -76,11 +76,13 @@ public class SupplierFacade {
     * @param jsonOfID the UUID of the supplier
     * @return an Optional containing the Supplier if found, or empty if not found
     */
-   public Optional<Supplier> getSupplier(String jsonOfID) {
+   public Supplier getSupplier(String jsonOfID) {
       try {
          Map<String, String> map = mapper.readValue(jsonOfID, Map.class);
          UUID id = UUID.fromString(map.get("supplierId"));
-         return Optional.ofNullable(suppliers.get(id));
+         return suppliers.get(id);
+      } catch (IllegalArgumentException e) {
+         throw new RuntimeException("Invalid Supplier ID or UUID format: " + jsonOfID, e);
       } catch (Exception e) {
          // e.printStackTrace();
          throw new RuntimeException("Supplier JSON parse failed", e);

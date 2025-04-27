@@ -60,14 +60,19 @@ public class AppCLI implements View {
 
    public AppCLI(String dataPath) {
       // Initialize controllers
+      // Initialize the facades and services
       SupplierFacade supplierFacade = new SupplierFacade();
       OrderFacade orderFacade = new OrderFacade(supplierFacade);
       AgreementFacade agreementFacade = new AgreementFacade();
+      SupplierService supplierService = new SupplierService(supplierFacade);
+      OrderService orderService = new OrderService(orderFacade);
+      AgreementService agreementService = new AgreementService(agreementFacade, supplierFacade);
+      SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
 
-      this.agreementsController = new AgreementController(this, new AgreementService(agreementFacade));
-      this.suppliersController = new SupplierController(this, new SupplierService(supplierFacade));
-      this.ordersController = new OrderController(this, new OrderService(orderFacade));
-      this.systemController = new SystemController(dataPath, new SystemService(), this);
+      this.agreementsController = new AgreementController(this, agreementService);
+      this.suppliersController = new SupplierController(this, supplierService);
+      this.ordersController = new OrderController(this, orderService);
+      this.systemController = new SystemController(dataPath, systemService, this);
       moduleSelection.put(CMD_MAIN, () -> System.out.println("Returning to the main menu..."));
       moduleSelection.put(CMD_SUPPLIER, suppliersController::handleModuleMenu);
       moduleSelection.put(CMD_ORDER, ordersController::handleModuleMenu);
@@ -133,6 +138,12 @@ public class AppCLI implements View {
       return scanner.nextLine();
    }
 
+   @Override
+   public String readLine(String message) {
+      showMessage(message);
+      return scanner.nextLine();
+   }
+
    public void showError(String message) {
       System.err.println(message);
    }
@@ -158,7 +169,7 @@ public class AppCLI implements View {
    }
 
    public static List<String> parseGrouped(String input) {
-      String[] parts = input.split(" ");
+      String[] parts = input.split("-");
       List<String> parameters = Arrays.stream(parts).map(String::trim).collect(Collectors.toList());
       return parameters;
    }

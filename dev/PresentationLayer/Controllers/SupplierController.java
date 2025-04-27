@@ -1,6 +1,11 @@
 package PresentationLayer.Controllers;
 
+import java.lang.reflect.Array;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.Classes.Supplier;
 import PresentationLayer.AbstractController;
@@ -17,7 +22,8 @@ public class SupplierController extends AbstractController {
       controllerMenuOptions.put("2", this::updateSupplier);
       controllerMenuOptions.put("3", this::deleteSupplier);
       controllerMenuOptions.put("4", this::viewSupplier);
-      controllerMenuOptions.put("5", () -> {
+      controllerMenuOptions.put("5", this::viewAllSuppliers);
+      controllerMenuOptions.put("6", () -> {
          System.out.println("Returning to the main menu...");
       });
       controllerMenuOptions.put("?", () -> {
@@ -32,17 +38,54 @@ public class SupplierController extends AbstractController {
             "Update Supplier",
             "Delete Supplier",
             "View Supplier",
+            "View All Suppliers",
             "Back to Main Menu");
    }
 
    public void createSupplier() {
-      System.out.println("Creating a new supplier...");
-      List<String> input = view.readParameters(
-            "Please enter the supplier details: Name-TaxNumber-Address-BankNumber-BranchNumber-AccountNumber-PaymentMethod-PaymentTerm");
-      String supplierJson = fuseClassAttributesAndParametersToJson(Supplier.class, input);
-      view.dispatchResponse(handleModuleCommand(
-            "addSupplier",
-            supplierJson), Supplier.class);
+      view.showMessage("Creating a new supplier… Please enter the following details:");
+      ObjectNode payload = mapper.createObjectNode();
+
+      String name = view.readLine("Name:");
+      payload.put("name", name);
+
+      String tax = view.readLine("TaxNumber:");
+      payload.put("taxNumber", tax);
+
+      ObjectNode addr = mapper.createObjectNode();
+      addr.put("street", view.readLine("Address – street:"));
+      addr.put("city", view.readLine("Address – city:"));
+      addr.put("buildingNumber", view.readLine("Address – buildingNumber:"));
+      payload.set("address", addr);
+
+      ObjectNode pay = mapper.createObjectNode();
+      pay.put("bankAccountNumber", view.readLine("PaymentDetails – bankAccountNumber:"));
+      pay.put("paymentMethod", view.readLine("PaymentDetails – paymentMethod (e.g. CASH):").toUpperCase());
+      pay.put("paymentTerm", view.readLine("PaymentDetails – paymentTerm (e.g. N30):").toUpperCase());
+      payload.set("paymentDetails", pay);
+
+      ArrayNode contacts = mapper.createArrayNode();
+      ArrayNode products = mapper.createArrayNode();
+      ArrayNode agreements = mapper.createArrayNode();
+      // if (view.readLine("Add contacts? (y/n):").equalsIgnoreCase("y")) {
+      // while (true) {
+      // String c = view.readLine(" Enter contact (blank to finish):");
+      // if (c == null || c.isBlank())
+      // break;
+      // contacts.add(c);
+      // }
+      // }
+
+      // even if user says “n”, contacts is just []
+      payload.set("contacts", contacts);
+      payload.set("products", products);
+      payload.set("agreements", agreements);
+
+      String supplierJson = payload.toString();
+
+      view.dispatchResponse(
+            handleModuleCommand("addSupplier", supplierJson),
+            Supplier.class);
    }
 
    public void updateSupplier() {
@@ -85,6 +128,12 @@ public class SupplierController extends AbstractController {
       String supplierId = view.readLine();
       String viewJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
       String response = handleModuleCommand("getSupplierDetails", viewJson);
+      view.dispatchResponse(response, Supplier.class);
+   }
+
+   public void viewAllSuppliers() {
+      System.out.println("Viewing all suppliers...");
+      String response = handleModuleCommand("getAllSuppliers", "{}");
       view.dispatchResponse(response, Supplier.class);
    }
 }

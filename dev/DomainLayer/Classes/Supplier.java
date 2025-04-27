@@ -5,6 +5,7 @@ import DomainLayer.Classes.Address;
 import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.ContactInfo;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import DomainLayer.Enums.PaymentTerm;
@@ -18,7 +19,6 @@ import java.util.UUID;
  * Supplier entity representing a vendor in the system.
  */
 public class Supplier implements Serializable {
-   private static final long serialVersionUID = 1L;
 
    private UUID supplierId;
    private String name;
@@ -37,21 +37,25 @@ public class Supplier implements Serializable {
          @JsonProperty("name") String name,
          @JsonProperty("taxNumber") String taxNumber,
          @JsonProperty("address") Address address,
-         @JsonProperty("paymentDetails") PaymentDetails paymentDetails) {
+         @JsonProperty("paymentDetails") PaymentDetails paymentDetails,
+         @JsonProperty("contacts") List<ContactInfo> contacts,
+         @JsonProperty("products") List<SupplierProduct> products,
+         @JsonProperty("agreements") List<Agreement> agreements) {
       this.supplierId = UUID.randomUUID();
       this.name = name;
       this.taxNumber = taxNumber;
       this.address = address;
       this.paymentDetails = paymentDetails;
-      this.contacts = new ArrayList<>();
-      this.products = new ArrayList<>();
-      this.agreements = new ArrayList<>();
+      this.contacts = contacts != null ? contacts : new ArrayList<>();
+      this.products = products != null ? products : new ArrayList<>();
+      this.agreements = agreements != null ? agreements : new ArrayList<>();
    }
 
    // ───────────────────────────────────────────────────────────────────────
    // Getters and setters
    // ───────────────────────────────────────────────────────────────────────
 
+   @JsonIgnore
    public UUID getSupplierId() {
       return supplierId;
    }
@@ -88,10 +92,12 @@ public class Supplier implements Serializable {
       return paymentDetails;
    }
 
+   @JsonIgnore
    public void setBankDetails(PaymentDetails paymentDetails) {
       this.paymentDetails = paymentDetails;
    }
 
+   @JsonIgnore
    public PaymentTerm getPaymentTerm() {
       return paymentDetails.getPaymentTerm();
    }

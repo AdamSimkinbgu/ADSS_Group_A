@@ -1,10 +1,7 @@
 package PresentationLayer;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import java.util.HashMap;
 
@@ -13,10 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import DomainLayer.*;
-import DomainLayer.Enums.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -33,7 +26,6 @@ public abstract class AbstractController {
    protected Map<Class<?>, List<String>> classFieldNames = new HashMap<>();
    protected static final ObjectMapper mapper = new ObjectMapper();
    protected IService service;
-   private final ObjectMapper objectMapper = new ObjectMapper();
    protected final View view;
    protected boolean implemented;
 
@@ -85,13 +77,12 @@ public abstract class AbstractController {
    protected String fuseClassAttributesAndParametersToJson(
          Class<?> cls,
          List<String> parameters) {
-      ObjectMapper mapper = new ObjectMapper();
       AtomicInteger idx = new AtomicInteger(0);
 
       // build the tree
       JsonNode tree;
       try {
-         tree = buildJsonForClass(cls, parameters, idx, mapper);
+         tree = buildJsonForClass(cls, parameters, idx);
       } catch (Exception e) {
          // return "{\"error\": \"Invalid input for " +
          // cls.getSimpleName() + ": " + e.getMessage() + "\", \"returnValue\": null}";
@@ -123,8 +114,7 @@ public abstract class AbstractController {
    private JsonNode buildJsonForClass(
          Class<?> cls,
          List<String> params,
-         AtomicInteger idx,
-         ObjectMapper mapper) {
+         AtomicInteger idx) {
       ObjectNode node = mapper.createObjectNode();
       Constructor<?> ctor = pickPrimaryConstructor(cls);
 
@@ -140,7 +130,7 @@ public abstract class AbstractController {
             String token = params.get(idx.getAndIncrement());
             node.put(name, token);
          } else {
-            JsonNode child = buildJsonForClass(type, params, idx, mapper);
+            JsonNode child = buildJsonForClass(type, params, idx);
             node.set(name, child);
          }
       }

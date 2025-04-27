@@ -28,16 +28,14 @@ public class OrderFacade {
                 throw new IllegalArgumentException("Supplier ID is missing from the order JSON.");
             }
             UUID supplierId = UUID.fromString(supplierIdStr);
-            Supplier supplier = supplierFacade.getSupplier(supplierIdStr)
-                    .orElseThrow(() -> new IllegalArgumentException("Supplier not found with id: " + supplierId));
+            Supplier supplier = supplierFacade.getSupplier(supplierIdStr);
             String newJson = String.format(
                     "{\"supplierId\":\"%s\",\"supplierName\":\"%s\",\"supplierAddress\":\"%s\",\"contactPhone\":\"%s\",\"orderItems\":%s}",
                     supplier.getSupplierId().toString(),
                     supplier.getName(),
                     supplier.getAddress(),
                     contactPhone,
-                    orderItemsStr
-            );
+                    orderItemsStr);
             Order order = mapper.readValue(newJson, Order.class);
             orders.put(order.getOrderId(), order);
             return order;

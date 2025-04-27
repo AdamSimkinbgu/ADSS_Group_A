@@ -31,4 +31,23 @@ public abstract class BaseService {
          return "{\"value\":null,\"error\":\"Serialization error\"}";
       }
    }
+
+   /**
+    * Try to bind the JSON into `targetType`. If it fails, return an error
+    * ServiceResponse<Boolean>. Otherwise return a “true” value so you can go
+    * on and call the facade.
+    */
+   public <T> ServiceResponse<Boolean> validateBinding(String json, Class<T> targetType) {
+      try {
+         // this will invoke the same @JsonCreator constructor
+         objectMapper.readValue(json, targetType);
+         return new ServiceResponse<>(true, "");
+      } catch (JsonProcessingException e) {
+         // Jackson tells you exactly which field/type failed
+         return new ServiceResponse<>(
+               false,
+               "Type conversion error: " + e.getOriginalMessage());
+      }
+   }
+
 }

@@ -31,12 +31,6 @@ public class Agreement implements Serializable {
     private List<BillofQuantitiesItem> billOfQuantities;
     private boolean hasFixedSupplyDays;
 
-    public Agreement() {
-        this.agreementId = UUID.randomUUID();
-        this.supplyDays = new ArrayList<>();
-        this.billOfQuantities = new ArrayList<>();
-    }
-
     /**
      * JSON constructor for Jackson.
      */
@@ -49,8 +43,7 @@ public class Agreement implements Serializable {
             @JsonProperty("supplyDays") List<WeekofDay> supplyDays,
             @JsonProperty("agreementStartDate") LocalDate agreementStartDate,
             @JsonProperty("agreementEndDate") LocalDate agreementEndDate,
-            @JsonProperty("hasFixedSupplyDays") boolean hasFixedSupplyDays
-    ) {
+            @JsonProperty("hasFixedSupplyDays") boolean hasFixedSupplyDays) {
         this.agreementId = UUID.randomUUID();
         this.supplierId = supplierId;
         this.supplierName = supplierName;
@@ -67,29 +60,81 @@ public class Agreement implements Serializable {
     // Getters
     // ───────────────────────────────────────────────────────────────────────
 
-    public UUID getAgreementId() { return agreementId; }
-    public UUID getSupplierId() { return supplierId; }
-    public String getSupplierName() { return supplierName; }
-    public boolean isValid() { return valid; }
-    public boolean isSelfSupply() { return selfSupply; }
-    public List<WeekofDay> getSupplyDays() { return supplyDays; }
-    public LocalDate getAgreementStartDate() { return agreementStartDate; }
-    public LocalDate getAgreementEndDate() { return agreementEndDate; }
-    public List<BillofQuantitiesItem> getBillOfQuantities() { return billOfQuantities; }
-    public boolean hasFixedSupplyDays() { return hasFixedSupplyDays; }
+    public UUID getAgreementId() {
+        return agreementId;
+    }
+
+    public UUID getSupplierId() {
+        return supplierId;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public boolean isSelfSupply() {
+        return selfSupply;
+    }
+
+    public List<WeekofDay> getSupplyDays() {
+        return supplyDays;
+    }
+
+    public LocalDate getAgreementStartDate() {
+        return agreementStartDate;
+    }
+
+    public LocalDate getAgreementEndDate() {
+        return agreementEndDate;
+    }
+
+    public List<BillofQuantitiesItem> getBillOfQuantities() {
+        return billOfQuantities;
+    }
+
+    public boolean hasFixedSupplyDays() {
+        return hasFixedSupplyDays;
+    }
 
     // ───────────────────────────────────────────────────────────────────────
     // Setters
     // ───────────────────────────────────────────────────────────────────────
 
-    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
-    public void setValid(boolean valid) { this.valid = valid; }
-    public void setSelfSupply(boolean selfSupply) { this.selfSupply = selfSupply; }
-    public void setSupplyDays(List<WeekofDay> supplyDays) { this.supplyDays = supplyDays; }
-    public void setAgreementStartDate(LocalDate agreementStartDate) { this.agreementStartDate = agreementStartDate; }
-    public void setAgreementEndDate(LocalDate agreementEndDate) { this.agreementEndDate = agreementEndDate; }
-    public void setHasFixedSupplyDays(boolean hasFixedSupplyDays) { this.hasFixedSupplyDays = hasFixedSupplyDays; }
-    public void setBillOfQuantities(List<BillofQuantitiesItem> billOfQuantities) { this.billOfQuantities = billOfQuantities; }
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    public void setSelfSupply(boolean selfSupply) {
+        this.selfSupply = selfSupply;
+    }
+
+    public void setSupplyDays(List<WeekofDay> supplyDays) {
+        this.supplyDays = supplyDays;
+    }
+
+    public void setAgreementStartDate(LocalDate agreementStartDate) {
+        this.agreementStartDate = agreementStartDate;
+    }
+
+    public void setAgreementEndDate(LocalDate agreementEndDate) {
+        this.agreementEndDate = agreementEndDate;
+    }
+
+    public void setHasFixedSupplyDays(boolean hasFixedSupplyDays) {
+        this.hasFixedSupplyDays = hasFixedSupplyDays;
+    }
+
+    public void setBillOfQuantities(List<BillofQuantitiesItem> billOfQuantities) {
+        this.billOfQuantities = billOfQuantities;
+    }
 
     // ───────────────────────────────────────────────────────────────────────
     // BoQ methods
