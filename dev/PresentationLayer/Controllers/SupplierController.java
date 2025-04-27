@@ -67,14 +67,6 @@ public class SupplierController extends AbstractController {
       ArrayNode contacts = mapper.createArrayNode();
       ArrayNode products = mapper.createArrayNode();
       ArrayNode agreements = mapper.createArrayNode();
-      // if (view.readLine("Add contacts? (y/n):").equalsIgnoreCase("y")) {
-      // while (true) {
-      // String c = view.readLine(" Enter contact (blank to finish):");
-      // if (c == null || c.isBlank())
-      // break;
-      // contacts.add(c);
-      // }
-      // }
 
       // even if user says “n”, contacts is just []
       payload.set("contacts", contacts);

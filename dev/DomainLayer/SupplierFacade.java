@@ -6,20 +6,15 @@ import DomainLayer.Classes.Supplier;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
-/**
- * Facade for managing Supplier entities in memory.
- */
 public class SupplierFacade {
    // In-memory map of suppliers by their UUID
    private final Map<UUID, Supplier> suppliers = new HashMap<>();
    private ObjectMapper mapper = new ObjectMapper();
 
-   public boolean addSupplier(String json) {
+   public void addSupplier(String json) {
       try {
          Supplier sup = mapper.readValue(json, Supplier.class);
          suppliers.put(sup.getSupplierId(), sup);
-
-         return true;
       } catch (MismatchedInputException e) {
          // this will show you exactly which JSON field was unexpected or
          // couldn’t map to the constructor
@@ -96,5 +91,19 @@ public class SupplierFacade {
     */
    public List<Supplier> listSuppliers() {
       return new ArrayList<>(suppliers.values());
+   }
+
+   public boolean supplierExists(String json) {
+      try {
+         Map<String, String> map = mapper.readValue(json, Map.class);
+         UUID id = UUID.fromString(map.get("supplierId"));
+         return suppliers.containsKey(id);
+      } catch (IllegalArgumentException e) {
+         throw new RuntimeException("Invalid Supplier ID or UUID format: " + json, e);
+      } catch (Exception e) {
+         // e.printStackTrace();
+         throw new RuntimeException("Supplier JSON parse failed", e);
+      }
+
    }
 }

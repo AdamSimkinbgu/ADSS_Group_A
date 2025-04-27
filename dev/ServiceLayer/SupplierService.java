@@ -47,8 +47,8 @@ public class SupplierService extends BaseService implements IService {
       // use facade to try and add supplier
       ServiceResponse<Boolean> resp;
       try {
-         boolean success = facade.addSupplier(creationJson);
-         resp = new ServiceResponse<>(success, "");
+         facade.addSupplier(creationJson);
+         resp = new ServiceResponse<>(true, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(false, e.getMessage());
       }

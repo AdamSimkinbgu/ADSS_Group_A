@@ -1,14 +1,9 @@
 
 package DomainLayer.Classes;
 
-import DomainLayer.Classes.Address;
-import DomainLayer.Classes.Agreement;
-import DomainLayer.Classes.ContactInfo;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import DomainLayer.Enums.PaymentTerm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -97,20 +92,6 @@ public class Supplier implements Serializable {
       this.paymentDetails = paymentDetails;
    }
 
-   @JsonIgnore
-   public PaymentTerm getPaymentTerm() {
-      return paymentDetails.getPaymentTerm();
-   }
-
-   public void setPaymentTerm(PaymentTerm paymentTerm) {
-      if (paymentDetails != null) {
-         paymentDetails = new PaymentDetails(
-               paymentDetails.getBankAccountNumber(),
-               paymentDetails.getPaymentMethod(),
-               paymentTerm);
-      }
-   }
-
    public List<ContactInfo> getContacts() {
       return contacts;
    }
@@ -133,5 +114,19 @@ public class Supplier implements Serializable {
 
    public void setAgreements(List<Agreement> agreements) {
       this.agreements = agreements;
+   }
+
+   @Override
+   public String toString() {
+      return "Supplier{" +
+            "supplierId=" + supplierId +
+            ", name='" + name + '\'' +
+            ", taxNumber='" + taxNumber + '\'' +
+            ", address=" + address +
+            ", paymentDetails=" + paymentDetails +
+            ", contacts=" + contacts +
+            ", products=" + products +
+            ", agreements=" + agreements +
+            '}';
    }
 }

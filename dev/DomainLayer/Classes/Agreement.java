@@ -10,6 +10,7 @@ import DomainLayer.Enums.WeekofDay;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class Agreement implements Serializable {
     private String supplierName;
     private boolean valid;
     private boolean selfSupply;
-    private List<WeekofDay> supplyDays;
+    private EnumSet<WeekofDay> supplyDays;
     private LocalDate agreementStartDate;
     private LocalDate agreementEndDate;
     private List<BillofQuantitiesItem> billOfQuantities;
@@ -38,18 +39,22 @@ public class Agreement implements Serializable {
     public Agreement(
             @JsonProperty("supplierId") UUID supplierId,
             @JsonProperty("supplierName") String supplierName,
-            @JsonProperty("valid") boolean valid,
             @JsonProperty("selfSupply") boolean selfSupply,
-            @JsonProperty("supplyDays") List<WeekofDay> supplyDays,
+            @JsonProperty("supplyDays") EnumSet<WeekofDay> supplyDays,
             @JsonProperty("agreementStartDate") LocalDate agreementStartDate,
             @JsonProperty("agreementEndDate") LocalDate agreementEndDate,
             @JsonProperty("hasFixedSupplyDays") boolean hasFixedSupplyDays) {
+        if (agreementEndDate.isBefore(agreementStartDate)) {
+            throw new IllegalArgumentException("Agreement end date cannot be before start date.");
+        }
         this.agreementId = UUID.randomUUID();
         this.supplierId = supplierId;
         this.supplierName = supplierName;
-        this.valid = valid;
+        this.valid = true;
         this.selfSupply = selfSupply;
-        this.supplyDays = supplyDays != null ? new ArrayList<>(supplyDays) : new ArrayList<>();
+        this.supplyDays = (supplyDays != null && !supplyDays.isEmpty())
+                ? EnumSet.copyOf(supplyDays)
+                : EnumSet.noneOf(WeekofDay.class);
         this.agreementStartDate = agreementStartDate;
         this.agreementEndDate = agreementEndDate;
         this.hasFixedSupplyDays = hasFixedSupplyDays;
@@ -80,7 +85,7 @@ public class Agreement implements Serializable {
         return selfSupply;
     }
 
-    public List<WeekofDay> getSupplyDays() {
+    public EnumSet<WeekofDay> getSupplyDays() {
         return supplyDays;
     }
 
@@ -116,7 +121,7 @@ public class Agreement implements Serializable {
         this.selfSupply = selfSupply;
     }
 
-    public void setSupplyDays(List<WeekofDay> supplyDays) {
+    public void setSupplyDays(EnumSet<WeekofDay> supplyDays) {
         this.supplyDays = supplyDays;
     }
 

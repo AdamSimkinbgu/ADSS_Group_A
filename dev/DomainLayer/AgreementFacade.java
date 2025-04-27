@@ -15,14 +15,11 @@ public class AgreementFacade {
      *
      * @return generated agreementId
      */
-    public UUID createAgreement(String json) {
+    public void createAgreement(String json) {
         try {
+            System.out.println("Creating Agreement with JSON: " + json);
             Agreement agr = mapper.readValue(json, Agreement.class);
-            if (agr.getSupplierId() == null) {
-                throw new RuntimeException("Supplier ID is required for Agreement");
-            }
             agreements.put(agr.getAgreementId(), agr);
-            return agr.getAgreementId();
         } catch (MismatchedInputException e) {
             System.err.println("JSON parse error: " + e.getOriginalMessage());
             System.err.println(" at: " + e.getPathReference());

@@ -50,4 +50,14 @@ public abstract class BaseService {
       }
    }
 
+   protected String injectKeyValueOnJsonString(String json, String key, String value) {
+      try {
+         HashMap<String, String> map = objectMapper.readValue(json, HashMap.class);
+         map.put(key, value);
+         json = objectMapper.writeValueAsString(map);
+         return json;
+      } catch (JsonProcessingException e) {
+         throw new RuntimeException("Failed to inject key-value pair", e);
+      }
+   }
 }

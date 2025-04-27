@@ -2,14 +2,16 @@
 package ServiceLayer;
 
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.function.Function;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.AgreementFacade;
 import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import DomainLayer.Classes.Agreement;
+import DomainLayer.Classes.Supplier;
 
 public class AgreementService extends BaseService implements IService {
    private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
@@ -33,12 +35,23 @@ public class AgreementService extends BaseService implements IService {
    }
 
    private String addAgreement(String json) {
-      ServiceResponse<UUID> resp;
+      ServiceResponse<Boolean> resp;
+      Supplier thatOneSupplier;
       try {
-         UUID id = agreementFacade.createAgreement(json);
-         resp = new ServiceResponse<>(id, "");
+         thatOneSupplier = supplierFacade.getSupplier(objectMapper.readValue(json, ObjectNode.class).toString());
+         // exists so add the name to the json
+         json = injectKeyValueOnJsonString(json, "supplierName", thatOneSupplier.getName());
+         System.out.println("Supplier exists: " + thatOneSupplier);
+         System.out.println("JSON after injection: " + json);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         return serialize(new ServiceResponse<>(null, "supplierId not found or bad format"));
+      }
+
+      try {
+         agreementFacade.createAgreement(json);
+         resp = new ServiceResponse<>(true, "");
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(false, e.getMessage());
       }
       return serialize(resp);
    }
@@ -76,7 +89,4 @@ public class AgreementService extends BaseService implements IService {
       return serialize(resp);
    }
 
-   // private String commandDoesNotExist(String data) {
-   // return "{\"value\":null,\"error\":\"Command does not exist\"}";
-   // }
 }
