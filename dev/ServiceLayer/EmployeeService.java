@@ -1,6 +1,7 @@
 package ServiceLayer;
 
 import DomainLayer.AuthorisationController;
+import DomainLayer.Employee;
 import DomainLayer.EmployeeController;
 import DomainLayer.exception.InvalidInputException;
 import DomainLayer.exception.UnauthorizedPermissionException;
@@ -8,9 +9,14 @@ import ServiceLayer.exception.AuthorizationException;
 import ServiceLayer.exception.EmployeeNotFoundException;
 import ServiceLayer.exception.ServiceException;
 import ServiceLayer.exception.ValidationException;
+import ServiceLayer.response.Response;
+import ServiceLayer.util.JsonUtil;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,16 +36,16 @@ public class EmployeeService {
      *
      * @param israeliId - The Israeli ID of the employee to check
      * @param permission - The permission to check for
-     * @return True if the employee is authorized, false otherwise
-     * @throws ServiceException if an error occurs during authorization check
+     * @return JSON string containing a Response with the result of the authorization check
      */
-    public boolean isEmployeeAuthorised(long israeliId, String permission) {
+    public String isEmployeeAuthorised(long israeliId, String permission) {
         try {
-            return employeeController.isEmployeeAuthorised(israeliId, permission);
+            boolean isAuthorized = employeeController.isEmployeeAuthorised(israeliId, permission);
+            return JsonUtil.successResponse(isAuthorized);
         } catch (UnauthorizedPermissionException e) {
-            throw new AuthorizationException(israeliId, permission);
+            return JsonUtil.errorResponse("Authorization error: " + e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error checking authorization: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error checking authorization: " + e.getMessage());
         }
     }
 
@@ -49,63 +55,47 @@ public class EmployeeService {
     /**
      * Gets all employees in the system.
      *
-     * @return An array of all employees
+     * @return JSON string containing a Response with all employees
      * @throws ServiceException if an error occurs while retrieving employees
      */
-    public EmployeeSL[] getAllEmployees() {
+    public String getAllEmployees() {
         try {
-            Map<Long, DomainLayer.Employee> employeeMap = employeeController.getAllEmployees();
-            EmployeeSL[] employees = new EmployeeSL[employeeMap.size()];
-            int i = 0;
-            for (DomainLayer.Employee employee : employeeMap.values()) {
-                employees[i] = new EmployeeSL(employee);
-                i++;
-            }
-            return employees;
+            Map<Long, Employee> employeeMap = employeeController.getAllEmployees();
+            List<Employee> employees = new ArrayList<>(employeeMap.values());
+            return JsonUtil.successResponse(employees);
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving all employees: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error retrieving all employees: " + e.getMessage());
         }
     }
 
     /**
      * Gets all roles in the system.
      *
-     * @return An array of all role names
+     * @return JSON string containing a Response with all role names
      * @throws ServiceException if an error occurs while retrieving roles
      */
-    public String[] getAllRoles() {
+    public String getAllRoles() {
         try {
             Map<String, String[]> rolesMap = authorisationController.getAllRolesWithPermissions();
-            String[] roles = new String[rolesMap.size()];
-            int i = 0;
-            for (String role : rolesMap.keySet()) {
-                roles[i] = role;
-                i++;
-            }
-            return roles;
+            List<String> roles = new ArrayList<>(rolesMap.keySet());
+            return JsonUtil.successResponse(roles);
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving all roles: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error retrieving all roles: " + e.getMessage());
         }
     }
 
     /**
      * Gets all permissions in the system.
      *
-     * @return An array of all permission names
+     * @return JSON string containing a Response with all permission names
      * @throws ServiceException if an error occurs while retrieving permissions
      */
-    public String[] getAllPermissions() {
+    public String getAllPermissions() {
         try {
-            Set<String> permissionsSet = authorisationController.getAllPermissions();
-            String[] permissions = new String[permissionsSet.size()];
-            int i = 0;
-            for (String permission : permissionsSet) {
-                permissions[i] = permission;
-                i++;
-            }
-            return permissions;
+            Set<String> permissions = authorisationController.getAllPermissions();
+            return JsonUtil.successResponse(new ArrayList<>(permissions));
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving all permissions: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error retrieving all permissions: " + e.getMessage());
         }
     }
 
@@ -113,29 +103,26 @@ public class EmployeeService {
      * Gets details of a specific role, including its permissions.
      *
      * @param roleName The name of the role to get details for
-     * @return A map containing the role name and its permissions
-     * @throws ValidationException if the role name is invalid
+     * @return JSON string containing a Response with the role details
      * @throws ServiceException if an error occurs while retrieving role details
      */
-    public Map<String, HashSet<String>> getRoleDetails(String roleName) {
+    public String getRoleDetails(String roleName) {
         try {
             // Validate input
             if (roleName == null || roleName.trim().isEmpty()) {
-                throw new ValidationException("roleName", "Role name cannot be null or empty");
+                return JsonUtil.errorResponse("Role name cannot be null or empty");
             }
 
             Map<String, HashSet<String>> roleDetails = authorisationController.getRoleDetails(roleName);
             if (roleDetails != null && !roleDetails.isEmpty()) {
-                return roleDetails;
+                return JsonUtil.successResponse(roleDetails);
             } else {
-                throw new ValidationException("Role not found: " + roleName);
+                return JsonUtil.errorResponse("Role not found: " + roleName);
             }
-        } catch (ValidationException e) {
-            throw e; // Rethrow validation exceptions
         } catch (InvalidInputException e) {
-            throw new ValidationException(e.getMessage(), e);
+            return JsonUtil.errorResponse(e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving role details: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error retrieving role details: " + e.getMessage());
         }
     }
 
@@ -154,28 +141,23 @@ public class EmployeeService {
      * @param salary         The salary of the employee.
      * @param termsOfEmployment The terms of employment for the employee.
      * @param startOfEmployment The start date of employment for the employee.
-     * @return A message indicating whether the employee was created successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws AuthorizationException if the user doesn't have permission to create employees
-     * @throws ServiceException if an unexpected error occurs
+     * @return JSON string containing a Response with a success or error message
      */
     public String createEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, LocalDate startOfEmployment) {
         try {
             boolean result = employeeController.createEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, null, startOfEmployment);
 
             if (result) {
-                return "Employee created successfully"; // Employee created successfully
+                return JsonUtil.successResponse("Employee created successfully");
             } else {
-                return "Failed to create employee"; // Failed to create employee
+                return JsonUtil.errorResponse("Failed to create employee");
             }
         } catch (UnauthorizedPermissionException e) {
-            throw new AuthorizationException(doneBy, "CREATE_EMPLOYEE");
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            throw new ValidationException(e.getMessage(), e);
-        } catch (ValidationException | AuthorizationException e) {
-            throw e; // Rethrow specific exceptions
+            return JsonUtil.errorResponse("Invalid input: " + e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error creating employee: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error creating employee: " + e.getMessage());
         }
     }
     /**
@@ -188,35 +170,28 @@ public class EmployeeService {
      * @param salary         The new salary of the employee.
      * @param termsOfEmployment The new terms of employment for the employee.
      * @param active         Whether the employee is active or not.
-     * @return A message indicating whether the employee was updated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to update employees
-     * @throws ServiceException if an unexpected error occurs
+     * @return JSON string containing a Response with a success or error message
      */
     public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, boolean active) {
         try {
-
             // Check if employee exists
-            DomainLayer.Employee employee = employeeController.getEmployeeByIsraeliId(israeliId);
+            Employee employee = employeeController.getEmployeeByIsraeliId(israeliId);
             if (employee == null) {
-                throw new EmployeeNotFoundException(israeliId);
+                return JsonUtil.errorResponse("Employee not found with ID: " + israeliId);
             }
 
             boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, active);
             if (result) {
-                return "Employee updated successfully";
+                return JsonUtil.successResponse("Employee updated successfully");
             } else {
-                return "Failed to update employee";
+                return JsonUtil.errorResponse("Failed to update employee");
             }
         } catch (UnauthorizedPermissionException e) {
-            throw new AuthorizationException(doneBy, "UPDATE_EMPLOYEE");
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            throw new ValidationException(e.getMessage(), e);
-        } catch (ValidationException | EmployeeNotFoundException | AuthorizationException e) {
-            throw e; // Rethrow specific exceptions
+            return JsonUtil.errorResponse("Invalid input: " + e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error updating employee: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error updating employee: " + e.getMessage());
         }
     }
 
@@ -225,39 +200,33 @@ public class EmployeeService {
      *
      * @param doneBy    The ID of the user who is deactivating the employee.
      * @param israeliId The Israeli ID of the employee to deactivate.
-     * @return A message indicating whether the employee was deactivated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to deactivate employees
-     * @throws ServiceException if an unexpected error occurs
+     * @return JSON string containing a Response with a success or error message
      */
     public String deactivateEmployee(long doneBy, long israeliId) {
         try {
             // Validate input parameters
             if (String.valueOf(israeliId).length() != 9) {
-                throw new ValidationException("israeliId", "Israeli ID must be 9 digits");
+                return JsonUtil.errorResponse("Israeli ID must be 9 digits");
             }
 
             // Check if employee exists
-            DomainLayer.Employee employee = employeeController.getEmployeeByIsraeliId(israeliId);
+            Employee employee = employeeController.getEmployeeByIsraeliId(israeliId);
             if (employee == null) {
-                throw new EmployeeNotFoundException(israeliId);
+                return JsonUtil.errorResponse("Employee not found with ID: " + israeliId);
             }
 
             boolean result = employeeController.deactivateEmployee(doneBy, israeliId);
             if (result) {
-                return "Employee deactivated successfully";
+                return JsonUtil.successResponse("Employee deactivated successfully");
             } else {
-                return "Failed to deactivate employee";
+                return JsonUtil.errorResponse("Failed to deactivate employee");
             }
         } catch (UnauthorizedPermissionException e) {
-            throw new AuthorizationException(doneBy, "DEACTIVATE_EMPLOYEE");
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            throw new ValidationException(e.getMessage(), e);
-        } catch (ValidationException | EmployeeNotFoundException | AuthorizationException e) {
-            throw e; // Rethrow specific exceptions
+            return JsonUtil.errorResponse("Invalid input: " + e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error deactivating employee: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error deactivating employee: " + e.getMessage());
         }
     }
 
@@ -269,7 +238,7 @@ public class EmployeeService {
      *
      * @param doneBy         The ID of the user who is creating the role.
      * @param roleName       The name of the role to be created.
-     * @return A message indicating whether the role was created successfully or not.
+     * @return JSON string containing a Response with a success or error message
      */
     public String createRole(long doneBy, String roleName) {
         try {
@@ -277,19 +246,19 @@ public class EmployeeService {
             String PERMISSION_REQUIRED = "CREATE_ROLE";
             boolean isAuth = employeeController.isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED);
             if (!isAuth) {
-                return "Permission denied: Cannot create roles";
+                return JsonUtil.errorResponse("Permission denied: Cannot create roles");
             }
 
             // Create role with empty permissions set
             boolean success = authorisationController.createRole(doneBy, roleName, new HashSet<>());
 
             if (success) {
-                return "Role '" + roleName + "' created successfully";
+                return JsonUtil.successResponse("Role '" + roleName + "' created successfully");
             } else {
-                return "Failed to create role: Role may already exist";
+                return JsonUtil.errorResponse("Failed to create role: Role may already exist");
             }
         } catch (RuntimeException e) {
-            return "Error creating role: " + e.getMessage();
+            return JsonUtil.errorResponse("Error creating role: " + e.getMessage());
         }
     }
 
@@ -299,7 +268,7 @@ public class EmployeeService {
      * @param doneBy      The ID of the user who is creating the role
      * @param roleName    The name of the role to be created
      * @param permissions Set of permission names to assign to the role
-     * @return A message indicating whether the role was created successfully
+     * @return JSON string containing a Response with a success or error message
      */
     public String createRoleWithPermissions(long doneBy, String roleName, Set<String> permissions) {
         try {
@@ -307,23 +276,23 @@ public class EmployeeService {
             String PERMISSION_REQUIRED = "CREATE_ROLE";
             boolean isAuth = employeeController.isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED);
             if (!isAuth) {
-                return "Permission denied: Cannot create roles";
+                return JsonUtil.errorResponse("Permission denied: Cannot create roles");
             }
 
             // Validation is now handled in the domain layer
             boolean success = authorisationController.createRole(doneBy, roleName, permissions);
 
             if (success) {
-                return "Role '" + roleName + "' created successfully with " + permissions.size() + " permissions";
+                return JsonUtil.successResponse("Role '" + roleName + "' created successfully with " + permissions.size() + " permissions");
             } else {
-                return "Failed to create role: Role may already exist";
+                return JsonUtil.errorResponse("Failed to create role: Role may already exist");
             }
         } catch (UnauthorizedPermissionException e) {
-            return "Permission denied: " + e.getMessage();
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            return "Error creating role: " + e.getMessage();
+            return JsonUtil.errorResponse("Error creating role: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
     /**
@@ -332,23 +301,23 @@ public class EmployeeService {
      * @param doneBy         The ID of the user who is adding the role.
      * @param israeliId      The Israeli ID of the employee.
      * @param roleName       The name of the role to be added.
-     * @return A message indicating whether the role was added successfully or not.
+     * @return JSON string containing a Response with a success or error message
      */
     public String addRoleToEmployee(long doneBy, long israeliId, String roleName) {
         try {
             // Validation is now handled in the domain layer
             boolean success = employeeController.addRoleToEmployee(doneBy, israeliId, roleName);
             if (success) {
-                return "Role '" + roleName + "' added successfully to employee with ID " + israeliId;
+                return JsonUtil.successResponse("Role '" + roleName + "' added successfully to employee with ID " + israeliId);
             } else {
-                return "Failed to add role";
+                return JsonUtil.errorResponse("Failed to add role");
             }
         } catch (UnauthorizedPermissionException e) {
-            return "Permission denied: " + e.getMessage();
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            return "Error adding role: " + e.getMessage();
+            return JsonUtil.errorResponse("Error adding role: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -358,23 +327,23 @@ public class EmployeeService {
      * @param doneBy         The ID of the user who is removing the role.
      * @param israeliId      The Israeli ID of the employee.
      * @param roleName       The name of the role to be removed.
-     * @return A message indicating whether the role was removed successfully or not.
+     * @return JSON string containing a Response with a success or error message
      */
     public String removeRoleFromEmployee(long doneBy, long israeliId, String roleName) {
         try {
             // Validation is now handled in the domain layer
             boolean success = employeeController.removeRoleFromEmployee(doneBy, israeliId, roleName);
             if (success) {
-                return "Role '" + roleName + "' removed successfully from employee with ID " + israeliId;
+                return JsonUtil.successResponse("Role '" + roleName + "' removed successfully from employee with ID " + israeliId);
             } else {
-                return "Failed to remove role";
+                return JsonUtil.errorResponse("Failed to remove role");
             }
         } catch (UnauthorizedPermissionException e) {
-            return "Permission denied: " + e.getMessage();
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            return "Error removing role: " + e.getMessage();
+            return JsonUtil.errorResponse("Error removing role: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -388,7 +357,7 @@ public class EmployeeService {
      * @param doneBy         The ID of the user who is adding the permission.
      * @param roleName       The name of the role to which the permission will be added.
      * @param permissionName  The name of the permission to be added.
-     * @return A message indicating whether the permission was added successfully or not.
+     * @return JSON string containing a Response with a success or error message
      */
     public String addPermissionToRole(long doneBy, String roleName, String permissionName) {
         String PERMISSION_REQUIRED = "ADD_PERMISSION_TO_ROLE";
@@ -396,21 +365,21 @@ public class EmployeeService {
             // Check authorization
             boolean isAuth = employeeController.isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED);
             if (!isAuth) {
-                return "Permission denied: Cannot add permissions to roles";
+                return JsonUtil.errorResponse("Permission denied: Cannot add permissions to roles");
             }
 
             // Validation is now handled in the domain layer
             boolean success = authorisationController.addPermissionToRole(roleName, permissionName);
 
             if (success) {
-                return "Permission '" + permissionName + "' added successfully to role '" + roleName + "'";
+                return JsonUtil.successResponse("Permission '" + permissionName + "' added successfully to role '" + roleName + "'");
             } else {
-                return "Failed to add permission: Permission is already assigned to this role";
+                return JsonUtil.errorResponse("Failed to add permission: Permission is already assigned to this role");
             }
         } catch (InvalidInputException e) {
-            return "Error adding permission: " + e.getMessage();
+            return JsonUtil.errorResponse("Error adding permission: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -420,7 +389,7 @@ public class EmployeeService {
      * @param doneBy         The ID of the user who is removing the permission.
      * @param roleName       The name of the role from which the permission will be removed.
      * @param permissionName  The name of the permission to be removed.
-     * @return A message indicating whether the permission was removed successfully or not.
+     * @return JSON string containing a Response with a success or error message
      */
     public String removePermissionFromRole(long doneBy, String roleName, String permissionName) {
         String PERMISSION_REQUIRED = "REMOVE_PERMISSION_FROM_ROLE";
@@ -428,21 +397,21 @@ public class EmployeeService {
             // Check authorization
             boolean isAuth = employeeController.isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED);
             if (!isAuth) {
-                return "Permission denied: Cannot remove permissions from roles";
+                return JsonUtil.errorResponse("Permission denied: Cannot remove permissions from roles");
             }
 
             // Validation is now handled in the domain layer
             boolean success = authorisationController.removePermissionFromRole(roleName, permissionName);
 
             if (success) {
-                return "Permission '" + permissionName + "' removed successfully from role '" + roleName + "'";
+                return JsonUtil.successResponse("Permission '" + permissionName + "' removed successfully from role '" + roleName + "'");
             } else {
-                return "Failed to remove permission: Permission is not assigned to this role";
+                return JsonUtil.errorResponse("Failed to remove permission: Permission is not assigned to this role");
             }
         } catch (InvalidInputException e) {
-            return "Error removing permission: " + e.getMessage();
+            return JsonUtil.errorResponse("Error removing permission: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -451,7 +420,7 @@ public class EmployeeService {
      *
      * @param doneBy         The ID of the user who is creating the permission.
      * @param permissionName The name of the new permission.
-     * @return A message indicating whether the permission was created successfully.
+     * @return JSON string containing a Response with a success or error message
      */
     public String createPermission(long doneBy, String permissionName) {
         try {
@@ -459,23 +428,23 @@ public class EmployeeService {
             String PERMISSION_REQUIRED = "CREATE_PERMISSION";
             boolean isAuth = employeeController.isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED);
             if (!isAuth) {
-                return "Permission denied: Cannot create permissions";
+                return JsonUtil.errorResponse("Permission denied: Cannot create permissions");
             }
 
             // Validation is now handled in the domain layer
             boolean success = authorisationController.createPermission(permissionName);
 
             if (success) {
-                return "Permission '" + permissionName + "' created successfully";
+                return JsonUtil.successResponse("Permission '" + permissionName + "' created successfully");
             } else {
-                return "Failed to create permission: Permission may already exist";
+                return JsonUtil.errorResponse("Failed to create permission: Permission may already exist");
             }
         } catch (UnauthorizedPermissionException e) {
-            return "Permission denied: " + e.getMessage();
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            return "Error creating permission: " + e.getMessage();
+            return JsonUtil.errorResponse("Error creating permission: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -485,7 +454,7 @@ public class EmployeeService {
      * @param doneBy          The ID of the user who is cloning the role
      * @param existingRoleName The name of the role to clone
      * @param newRoleName     The name of the new role to create
-     * @return A message indicating whether the role was cloned successfully
+     * @return JSON string containing a Response with a success or error message
      */
     public String cloneRole(long doneBy, String existingRoleName, String newRoleName) {
         try {
@@ -493,13 +462,13 @@ public class EmployeeService {
             String PERMISSION_REQUIRED = "CREATE_ROLE";
             boolean isAuth = employeeController.isEmployeeAuthorised(doneBy, PERMISSION_REQUIRED);
             if (!isAuth) {
-                return "Permission denied: Cannot create roles";
+                return JsonUtil.errorResponse("Permission denied: Cannot create roles");
             }
 
             // Get existing role's permissions
             Map<String, HashSet<String>> roleDetails = authorisationController.getRoleDetails(existingRoleName);
             if (roleDetails.isEmpty()) {
-                return "Source role not found: " + existingRoleName;
+                return JsonUtil.errorResponse("Source role not found: " + existingRoleName);
             }
 
             HashSet<String> permissions = roleDetails.get(existingRoleName);
@@ -509,16 +478,16 @@ public class EmployeeService {
             boolean success = authorisationController.createRole(doneBy, newRoleName, permissions);
 
             if (success) {
-                return "Role '" + newRoleName + "' cloned successfully from '" + existingRoleName + "'";
+                return JsonUtil.successResponse("Role '" + newRoleName + "' cloned successfully from '" + existingRoleName + "'");
             } else {
-                return "Failed to clone role: Target role may already exist";
+                return JsonUtil.errorResponse("Failed to clone role: Target role may already exist");
             }
         } catch (UnauthorizedPermissionException e) {
-            return "Permission denied: " + e.getMessage();
+            return JsonUtil.errorResponse("Permission denied: " + e.getMessage());
         } catch (InvalidInputException e) {
-            return "Error cloning role: " + e.getMessage();
+            return JsonUtil.errorResponse("Error cloning role: " + e.getMessage());
         } catch (RuntimeException e) {
-            return "Unexpected error: " + e.getMessage();
+            return JsonUtil.errorResponse("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -526,38 +495,42 @@ public class EmployeeService {
      * Retrieves an employee by their Israeli ID.
      *
      * @param israeliId The Israeli ID of the employee to retrieve
-     * @return The employee with the given Israeli ID
-     * @throws EmployeeNotFoundException if the employee is not found
-     * @throws ServiceException if an unexpected error occurs
+     * @return JSON string containing a Response with the employee data
      */
-    public EmployeeSL getEmployeeById(long israeliId) {
+    public String getEmployeeById(long israeliId) {
         try {
             // Validate input
             if (String.valueOf(israeliId).length() != 9) {
-                throw new ValidationException("israeliId", "Israeli ID must be 9 digits");
+                return JsonUtil.errorResponse("Israeli ID must be 9 digits");
             }
 
-            DomainLayer.Employee employee = employeeController.getEmployeeByIsraeliId(israeliId);
+            Employee employee = employeeController.getEmployeeByIsraeliId(israeliId);
             if (employee == null) {
-                throw new EmployeeNotFoundException(israeliId);
+                return JsonUtil.errorResponse("Employee not found with ID: " + israeliId);
             }
-            return new EmployeeSL(employee);
+            return JsonUtil.successResponse(employee);
         } catch (InvalidInputException e) {
-            throw new ValidationException(e.getMessage(), e);
-        } catch (EmployeeNotFoundException | ValidationException e) {
-            throw e; // Rethrow specific exceptions
+            return JsonUtil.errorResponse("Invalid input: " + e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error retrieving employee: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error retrieving employee: " + e.getMessage());
         }
     }
 
-    public boolean hasPermission(long israeliId, String permission) {
+    /**
+     * Checks if an employee has a specific permission.
+     *
+     * @param israeliId The Israeli ID of the employee to check
+     * @param permission The permission to check for
+     * @return JSON string containing a Response with the result of the permission check
+     */
+    public String hasPermission(long israeliId, String permission) {
         try {
-            return employeeController.hasPermission(israeliId, permission);
+            boolean hasPermission = employeeController.hasPermission(israeliId, permission);
+            return JsonUtil.successResponse(hasPermission);
         } catch (UnauthorizedPermissionException e) {
-            throw new AuthorizationException(israeliId, permission);
+            return JsonUtil.errorResponse("Authorization error: " + e.getMessage());
         } catch (Exception e) {
-            throw new ServiceException("Error checking authorization: " + e.getMessage(), e);
+            return JsonUtil.errorResponse("Error checking authorization: " + e.getMessage());
         }
     }
 }

@@ -167,11 +167,10 @@ Enter the number corresponding to your desired action and press Enter.
 |------------|----------|-------------|
 | `CREATE_EMPLOYEE` | Employee Management | Allows creating new employees in the system with full details. |
 | `UPDATE_EMPLOYEE` | Employee Management | Allows modifying existing employee information such as name, salary, and employment terms. |
-| `EDIT_EMPLOYEE` | Employee Management | Allows editing employee information (alias for updating fields). |
-| `VIEW_EMPLOYEE` | Employee Management | Allows viewing employee information without editing rights. |
 | `DEACTIVATE_EMPLOYEE` | Employee Management | Allows marking an employee as inactive in the system. |
 | `DELETE_EMPLOYEE` | Employee Management | Allows permanent removal of an employee record from the system. |
-| `MANAGE_HR` | Employee Management | Provides general human resources management capabilities. |
+| `EDIT_EMPLOYEE` | Employee Management | Allows editing employee information (alias for updating fields). |
+| `VIEW_EMPLOYEE` | Employee Management | Allows viewing employee information without editing rights. |
 | `CREATE_ROLE` | Role Management | Allows creating new roles in the system and cloning existing ones. |
 | `EDIT_ROLE` | Role Management | Allows editing existing role details. |
 | `ROLE_PERMISSION` | Role Management | Allows assigning and removing roles from employees. |
@@ -183,16 +182,10 @@ Enter the number corresponding to your desired action and press Enter.
 | `ROLE_REQUIRED` | Role Management | Indicates a role requirement for a certain operation (internal system use). |
 | `CREATE_SHIFT` | Shift Management | Allows creating new shifts individually or by week. |
 | `UPDATE_SHIFT` | Shift Management | Allows modifying existing shift information. |
-| `EDIT_SHIFT` | Shift Management | Allows editing shift details (alias for updating fields). |
 | `REMOVE_SHIFT` | Shift Management | Allows deleting shifts from the system. |
 | `GET_SHIFT` | Shift Management | Allows viewing shift information and shift lists. |
-| `MANAGE_SHIFT` | Shift Management | Provides general shift management capabilities. |
+| `EDIT_SHIFT` | Shift Management | Allows editing shift details (alias for updating fields). |
+| `VIEW_SHIFT` | Shift Management | Allows viewing shift information without editing rights. |
 | `ASSIGN_EMPLOYEE` | Assignment Management | Allows assigning employees to shifts. |
-| `ASSIGN_EMPLOYEE_TO_SHIFT` | Assignment Management | Allows assigning employees to shifts based on roles and availability. |
 | `UPDATE_AVAILABLE` | Availability Management | Allows marking availability for shifts. |
-| `MANAGE_INVENTORY` | Operational | Allows managing inventory stock and operations. |
-| `HANDLE_CASH` | Operational | Allows handling cash operations (e.g., cashier duties). |
-| `DRIVE_VEHICLE` | Operational | Allows operating company vehicles. |
-| `CLEAN_FACILITY` | Operational | Allows cleaning and maintaining company facilities. |
-| `STOCK_SHELVES` | Operational | Allows stocking merchandise and organizing inventory shelves. |
 ---

@@ -37,10 +37,10 @@ public class AvailabilityCLI {
 
     public boolean process() {
         try {
-            //        if (isWeekendBlocked()) {
-//                System.out.println("🚫 Availability update is blocked on weekends.");
-//                return;
-//            }
+            if (isWeekendBlocked()) {
+                System.out.println("🚫 Availability update is blocked on weekends.");
+                return false;
+            }
             LocalDate startDate = Week.getNextSunday(LocalDate.now());
             Week week = Week.from(startDate);
             Set<ShiftSL> weekShifts = shiftService.getShiftsByWeek(doneBy, week);

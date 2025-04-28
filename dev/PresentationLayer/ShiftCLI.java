@@ -1,11 +1,16 @@
 package PresentationLayer;
 
+import DomainLayer.Employee;
+import DomainLayer.Shift;
 import DomainLayer.enums.ShiftType;
 import ServiceLayer.EmployeeSL;
 import ServiceLayer.EmployeeService;
 import ServiceLayer.ShiftSL;
 import ServiceLayer.ShiftService;
 import ServiceLayer.exception.ServiceException;
+import ServiceLayer.response.Response;
+import ServiceLayer.util.JsonUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -169,8 +174,15 @@ public class ShiftCLI {
      */
     private boolean hasPermission(String permission) {
         try {
-            employeeService.isEmployeeAuthorised(doneBy, permission);
-            return true;
+            String responseJson = employeeService.isEmployeeAuthorised(doneBy, permission);
+            Response<Boolean> response = JsonUtil.fromJson(responseJson, new TypeReference<Response<Boolean>>() {});
+
+            if (response.isError()) {
+                //printError("Error checking permissions: " + response.getErrorMessage());
+                return false;
+            }
+
+            return response.getValue();
         } catch (Exception e) {
             //printError("Error checking permissions: " + e.getMessage());
             return false;
@@ -185,9 +197,16 @@ public class ShiftCLI {
      */
     private String formatEmployeeDisplay(long employeeId) {
         try {
-            EmployeeSL employee = employeeService.getEmployeeById(employeeId);
-            return employee.getFullName() + " (#" + employeeId + ")";
-        } catch (ServiceException e) {
+            String responseJson = employeeService.getEmployeeById(employeeId);
+            Response<Employee> response = JsonUtil.fromJson(responseJson, new TypeReference<Response<Employee>>() {});
+
+            if (response.isError()) {
+                return "Employee #" + employeeId;
+            }
+
+            Employee employee = response.getValue();
+            return employee.getFirstName() + " " + employee.getLastName() + " (#" + employeeId + ")";
+        } catch (Exception e) {
             // If we can't get the employee name, just return the ID
             return "Employee #" + employeeId;
         }
@@ -201,7 +220,7 @@ public class ShiftCLI {
      * @param openOnly Whether to only show open shifts
      * @return The selected shift, or null if no shift was selected
      */
-    private ShiftSL selectShiftByDateAndType(String headerText, boolean openOnly) {
+    private Shift selectShiftByDateAndType(String headerText, boolean openOnly) {
         printSectionHeader(headerText);
 
         // Get date from user
@@ -209,12 +228,21 @@ public class ShiftCLI {
 
         // Show available shifts on this date to help user make a selection
         try {
-            ShiftSL[] shiftsOnDate = shiftService.getAllShiftsByDate(doneBy, date);
+            String shiftsResponseJson = shiftService.getAllShiftsByDate(doneBy, date);
+            Response<List<Shift>> shiftsResponse = JsonUtil.fromJson(shiftsResponseJson, new TypeReference<Response<List<Shift>>>() {});
+
+            if (shiftsResponse.isError()) {
+                printError("Error retrieving shifts: " + shiftsResponse.getErrorMessage());
+                waitForEnter();
+                return null;
+            }
+
+            List<Shift> shiftsOnDate = shiftsResponse.getValue();
 
             // Filter shifts if openOnly is true
             if (openOnly) {
-                List<ShiftSL> openShifts = new ArrayList<>();
-                for (ShiftSL s : shiftsOnDate) {
+                List<Shift> openShifts = new ArrayList<>();
+                for (Shift s : shiftsOnDate) {
                     if (s.isOpen()) {
                         openShifts.add(s);
                     }
@@ -226,10 +254,10 @@ public class ShiftCLI {
                     return null;
                 }
 
-                shiftsOnDate = openShifts.toArray(new ShiftSL[0]);
+                shiftsOnDate = openShifts;
             }
 
-            if (shiftsOnDate.length == 0) {
+            if (shiftsOnDate.isEmpty()) {
                 printError("No shifts found for the selected date: " + date.format(dateFormatter));
                 waitForEnter();
                 return null;
@@ -238,7 +266,7 @@ public class ShiftCLI {
             CliUtil.printSectionWithIcon("Available shifts on " + date.format(dateFormatter) + ":", "📅");
 
             List<String> shiftItems = new ArrayList<>();
-            for (ShiftSL s : shiftsOnDate) {
+            for (Shift s : shiftsOnDate) {
                 String status = s.isOpen() ? "(Open)" : "(Closed)";
                 shiftItems.add(s.getShiftType() + " shift " + status + " (ID: " + s.getId() + ")");
             }
@@ -254,7 +282,16 @@ public class ShiftCLI {
 
         try {
             // Get shift by date and type
-            ShiftSL shift = shiftService.getShift(doneBy, date, shiftType);
+            String shiftResponseJson = shiftService.getShift(doneBy, date, shiftType);
+            Response<Shift> shiftResponse = JsonUtil.fromJson(shiftResponseJson, new TypeReference<Response<Shift>>() {});
+
+            if (shiftResponse.isError()) {
+                printError("Error retrieving shift: " + shiftResponse.getErrorMessage());
+                waitForEnter();
+                return null;
+            }
+
+            Shift shift = shiftResponse.getValue();
 
             // Check if shift is open if openOnly is true
             if (openOnly && !shift.isOpen()) {
@@ -358,45 +395,65 @@ public class ShiftCLI {
      * Displays all shifts in the system with pagination
      */
     private void viewAllShifts() {
-        // Convert array to list for pagination
-        List<ShiftSL> shiftList = Arrays.asList(shiftService.getAllShifts(doneBy));
+        try {
+            // Get all shifts from service
+            String shiftsResponseJson = shiftService.getAllShifts(doneBy);
+            Response<List<Shift>> shiftsResponse = JsonUtil.fromJson(shiftsResponseJson, new TypeReference<Response<List<Shift>>>() {});
 
-        // Define how many shifts to show per page
-        final int ITEMS_PER_PAGE = 5;
+            if (shiftsResponse.isError()) {
+                printError("Error retrieving shifts: " + shiftsResponse.getErrorMessage());
+                waitForEnter();
+                return;
+            }
 
-        // Use the pagination utility to display shifts
-        CliUtil.displayPaginatedList(
-                "All Shifts",
-                shiftList,
-                ITEMS_PER_PAGE,
-                shift -> {
-                    // Format each shift for display
-                    String openStatus = shift.isOpen() ? CliUtil.greenString("Open") : CliUtil.redString("Closed");
+            List<Shift> shiftList = shiftsResponse.getValue();
 
-                    // Calculate total assigned vs required employees
-                    int totalAssigned = 0;
-                    int totalRequired = 0;
+            if (shiftList.isEmpty()) {
+                printError("No shifts found in the system.");
+                waitForEnter();
+                return;
+            }
 
-                    for (Map.Entry<String, Set<Long>> entry : shift.getAssignedEmployees().entrySet()) {
-                        totalAssigned += entry.getValue().size();
-                    }
+            // Define how many shifts to show per page
+            final int ITEMS_PER_PAGE = 5;
 
-                    for (Integer required : shift.getRolesRequired().values()) {
-                        totalRequired += required;
-                    }
+            // Use the pagination utility to display shifts
+            CliUtil.displayPaginatedList(
+                    "All Shifts",
+                    shiftList,
+                    ITEMS_PER_PAGE,
+                    shift -> {
+                        // Format each shift for display
+                        String openStatus = shift.isOpen() ? CliUtil.greenString("Open") : CliUtil.redString("Closed");
 
-                    String assignmentStatus = totalAssigned + "/" + totalRequired;
+                        // Calculate total assigned vs required employees
+                        int totalAssigned = 0;
+                        int totalRequired = 0;
 
-                    // Return formatted string representation of the shift
-                    return String.format("ID: %s | Date: %s | Type: %s | Status: %s | Assigned/Required: %s",
-                            shift.getId(),
-                            shift.getShiftDate().toString(),
-                            shift.getShiftType().toString(),
-                            openStatus,
-                            assignmentStatus);
-                },
-                scanner
-        );
+                        for (Map.Entry<String, Set<Long>> entry : shift.getAssignedEmployees().entrySet()) {
+                            totalAssigned += entry.getValue().size();
+                        }
+
+                        for (Integer required : shift.getRolesRequired().values()) {
+                            totalRequired += required;
+                        }
+
+                        String assignmentStatus = totalAssigned + "/" + totalRequired;
+
+                        // Return formatted string representation of the shift
+                        return String.format("ID: %s | Date: %s | Type: %s | Status: %s | Assigned/Required: %s",
+                                shift.getId(),
+                                shift.getShiftDate().toString(),
+                                shift.getShiftType().toString(),
+                                openStatus,
+                                assignmentStatus);
+                    },
+                    scanner
+            );
+        } catch (Exception e) {
+            printError("Error retrieving shifts: " + e.getMessage());
+            waitForEnter();
+        }
     }
 
     /**
@@ -414,9 +471,18 @@ public class ShiftCLI {
 
         // Show available shifts on this date to help user make a selection
         try {
-            ShiftSL[] shiftsOnDate = shiftService.getAllShiftsByDate(doneBy, date);
+            String shiftsResponseJson = shiftService.getAllShiftsByDate(doneBy, date);
+            Response<List<Shift>> shiftsResponse = JsonUtil.fromJson(shiftsResponseJson, new TypeReference<Response<List<Shift>>>() {});
 
-            if (shiftsOnDate.length == 0) {
+            if (shiftsResponse.isError()) {
+                printError("Error retrieving shifts: " + shiftsResponse.getErrorMessage());
+                waitForEnter();
+                return;
+            }
+
+            List<Shift> shiftsOnDate = shiftsResponse.getValue();
+
+            if (shiftsOnDate.isEmpty()) {
                 printError("No shifts found for the selected date: " + date.format(dateFormatter));
                 waitForEnter();
                 return;
@@ -425,7 +491,7 @@ public class ShiftCLI {
             CliUtil.printSectionWithIcon("Available shifts on " + date.format(dateFormatter) + ":", "📅");
 
             List<String> shiftItems = new ArrayList<>();
-            for (ShiftSL s : shiftsOnDate) {
+            for (Shift s : shiftsOnDate) {
                 shiftItems.add(s.getShiftType() + " shift (ID: " + s.getId() + ")");
             }
             CliUtil.printHierarchicalList(shiftItems, "• ", 2);
@@ -440,7 +506,16 @@ public class ShiftCLI {
 
         try {
             // Get shift by date and type
-            ShiftSL shift = shiftService.getShift(doneBy, date, shiftType);
+            String shiftResponseJson = shiftService.getShift(doneBy, date, shiftType);
+            Response<Shift> shiftResponse = JsonUtil.fromJson(shiftResponseJson, new TypeReference<Response<Shift>>() {});
+
+            if (shiftResponse.isError()) {
+                printError("Error retrieving shift: " + shiftResponse.getErrorMessage());
+                waitForEnter();
+                return;
+            }
+
+            Shift shift = shiftResponse.getValue();
 
             CliUtil.printSuccessWithCheckmark("Found shift: " + date.format(dateFormatter) + " " + shiftType + " (ID: " + shift.getId() + ")");
             CliUtil.printEmptyLine();
@@ -536,7 +611,7 @@ public class ShiftCLI {
         printSectionHeader("Update Shift");
 
         // Select a shift to update
-        ShiftSL shift = selectShiftByDateAndType("Select Shift to Update", false);
+        Shift shift = selectShiftByDateAndType("Select Shift to Update", false);
         if (shift == null) {
             return; // User cancelled or no shift found
         }
@@ -676,7 +751,7 @@ public class ShiftCLI {
         printSectionHeader("Delete Shift");
 
         // Select a shift to delete
-        ShiftSL shift = selectShiftByDateAndType("Select Shift to Delete", false);
+        Shift shift = selectShiftByDateAndType("Select Shift to Delete", false);
         if (shift == null) {
             return; // User cancelled or no shift found
         }
@@ -753,8 +828,10 @@ public class ShiftCLI {
 
             // Check if shift already exists
             try {
-                ShiftSL existingShift = shiftService.getShift(doneBy, date, shiftType);
-                if (existingShift != null) {
+                String shiftResponseJson = shiftService.getShift(doneBy, date, shiftType);
+                Response<Shift> shiftResponse = JsonUtil.fromJson(shiftResponseJson, new TypeReference<Response<Shift>>() {});
+
+                if (!shiftResponse.isError()) {
                     printError("A " + shiftType + " shift already exists for " + date.format(dateFormatter));
                     CliUtil.printTip("You can edit the existing shift using the 'Edit Shifts' option.");
                     waitForEnter();
@@ -775,7 +852,17 @@ public class ShiftCLI {
             CliUtil.printEmptyLine();
 
             Map<String, Integer> rolesRequired = new HashMap<>();
-            Set<String> roles = shiftService.getRoles(doneBy);
+            String rolesResponseJson = shiftService.getRoles(doneBy);
+            Response<List<String>> rolesResponse = JsonUtil.fromJson(rolesResponseJson, new TypeReference<Response<List<String>>>() {});
+
+            if (rolesResponse.isError()) {
+                printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+                waitForEnter();
+                return;
+            }
+
+            List<String> rolesList = rolesResponse.getValue();
+            Set<String> roles = new HashSet<>(rolesList);
 
             if (roles.isEmpty()) {
                 printError("No roles defined in the system. Please create roles first.");
@@ -879,7 +966,17 @@ public class ShiftCLI {
             CliUtil.printEmptyLine();
 
             Map<String, Integer> rolesRequired = new HashMap<>();
-            Set<String> roles = shiftService.getRoles(doneBy);
+            String rolesResponseJson = shiftService.getRoles(doneBy);
+            Response<List<String>> rolesResponse = JsonUtil.fromJson(rolesResponseJson, new TypeReference<Response<List<String>>>() {});
+
+            if (rolesResponse.isError()) {
+                printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+                waitForEnter();
+                return;
+            }
+
+            List<String> rolesList = rolesResponse.getValue();
+            Set<String> roles = new HashSet<>(rolesList);
 
             if (roles.isEmpty()) {
                 printError("No roles defined in the system. Please create roles first.");

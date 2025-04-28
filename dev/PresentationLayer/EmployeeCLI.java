@@ -1,8 +1,12 @@
 package PresentationLayer;
 
-import ServiceLayer.EmployeeSL;
+import DomainLayer.Employee;
 import ServiceLayer.EmployeeService;
 import ServiceLayer.exception.AuthorizationException;
+import ServiceLayer.response.Response;
+import ServiceLayer.util.JsonUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.stream.Collectors;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -313,8 +317,15 @@ public class EmployeeCLI {
      */
     private boolean hasPermission(String permission) {
         try {
-            employeeService.isEmployeeAuthorised(doneBy, permission);
-            return true;
+            String responseJson = employeeService.isEmployeeAuthorised(doneBy, permission);
+            Response<Boolean> response = JsonUtil.fromJson(responseJson, new TypeReference<Response<Boolean>>() {});
+
+            if (response.isError()) {
+                //printError("Error checking permissions: " + response.getErrorMessage());
+                return false;
+            }
+
+            return response.getValue();
         } catch (Exception e) {
             //printError("Error checking permissions: " + e.getMessage());
             return false;
@@ -332,22 +343,49 @@ public class EmployeeCLI {
     private void deactivateEmployee() {
         printSectionHeader("Deactivate Employee");
 
-        // Show all employee
+        // Show all employees
         CliUtil.printInfo("Current employees:");
-        EmployeeSL[] employees = employeeService.getAllEmployees();
-        for (EmployeeSL employee : employees) {
-            String status = employee.isActive() ? CliUtil.greenString("Active") : CliUtil.redString("Inactive");
-            System.out.printf("  • ID: %-9s | Name: %-20s | Status: %s%n",
-                employee.getIsraeliId(),
-                employee.getFullName(),
-                status);
+        try {
+            // Get employees as JSON and parse
+            String responseJson = employeeService.getAllEmployees();
+            Response<List<Employee>> response = JsonUtil.fromJson(responseJson, 
+                new TypeReference<Response<List<Employee>>>() {});
+
+            if (response.isError()) {
+                printError("Error retrieving employees: " + response.getErrorMessage());
+                return;
+            }
+
+            List<Employee> employees = response.getValue();
+            for (Employee employee : employees) {
+                String status = employee.isActive() ? CliUtil.greenString("Active") : CliUtil.redString("Inactive");
+                System.out.printf("  • ID: %-9s | Name: %-20s | Status: %s%n",
+                    employee.getIsraeliId(),
+                    employee.getFirstName() + " " + employee.getLastName(),
+                    status);
+            }
+        } catch (Exception e) {
+            printError("Error retrieving employees: " + e.getMessage());
+            CliUtil.waitForEnter(scanner);
+            return;
         }
 
         CliUtil.printEmptyLine();
         long israeliId = getLongInput("Employee Israeli ID: ");
 
         try {
-            EmployeeSL employee = employeeService.getEmployeeById(israeliId);
+            // Get employee by ID
+            String employeeResponseJson = employeeService.getEmployeeById(israeliId);
+            Response<Employee> employeeResponse = JsonUtil.fromJson(employeeResponseJson, 
+                new TypeReference<Response<Employee>>() {});
+
+            if (employeeResponse.isError()) {
+                printError("Error retrieving employee: " + employeeResponse.getErrorMessage());
+                CliUtil.waitForEnter(scanner);
+                return;
+            }
+
+            Employee employee = employeeResponse.getValue();
 
             if (!employee.isActive()) {
                 printError("Employee is already inactive.");
@@ -356,13 +394,14 @@ public class EmployeeCLI {
             }
 
             // Confirm
-            if (confirm("Confirm deactivating employee '" + employee.getFullName() + "' (ID: " + israeliId + ")?")) {
-                String result = employeeService.deactivateEmployee(doneBy, israeliId);
+            if (confirm("Confirm deactivating employee '" + employee.getFirstName() + " " + employee.getLastName() + "' (ID: " + israeliId + ")?")) {
+                String resultJson = employeeService.deactivateEmployee(doneBy, israeliId);
+                Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-                if (result.contains("successfully")) {
-                    printSuccess(result);
+                if (resultResponse.isError()) {
+                    printError(resultResponse.getErrorMessage());
                 } else {
-                    printError(result);
+                    printSuccess(resultResponse.getValue());
                 }
             } else {
                 CliUtil.printOperationCancelled();
@@ -423,12 +462,13 @@ public class EmployeeCLI {
                 termsOfEmployment.put(key, value);
                 CliUtil.printSuccessWithCheckmark("Added: " + key + " = " + value);
             }
-            String result = employeeService.createEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, startDate);
+            String resultJson = employeeService.createEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, startDate);
+            Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-            if (result.contains("successfully")) {
-                printSuccess(result);
+            if (resultResponse.isError()) {
+                printError(resultResponse.getErrorMessage());
             } else {
-                printError(result);
+                printSuccess(resultResponse.getValue());
             }
         } catch (NumberFormatException e) {
             printError("Please enter valid input.");
@@ -445,13 +485,19 @@ public class EmployeeCLI {
         CliUtil.printBold("Israeli ID: ");
         long israeliId = Long.parseLong(scanner.nextLine());
 
-        EmployeeSL existing = employeeService.getEmployeeById(israeliId);
-        if (existing == null) {
-            printError("Employee not found.");
+        // Get employee by ID
+        String employeeResponseJson = employeeService.getEmployeeById(israeliId);
+        Response<Employee> employeeResponse = JsonUtil.fromJson(employeeResponseJson, 
+            new TypeReference<Response<Employee>>() {});
+
+        if (employeeResponse.isError()) {
+            printError("Error retrieving employee: " + employeeResponse.getErrorMessage());
             return;
         }
 
-        printSectionHeader("Edit Employee: " + CliUtil.YELLOW + existing.getFullName() + CliUtil.RESET);
+        Employee existing = employeeResponse.getValue();
+
+        printSectionHeader("Edit Employee: " + CliUtil.YELLOW + existing.getFirstName() + " " + existing.getLastName() + CliUtil.RESET);
 
         CliUtil.printInfo("Leave field empty to keep current value");
         CliUtil.printEmptyLine();
@@ -509,12 +555,13 @@ public class EmployeeCLI {
             }
         }
 
-        String result = employeeService.updateEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, active);
+        String resultJson = employeeService.updateEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, active);
+        Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-        if (result.contains("successfully")) {
-            printSuccess(result);
+        if (resultResponse.isError()) {
+            printError(resultResponse.getErrorMessage());
         } else {
-            printError(result);
+            printSuccess(resultResponse.getValue());
         }
 
         CliUtil.waitForEnter(scanner);
@@ -522,14 +569,34 @@ public class EmployeeCLI {
     private void addRoleToEmployee() {
         printSectionHeader("Add Role to Employee");
 
-        String[] allRoles = employeeService.getAllRoles();
+        // Get all roles from service
+        String responseJson = employeeService.getAllRoles();
+        Response<List<String>> rolesResponse = JsonUtil.fromJson(responseJson, new TypeReference<Response<List<String>>>() {});
+
+        if (rolesResponse.isError()) {
+            printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+            return;
+        }
+
+        List<String> allRolesList = rolesResponse.getValue();
+        String[] allRoles = allRolesList.toArray(new String[0]);
 
         CliUtil.printBold("Employee Israeli ID: ");
         long israeliId = Long.parseLong(scanner.nextLine());
 
         try {
-            EmployeeSL employee = employeeService.getEmployeeById(israeliId);
-            CliUtil.printSuccess("Employee: " + employee.getFullName());
+            // Get employee by ID
+            String employeeResponseJson = employeeService.getEmployeeById(israeliId);
+            Response<Employee> employeeResponse = JsonUtil.fromJson(employeeResponseJson, 
+                new TypeReference<Response<Employee>>() {});
+
+            if (employeeResponse.isError()) {
+                printError("Error retrieving employee: " + employeeResponse.getErrorMessage());
+                return;
+            }
+
+            Employee employee = employeeResponse.getValue();
+            CliUtil.printSuccess("Employee: " + employee.getFirstName() + " " + employee.getLastName());
 
             CliUtil.printEmptyLine();
             CliUtil.printSectionWithIcon("CURRENT ROLES", "👤");
@@ -554,12 +621,13 @@ public class EmployeeCLI {
 
         // Confirm
         if (confirm("Confirm adding role '" + roleName + "' to employee #" + israeliId + "?")) {
-            String result = employeeService.addRoleToEmployee(doneBy, israeliId, roleName);
+            String resultJson = employeeService.addRoleToEmployee(doneBy, israeliId, roleName);
+            Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-            if (result.contains("successfully")) {
-                printSuccess(result);
+            if (resultResponse.isError()) {
+                printError(resultResponse.getErrorMessage());
             } else {
-                printError(result);
+                printSuccess(resultResponse.getValue());
             }
         } else {
             CliUtil.printOperationCancelled();
@@ -575,8 +643,18 @@ public class EmployeeCLI {
         long israeliId = Long.parseLong(scanner.nextLine());
 
         try {
-            EmployeeSL employee = employeeService.getEmployeeById(israeliId);
-            CliUtil.printSuccess("Employee: " + employee.getFullName());
+            // Get employee by ID
+            String employeeResponseJson = employeeService.getEmployeeById(israeliId);
+            Response<Employee> employeeResponse = JsonUtil.fromJson(employeeResponseJson, 
+                new TypeReference<Response<Employee>>() {});
+
+            if (employeeResponse.isError()) {
+                printError("Error retrieving employee: " + employeeResponse.getErrorMessage());
+                return;
+            }
+
+            Employee employee = employeeResponse.getValue();
+            CliUtil.printSuccess("Employee: " + employee.getFirstName() + " " + employee.getLastName());
 
             CliUtil.printEmptyLine();
             CliUtil.printSectionWithIcon("CURRENT ROLES", "👤");
@@ -595,12 +673,13 @@ public class EmployeeCLI {
 
             // Confirm
             if (confirm("Confirm removing role '" + roleName + "' from employee #" + israeliId + "?")) {
-                String result = employeeService.removeRoleFromEmployee(doneBy, israeliId, roleName);
+                String resultJson = employeeService.removeRoleFromEmployee(doneBy, israeliId, roleName);
+                Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-                if (result.contains("successfully")) {
-                    printSuccess(result);
+                if (resultResponse.isError()) {
+                    printError(resultResponse.getErrorMessage());
                 } else {
-                    printError(result);
+                    printSuccess(resultResponse.getValue());
                 }
             } else {
                 CliUtil.printOperationCancelled();
@@ -625,12 +704,22 @@ public class EmployeeCLI {
         if (addPermissions.equalsIgnoreCase("yes")) {
             CliUtil.printEmptyLine();
             CliUtil.printSectionWithIcon("AVAILABLE PERMISSIONS", "🔑");
-            String[] allPermissions = employeeService.getAllPermissions();
 
-            if (allPermissions.length == 0) {
+            // Get all permissions from service
+            String permissionsResponseJson = employeeService.getAllPermissions();
+            Response<List<String>> permissionsResponse = JsonUtil.fromJson(permissionsResponseJson, 
+                new TypeReference<Response<List<String>>>() {});
+
+            if (permissionsResponse.isError()) {
+                printError("Error retrieving permissions: " + permissionsResponse.getErrorMessage());
+                return;
+            }
+
+            List<String> permissionsList = permissionsResponse.getValue();
+
+            if (permissionsList.isEmpty()) {
                 CliUtil.printInfo("  No permissions defined in the system");
             } else {
-                List<String> permissionsList = Arrays.asList(allPermissions);
                 CliUtil.printHierarchicalList(permissionsList, "•", 2);
             }
 
@@ -650,12 +739,13 @@ public class EmployeeCLI {
 
             // Confirm
             if (confirm("Confirm creating role '" + roleName + "' with " + permissions.size() + " permissions?")) {
-                String result = employeeService.createRoleWithPermissions(doneBy, roleName, permissions);
+                String resultJson = employeeService.createRoleWithPermissions(doneBy, roleName, permissions);
+                Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-                if (result.contains("successfully")) {
-                    printSuccess(result);
+                if (resultResponse.isError()) {
+                    printError(resultResponse.getErrorMessage());
                 } else {
-                    printError(result);
+                    printSuccess(resultResponse.getValue());
                 }
             } else {
                 CliUtil.printOperationCancelled();
@@ -664,12 +754,13 @@ public class EmployeeCLI {
             // Confirm
             if (confirm("Confirm creating role '" + roleName + "' with no permissions?")) {
                 // Create role without permissions
-                String result = employeeService.createRole(doneBy, roleName);
+                String resultJson = employeeService.createRole(doneBy, roleName);
+                Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-                if (result.contains("successfully")) {
-                    printSuccess(result);
+                if (resultResponse.isError()) {
+                    printError(resultResponse.getErrorMessage());
                 } else {
-                    printError(result);
+                    printSuccess(resultResponse.getValue());
                 }
             } else {
                 CliUtil.printOperationCancelled();
@@ -684,8 +775,17 @@ public class EmployeeCLI {
 
         // Show roles
         CliUtil.printInfo("Available roles:");
-        String[] allRoles = employeeService.getAllRoles();
-        List<String> rolesList = Arrays.asList(allRoles);
+
+        // Get all roles from service
+        String rolesResponseJson = employeeService.getAllRoles();
+        Response<List<String>> rolesResponse = JsonUtil.fromJson(rolesResponseJson, new TypeReference<Response<List<String>>>() {});
+
+        if (rolesResponse.isError()) {
+            printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+            return;
+        }
+
+        List<String> rolesList = rolesResponse.getValue();
         CliUtil.printHierarchicalList(rolesList, "•", 2);
 
         CliUtil.printEmptyLine();
@@ -695,8 +795,17 @@ public class EmployeeCLI {
         // Show permissions
         CliUtil.printEmptyLine();
         CliUtil.printInfo("Available permissions:");
-        String[] allPermissions = employeeService.getAllPermissions();
-        List<String> permissionsList = Arrays.asList(allPermissions);
+
+        // Get all permissions from service
+        String permissionsResponseJson = employeeService.getAllPermissions();
+        Response<List<String>> permissionsResponse = JsonUtil.fromJson(permissionsResponseJson, new TypeReference<Response<List<String>>>() {});
+
+        if (permissionsResponse.isError()) {
+            printError("Error retrieving permissions: " + permissionsResponse.getErrorMessage());
+            return;
+        }
+
+        List<String> permissionsList = permissionsResponse.getValue();
         CliUtil.printHierarchicalList(permissionsList, "•", 2);
 
         CliUtil.printEmptyLine();
@@ -705,12 +814,13 @@ public class EmployeeCLI {
 
         // Confirm
         if (confirm("Confirm adding permission '" + permissionName + "' to role '" + roleName + "'?")) {
-            String result = employeeService.addPermissionToRole(doneBy, roleName, permissionName);
+            String resultJson = employeeService.addPermissionToRole(doneBy, roleName, permissionName);
+            Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-            if (result.contains("successfully")) {
-                printSuccess(result);
+            if (resultResponse.isError()) {
+                printError(resultResponse.getErrorMessage());
             } else {
-                printError(result);
+                printSuccess(resultResponse.getValue());
             }
         } else {
             CliUtil.printOperationCancelled();
@@ -723,8 +833,17 @@ public class EmployeeCLI {
         printSectionHeader("Remove Permission from Role");
 
         CliUtil.printInfo("Available roles:");
-        String[] allRoles = employeeService.getAllRoles();
-        List<String> rolesList = Arrays.asList(allRoles);
+
+        // Get all roles from service
+        String rolesResponseJson = employeeService.getAllRoles();
+        Response<List<String>> rolesResponse = JsonUtil.fromJson(rolesResponseJson, new TypeReference<Response<List<String>>>() {});
+
+        if (rolesResponse.isError()) {
+            printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+            return;
+        }
+
+        List<String> rolesList = rolesResponse.getValue();
         CliUtil.printHierarchicalList(rolesList, "•", 2);
 
         CliUtil.printEmptyLine();
@@ -732,7 +851,19 @@ public class EmployeeCLI {
         String roleName = scanner.nextLine();
 
         try {
-            Map<String, HashSet<String>> roleDetails = employeeService.getRoleDetails(roleName);
+            // Get role details from service
+            String roleDetailsResponseJson = employeeService.getRoleDetails(roleName);
+            Response<Map<String, HashSet<String>>> roleDetailsResponse = JsonUtil.fromJson(
+                roleDetailsResponseJson, 
+                new TypeReference<Response<Map<String, HashSet<String>>>>() {}
+            );
+
+            if (roleDetailsResponse.isError()) {
+                printError("Error retrieving role details: " + roleDetailsResponse.getErrorMessage());
+                return;
+            }
+
+            Map<String, HashSet<String>> roleDetails = roleDetailsResponse.getValue();
             if (roleDetails != null && !roleDetails.isEmpty()) {
                 HashSet<String> permissions = roleDetails.get(roleName);
 
@@ -754,12 +885,13 @@ public class EmployeeCLI {
 
                 // Confirm
                 if (confirm("Confirm removing permission '" + permissionName + "' from role '" + roleName + "'?")) {
-                    String result = employeeService.removePermissionFromRole(doneBy, roleName, permissionName);
+                    String resultJson = employeeService.removePermissionFromRole(doneBy, roleName, permissionName);
+                    Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-                    if (result.contains("successfully")) {
-                        printSuccess(result);
+                    if (resultResponse.isError()) {
+                        printError(resultResponse.getErrorMessage());
                     } else {
-                        printError(result);
+                        printSuccess(resultResponse.getValue());
                     }
                 } else {
                     CliUtil.printOperationCancelled();
@@ -778,27 +910,40 @@ public class EmployeeCLI {
      * Displays all employees in the system with pagination
      */
     private void printAllEmployees() {
-        // Convert array to list for pagination
-        List<EmployeeSL> employeeList = Arrays.asList(employeeService.getAllEmployees());
+        try {
+            // Get employees as JSON and parse
+            String responseJson = employeeService.getAllEmployees();
+            Response<List<DomainLayer.Employee>> response = JsonUtil.fromJson(responseJson, 
+                new TypeReference<Response<List<DomainLayer.Employee>>>() {});
 
-        // Define how many employees to show per page
-        final int ITEMS_PER_PAGE = 5;
+            if (response.isError()) {
+                printError("Error retrieving employees: " + response.getErrorMessage());
+                return;
+            }
 
-        // Use the pagination utility to display employees
-        CliUtil.displayPaginatedList(
-            "All Employees",
-            employeeList,
-            ITEMS_PER_PAGE,
-            employee -> {
-                // Format each employee for display
-                String status = employee.isActive() ? CliUtil.greenString("Active") : CliUtil.redString("Inactive");
-                return String.format("ID: %-11s | Name: %-28s | Status: %s",
-                    employee.getIsraeliId(),
-                    employee.getFullName(),
-                    status);
-            },
-            scanner
-        );
+            List<DomainLayer.Employee> employeeList = response.getValue();
+
+            // Define how many employees to show per page
+            final int ITEMS_PER_PAGE = 5;
+
+            // Use the pagination utility to display employees
+            CliUtil.displayPaginatedList(
+                "All Employees",
+                employeeList,
+                ITEMS_PER_PAGE,
+                employee -> {
+                    // Format each employee for display
+                    String status = employee.isActive() ? CliUtil.greenString("Active") : CliUtil.redString("Inactive");
+                    return String.format("ID: %-11s | Name: %-28s | Status: %s",
+                        employee.getIsraeliId(),
+                        employee.getFirstName() + " " + employee.getLastName(),
+                        status);
+                },
+                scanner
+            );
+        } catch (Exception e) {
+            printError("Error retrieving employees: " + e.getMessage());
+        }
     }
 
     /**
@@ -810,7 +955,18 @@ public class EmployeeCLI {
         printSectionHeader("Employee Details");
 
         try {
-            EmployeeSL employee = employeeService.getEmployeeById(israeliId);
+            // Get employee by ID
+            String employeeResponseJson = employeeService.getEmployeeById(israeliId);
+            Response<Employee> employeeResponse = JsonUtil.fromJson(employeeResponseJson, 
+                new TypeReference<Response<Employee>>() {});
+
+            if (employeeResponse.isError()) {
+                printError("Error retrieving employee: " + employeeResponse.getErrorMessage());
+                CliUtil.waitForEnter(scanner);
+                return;
+            }
+
+            Employee employee = employeeResponse.getValue();
 
             // Create headers for the table sections
             List<String> headers = Arrays.asList(
@@ -825,7 +981,7 @@ public class EmployeeCLI {
             // Employee Information section
             List<String[]> employeeInfo = new ArrayList<>();
             employeeInfo.add(new String[]{"ID:", String.valueOf(employee.getIsraeliId())});
-            employeeInfo.add(new String[]{"Name:", employee.getFullName()});
+            employeeInfo.add(new String[]{"Name:", employee.getFirstName() + " " + employee.getLastName()});
             employeeInfo.add(new String[]{"Salary:", String.valueOf(employee.getSalary())});
 
             String status = employee.isActive()
@@ -894,23 +1050,36 @@ public class EmployeeCLI {
      * Displays all roles in the system with pagination
      */
     private void printAllRoles() {
-        // Convert array to list for pagination
-        List<String> rolesList = Arrays.asList(employeeService.getAllRoles());
+        try {
+            // Get all roles from service
+            String rolesResponseJson = employeeService.getAllRoles();
+            Response<List<String>> rolesResponse = JsonUtil.fromJson(rolesResponseJson, 
+                new TypeReference<Response<List<String>>>() {});
 
-        // Define how many roles to show per page
-        final int ITEMS_PER_PAGE = 5;
+            if (rolesResponse.isError()) {
+                printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+                return;
+            }
 
-        // Use the pagination utility to display roles
-        CliUtil.displayPaginatedList(
-            "All Roles",
-            rolesList,
-            ITEMS_PER_PAGE,
-            role -> role,  // Simple display function as roles are just strings
-            scanner
-        );
+            List<String> rolesList = rolesResponse.getValue();
 
-        // Display tip after exiting the paginated view
-        CliUtil.printSectionWithIcon("Use 'View Role Details' to see permissions for each role","💡");
+            // Define how many roles to show per page
+            final int ITEMS_PER_PAGE = 5;
+
+            // Use the pagination utility to display roles
+            CliUtil.displayPaginatedList(
+                "All Roles",
+                rolesList,
+                ITEMS_PER_PAGE,
+                role -> role,  // Simple display function as roles are just strings
+                scanner
+            );
+
+            // Display tip after exiting the paginated view
+            CliUtil.printSectionWithIcon("Use 'View Role Details' to see permissions for each role","💡");
+        } catch (Exception e) {
+            printError("Error retrieving roles: " + e.getMessage());
+        }
         CliUtil.waitForEnter(scanner);
     }
 
@@ -923,7 +1092,19 @@ public class EmployeeCLI {
         printSectionHeader("Role Details");
 
         try {
-            Map<String, HashSet<String>> roleDetails = employeeService.getRoleDetails(roleName);
+            // Get role details from service
+            String roleDetailsResponseJson = employeeService.getRoleDetails(roleName);
+            Response<Map<String, HashSet<String>>> roleDetailsResponse = JsonUtil.fromJson(
+                roleDetailsResponseJson, 
+                new TypeReference<Response<Map<String, HashSet<String>>>>() {}
+            );
+
+            if (roleDetailsResponse.isError()) {
+                printError("Error retrieving role details: " + roleDetailsResponse.getErrorMessage());
+                return;
+            }
+
+            Map<String, HashSet<String>> roleDetails = roleDetailsResponse.getValue();
 
             if (roleDetails != null && !roleDetails.isEmpty()) {
                 // Create headers for the table sections
@@ -975,20 +1156,33 @@ public class EmployeeCLI {
      * Displays all permissions in the system with pagination
      */
     private void printAllPermissions() {
-        // Convert array to list for pagination
-        List<String> permissionsList = Arrays.asList(employeeService.getAllPermissions());
+        try {
+            // Get all permissions from service
+            String permissionsResponseJson = employeeService.getAllPermissions();
+            Response<List<String>> permissionsResponse = JsonUtil.fromJson(permissionsResponseJson, 
+                new TypeReference<Response<List<String>>>() {});
 
-        // Define how many permissions to show per page
-        final int ITEMS_PER_PAGE = 5;
+            if (permissionsResponse.isError()) {
+                printError("Error retrieving permissions: " + permissionsResponse.getErrorMessage());
+                return;
+            }
 
-        // Use the pagination utility to display permissions
-        CliUtil.displayPaginatedList(
-            "All Permissions",
-            permissionsList,
-            ITEMS_PER_PAGE,
-            permission -> permission,  // Simple display function as permissions are just strings
-            scanner
-        );
+            List<String> permissionsList = permissionsResponse.getValue();
+
+            // Define how many permissions to show per page
+            final int ITEMS_PER_PAGE = 5;
+
+            // Use the pagination utility to display permissions
+            CliUtil.displayPaginatedList(
+                "All Permissions",
+                permissionsList,
+                ITEMS_PER_PAGE,
+                permission -> permission,  // Simple display function as permissions are just strings
+                scanner
+            );
+        } catch (Exception e) {
+            printError("Error retrieving permissions: " + e.getMessage());
+        }
     }
 
     /**
@@ -998,7 +1192,17 @@ public class EmployeeCLI {
         printSectionHeader("Create Permission");
 
         // Show permissions
-        String[] existingPermissions = employeeService.getAllPermissions();
+        String permissionsResponseJson = employeeService.getAllPermissions();
+        Response<List<String>> permissionsResponse = JsonUtil.fromJson(permissionsResponseJson, 
+            new TypeReference<Response<List<String>>>() {});
+
+        if (permissionsResponse.isError()) {
+            printError("Error retrieving permissions: " + permissionsResponse.getErrorMessage());
+            return;
+        }
+
+        List<String> existingPermissionsList = permissionsResponse.getValue();
+        String[] existingPermissions = existingPermissionsList.toArray(new String[0]);
         if (existingPermissions.length > 0) {
             CliUtil.printInfo("Existing permissions in the system:");
             List<String> permissionsList = Arrays.asList(existingPermissions);
@@ -1011,12 +1215,13 @@ public class EmployeeCLI {
 
         // Confirm
         if (confirm("Confirm creating permission '" + permissionName + "'?")) {
-            String result = employeeService.createPermission(doneBy, permissionName);
+            String resultJson = employeeService.createPermission(doneBy, permissionName);
+            Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-            if (result.contains("successfully")) {
-                printSuccess(result);
+            if (resultResponse.isError()) {
+                printError(resultResponse.getErrorMessage());
             } else {
-                printError(result);
+                printSuccess(resultResponse.getValue());
             }
         } else {
             CliUtil.printOperationCancelled();
@@ -1032,7 +1237,17 @@ public class EmployeeCLI {
         printSectionHeader("Clone Role");
 
         // Show roles
-        String[] existingRoles = employeeService.getAllRoles();
+        String rolesResponseJson = employeeService.getAllRoles();
+        Response<List<String>> rolesResponse = JsonUtil.fromJson(rolesResponseJson, 
+            new TypeReference<Response<List<String>>>() {});
+
+        if (rolesResponse.isError()) {
+            printError("Error retrieving roles: " + rolesResponse.getErrorMessage());
+            return;
+        }
+
+        List<String> existingRolesList = rolesResponse.getValue();
+        String[] existingRoles = existingRolesList.toArray(new String[0]);
         if (existingRoles.length == 0) {
             printError("No roles exist in the system to clone.");
             CliUtil.waitForEnter(scanner);
@@ -1048,7 +1263,20 @@ public class EmployeeCLI {
         String existingRoleName = scanner.nextLine();
 
         try {
-            Map<String, HashSet<String>> roleDetails = employeeService.getRoleDetails(existingRoleName);
+            // Get role details
+            String roleDetailsResponseJson = employeeService.getRoleDetails(existingRoleName);
+            Response<Map<String, HashSet<String>>> roleDetailsResponse = JsonUtil.fromJson(
+                roleDetailsResponseJson, 
+                new TypeReference<Response<Map<String, HashSet<String>>>>() {}
+            );
+
+            if (roleDetailsResponse.isError()) {
+                printError("Error retrieving role details: " + roleDetailsResponse.getErrorMessage());
+                CliUtil.waitForEnter(scanner);
+                return;
+            }
+
+            Map<String, HashSet<String>> roleDetails = roleDetailsResponse.getValue();
             if (roleDetails == null || roleDetails.isEmpty()) {
                 printError("Source role '" + existingRoleName + "' not found.");
                 CliUtil.waitForEnter(scanner);
@@ -1077,12 +1305,13 @@ public class EmployeeCLI {
 
         // Confirm
         if (confirm("Confirm cloning role '" + existingRoleName + "' to new role '" + newRoleName + "'?")) {
-            String result = employeeService.cloneRole(doneBy, existingRoleName, newRoleName);
+            String resultJson = employeeService.cloneRole(doneBy, existingRoleName, newRoleName);
+            Response<String> resultResponse = JsonUtil.fromJson(resultJson, new TypeReference<Response<String>>() {});
 
-            if (result.contains("successfully")) {
-                printSuccess(result);
+            if (resultResponse.isError()) {
+                printError(resultResponse.getErrorMessage());
             } else {
-                CliUtil.printOperationCancelled();
+                printSuccess(resultResponse.getValue());
             }
         } else {
             CliUtil.printOperationCancelled();
