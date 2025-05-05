@@ -5,16 +5,12 @@ import java.util.*;
 import DomainLayer.Classes.Agreement;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 public class AgreementFacade extends BaseFacade {
     private final Map<UUID, Agreement> agreements = new HashMap<>();
 
-    /**
-     * Create and store a new Agreement from JSON.
-     *
-     * @return generated agreementId
-     */
     public void createAgreement(String json) {
         try {
             Agreement agr = mapper.readValue(json, Agreement.class);
@@ -39,12 +35,6 @@ public class AgreementFacade extends BaseFacade {
         }
     }
 
-    /**
-     * Removes an existing Agreement by its UUID string.
-     * 
-     * @param id UUID string of the Agreement
-     * @return true if removed successfully
-     */
     public boolean removeAgreement(String id) {
         try {
             UUID uuid = UUID.fromString(id);
@@ -54,32 +44,15 @@ public class AgreementFacade extends BaseFacade {
         }
     }
 
-    /**
-     * Updates an existing Agreement via JSON merge.
-     * 
-     * @param partialJson JSON with fields to update (must include agreementId)
-     * @return updated Agreement instance
-     */
-    public Agreement updateAgreement(String partialJson) {
-        try {
-            // Deserialize to temp object to get ID
-            Agreement temp = mapper.readValue(partialJson, Agreement.class);
-            UUID id = temp.getAgreementId();
-            Agreement existing = agreements.get(id);
-            if (existing == null) {
-                throw new RuntimeException("Agreement not found: " + id);
-            }
-            // Merge JSON fields into existing object
-            mapper.readerForUpdating(existing).readValue(partialJson);
-            return existing;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to update Agreement", e);
+    public boolean updateAgreement(Agreement updated) {
+        UUID id = updated.getAgreementId();
+        if (!agreements.containsKey(id)) {
+            return false;
         }
+        agreements.put(id, updated);
+        return true;
     }
 
-    /**
-     * Retrieves an Agreement by its UUID string.
-     */
     public Agreement getAgreement(String id) {
         UUID uuid = UUID.fromString(id);
         return agreements.get(uuid);
@@ -87,5 +60,15 @@ public class AgreementFacade extends BaseFacade {
 
     public List<Agreement> getAgreementsWithFullDetail() {
         return new ArrayList<>(agreements.values());
+    }
+
+    public Agreement getAgreementById(String lookupJson) {
+        try {
+            JsonNode root = mapper.readTree(lookupJson);
+            UUID id = UUID.fromString(root.get("agreementId").asText());
+            return agreements.get(id);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

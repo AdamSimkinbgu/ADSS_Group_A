@@ -20,6 +20,7 @@ public class SupplierProduct implements Serializable {
    private UUID productId;
    private String supplierCatalogNumber;
    private BigDecimal price;
+   private String manufacturerName;
 
    /** Jackson constructor */
    @JsonCreator
@@ -27,11 +28,14 @@ public class SupplierProduct implements Serializable {
          @JsonProperty("supplierId") UUID supplierId,
          @JsonProperty("productId") UUID productId,
          @JsonProperty("supplierCatalogNumber") String supplierCatalogNumber,
-         @JsonProperty("price") BigDecimal price) {
+         @JsonProperty("price") BigDecimal price,
+         @JsonProperty("manufacturerName") String manufacturerName) {
       this.supplierId = Objects.requireNonNull(supplierId, "supplierId");
-      this.productId = Objects.requireNonNull(productId, "productId");
       this.supplierCatalogNumber = Objects.requireNonNull(supplierCatalogNumber, "supplierCatalogNumber");
+      this.productId = UUID.nameUUIDFromBytes(
+            (supplierId.toString() + ":" + supplierCatalogNumber).getBytes());
       this.price = Objects.requireNonNull(price, "price");
+      this.manufacturerName = manufacturerName;
    }
 
    // ────────────────────────────────────────────────────────
@@ -68,6 +72,30 @@ public class SupplierProduct implements Serializable {
 
    public void setPrice(BigDecimal price) {
       this.price = price;
+   }
+
+   public String getManufacturerName() {
+      return manufacturerName;
+   }
+
+   public void setManufacturerName(String manufacturerName) {
+      this.manufacturerName = manufacturerName;
+   }
+
+   public void setSupplierId(String supplierId) {
+      try {
+         this.supplierId = UUID.fromString(supplierId);
+      } catch (IllegalArgumentException e) {
+         throw new IllegalArgumentException("Invalid UUID format: " + supplierId, e);
+      }
+   }
+
+   public void setProductId(String productId) {
+      try {
+         this.productId = UUID.fromString(productId);
+      } catch (IllegalArgumentException e) {
+         throw new IllegalArgumentException("Invalid UUID format: " + productId, e);
+      }
    }
 
    // ────────────────────────────────────────────────────────

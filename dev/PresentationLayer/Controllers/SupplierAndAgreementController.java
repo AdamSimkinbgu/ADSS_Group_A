@@ -19,11 +19,11 @@ import PresentationLayer.View;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
-public class SupplierController extends AbstractController {
+public class SupplierAndAgreementController extends AbstractController {
    protected Map<String, Runnable> supplierOptions = new HashMap<>();
    protected Map<String, Runnable> agreementOptions = new HashMap<>();
 
-   public SupplierController(View view, SupplierService supplierService) {
+   public SupplierAndAgreementController(View view, SupplierService supplierService) {
       super(view, supplierService);
       this.implemented = true;
       controllerMenuOptions.put("1", () -> {
@@ -113,7 +113,6 @@ public class SupplierController extends AbstractController {
 
       ArrayNode products = mapper.createArrayNode();
 
-      // even if user says “n”, contacts is just []
       payload.set("contacts", requestContacts());
       payload.set("products", products);
       // agreements is just [] because we don't have any yet
@@ -129,19 +128,16 @@ public class SupplierController extends AbstractController {
    public void updateSupplier() {
       view.showMessage("Updating an existing supplier…");
 
-      // 1) Read & verify the supplier ID
       String supplierId = view.readLine("Please enter the supplier ID to update:");
       String lookupJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
       if (!doesSupplierExists(lookupJson)) {
-         // doesSupplierExists already shows an error
+         view.showError("Supplier doesn't exist, update cancelled");
          return;
       }
 
-      // 2) Build a JSON payload containing only the fields to change
       ObjectNode payload = mapper.createObjectNode();
       payload.put("supplierId", supplierId);
 
-      // 3) Let the user pick which fields to update
       while (true) {
          String field = view.readLine(
                "Enter field to update (blank to finish):\n" +
@@ -161,13 +157,11 @@ public class SupplierController extends AbstractController {
          }
       }
 
-      // 4) If the user never entered anything but the ID, abort
       if (payload.size() == 1) {
          view.showMessage("No changes entered. Update cancelled.");
          return;
       }
 
-      // 5) Dispatch to service
       String responseJson = handleModuleCommand("updateSupplier", payload.toString());
       view.dispatchResponse(responseJson, Supplier.class);
    }
@@ -303,8 +297,6 @@ public class SupplierController extends AbstractController {
       payload.put("selfSupply", selfSupply);
 
       ArrayNode daysArray = payload.putArray("supplyDays");
-      // askForSupplyDays() -> Stream<WeekofDay> -> map each day to its String name
-      // -> collect into a Jackson ArrayNode -> daysArray.addAll(that ArrayNode)
       daysArray.addAll(askForSupplyDays().stream()
             .map(WeekofDay::name)
             .collect(mapper::createArrayNode, ArrayNode::add, ArrayNode::addAll));
@@ -319,19 +311,61 @@ public class SupplierController extends AbstractController {
    }
 
    public void updateAgreement() {
-      view.showMessage("Updating an existing agreement...");
-      view.showMessage("Enter Agreement ID to update:");
-      String id = view.readLine();
-      view.showMessage("Which field to update?");
-      String field = view.readLine();
-      view.showMessage("Enter new value:");
-      String value = view.readLine();
-      String updateJson = String.format(
-            "{\"agreementId\":\"%s\", \"%s\":\"%s\"}",
-            id, field, value);
-      view.dispatchResponse(
-            handleModuleCommand("updateAgreement", updateJson),
-            Agreement.class);
+      view.showMessage("Updating an existing agreement…");
+
+      String agreementId = view.readLine("Please enter the agreement ID to update:");
+      String lookup = String.format("{\"agreementId\":\"%s\"}", agreementId);
+      if (!doesAgreementExist(lookup)) {
+         view.showError("Agreement not found, update cancelled.");
+         return;
+      }
+
+      ObjectNode payload = mapper.createObjectNode();
+      payload.put("agreementId", agreementId);
+
+      while (true) {
+         String field = view.readLine(
+               "Enter field to update (blank to finish):\n" +
+                     "  selfSupply, supplyDays, agreementStartDate, agreementEndDate, hasFixedSupplyDays")
+               .trim().toLowerCase();
+         if (field.isEmpty())
+            break;
+
+         switch (field) {
+            case "selfsupply" -> payload.put("selfSupply",
+                  requestBoolean("Self Supply? (true/false):"));
+            case "supplydays" -> {
+               ArrayNode days = mapper.createArrayNode();
+               askForSupplyDays().forEach(d -> days.add(d.name()));
+               payload.set("supplyDays", days);
+            }
+            case "agreementstartdate" -> payload.put("agreementStartDate",
+                  askForFutureOrTodayDate("Enter new start date").toString());
+            case "agreementenddate" -> payload.put("agreementEndDate",
+                  askForFutureOrTodayDate("Enter new end date").toString());
+            case "hasfixedsupplydays" -> payload.put("hasFixedSupplyDays",
+                  requestBoolean("Has fixed supply days? (true/false):"));
+            default -> view.showError("Unknown field: " + field);
+         }
+      }
+
+      if (payload.size() == 1) {
+         view.showMessage("No changes entered. Update cancelled.");
+         return;
+      }
+
+      // 3) Dispatch and render result
+      String respJson = handleModuleCommand("updateAgreement", payload.toString());
+      view.dispatchResponse(respJson, Agreement.class);
+   }
+
+   private boolean doesAgreementExist(String lookupJson) {
+      ServiceResponse<?> r = service.execute("checkAgreementExists", lookupJson);
+      if ((boolean) r.getValue() == false) {
+         view.showError("Agreement doesn't exist, update cancelled");
+         return false;
+      }
+      return Boolean.TRUE.equals(r.getValue());
    }
 
    public void deleteAgreement() {

@@ -45,11 +45,10 @@ public abstract class BaseService {
       try {
          // this will invoke the same @JsonCreator constructor
          objectMapper.readValue(json, targetType);
-         return new ServiceResponse<>(true, "");
+         return ServiceResponse.ok(true);
       } catch (JsonProcessingException e) {
          // Jackson tells you exactly which field/type failed
-         return new ServiceResponse<>(
-               false,
+         return ServiceResponse.error(
                "Type conversion error: " + e.getOriginalMessage());
       }
    }

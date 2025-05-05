@@ -47,7 +47,8 @@ public class Agreement implements Serializable {
         if (agreementEndDate.isBefore(agreementStartDate)) {
             throw new IllegalArgumentException("Agreement end date cannot be before start date.");
         }
-        this.agreementId = UUID.randomUUID();
+        this.agreementId = UUID.nameUUIDFromBytes(
+                (supplierId.toString() + ":" + agreementStartDate.toString()).getBytes());
         this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.valid = true;

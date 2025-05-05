@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
 import PresentationLayer.Controllers.OrderController;
-import PresentationLayer.Controllers.SupplierController;
+import PresentationLayer.Controllers.SupplierAndAgreementController;
 import PresentationLayer.Controllers.SystemController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class AppCLI implements View {
    private OrderController ordersController;
-   private SupplierController suppliersController;
+   private SupplierAndAgreementController suppliersController;
    private SystemController systemController;
    private String userInput;
    private static final int TITLE = 0;
@@ -66,7 +66,7 @@ public class AppCLI implements View {
       OrderService orderService = new OrderService(orderFacade);
       SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
 
-      this.suppliersController = new SupplierController(this, supplierService);
+      this.suppliersController = new SupplierAndAgreementController(this, supplierService);
       this.ordersController = new OrderController(this, orderService);
       this.systemController = new SystemController(dataPath, systemService, this);
       moduleSelection.put(CMD_MAIN, () -> System.out.println("Returning to the main menu..."));

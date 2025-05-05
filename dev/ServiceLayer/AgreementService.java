@@ -3,9 +3,11 @@ package ServiceLayer;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.AgreementFacade;
@@ -37,40 +39,56 @@ public class AgreementService extends BaseService implements IService {
          ObjectNode root = (ObjectNode) objectMapper.readTree(json);
          String supplierId = root.path("supplierId").asText(null);
          if (supplierId == null) {
-            throw new IllegalArgumentException("supplierId is missing");
+            resp = ServiceResponse.error("Missing supplierId in JSON payload");
+            return resp;
          }
 
          String lookup = objectMapper.createObjectNode()
                .put("supplierId", supplierId).toString();
          Supplier sup = supplierFacade.getSupplier(lookup);
          if (sup == null) {
-            resp = new ServiceResponse<>(false,
+            resp = ServiceResponse.error(
                   "No supplier found with ID: " + supplierId);
             return resp;
          }
 
          root.put("supplierName", sup.getName());
          agreementFacade.createAgreement(root.toString());
-         resp = new ServiceResponse<>(true, "");
+         resp = ServiceResponse.ok(true);
       } catch (JsonProcessingException e) {
-         resp = new ServiceResponse<>(false,
+         resp = ServiceResponse.error(
                "Invalid JSON payload: " + e.getOriginalMessage());
       } catch (IllegalArgumentException e) {
-         resp = new ServiceResponse<>(false, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       } catch (Exception e) {
-         resp = new ServiceResponse<>(false,
+         resp = ServiceResponse.error(
                "Failed to create agreement: " + e.getMessage());
       }
       return resp;
    }
 
-   public ServiceResponse<?> updateAgreement(String json) {
+   public ServiceResponse<?> updateAgreement(String updateJson) {
       ServiceResponse<Agreement> resp;
       try {
-         // TODO: implement update logic
-         resp = new ServiceResponse<>(null, "Not implemented yet");
+         // pull out and parse the ID
+         JsonNode root = objectMapper.readTree(updateJson);
+         String agreementId = "{\"agreementId\": \"" + root.path("agreementId").asText() + "\"}";
+
+         // load existing
+         Agreement existing = agreementFacade.getAgreementById(agreementId);
+         if (existing == null) {
+            resp = ServiceResponse.error("No agreement with ID: " + root.path("agreementId").asText());
+         } else {
+            // merge only provided fields
+            objectMapper.readerForUpdating(existing)
+                  .readValue(updateJson);
+
+            // persist
+            agreementFacade.updateAgreement(existing);
+            resp = ServiceResponse.ok(existing);
+         }
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error("Update failed: " + e.getMessage());
       }
       return resp;
    }
@@ -80,14 +98,14 @@ public class AgreementService extends BaseService implements IService {
       try {
          boolean deleted = agreementFacade.removeAgreement(json);
          if (deleted) {
-            resp = new ServiceResponse<>(true, "");
+            resp = ServiceResponse.ok(deleted);
          } else {
-            resp = new ServiceResponse<>(false, "No agreement with ID: " + json);
+            resp = ServiceResponse.error("No agreement with ID: " + json);
          }
       } catch (IllegalArgumentException e) {
-         resp = new ServiceResponse<>(false, "Invalid Agreement ID format: " + json);
+         resp = ServiceResponse.error("Invalid Agreement ID format: " + json);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(false, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -97,14 +115,14 @@ public class AgreementService extends BaseService implements IService {
       try {
          Agreement agreement = agreementFacade.getAgreement(json);
          if (agreement != null) {
-            resp = new ServiceResponse<>(agreement, "");
+            resp = ServiceResponse.ok(agreement);
          } else {
-            resp = new ServiceResponse<>(null, "No agreement with ID: " + json);
+            resp = ServiceResponse.error("No agreement with ID: " + json);
          }
       } catch (IllegalArgumentException e) {
-         resp = new ServiceResponse<>(null, "Invalid Agreement ID format: " + json);
+         resp = ServiceResponse.error("Invalid Agreement ID format: " + json);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -113,9 +131,21 @@ public class AgreementService extends BaseService implements IService {
       ServiceResponse<List<Agreement>> resp;
       try {
          List<Agreement> agreements = agreementFacade.getAgreementsWithFullDetail();
-         resp = new ServiceResponse<>(agreements, "");
+         resp = ServiceResponse.ok(agreements);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
+      }
+      return resp;
+   }
+
+   public ServiceResponse<?> checkAgreementExists(String lookupJson) {
+      ServiceResponse<Boolean> resp;
+      try {
+         JsonNode root = objectMapper.readTree(lookupJson);
+         String agreementId = "{\"agreementId\": \"" + root.path("agreementId").asText() + "\"}";
+         resp = ServiceResponse.ok(agreementFacade.getAgreementById(agreementId) != null);
+      } catch (Exception e) {
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }

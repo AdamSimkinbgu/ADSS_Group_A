@@ -35,10 +35,8 @@ public class OrderService extends BaseService implements IService {
       ServiceResponse<Order> resp;
       try {
          return ServiceResponse.error("Sorry, this method is not implemented yet.");
-         // Order createdOrder = orderFacade.createOrder(json);
-         // resp = new ServiceResponse<>(createdOrder, "");
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -48,9 +46,9 @@ public class OrderService extends BaseService implements IService {
       try {
          Order order = objectMapper.readValue(json, Order.class);
          Order updatedOrder = orderFacade.updateOrder(order);
-         resp = new ServiceResponse<>(updatedOrder, "");
+         resp = ServiceResponse.ok(updatedOrder);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -60,9 +58,9 @@ public class OrderService extends BaseService implements IService {
       try {
          UUID orderId = UUID.fromString(json.replace("\"", ""));
          orderFacade.deleteOrder(orderId);
-         resp = new ServiceResponse<>(true, "");
+         resp = ServiceResponse.ok(true);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(false, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -72,9 +70,9 @@ public class OrderService extends BaseService implements IService {
       try {
          UUID orderId = UUID.fromString(json.replace("\"", ""));
          Order order = orderFacade.getOrder(orderId);
-         resp = new ServiceResponse<>(order, "");
+         resp = ServiceResponse.ok(order);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }

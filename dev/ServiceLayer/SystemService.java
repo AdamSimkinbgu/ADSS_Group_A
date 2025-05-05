@@ -21,7 +21,6 @@ public class SystemService extends BaseService implements IService {
    private final AgreementFacade agreementFacade;
 
    public SystemService(SupplierFacade supplierFacade, OrderFacade orderFacade, AgreementFacade agreementFacade) {
-      // Initialize the service functions
       this.supplierFacade = supplierFacade;
       this.orderFacade = orderFacade;
       this.agreementFacade = agreementFacade;
@@ -45,7 +44,6 @@ public class SystemService extends BaseService implements IService {
 
          JsonNode root = objectMapper.readTree(in);
 
-         // 1) load all suppliers and keep their IDs
          for (JsonNode s : root.withArray("suppliers")) {
             supplierFacade.addSupplier(s.toString());
          }
@@ -54,9 +52,7 @@ public class SystemService extends BaseService implements IService {
                .stream().map(Supplier::getSupplierId).toList();
 
          int i = 0;
-         // 2) load all agreements
          for (JsonNode a : root.withArray("agreements")) {
-            // extract supplierId
             String sid = supplierIds.get(i++).toString();
             Supplier sup = supplierFacade.getSupplier(
                   "{\"supplierId\":\"" + sid + "\"}");
@@ -64,12 +60,10 @@ public class SystemService extends BaseService implements IService {
                throw new IllegalStateException("No supplier for ID: " + sid);
             }
 
-            // inject the name and ID into the agreement
             ObjectNode copy = ((ObjectNode) a).deepCopy();
             copy.put("supplierName", sup.getName());
             copy.put("supplierId", sid);
 
-            // create in the facade
             agreementFacade.createAgreement(copy.toString());
          }
 
@@ -109,7 +103,6 @@ public class SystemService extends BaseService implements IService {
          resp = ServiceResponse.error("Get all data failed: " + e.getMessage());
       }
 
-      // 4) return the serialized response
       return resp;
    }
 }

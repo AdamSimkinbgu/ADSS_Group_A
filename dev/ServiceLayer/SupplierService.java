@@ -35,6 +35,7 @@ public class SupplierService extends BaseService implements IService {
       serviceFunctions.put("removeAgreement", agreementService::removeAgreement);
       serviceFunctions.put("getAgreement", agreementService::getAgreement);
       serviceFunctions.put("getAllAgreements", agreementService::getAllAgreements);
+      serviceFunctions.put("checkAgreementExists", agreementService::checkAgreementExists);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -67,22 +68,19 @@ public class SupplierService extends BaseService implements IService {
    private ServiceResponse<?> updateSupplier(String updateJson) {
       ServiceResponse<Supplier> resp;
       try {
-         // 1) Extract the ID
          JsonNode root = objectMapper.readTree(updateJson);
          String supplierId = "{\"supplierId\": \"" + root.path("supplierId").asText() + "\"}";
 
-         // 2) Load existing supplier
          Supplier existing = supplierFacade.getSupplier(supplierId);
          if (existing == null) {
             resp = ServiceResponse.error("Supplier not found: " + root.path("supplierId").asText());
          } else {
-            // 3) Merge only the provided fields into the object
+            // merge only the provided fields into the object
             objectMapper.readerForUpdating(existing).readValue(updateJson);
 
-            // 4) Persist the updated object
+            // persist the updated object
             supplierFacade.updateSupplier(existing);
 
-            // 5) Return success
             resp = ServiceResponse.ok(existing);
          }
       } catch (Exception e) {
