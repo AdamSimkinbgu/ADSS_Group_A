@@ -1,37 +1,66 @@
 package PresentationLayer.Controllers;
 
-import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
+import DomainLayer.Enums.WeekofDay;
 import PresentationLayer.AbstractController;
 import PresentationLayer.View;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class SupplierController extends AbstractController {
+   protected Map<String, Runnable> supplierOptions = new HashMap<>();
+   protected Map<String, Runnable> agreementOptions = new HashMap<>();
 
    public SupplierController(View view, SupplierService supplierService) {
       super(view, supplierService);
       this.implemented = true;
-      controllerMenuOptions.put("1", this::createSupplier);
-      controllerMenuOptions.put("2", this::updateSupplier);
-      controllerMenuOptions.put("3", this::deleteSupplier);
-      controllerMenuOptions.put("4", this::viewSupplier);
-      controllerMenuOptions.put("5", this::viewAllSuppliers);
-      controllerMenuOptions.put("6", () -> {
-         System.out.println("Returning to the main menu...");
+      controllerMenuOptions.put("1", () -> {
+         List<String> menu = showSupplierMenu();
+         view.showOptions(menu.get(0), menu.subList(0, menu.size()));
+         handleSupplierMenuChoice();
       });
-      controllerMenuOptions.put("?", () -> {
-         System.out.println("Invalid choice. Please try again.");
+      controllerMenuOptions.put("2", () -> {
+         List<String> menu = showAgreementMenu();
+         view.showOptions(menu.get(0), menu.subList(0, menu.size()));
+         handleAgreementMenuChoice();
       });
+      supplierOptions.put("1", this::createSupplier);
+      supplierOptions.put("2", this::updateSupplier);
+      supplierOptions.put("3", this::deleteSupplier);
+      supplierOptions.put("4", this::viewSupplier);
+      supplierOptions.put("5", this::viewAllSuppliers);
+      supplierOptions.put("6", () -> System.out.println("Returning to the main menu..."));
+      supplierOptions.put("?", () -> System.out.println("Invalid choice. Please try again."));
+      agreementOptions.put("1", this::createAgreement);
+      agreementOptions.put("2", this::updateAgreement);
+      agreementOptions.put("3", this::deleteAgreement);
+      agreementOptions.put("4", this::viewAgreement);
+      agreementOptions.put("5", this::listAllAgreements);
+      agreementOptions.put("6", () -> System.out.println("Returning to the main menu..."));
+      agreementOptions.put("?", () -> System.out.println("Invalid choice. Please try again."));
    }
 
    public List<String> showMenu() {
+      return List.of(
+            "Please choose an option:",
+            "Supplier Menu",
+            "Agreement Menu",
+            "Back to Main Menu");
+   }
+
+   public List<String> showSupplierMenu() {
       return List.of(
             "Please choose an option:",
             "Create Supplier",
@@ -40,6 +69,37 @@ public class SupplierController extends AbstractController {
             "View Supplier",
             "View All Suppliers",
             "Back to Main Menu");
+   }
+
+   public List<String> showAgreementMenu() {
+      return List.of(
+            "Please choose an option:",
+            "Create Agreement",
+            "Update Agreement",
+            "Delete Agreement",
+            "View Agreement",
+            "List All Agreements",
+            "Back to Main Menu");
+   }
+
+   private void handleSupplierMenuChoice() {
+      String choice = view.readLine();
+      Runnable action = supplierOptions.get(choice);
+      if (action != null) {
+         action.run();
+      } else {
+         supplierOptions.get("?").run();
+      }
+   }
+
+   private void handleAgreementMenuChoice() {
+      String choice = view.readLine();
+      Runnable action = agreementOptions.get(choice);
+      if (action != null) {
+         action.run();
+      } else {
+         agreementOptions.get("?").run();
+      }
    }
 
    public void createSupplier() {
@@ -67,20 +127,49 @@ public class SupplierController extends AbstractController {
    }
 
    public void updateSupplier() {
-      System.out.println("Updating an existing supplier...");
+      view.showMessage("Updating an existing supplier…");
+
+      // 1) Read & verify the supplier ID
       String supplierId = view.readLine("Please enter the supplier ID to update:");
-      if (!doesSupplierExists(supplierId)) {
-         view.showError("Supplier id does not exist.");
+      String lookupJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
+      if (!doesSupplierExists(lookupJson)) {
+         // doesSupplierExists already shows an error
          return;
       }
-      view.showMessage(
-            "What do you want to update? (Name, TaxNumber, Address, BankNumber, BranchNumber, AccountNumber, PaymentMethod, PaymentTerm)");
-      String fieldToUpdate = view.readLine();
-      view.showMessage("Please enter the new value:");
-      String newValue = view.readLine();
-      String updateJson = String.format("{\"supplierId\":\"%s\", \"%s\":\"%s\"}", supplierId, fieldToUpdate, newValue);
-      String response = handleModuleCommand("updateSupplier", updateJson);
-      view.dispatchResponse(response, Supplier.class);
+
+      // 2) Build a JSON payload containing only the fields to change
+      ObjectNode payload = mapper.createObjectNode();
+      payload.put("supplierId", supplierId);
+
+      // 3) Let the user pick which fields to update
+      while (true) {
+         String field = view.readLine(
+               "Enter field to update (blank to finish):\n" +
+                     "  name, taxNumber, address, paymentDetails, contacts")
+               .trim().toLowerCase();
+
+         if (field.isEmpty())
+            break;
+
+         switch (field) {
+            case "name" -> payload.put("name", view.readLine("New name:"));
+            case "taxnumber" -> payload.put("taxNumber", view.readLine("New tax number:"));
+            case "address" -> payload.set("address", requestAddress());
+            case "paymentdetails" -> payload.set("paymentDetails", requestPaymentDetails());
+            case "contacts" -> payload.set("contacts", requestContacts());
+            default -> view.showError("Unknown field: " + field);
+         }
+      }
+
+      // 4) If the user never entered anything but the ID, abort
+      if (payload.size() == 1) {
+         view.showMessage("No changes entered. Update cancelled.");
+         return;
+      }
+
+      // 5) Dispatch to service
+      String responseJson = handleModuleCommand("updateSupplier", payload.toString());
+      view.dispatchResponse(responseJson, Supplier.class);
    }
 
    public void deleteSupplier() {
@@ -90,17 +179,6 @@ public class SupplierController extends AbstractController {
       String deleteJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
       String response = handleModuleCommand("removeSupplier", deleteJson);
       view.dispatchResponse(response, ServiceResponse.class);
-      // if (response != null) {
-      // ServiceResponse<Supplier> serviceResponse = mapper.readValue(response,
-      // ServiceResponse.class);
-      // if (serviceResponse.getError() == null) {
-      // view.showMessage("Supplier deleted successfully.");
-      // } else {
-      // view.showError("Error deleting supplier: " + serviceResponse.getError());
-      // }
-      // } else {
-      // view.showError("Failed to delete supplier.");
-      // }
    }
 
    public void viewSupplier() {
@@ -146,28 +224,13 @@ public class SupplierController extends AbstractController {
       return payload;
    }
 
-   private boolean doesSupplierExists(String supName, String supTax) {
-      try {
-         String viewJson = String.format("{\"supplierId\":\"%s\"}", supName + ":" + supTax);
-         String response = handleModuleCommand("getSupplierDetails", viewJson);
-         Supplier supplier = mapper.readValue(response, Supplier.class);
-         return supplier != null;
-      } catch (Exception e) {
-         view.showError("Error: " + e.getMessage());
+   private boolean doesSupplierExists(String supJson) {
+      ServiceResponse<?> exeRes = service.execute("checkSupplierExists", supJson);
+      if ((boolean) exeRes.getValue() == false) {
+         view.showError("Supplier doesn't exist, update cancelled");
          return false;
       }
-   }
-
-   private boolean doesSupplierExists(String supplierId) {
-      try {
-         String viewJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
-         String response = handleModuleCommand("getSupplierDetails", viewJson);
-         Supplier supplier = mapper.readValue(response, Supplier.class);
-         return supplier != null;
-      } catch (Exception e) {
-         view.showError("Error: " + e.getMessage());
-         return false;
-      }
+      return true;
    }
 
    private ArrayNode requestContacts() {
@@ -177,13 +240,13 @@ public class SupplierController extends AbstractController {
          ObjectNode contact = mapper.createObjectNode();
          String name = null;
          while (name == null || name.isEmpty())
-            view.readLine("Please enter contact name (Can not be empty):");
+            name = view.readLine("Please enter contact name (Can not be empty):");
          String email = null;
          while (email == null || email.isEmpty())
-            view.readLine("Please enter contact email (Can not be empty):");
+            email = view.readLine("Please enter contact email (Can not be empty):");
          String phone = null;
          while (phone == null || phone.isEmpty())
-            view.readLine("Please enter contact phone (Can not be empty):");
+            phone = view.readLine("Please enter contact phone (Can not be empty):");
          contacts.add(contact);
          wantsToContinue = view.readLine("Do you want to add another contact? (y/n):").toLowerCase();
       }
@@ -229,4 +292,119 @@ public class SupplierController extends AbstractController {
       pay.put("paymentTerm", paymentTerm);
       return pay;
    }
+
+   public void createAgreement() {
+      view.showMessage("Creating a new agreement... Please enter the following details:");
+
+      ObjectNode payload = mapper.createObjectNode();
+      String supplierId = view.readLine("Supplier ID:");
+      payload.put("supplierId", supplierId);
+      Boolean selfSupply = requestBoolean("Is this a self-supply agreement (true/false):");
+      payload.put("selfSupply", selfSupply);
+
+      ArrayNode daysArray = payload.putArray("supplyDays");
+      // askForSupplyDays() -> Stream<WeekofDay> -> map each day to its String name
+      // -> collect into a Jackson ArrayNode -> daysArray.addAll(that ArrayNode)
+      daysArray.addAll(askForSupplyDays().stream()
+            .map(WeekofDay::name)
+            .collect(mapper::createArrayNode, ArrayNode::add, ArrayNode::addAll));
+      payload.put("agreementStartDate",
+            askForFutureOrTodayDate("Enter agreement start date").toString());
+      payload.put("agreementEndDate",
+            askForFutureOrTodayDate("Enter agreement end date").toString());
+      Boolean hasFixedSupplyDays = requestBoolean("Does this agreement have fixed supply days (true/false):");
+      payload.put("hasFixedSupplyDays", hasFixedSupplyDays);
+      String response = handleModuleCommand("addAgreement", payload.toString());
+      view.dispatchResponse(response, Agreement.class);
+   }
+
+   public void updateAgreement() {
+      view.showMessage("Updating an existing agreement...");
+      view.showMessage("Enter Agreement ID to update:");
+      String id = view.readLine();
+      view.showMessage("Which field to update?");
+      String field = view.readLine();
+      view.showMessage("Enter new value:");
+      String value = view.readLine();
+      String updateJson = String.format(
+            "{\"agreementId\":\"%s\", \"%s\":\"%s\"}",
+            id, field, value);
+      view.dispatchResponse(
+            handleModuleCommand("updateAgreement", updateJson),
+            Agreement.class);
+   }
+
+   public void deleteAgreement() {
+      view.showMessage("Deleting an existing agreement...");
+      view.showMessage("Enter Agreement ID to delete:");
+      String id = view.readLine();
+      String response = handleModuleCommand("removeAgreement", id);
+      view.dispatchResponse(response, Boolean.class);
+   }
+
+   public void viewAgreement() {
+      view.showMessage("Viewing an existing agreement...");
+      view.showMessage("Enter Agreement ID to view:");
+      String id = view.readLine();
+      view.dispatchResponse(
+            handleModuleCommand("getAgreement", id),
+            Agreement.class);
+   }
+
+   public void listAllAgreements() {
+      view.showMessage("Listing all agreements...");
+      view.dispatchResponse(
+            handleModuleCommand("getAllAgreements", ""),
+            Agreement[].class);
+   }
+
+   private LocalDate askForFutureOrTodayDate(String prompt) {
+      DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE;
+      while (true) {
+         view.showMessage(prompt + " (format YYYY-MM-DD, must be today or later):");
+         String raw = view.readLine().trim();
+         try {
+            LocalDate entered = LocalDate.parse(raw, fmt);
+
+            if (entered.isBefore(LocalDate.now())) {
+               view.showMessage("The date cannot be in the past. Please enter today’s date or later.");
+               continue;
+            }
+
+            return entered;
+
+         } catch (DateTimeParseException ex) {
+            view.showMessage("Invalid format. Please use YYYY-MM-DD, e.g. 2025-04-15.");
+         }
+      }
+   }
+
+   private EnumSet<WeekofDay> askForSupplyDays() {
+      EnumSet<WeekofDay> supplyDays = EnumSet.noneOf(WeekofDay.class);
+      String userInput = "";
+      while (userInput == null || userInput.isEmpty()) {
+         userInput = view
+               .readLine(
+                     "Enter delivery day (e.g. Monday/monday/MONDAY), then enter 'done' (To deselect, enter the day again):")
+               .trim().toUpperCase();
+         if (userInput.equals("DONE")) {
+            view.showMessage("Selected days: " + supplyDays);
+            break;
+         }
+         try {
+            WeekofDay day = WeekofDay.valueOf(userInput);
+            if (!supplyDays.add(day)) {
+               supplyDays.remove(day);
+               view.showMessage(day + " removed. Current days: " + supplyDays);
+            } else {
+               view.showMessage(day + " added. Current days: " + supplyDays);
+            }
+         } catch (IllegalArgumentException e) {
+            view.showMessage("Invalid entry. Please enter a valid weekday or DONE.");
+         }
+      }
+
+      return supplyDays;
+   }
+
 }

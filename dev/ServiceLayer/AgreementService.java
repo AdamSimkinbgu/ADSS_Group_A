@@ -22,11 +22,6 @@ public class AgreementService extends BaseService implements IService {
    public AgreementService(AgreementFacade agreementFacade, SupplierFacade supplierFacade) {
       this.agreementFacade = agreementFacade;
       this.supplierFacade = supplierFacade;
-      serviceFunctions.put("addAgreement", this::addAgreement);
-      serviceFunctions.put("updateAgreement", this::updateAgreement);
-      serviceFunctions.put("removeAgreement", this::removeAgreement);
-      serviceFunctions.put("getAgreement", this::getAgreement);
-      serviceFunctions.put("getAllAgreements", this::getAllAgreements);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -36,7 +31,7 @@ public class AgreementService extends BaseService implements IService {
       return fn.apply(data);
    }
 
-   private ServiceResponse<?> addAgreement(String json) {
+   public ServiceResponse<?> addAgreement(String json) {
       ServiceResponse<Boolean> resp;
       try {
          ObjectNode root = (ObjectNode) objectMapper.readTree(json);
@@ -69,7 +64,7 @@ public class AgreementService extends BaseService implements IService {
       return resp;
    }
 
-   private ServiceResponse<?> updateAgreement(String json) {
+   public ServiceResponse<?> updateAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {
          // TODO: implement update logic
@@ -80,7 +75,7 @@ public class AgreementService extends BaseService implements IService {
       return resp;
    }
 
-   private ServiceResponse<?> removeAgreement(String json) {
+   public ServiceResponse<?> removeAgreement(String json) {
       ServiceResponse<Boolean> resp;
       try {
          boolean deleted = agreementFacade.removeAgreement(json);
@@ -97,7 +92,7 @@ public class AgreementService extends BaseService implements IService {
       return resp;
    }
 
-   private ServiceResponse<?> getAgreement(String json) {
+   public ServiceResponse<?> getAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {
          Agreement agreement = agreementFacade.getAgreement(json);
@@ -114,7 +109,7 @@ public class AgreementService extends BaseService implements IService {
       return resp;
    }
 
-   private ServiceResponse<?> getAllAgreements(String json) {
+   public ServiceResponse<?> getAllAgreements(String json) {
       ServiceResponse<List<Agreement>> resp;
       try {
          List<Agreement> agreements = agreementFacade.getAgreementsWithFullDetail();

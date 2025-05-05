@@ -37,7 +37,6 @@ public class SystemController extends AbstractController {
       controllerMenuOptions.put("?", () -> System.out.println("Invalid choice. Please try again."));
    }
 
-   @Override
    public List<String> showMenu() {
       return List.of(
             "Please choose how to initialize the system:",

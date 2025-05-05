@@ -225,7 +225,7 @@ class SupplierTest {
       assertEquals("111222333", s.getTaxNumber());
       // address & paymentDetails would need real getters; at least not null:
       assertNotNull(s.getAddress());
-      assertNotNull(s.getBankDetails());
+      assertNotNull(s.getPaymentDetails());
       // lists should be non-null (empty arrays)
       assertNotNull(s.getContacts());
       assertNotNull(s.getProducts());

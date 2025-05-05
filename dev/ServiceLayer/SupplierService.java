@@ -1,12 +1,15 @@
 package ServiceLayer;
 
-import java.security.Provider.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.UUID;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.IService;
@@ -17,16 +20,21 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
  * ServiceResponse<T> envelope.
  */
 public class SupplierService extends BaseService implements IService {
-   private final SupplierFacade facade;
+   private final SupplierFacade supplierFacade;
 
-   public SupplierService(SupplierFacade facade) {
-      this.facade = facade;
+   public SupplierService(SupplierFacade facade, AgreementService agreementService) {
+      this.supplierFacade = facade;
       serviceFunctions.put("addSupplier", this::addSupplier);
       serviceFunctions.put("updateSupplier", this::updateSupplier);
       serviceFunctions.put("removeSupplier", this::removeSupplier);
       serviceFunctions.put("getSupplierDetails", this::getSupplierDetails);
       serviceFunctions.put("getAllSuppliers", this::getAllSuppliers);
       serviceFunctions.put("checkSupplierExists", this::checkSupplierExists);
+      serviceFunctions.put("addAgreement", agreementService::addAgreement);
+      serviceFunctions.put("updateAgreement", agreementService::updateAgreement);
+      serviceFunctions.put("removeAgreement", agreementService::removeAgreement);
+      serviceFunctions.put("getAgreement", agreementService::getAgreement);
+      serviceFunctions.put("getAllAgreements", agreementService::getAllAgreements);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -46,23 +54,39 @@ public class SupplierService extends BaseService implements IService {
       }
 
       // use facade to try and add supplier
-      ServiceResponse<Boolean> resp;
+      ServiceResponse<String> resp;
       try {
-         facade.addSupplier(creationJson);
-         resp = new ServiceResponse<>(true, "");
+         supplierFacade.addSupplier(creationJson);
+         resp = ServiceResponse.ok("Supplier added successfully");
       } catch (Exception e) {
-         resp = new ServiceResponse<>(false, e.getMessage());
+         resp = ServiceResponse.error("Failed to add supplier: " + e.getMessage());
       }
       return resp;
    }
 
-   private ServiceResponse<Supplier> updateSupplier(String updateJson) {
+   private ServiceResponse<?> updateSupplier(String updateJson) {
       ServiceResponse<Supplier> resp;
       try {
-         // TODO: implement update logic
-         resp = new ServiceResponse<>(null, "Not implemented yet");
+         // 1) Extract the ID
+         JsonNode root = objectMapper.readTree(updateJson);
+         String supplierId = "{\"supplierId\": \"" + root.path("supplierId").asText() + "\"}";
+
+         // 2) Load existing supplier
+         Supplier existing = supplierFacade.getSupplier(supplierId);
+         if (existing == null) {
+            resp = ServiceResponse.error("Supplier not found: " + root.path("supplierId").asText());
+         } else {
+            // 3) Merge only the provided fields into the object
+            objectMapper.readerForUpdating(existing).readValue(updateJson);
+
+            // 4) Persist the updated object
+            supplierFacade.updateSupplier(existing);
+
+            // 5) Return success
+            resp = ServiceResponse.ok(existing);
+         }
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error("Update failed: " + e.getMessage());
       }
       return resp;
    }
@@ -70,14 +94,14 @@ public class SupplierService extends BaseService implements IService {
    private ServiceResponse<?> removeSupplier(String id) {
       ServiceResponse<Boolean> resp;
       try {
-         boolean deleted = facade.removeSupplier(id);
+         boolean deleted = supplierFacade.removeSupplier(id);
          if (deleted) {
-            resp = new ServiceResponse<>(true, "");
+            resp = ServiceResponse.ok(deleted);
          } else {
-            resp = new ServiceResponse<>(false, "No supplier with ID: " + id);
+            resp = ServiceResponse.error("No supplier with ID: " + id);
          }
       } catch (Exception e) {
-         resp = new ServiceResponse<>(false, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -85,14 +109,14 @@ public class SupplierService extends BaseService implements IService {
    private ServiceResponse<?> getSupplierDetails(String id) {
       ServiceResponse<Supplier> resp;
       try {
-         Supplier supplier = facade.getSupplier(id);
+         Supplier supplier = supplierFacade.getSupplier(id);
          if (supplier != null) {
-            resp = new ServiceResponse<>(supplier, "");
+            resp = ServiceResponse.ok(supplier);
          } else {
-            resp = new ServiceResponse<>(null, "No supplier with ID: " + id);
+            resp = ServiceResponse.error("No supplier with ID: " + id);
          }
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
    }
@@ -100,7 +124,7 @@ public class SupplierService extends BaseService implements IService {
    private ServiceResponse<?> getAllSuppliers(String id) {
       ServiceResponse<Map<String, String>> resp;
       try {
-         List<Supplier> suppliers = facade.getSuppliersWithFullDetail();
+         List<Supplier> suppliers = supplierFacade.getSuppliersWithFullDetail();
          Map<String, String> suppliersMap = new HashMap<>();
          for (Supplier supplier : suppliers) {
             suppliersMap.put(supplier.getSupplierId().toString(), supplier.getName());
@@ -112,10 +136,10 @@ public class SupplierService extends BaseService implements IService {
       return resp;
    }
 
-   private ServiceResponse<?> checkSupplierExists(String nameAndTax) {
+   private ServiceResponse<?> checkSupplierExists(String infoToCheck) {
       ServiceResponse<Boolean> resp;
       try {
-         boolean exists = facade.supplierExists(nameAndTax);
+         boolean exists = supplierFacade.supplierExists(infoToCheck);
          resp = ServiceResponse.ok(exists);
       } catch (Exception e) {
          resp = ServiceResponse.error(e.getMessage());

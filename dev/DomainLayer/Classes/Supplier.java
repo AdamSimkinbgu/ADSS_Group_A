@@ -88,12 +88,11 @@ public class Supplier implements Serializable {
       this.address = address;
    }
 
-   public PaymentDetails getBankDetails() {
+   public PaymentDetails getPaymentDetails() {
       return paymentDetails;
    }
 
-   @JsonIgnore
-   public void setBankDetails(PaymentDetails paymentDetails) {
+   public void setPaymentDetails(PaymentDetails paymentDetails) {
       this.paymentDetails = paymentDetails;
    }
 

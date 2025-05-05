@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
-import PresentationLayer.Controllers.AgreementController;
 import PresentationLayer.Controllers.OrderController;
 import PresentationLayer.Controllers.SupplierController;
 import PresentationLayer.Controllers.SystemController;
@@ -22,7 +21,6 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class AppCLI implements View {
    private OrderController ordersController;
-   private AgreementController agreementsController;
    private SupplierController suppliersController;
    private SystemController systemController;
    private String userInput;
@@ -30,9 +28,8 @@ public class AppCLI implements View {
    private static final String CMD_MAIN = "0";
    private static final String CMD_SUPPLIER = "1";
    private static final String CMD_ORDER = "2";
-   private static final String CMD_AGREEMENT = "3";
-   private static final String CMD_SYSTEM = "4";
-   private static final String CMD_EXIT = "5";
+   private static final String CMD_SYSTEM = "3";
+   private static final String CMD_EXIT = "4";
    private static final String CMD_INVALID = "?";
    private String selectedModule = CMD_SYSTEM;
    public static final Scanner scanner = new Scanner(System.in);
@@ -62,21 +59,19 @@ public class AppCLI implements View {
       // Initialize controllers
       // Initialize the facades and services
       SupplierFacade supplierFacade = new SupplierFacade();
-      OrderFacade orderFacade = new OrderFacade(supplierFacade);
       AgreementFacade agreementFacade = new AgreementFacade();
-      SupplierService supplierService = new SupplierService(supplierFacade);
-      OrderService orderService = new OrderService(orderFacade);
+      OrderFacade orderFacade = new OrderFacade(supplierFacade);
       AgreementService agreementService = new AgreementService(agreementFacade, supplierFacade);
+      SupplierService supplierService = new SupplierService(supplierFacade, agreementService);
+      OrderService orderService = new OrderService(orderFacade);
       SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
 
-      this.agreementsController = new AgreementController(this, agreementService);
       this.suppliersController = new SupplierController(this, supplierService);
       this.ordersController = new OrderController(this, orderService);
       this.systemController = new SystemController(dataPath, systemService, this);
       moduleSelection.put(CMD_MAIN, () -> System.out.println("Returning to the main menu..."));
       moduleSelection.put(CMD_SUPPLIER, suppliersController::handleModuleMenu);
       moduleSelection.put(CMD_ORDER, ordersController::handleModuleMenu);
-      moduleSelection.put(CMD_AGREEMENT, agreementsController::handleModuleMenu);
       moduleSelection.put(CMD_SYSTEM, systemController::handleModuleMenu);
       moduleSelection.put(CMD_EXIT, () -> {
          System.out.println("Exiting the system...");
@@ -85,7 +80,7 @@ public class AppCLI implements View {
       moduleSelection.put(CMD_INVALID, () -> {
          System.out.println("Invalid choice. Please try again.");
          List<String> mainMenu = this.showMenu();
-         showOptions(mainMenu.get(TITLE), showMenu().subList(0, mainMenu.size()));
+         showOptions(mainMenu.get(TITLE), mainMenu.subList(0, mainMenu.size()));
       });
    }
 
@@ -149,7 +144,12 @@ public class AppCLI implements View {
    }
 
    private List<String> showMenu() {
-      return List.of("Please select a module to make actions in", "Supplier", "Order", "Agreement", "System", "Exit");
+      return List.of(
+            "Please select a module to make actions in",
+            "Suppliers and Agreements",
+            "Orders",
+            "System",
+            "Exit");
    }
 
    private void handleChoice() {

@@ -1,6 +1,7 @@
 package DomainLayer;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidParameterException;
 import java.util.*;
 
 import DomainLayer.Classes.Supplier;
@@ -65,19 +66,12 @@ public class SupplierFacade {
       return false;
    }
 
-   /**
-    * Updates an existing supplier's information.
-    * The supplier's id must already exist.
-    *
-    * @param s the Supplier with updated information (must have id set)
-    * @return true if the supplier existed and was updated, false otherwise
-    */
-   public boolean updateSupplier(Supplier s) {
-      UUID id = s.getSupplierId();
-      if (id == null || !suppliers.containsKey(id)) {
+   public boolean updateSupplier(Supplier updated) {
+      UUID id = updated.getSupplierId();
+      if (!suppliers.containsKey(id)) {
          return false;
       }
-      suppliers.put(id, s);
+      suppliers.put(id, updated);
       return true;
    }
 
@@ -103,7 +97,16 @@ public class SupplierFacade {
    public boolean supplierExists(String json) {
       try {
          Map<String, String> map = mapper.readValue(json, Map.class);
-         UUID id = UUID.nameUUIDFromBytes((map.get("supplierId").getBytes(StandardCharsets.UTF_8)));
+         UUID id;
+         String candidate = map.get("supplierId");
+         try {
+            id = UUID.fromString(candidate);
+         } catch (IllegalArgumentException ex) {
+            id = UUID.nameUUIDFromBytes(
+                  candidate.getBytes(StandardCharsets.UTF_8));
+         } catch (Exception e) {
+            throw new InvalidParameterException("Can not parse ID");
+         }
          return suppliers.containsKey(id);
       } catch (IllegalArgumentException e) {
          throw new RuntimeException("Invalid Supplier ID or UUID format: " + json, e);
