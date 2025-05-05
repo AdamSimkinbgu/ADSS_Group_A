@@ -7,19 +7,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.*;
+import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
 import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class SystemService extends BaseService implements IService {
-   private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
-   private final ObjectMapper objectMapper = new ObjectMapper();
    private final SupplierFacade supplierFacade;
    private final OrderFacade orderFacade;
    private final AgreementFacade agreementFacade;
@@ -50,7 +47,6 @@ public class SystemService extends BaseService implements IService {
          JsonNode root = objectMapper.readTree(in);
 
          // 1) load all suppliers and keep their IDs
-
          for (JsonNode s : root.withArray("suppliers")) {
             supplierFacade.addSupplier(s.toString());
          }
@@ -69,9 +65,10 @@ public class SystemService extends BaseService implements IService {
                throw new IllegalStateException("No supplier for ID: " + sid);
             }
 
-            // inject the name
+            // inject the name and ID into the agreement
             ObjectNode copy = ((ObjectNode) a).deepCopy();
             copy.put("supplierName", sup.getName());
+            copy.put("supplierId", sid);
 
             // create in the facade
             agreementFacade.createAgreement(copy.toString());
@@ -92,17 +89,28 @@ public class SystemService extends BaseService implements IService {
       return serialize(resp);
    }
 
-   private String getAllData(String json) {
+   private String getAllData(String ignored) {
       ServiceResponse<String> resp;
+      ObjectNode root;
       try {
-         // Get all data from the system
-         String allData = supplierFacade.getSuppliersWithFullDetail() + "\n"
-               + agreementFacade.getAgreementsWithFullDetail() + "\n";
-         // + orderFacade.getOrdersWithFullDetail() + "\n";
-         resp = new ServiceResponse<>(allData, "");
+         // 1) get lists from facades
+         List<Supplier> allSuppliers = supplierFacade.getSuppliersWithFullDetail();
+         List<Agreement> allAgreements = agreementFacade.getAgreementsWithFullDetail();
+         // (and later on orders, etc.)
+
+         // 2) build a single JSON object with arrays
+         root = objectMapper.createObjectNode();
+         root.set("suppliers", objectMapper.valueToTree(allSuppliers));
+         root.set("agreements", objectMapper.valueToTree(allAgreements));
+         // root.set("orders", mapper.valueToTree(allOrders));
+
+         // 3) resp as ServiceResponse
+         resp = new ServiceResponse<>(root.toPrettyString(), "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, "Get all data failed: " + e.getMessage());
       }
+
+      // 4) return the serialized response
       return serialize(resp);
    }
 }

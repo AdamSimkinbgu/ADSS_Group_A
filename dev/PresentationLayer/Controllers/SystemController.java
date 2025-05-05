@@ -3,6 +3,7 @@ package PresentationLayer.Controllers;
 import java.io.File;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import PresentationLayer.AbstractController;
@@ -62,7 +63,22 @@ public class SystemController extends AbstractController {
 
    public void getAllData() {
       view.showMessage("Getting all data...");
-      String response = handleModuleCommand("GetAllData", "");
-      view.dispatchResponse(response, String.class);
+      String response = handleModuleCommand("getAllData", "");
+      StringBuilder sb = new StringBuilder();
+      sb.append("System data:\n");
+      try {
+         sb.append("Data path: ").append(DATA_PATH).append("\n");
+         JsonNode data = mapper.readTree(response);
+
+         // full pretty-print of the entire JsonNode
+         String pretty = mapper
+               .writerWithDefaultPrettyPrinter()
+               .writeValueAsString(data);
+
+         sb.append(pretty).append("\n");
+      } catch (Exception e) {
+         sb.append("Error: ").append(e.getMessage()).append("\n");
+      }
+      view.dispatchResponse(sb.toString(), String.class);
    }
 }

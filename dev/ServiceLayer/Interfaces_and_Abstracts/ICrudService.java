@@ -2,7 +2,7 @@ package ServiceLayer.Interfaces_and_Abstracts;
 
 import java.util.List;
 
-import ServiceLayer.Response;
+;
 
 /**
  * Generic CRUD contract, where each call yields a JSON‐friendly Response.
@@ -12,17 +12,17 @@ import ServiceLayer.Response;
  */
 public interface ICrudService<T, UUID> {
     /** List every T in the system. */
-    Response<List<T>> getAll();
+    ServiceResponse<List<T>> getAll();
 
     /** Look up a single T by its ID. */
-    Response<T> findById(UUID id);
+    ServiceResponse<T> findById(UUID id);
 
     /** Create a new T; returns the new ID on success. */
-    Response<UUID> create(T entity);
+    ServiceResponse<UUID> create(T entity);
 
     /** Update an existing T; no data returns if successful. */
-    Response<String> update(T entity);
+    ServiceResponse<String> update(T entity);
 
     /** Delete by ID; no data returns if successful. */
-    Response<String> delete(UUID id);
+    ServiceResponse<String> delete(UUID id);
 }

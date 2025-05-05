@@ -107,7 +107,7 @@ public class AgreementController extends AbstractController {
    public void listAllAgreements() {
       view.showMessage("Listing all agreements...");
       view.dispatchResponse(
-            handleModuleCommand("listAllAgreements", ""),
+            handleModuleCommand("getAllAgreements", ""),
             Agreement[].class);
    }
 

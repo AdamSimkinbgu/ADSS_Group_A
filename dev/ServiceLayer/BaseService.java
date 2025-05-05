@@ -11,18 +11,18 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public abstract class BaseService {
-   protected HashMap<String, Function<String, String>> serviceFucntions = new HashMap<>();
+   protected HashMap<String, Function<String, ServiceResponse<?>>> serviceFunctions = new HashMap<>();
    protected ObjectMapper objectMapper;
 
    public BaseService() {
       this.objectMapper = new ObjectMapper();
-      serviceFucntions.put("?", this::commandDoesNotExist);
+      serviceFunctions.put("?", this::commandDoesNotExist);
       objectMapper.registerModule(new JavaTimeModule());
       objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
    }
 
-   public String commandDoesNotExist(String data) {
-      return "Command does not exist";
+   public ServiceResponse<String> commandDoesNotExist(String data) {
+      return ServiceResponse.error("Command does not exist.");
    }
 
    /**

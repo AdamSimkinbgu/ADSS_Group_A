@@ -4,8 +4,6 @@ package ServiceLayer.Interfaces_and_Abstracts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ServiceLayer.Response;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -50,51 +48,51 @@ public abstract class AbstractJsonCrudService<T, ID> implements ICrudService<T, 
    }
 
    @Override
-   public Response<List<T>> getAll() {
-      return Response.ok(cache);
+   public ServiceResponse<List<T>> getAll() {
+      return ServiceResponse.ok(cache);
    }
 
    @Override
-   public Response<T> findById(UUID id) {
+   public ServiceResponse<T> findById(UUID id) {
       return cache.stream()
             .filter(e -> Objects.equals(getId(e), id))
             .findFirst()
-            .map(e -> Response.ok(e))
-            .orElse(Response.error("Entity with ID: " + id + " not found."));
+            .map(e -> ServiceResponse.ok(e))
+            .orElse(ServiceResponse.error("Entity with ID: " + id + " not found."));
    }
 
    @Override
-   public Response<UUID> create(T entity) {
+   public ServiceResponse<UUID> create(T entity) {
       if (getId(entity) == null) {
          setId(entity, generateId());
          cache.add(entity);
          save();
-         return Response.ok(getId(entity));
+         return ServiceResponse.ok(getId(entity));
       }
-      return Response.error("Failed to create entity: ID already exists.");
+      return ServiceResponse.error("Failed to create entity: ID already exists.");
    }
 
    @Override
-   public Response<String> update(T updated) {
+   public ServiceResponse<String> update(T updated) {
       UUID id = getId(updated);
       for (int i = 0; i < cache.size(); i++) {
          if (Objects.equals(getId(cache.get(i)), id)) {
             cache.set(i, updated);
             save();
-            return Response.ok("Entity with ID: " + id + " updated successfully.");
+            return ServiceResponse.ok("Entity with ID: " + id + " updated successfully.");
          }
       }
-      return Response.error("Failed to update entity with ID: " + id);
+      return ServiceResponse.error("Failed to update entity with ID: " + id);
    }
 
    @Override
-   public Response<String> delete(UUID id) {
+   public ServiceResponse<String> delete(UUID id) {
       boolean removed = cache.removeIf(e -> Objects.equals(getId(e), id));
       if (removed) {
          save();
-         return Response.ok("Entity with ID: " + id + " deleted successfully.");
+         return ServiceResponse.ok("Entity with ID: " + id + " deleted successfully.");
       }
-      return Response.error("Failed to delete entity with ID: " + id);
+      return ServiceResponse.error("Failed to delete entity with ID: " + id);
    }
 
    // Subclasses must implement these three:

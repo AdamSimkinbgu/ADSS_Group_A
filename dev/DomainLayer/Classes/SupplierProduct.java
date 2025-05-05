@@ -16,8 +16,6 @@ import java.util.UUID;
  * • price – base unit price
  */
 public class SupplierProduct implements Serializable {
-   private static final long serialVersionUID = 1L;
-
    private UUID supplierId;
    private UUID productId;
    private String supplierCatalogNumber;

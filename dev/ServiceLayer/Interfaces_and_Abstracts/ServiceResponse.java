@@ -1,5 +1,6 @@
 package ServiceLayer.Interfaces_and_Abstracts;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -38,5 +39,23 @@ public class ServiceResponse<T> {
 
    public void setError(String error) {
       this.error = error;
+   }
+
+   @JsonIgnore
+   public boolean isSuccess() {
+      return error == null;
+   }
+
+   @JsonIgnore
+   public boolean isFailure() {
+      return error != null;
+   }
+
+   public static <T> ServiceResponse<T> ok(T value) {
+      return new ServiceResponse<>(value, null);
+   }
+
+   public static <T> ServiceResponse<T> error(String error) {
+      return new ServiceResponse<>(null, error);
    }
 }

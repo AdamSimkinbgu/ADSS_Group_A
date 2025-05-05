@@ -156,4 +156,20 @@ public class Agreement implements Serializable {
     public void removeBillOfQuantitiesItem(UUID itemId) {
         this.billOfQuantities.removeIf(item -> item.getId().equals(itemId));
     }
+
+    @Override
+    public String toString() {
+        return "Agreement{" +
+                "agreementId=" + agreementId +
+                ", supplierId=" + supplierId +
+                ", supplierName='" + supplierName + '\'' +
+                ", valid=" + valid +
+                ", selfSupply=" + selfSupply +
+                ", supplyDays=" + supplyDays +
+                ", agreementStartDate=" + agreementStartDate +
+                ", agreementEndDate=" + agreementEndDate +
+                ", billOfQuantities=" + billOfQuantities +
+                ", hasFixedSupplyDays=" + hasFixedSupplyDays +
+                '}';
+    }
 }

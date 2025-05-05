@@ -16,7 +16,6 @@ import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
 
 public class AgreementService extends BaseService implements IService {
-   private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
    private final AgreementFacade agreementFacade;
    private final SupplierFacade supplierFacade;
 

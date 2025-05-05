@@ -44,7 +44,6 @@ public abstract class AbstractSecureJsonCrudService<T, ID>
         try {
             byte[] cipherText = Files.readAllBytes(file.toPath());
             byte[] jsonBytes = decrypt(cipherText);
-            @SuppressWarnings("unchecked")
             List<T> list = mapper.readValue(jsonBytes, new TypeReference<List<T>>() {
             });
             cache = list;

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class Supplier implements Serializable {
          @JsonProperty("contacts") List<ContactInfo> contacts,
          @JsonProperty("products") List<SupplierProduct> products,
          @JsonProperty("agreements") List<Agreement> agreements) {
-      this.supplierId = UUID.randomUUID();
+      this.supplierId = UUID.nameUUIDFromBytes((name + ":" + taxNumber).getBytes(StandardCharsets.UTF_8));
       this.name = name;
       this.taxNumber = taxNumber;
       this.address = address;

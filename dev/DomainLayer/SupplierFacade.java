@@ -1,5 +1,6 @@
 package DomainLayer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import DomainLayer.Classes.Supplier;
@@ -102,7 +103,7 @@ public class SupplierFacade {
    public boolean supplierExists(String json) {
       try {
          Map<String, String> map = mapper.readValue(json, Map.class);
-         UUID id = UUID.fromString(map.get("supplierId"));
+         UUID id = UUID.nameUUIDFromBytes((map.get("supplierId").getBytes(StandardCharsets.UTF_8)));
          return suppliers.containsKey(id);
       } catch (IllegalArgumentException e) {
          throw new RuntimeException("Invalid Supplier ID or UUID format: " + json, e);

@@ -13,7 +13,6 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import DomainLayer.Classes.Order;
 
 public class OrderService extends BaseService implements IService {
-   private final HashMap<String, Function<String, String>> serviceFunctions = new HashMap<>();
    private final ObjectMapper objectMapper = new ObjectMapper();
    private final OrderFacade orderFacade;
 

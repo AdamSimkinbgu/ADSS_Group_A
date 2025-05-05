@@ -44,34 +44,20 @@ public class SupplierController extends AbstractController {
 
    public void createSupplier() {
       view.showMessage("Creating a new supplier… Please enter the following details:");
-      ObjectNode payload = mapper.createObjectNode();
+      ObjectNode payload = initCreatePayload();
+      if (payload == null)
+         return;
+      payload.set("address", requestAddress());
 
-      String name = view.readLine("Name:");
-      payload.put("name", name);
+      payload.set("paymentDetails", requestPaymentDetails());
 
-      String tax = view.readLine("TaxNumber:");
-      payload.put("taxNumber", tax);
-
-      ObjectNode addr = mapper.createObjectNode();
-      addr.put("street", view.readLine("Address – street:"));
-      addr.put("city", view.readLine("Address – city:"));
-      addr.put("buildingNumber", view.readLine("Address – buildingNumber:"));
-      payload.set("address", addr);
-
-      ObjectNode pay = mapper.createObjectNode();
-      pay.put("bankAccountNumber", view.readLine("PaymentDetails – bankAccountNumber:"));
-      pay.put("paymentMethod", view.readLine("PaymentDetails – paymentMethod (e.g. CASH):").toUpperCase());
-      pay.put("paymentTerm", view.readLine("PaymentDetails – paymentTerm (e.g. N30):").toUpperCase());
-      payload.set("paymentDetails", pay);
-
-      ArrayNode contacts = mapper.createArrayNode();
       ArrayNode products = mapper.createArrayNode();
-      ArrayNode agreements = mapper.createArrayNode();
 
       // even if user says “n”, contacts is just []
-      payload.set("contacts", contacts);
+      payload.set("contacts", requestContacts());
       payload.set("products", products);
-      payload.set("agreements", agreements);
+      // agreements is just [] because we don't have any yet
+      payload.set("agreements", mapper.createArrayNode());
 
       String supplierJson = payload.toString();
 
@@ -82,8 +68,11 @@ public class SupplierController extends AbstractController {
 
    public void updateSupplier() {
       System.out.println("Updating an existing supplier...");
-      view.showMessage("Please enter the supplier ID to update:");
-      String supplierId = view.readLine();
+      String supplierId = view.readLine("Please enter the supplier ID to update:");
+      if (!doesSupplierExists(supplierId)) {
+         view.showError("Supplier id does not exist.");
+         return;
+      }
       view.showMessage(
             "What do you want to update? (Name, TaxNumber, Address, BankNumber, BranchNumber, AccountNumber, PaymentMethod, PaymentTerm)");
       String fieldToUpdate = view.readLine();
@@ -127,5 +116,109 @@ public class SupplierController extends AbstractController {
       System.out.println("Viewing all suppliers...");
       String response = handleModuleCommand("getAllSuppliers", "{}");
       view.dispatchResponse(response, Supplier.class);
+   }
+
+   private ObjectNode initCreatePayload() {
+      ObjectNode payload = mapper.createObjectNode();
+      boolean res = true;
+      while (res) {
+         String name = view.readLine("Name:");
+         String tax = view.readLine("TaxNumber:");
+         String supplierId = name + ":" + tax;
+         String supJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
+         if (service.execute("checkSupplierExists", supJson).equals("false")) {
+            res = requestBoolean(
+                  "Supplier with this name and tax number already exists. Do you want to try again? (true/false):");
+            if (res == false) {
+               return null;
+            }
+            continue;
+         }
+         payload.put("name", name);
+         payload.put("taxNumber", tax);
+      }
+      return payload;
+   }
+
+   private boolean doesSupplierExists(String supName, String supTax) {
+      try {
+         String viewJson = String.format("{\"supplierId\":\"%s\"}", supName + ":" + supTax);
+         String response = handleModuleCommand("getSupplierDetails", viewJson);
+         Supplier supplier = mapper.readValue(response, Supplier.class);
+         return supplier != null;
+      } catch (Exception e) {
+         view.showError("Error: " + e.getMessage());
+         return false;
+      }
+   }
+
+   private boolean doesSupplierExists(String supplierId) {
+      try {
+         String viewJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
+         String response = handleModuleCommand("getSupplierDetails", viewJson);
+         Supplier supplier = mapper.readValue(response, Supplier.class);
+         return supplier != null;
+      } catch (Exception e) {
+         view.showError("Error: " + e.getMessage());
+         return false;
+      }
+   }
+
+   private ArrayNode requestContacts() {
+      ArrayNode contacts = mapper.createArrayNode();
+      String wantsToContinue = view.readLine("Do you want to add a contact? (y/n):").toLowerCase();
+      while (wantsToContinue.equals("y")) {
+         ObjectNode contact = mapper.createObjectNode();
+         String name = null;
+         while (name == null || name.isEmpty())
+            view.readLine("Please enter contact name (Can not be empty):");
+         String email = null;
+         while (email == null || email.isEmpty())
+            view.readLine("Please enter contact email (Can not be empty):");
+         String phone = null;
+         while (phone == null || phone.isEmpty())
+            view.readLine("Please enter contact phone (Can not be empty):");
+         contacts.add(contact);
+         wantsToContinue = view.readLine("Do you want to add another contact? (y/n):").toLowerCase();
+      }
+      return contacts;
+   }
+
+   private ObjectNode requestAddress() {
+      ObjectNode addr = mapper.createObjectNode();
+      String street = null;
+      while (street == null || street.isEmpty())
+         view.readLine("Please enter an address – street (Can not be empty):");
+      String city = null;
+      while (city == null || city.isEmpty())
+         view.readLine("Please enter an address – city (Can not be empty):");
+      String buildingNumber = null;
+      while (buildingNumber == null || buildingNumber.isEmpty())
+         view.readLine("Please enter an address – buildingNumber (Can not be empty):");
+
+      addr.put("street", street);
+      addr.put("city", city);
+      addr.put("buildingNumber", buildingNumber);
+      return addr;
+   }
+
+   private ObjectNode requestPaymentDetails() {
+      ObjectNode pay = mapper.createObjectNode();
+      String bankAccountNumber = null;
+      while (bankAccountNumber == null || bankAccountNumber.isEmpty())
+         view.readLine("Please enter payment details – bankAccountNumber (Can not be empty):");
+      String paymentMethod = null;
+      while (paymentMethod == null || paymentMethod.isEmpty())
+         view.readLine(
+               "Please enter payment details – paymentMethod (Can not be empty, Must be valid or creation will be rejected later [e.g. CASH]):");
+      String paymentTerm = null;
+      while (paymentTerm == null || paymentTerm.isEmpty())
+         view.readLine(
+               "Please enter payment details – paymentTerm (Can not be empty and must be valid or creation will be rejected later[e.g. N30]):");
+
+      pay.put("bankAccountNumber", bankAccountNumber);
+      pay.put("paymentMethod", paymentMethod);
+      pay.put("paymentTerm", paymentTerm);
+      return pay;
    }
 }

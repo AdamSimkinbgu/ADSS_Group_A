@@ -17,7 +17,6 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
  */
 public class SupplierService extends BaseService implements IService {
    private final SupplierFacade facade;
-   private final Map<String, Function<String, String>> serviceFunctions = new HashMap<>();
 
    public SupplierService(SupplierFacade facade) {
       this.facade = facade;
@@ -26,6 +25,7 @@ public class SupplierService extends BaseService implements IService {
       serviceFunctions.put("removeSupplier", this::removeSupplier);
       serviceFunctions.put("getSupplierDetails", this::getSupplierDetails);
       serviceFunctions.put("getAllSuppliers", this::getAllSuppliers);
+      serviceFunctions.put("checkSupplierExists", this::checkSupplierExists);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -104,9 +104,20 @@ public class SupplierService extends BaseService implements IService {
          for (Supplier supplier : suppliers) {
             suppliersMap.put(supplier.getSupplierId().toString(), supplier.getName());
          }
-         resp = new ServiceResponse<>(suppliersMap, "");
+         resp = ServiceResponse.ok(suppliersMap);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
+      }
+      return serialize(resp);
+   }
+
+   private String checkSupplierExists(String nameAndTax) {
+      ServiceResponse<Boolean> resp;
+      try {
+         boolean exists = facade.supplierExists(nameAndTax);
+         resp = new ServiceResponse<>(exists, "");
+      } catch (Exception e) {
+         resp = new ServiceResponse<>(false, e.getMessage());
       }
       return serialize(resp);
    }
