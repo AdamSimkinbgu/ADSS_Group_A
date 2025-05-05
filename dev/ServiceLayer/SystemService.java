@@ -33,12 +33,12 @@ public class SystemService extends BaseService implements IService {
    }
 
    @Override
-   public String execute(String serviceOption, String data) {
-      Function<String, String> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
+   public ServiceResponse<?> execute(String serviceOption, String data) {
+      Function<String, ServiceResponse<?>> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
       return fn.apply(data);
    }
 
-   private String loadData(String ignored) {
+   private ServiceResponse<String> loadData(String ignored) {
       ServiceResponse<String> resp;
       try (InputStream in = getClass().getResourceAsStream("/data.json")) {
          if (in == null)
@@ -74,22 +74,22 @@ public class SystemService extends BaseService implements IService {
             agreementFacade.createAgreement(copy.toString());
          }
 
-         resp = new ServiceResponse<>("Data loaded successfully", "");
+         resp = ServiceResponse.ok("Data loaded successfully");
 
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, "Load failed: " + e.getMessage());
+         resp = ServiceResponse.error("Load failed: " + e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String noData(String json) {
+   private ServiceResponse<String> noData(String json) {
       // simulated payload
       String dummy = "No data loaded";
-      ServiceResponse<String> resp = new ServiceResponse<>(dummy, "");
-      return serialize(resp);
+      ServiceResponse<String> resp = ServiceResponse.ok(dummy);
+      return resp;
    }
 
-   private String getAllData(String ignored) {
+   private ServiceResponse<String> getAllData(String ignored) {
       ServiceResponse<String> resp;
       ObjectNode root;
       try {
@@ -105,12 +105,12 @@ public class SystemService extends BaseService implements IService {
          // root.set("orders", mapper.valueToTree(allOrders));
 
          // 3) resp as ServiceResponse
-         resp = new ServiceResponse<>(root.toPrettyString(), "");
+         resp = ServiceResponse.ok(root.toPrettyString());
       } catch (Exception e) {
-         resp = new ServiceResponse<>(null, "Get all data failed: " + e.getMessage());
+         resp = ServiceResponse.error("Get all data failed: " + e.getMessage());
       }
 
       // 4) return the serialized response
-      return serialize(resp);
+      return resp;
    }
 }

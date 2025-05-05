@@ -31,12 +31,12 @@ public class AgreementService extends BaseService implements IService {
    }
 
    @Override
-   public String execute(String serviceOption, String data) {
-      Function<String, String> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
+   public ServiceResponse<?> execute(String serviceOption, String data) {
+      Function<String, ServiceResponse<?>> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
       return fn.apply(data);
    }
 
-   private String addAgreement(String json) {
+   private ServiceResponse<?> addAgreement(String json) {
       ServiceResponse<Boolean> resp;
       try {
          ObjectNode root = (ObjectNode) objectMapper.readTree(json);
@@ -51,7 +51,7 @@ public class AgreementService extends BaseService implements IService {
          if (sup == null) {
             resp = new ServiceResponse<>(false,
                   "No supplier found with ID: " + supplierId);
-            return serialize(resp);
+            return resp;
          }
 
          root.put("supplierName", sup.getName());
@@ -66,10 +66,10 @@ public class AgreementService extends BaseService implements IService {
          resp = new ServiceResponse<>(false,
                "Failed to create agreement: " + e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String updateAgreement(String json) {
+   private ServiceResponse<?> updateAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {
          // TODO: implement update logic
@@ -77,10 +77,10 @@ public class AgreementService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String removeAgreement(String json) {
+   private ServiceResponse<?> removeAgreement(String json) {
       ServiceResponse<Boolean> resp;
       try {
          boolean deleted = agreementFacade.removeAgreement(json);
@@ -94,10 +94,10 @@ public class AgreementService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(false, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String getAgreement(String json) {
+   private ServiceResponse<?> getAgreement(String json) {
       ServiceResponse<Agreement> resp;
       try {
          Agreement agreement = agreementFacade.getAgreement(json);
@@ -111,10 +111,10 @@ public class AgreementService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String getAllAgreements(String json) {
+   private ServiceResponse<?> getAllAgreements(String json) {
       ServiceResponse<List<Agreement>> resp;
       try {
          List<Agreement> agreements = agreementFacade.getAgreementsWithFullDetail();
@@ -122,7 +122,7 @@ public class AgreementService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
 }

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import ServiceLayer.Interfaces_and_Abstracts.IService;
+import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public abstract class AbstractController {
    protected Map<String, Runnable> controllerMenuOptions = new HashMap<>();
@@ -74,8 +75,16 @@ public abstract class AbstractController {
    }
 
    public String handleModuleCommand(String function, String JsonDTO) {
-      lastServiceResponse = service.execute(function, JsonDTO);
+      lastServiceResponse = serialize(service.execute(function, JsonDTO));
       return lastServiceResponse;
+   }
+
+   protected <T> String serialize(ServiceResponse<T> resp) {
+      try {
+         return mapper.writeValueAsString(resp);
+      } catch (JsonProcessingException e) {
+         return "{\"value\":null,\"error\":\"Serialization error\"}";
+      }
    }
 
    protected String fuseClassAttributesAndParametersToJson(
@@ -171,6 +180,10 @@ public abstract class AbstractController {
 
    protected boolean requestBoolean(String message) {
       String input = view.readLine(message);
+      if (input.toLowerCase().equals("y") || input.toLowerCase().equals("yes"))
+         return true;
+      else if (input.toLowerCase().equals("n") || input.toLowerCase().equals("no"))
+         return false;
       return Boolean.parseBoolean(input);
    }
 }

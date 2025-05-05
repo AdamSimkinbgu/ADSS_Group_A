@@ -26,24 +26,24 @@ public class OrderService extends BaseService implements IService {
    }
 
    @Override
-   public String execute(String serviceOption, String data) {
-      Function<String, String> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
+   public ServiceResponse<?> execute(String serviceOption, String data) {
+      Function<String, ServiceResponse<?>> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
       return fn.apply(data);
    }
 
-   private String addOrder(String json) {
+   private ServiceResponse<?> addOrder(String json) {
       ServiceResponse<Order> resp;
       try {
-         return new ServiceResponse<String>(null, "Sorry, this method is not implemented yet.").toString();
+         return ServiceResponse.error("Sorry, this method is not implemented yet.");
          // Order createdOrder = orderFacade.createOrder(json);
          // resp = new ServiceResponse<>(createdOrder, "");
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String updateOrder(String json) {
+   private ServiceResponse<?> updateOrder(String json) {
       ServiceResponse<Order> resp;
       try {
          Order order = objectMapper.readValue(json, Order.class);
@@ -52,10 +52,10 @@ public class OrderService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String removeOrder(String json) {
+   private ServiceResponse<?> removeOrder(String json) {
       ServiceResponse<Boolean> resp;
       try {
          UUID orderId = UUID.fromString(json.replace("\"", ""));
@@ -64,10 +64,10 @@ public class OrderService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(false, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String getOrder(String json) {
+   private ServiceResponse<?> getOrder(String json) {
       ServiceResponse<Order> resp;
       try {
          UUID orderId = UUID.fromString(json.replace("\"", ""));
@@ -76,7 +76,7 @@ public class OrderService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
 }

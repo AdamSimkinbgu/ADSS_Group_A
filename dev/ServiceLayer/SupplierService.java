@@ -1,5 +1,6 @@
 package ServiceLayer;
 
+import java.security.Provider.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,18 +31,18 @@ public class SupplierService extends BaseService implements IService {
    }
 
    @Override
-   public String execute(String serviceOption, String data) {
-      Function<String, String> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
+   public ServiceResponse<?> execute(String serviceOption, String data) {
+      Function<String, ServiceResponse<?>> fn = serviceFunctions.getOrDefault(serviceOption, this::commandDoesNotExist);
       return fn.apply(data);
    }
 
    // example function
-   private String addSupplier(String creationJson) {
+   private ServiceResponse<?> addSupplier(String creationJson) {
       // make sure json is good
       ServiceResponse<Boolean> pre = validateBinding(creationJson, Supplier.class);
       // if not, return jackson error message
       if (pre.getValue() == null || !pre.getValue()) {
-         return serialize(pre);
+         return pre;
       }
 
       // use facade to try and add supplier
@@ -52,10 +53,10 @@ public class SupplierService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(false, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String updateSupplier(String updateJson) {
+   private ServiceResponse<Supplier> updateSupplier(String updateJson) {
       ServiceResponse<Supplier> resp;
       try {
          // TODO: implement update logic
@@ -63,10 +64,10 @@ public class SupplierService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String removeSupplier(String id) {
+   private ServiceResponse<?> removeSupplier(String id) {
       ServiceResponse<Boolean> resp;
       try {
          boolean deleted = facade.removeSupplier(id);
@@ -78,10 +79,10 @@ public class SupplierService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(false, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String getSupplierDetails(String id) {
+   private ServiceResponse<?> getSupplierDetails(String id) {
       ServiceResponse<Supplier> resp;
       try {
          Supplier supplier = facade.getSupplier(id);
@@ -93,10 +94,10 @@ public class SupplierService extends BaseService implements IService {
       } catch (Exception e) {
          resp = new ServiceResponse<>(null, e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String getAllSuppliers(String id) {
+   private ServiceResponse<?> getAllSuppliers(String id) {
       ServiceResponse<Map<String, String>> resp;
       try {
          List<Supplier> suppliers = facade.getSuppliersWithFullDetail();
@@ -108,17 +109,17 @@ public class SupplierService extends BaseService implements IService {
       } catch (Exception e) {
          resp = ServiceResponse.error(e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 
-   private String checkSupplierExists(String nameAndTax) {
+   private ServiceResponse<?> checkSupplierExists(String nameAndTax) {
       ServiceResponse<Boolean> resp;
       try {
          boolean exists = facade.supplierExists(nameAndTax);
-         resp = new ServiceResponse<>(exists, "");
+         resp = ServiceResponse.ok(exists);
       } catch (Exception e) {
-         resp = new ServiceResponse<>(false, e.getMessage());
+         resp = ServiceResponse.error(e.getMessage());
       }
-      return serialize(resp);
+      return resp;
    }
 }

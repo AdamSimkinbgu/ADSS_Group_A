@@ -45,7 +45,7 @@ public class SupplierController extends AbstractController {
    public void createSupplier() {
       view.showMessage("Creating a new supplier… Please enter the following details:");
       ObjectNode payload = initCreatePayload();
-      if (payload == null)
+      if (payload.isEmpty())
          return;
       payload.set("address", requestAddress());
 
@@ -126,16 +126,22 @@ public class SupplierController extends AbstractController {
          String tax = view.readLine("TaxNumber:");
          String supplierId = name + ":" + tax;
          String supJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
-         if (service.execute("checkSupplierExists", supJson).equals("false")) {
-            res = requestBoolean(
-                  "Supplier with this name and tax number already exists. Do you want to try again? (true/false):");
-            if (res == false) {
-               return null;
+         String exeRes = serialize(service.execute("checkSupplierExists", supJson));
+         try {
+            if (mapper.readTree(exeRes).get("value").asBoolean()) {
+               res = requestBoolean(
+                     "Supplier with this name and tax number already exists. Do you want to try again? (y/n):");
+               if (res == false) {
+                  return payload; // empty payload
+               }
+               continue;
             }
-            continue;
+         } catch (Exception e) {
+            view.showError(e.getMessage());
          }
          payload.put("name", name);
          payload.put("taxNumber", tax);
+         res = false;
       }
       return payload;
    }
@@ -188,13 +194,13 @@ public class SupplierController extends AbstractController {
       ObjectNode addr = mapper.createObjectNode();
       String street = null;
       while (street == null || street.isEmpty())
-         view.readLine("Please enter an address – street (Can not be empty):");
+         street = view.readLine("Please enter an address – street (Can not be empty):");
       String city = null;
       while (city == null || city.isEmpty())
-         view.readLine("Please enter an address – city (Can not be empty):");
+         city = view.readLine("Please enter an address – city (Can not be empty):");
       String buildingNumber = null;
       while (buildingNumber == null || buildingNumber.isEmpty())
-         view.readLine("Please enter an address – buildingNumber (Can not be empty):");
+         buildingNumber = view.readLine("Please enter an address – buildingNumber (Can not be empty):");
 
       addr.put("street", street);
       addr.put("city", city);
@@ -206,15 +212,17 @@ public class SupplierController extends AbstractController {
       ObjectNode pay = mapper.createObjectNode();
       String bankAccountNumber = null;
       while (bankAccountNumber == null || bankAccountNumber.isEmpty())
-         view.readLine("Please enter payment details – bankAccountNumber (Can not be empty):");
+         bankAccountNumber = view.readLine("Please enter payment details – bankAccountNumber (Can not be empty):");
       String paymentMethod = null;
       while (paymentMethod == null || paymentMethod.isEmpty())
-         view.readLine(
-               "Please enter payment details – paymentMethod (Can not be empty, Must be valid or creation will be rejected later [e.g. CASH]):");
+         paymentMethod = view.readLine(
+               "Please enter payment details – paymentMethod (Can not be empty, Must be valid or creation will be rejected later [e.g. CASH]):")
+               .toUpperCase();
       String paymentTerm = null;
       while (paymentTerm == null || paymentTerm.isEmpty())
-         view.readLine(
-               "Please enter payment details – paymentTerm (Can not be empty and must be valid or creation will be rejected later[e.g. N30]):");
+         paymentTerm = view.readLine(
+               "Please enter payment details – paymentTerm (Can not be empty and must be valid or creation will be rejected later[e.g. N30]):")
+               .toUpperCase();
 
       pay.put("bankAccountNumber", bankAccountNumber);
       pay.put("paymentMethod", paymentMethod);
