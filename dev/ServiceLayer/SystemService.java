@@ -4,7 +4,6 @@ package ServiceLayer;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,12 +17,12 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class SystemService extends BaseService implements IService {
    private final SupplierFacade supplierFacade;
-   private final OrderFacade orderFacade;
+   // private final OrderFacade orderFacade;
    private final AgreementFacade agreementFacade;
 
    public SystemService(SupplierFacade supplierFacade, OrderFacade orderFacade, AgreementFacade agreementFacade) {
       this.supplierFacade = supplierFacade;
-      this.orderFacade = orderFacade;
+      // this.orderFacade = orderFacade;
       this.agreementFacade = agreementFacade;
       serviceFunctions.put("loadData", this::loadData);
       serviceFunctions.put("noData", this::noData);
@@ -53,7 +52,7 @@ public class SystemService extends BaseService implements IService {
             idx++;
             String supplierJson = s.toString();
 
-            ServiceResponse<Void> valSup = validateJsonPayload(supplierJson, Supplier.class);
+            ServiceResponse<Void> valSup = validatePatchViaSetters(supplierJson, Supplier.class);
             if (valSup.getError() != null && !valSup.getError().isEmpty()) {
                allErrors.add("Supplier[" + idx + "]: " + valSup.getError());
                continue;
