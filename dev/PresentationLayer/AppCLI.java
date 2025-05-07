@@ -1,11 +1,9 @@
 package PresentationLayer;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
@@ -38,6 +36,7 @@ public class AppCLI implements View {
    private final ObjectMapper mapper = new ObjectMapper();
 
    public static void main(String[] args) {
+      // we should change this so that the data path is optional
       String[] fakeargs = new String[] { "fake/data/path" }; // For testing purposes
       if (fakeargs.length != 1 || fakeargs[0].isEmpty()) {
          System.err.println("Please provide the data path as an argument.");
@@ -79,8 +78,6 @@ public class AppCLI implements View {
       });
       moduleSelection.put(CMD_INVALID, () -> {
          System.out.println("Invalid choice. Please try again.");
-         List<String> mainMenu = this.showMenu();
-         showOptions(mainMenu.get(TITLE), mainMenu.subList(0, mainMenu.size()));
       });
    }
 
@@ -118,13 +115,13 @@ public class AppCLI implements View {
             // success: show the object
             String pretty = mapper.writerWithDefaultPrettyPrinter()
                   .writeValueAsString(resp.getValue());
-            this.showMessage(pretty);
+            this.showMessage("Success: " + pretty);
          } else {
             // failure: show only the error
-            this.showError(resp.getError());
+            this.showError("Failure: " + resp.getError());
          }
       } catch (Exception e) {
-         this.showError("Invalid response format: " + e.getMessage());
+         this.showError("Error:" + "Invalid response format: " + e.getMessage());
       }
    }
 
@@ -159,18 +156,5 @@ public class AppCLI implements View {
 
    private void invokeModuleChoice(String userRequest) {
       moduleSelection.getOrDefault(selectedModule, moduleSelection.get("?")).run();
-   }
-
-   @Override
-   public List<String> readParameters(String message) {
-      showMessage(message);
-      String input = scanner.nextLine();
-      return parseGrouped(input);
-   }
-
-   public static List<String> parseGrouped(String input) {
-      String[] parts = input.split("-");
-      List<String> parameters = Arrays.stream(parts).map(String::trim).collect(Collectors.toList());
-      return parameters;
    }
 }

@@ -14,6 +14,4 @@ public interface View {
    String readLine();
 
    String readLine(String message);
-
-   List<String> readParameters(String message);
 }

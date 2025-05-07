@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -39,7 +41,8 @@ public abstract class AbstractController {
       this.implemented = false;
       mapper.registerModule(new JavaTimeModule());
       // serialize/deserialize dates as ISO-strings, not timestamps
-      mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+      mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
       controllerMenuOptions.put("?", () -> {
          System.out.println("Invalid choice. Please try again.");
       });
