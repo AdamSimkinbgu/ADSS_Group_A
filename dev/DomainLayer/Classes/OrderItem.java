@@ -11,7 +11,6 @@ public class OrderItem {
     private double discount;
     private double finalPrice;
 
-
     public OrderItem(String itemId, String itemName, int quantity, double price, double discount, double finalPrice) {
         this.itemId = itemId;
         this.itemName = itemName;
@@ -20,10 +19,10 @@ public class OrderItem {
         this.discount = discount;
         this.finalPrice = finalPrice;
     }
+
     public OrderItem() {
     }
 
-    @JsonProperty("itemId")
     public String getItemId() {
         return itemId;
     }
@@ -32,7 +31,6 @@ public class OrderItem {
         this.itemId = itemId;
     }
 
-    @JsonProperty("itemName")
     public String getItemName() {
         return itemName;
     }
@@ -77,4 +75,3 @@ public class OrderItem {
         this.finalPrice = finalPrice;
     }
 }
-

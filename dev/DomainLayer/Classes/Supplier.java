@@ -59,17 +59,12 @@ public class Supplier implements Serializable {
    // Getters and setters
    // ───────────────────────────────────────────────────────────────────────
 
-   @JsonIgnore
    public UUID getSupplierId() {
       return supplierId;
    }
 
    public void setSupplierId(UUID supplierId) {
-      try {
-         this.supplierId = supplierId;
-      } catch (IllegalArgumentException e) {
-         throw new IllegalArgumentException("Invalid UUID format: " + supplierId, e);
-      }
+      this.supplierId = supplierId;
    }
 
    public String getName() {

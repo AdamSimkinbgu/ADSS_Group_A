@@ -236,12 +236,15 @@ public class SupplierAndAgreementController extends AbstractController {
          String name = null;
          while (name == null || name.isEmpty())
             name = view.readLine("Please enter contact name (Can not be empty):");
+         contact.put("name", name);
          String email = null;
          while (email == null || email.isEmpty())
             email = view.readLine("Please enter contact email (Can not be empty):");
+         contact.put("email", email);
          String phone = null;
          while (phone == null || phone.isEmpty())
             phone = view.readLine("Please enter contact phone (Can not be empty):");
+         contact.put("phone", phone);
          contacts.add(contact);
          wantsToContinue = view.readLine("Do you want to add another contact? (y/n):").toLowerCase();
       }

@@ -26,7 +26,7 @@ public class SupplierProduct implements Serializable {
    @JsonCreator
    public SupplierProduct(
          @JsonProperty("supplierId") UUID supplierId,
-         @JsonProperty("productId") UUID productId,
+         @JsonProperty(value = "productId", required = false) UUID productId,
          @JsonProperty("supplierCatalogNumber") String supplierCatalogNumber,
          @JsonProperty("price") BigDecimal price,
          @JsonProperty("manufacturerName") String manufacturerName) {
