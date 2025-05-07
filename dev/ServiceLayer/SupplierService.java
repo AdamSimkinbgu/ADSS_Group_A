@@ -3,13 +3,10 @@ package ServiceLayer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.IService;
@@ -67,6 +64,10 @@ public class SupplierService extends BaseService implements IService {
    private ServiceResponse<?> updateSupplier(String updateJson) {
       ServiceResponse<Supplier> resp;
       try {
+         ServiceResponse<Void> patchCheck = validatePatch(updateJson, Supplier.class);
+         if (patchCheck.getError() != null && !patchCheck.getError().isEmpty()) {
+            return ServiceResponse.error("Invalid JSON payload: " + patchCheck.getError());
+         }
          JsonNode root = objectMapper.readTree(updateJson);
          String supplierId = "{\"supplierId\": \"" + root.path("supplierId").asText() + "\"}";
 
