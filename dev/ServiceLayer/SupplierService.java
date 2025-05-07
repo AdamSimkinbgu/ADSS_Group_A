@@ -48,10 +48,9 @@ public class SupplierService extends BaseService implements IService {
    // example function
    private ServiceResponse<?> addSupplier(String creationJson) {
       // make sure json is good
-      ServiceResponse<Boolean> pre = validateBinding(creationJson, Supplier.class);
-      // if not, return jackson error message
-      if (pre.getValue() == null || !pre.getValue()) {
-         return pre;
+      ServiceResponse<Void> validation = validateJsonPayload(creationJson, Supplier.class);
+      if (validation.getError() != null && !validation.getError().isEmpty()) {
+         return ServiceResponse.error("Invalid JSON payload: " + validation.getError());
       }
 
       // use facade to try and add supplier

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import DomainLayer.Enums.WeekofDay;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -37,6 +38,7 @@ public class Agreement implements Serializable {
      */
     @JsonCreator
     public Agreement(
+            @JsonProperty(value = "agreementId", required = false) UUID agreementId,
             @JsonProperty("supplierId") UUID supplierId,
             @JsonProperty("supplierName") String supplierName,
             @JsonProperty("selfSupply") boolean selfSupply,
@@ -45,10 +47,16 @@ public class Agreement implements Serializable {
             @JsonProperty("agreementEndDate") LocalDate agreementEndDate,
             @JsonProperty("hasFixedSupplyDays") boolean hasFixedSupplyDays) {
         if (agreementEndDate.isBefore(agreementStartDate)) {
-            throw new IllegalArgumentException("Agreement end date cannot be before start date.");
+            throw new IllegalArgumentException("End date before start date");
         }
-        this.agreementId = UUID.nameUUIDFromBytes(
-                (supplierId.toString() + ":" + agreementStartDate.toString()).getBytes());
+        this.agreementId = (agreementId != null)
+                ? agreementId
+                : UUID.nameUUIDFromBytes(
+                        (supplierId.toString()
+                                + ":" + agreementStartDate
+                                + ":" + agreementEndDate)
+                                .getBytes(StandardCharsets.UTF_8));
+
         this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.valid = true;

@@ -1,6 +1,7 @@
 {
    "suppliers": [
      {
+       "supplierId": "aaaaaaaa-1111-1111-1111-111111111111",
        "name": "Supplier A",
        "taxNumber": "111-111-111",
        "address": { "street": "1 Alpha St", "city": "Alpha City", "buildingNumber": "1" },
@@ -10,6 +11,7 @@
        "agreements": []
      },
      {
+       "supplierId": "aaaaaaaa-2222-2222-2222-222222222222",
        "name": "Supplier B",
        "taxNumber": "222-222-222",
        "address": { "street": "2 Beta Ave", "city": "Beta Town", "buildingNumber": "2" },
@@ -18,8 +20,8 @@
        "products": [],
        "agreements": []
      },
-     
      {
+       "supplierId": "aaaaaaaa-3333-3333-3333-333333333333",
        "name": "Supplier C",
        "taxNumber": "333-333-333",
        "address": { "street": "3 Gamma Rd", "city": "Gamma Village", "buildingNumber": "3" },
@@ -32,6 +34,8 @@
  
    "agreements": [
      {
+       "agreementId": "bbbbbbbb-1111-1111-1111-111111111111",
+       "supplierId": "aaaaaaaa-1111-1111-1111-111111111111",
        "supplierName": "Supplier A",
        "selfSupply": false,
        "supplyDays": ["MONDAY", "WEDNESDAY", "FRIDAY"],
@@ -40,6 +44,8 @@
        "hasFixedSupplyDays": true
      },
      {
+       "agreementId": "bbbbbbbb-2222-2222-2222-222222222222",
+       "supplierId": "aaaaaaaa-2222-2222-2222-222222222222",
        "supplierName": "Supplier B",
        "selfSupply": true,
        "supplyDays": [],
@@ -48,6 +54,8 @@
        "hasFixedSupplyDays": false
      },
      {
+       "agreementId": "bbbbbbbb-3333-3333-3333-333333333333",
+       "supplierId": "aaaaaaaa-3333-3333-3333-333333333333",
        "supplierName": "Supplier C",
        "selfSupply": false,
        "supplyDays": ["TUESDAY", "THURSDAY"],

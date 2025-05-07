@@ -53,7 +53,7 @@ public class SystemController extends AbstractController {
       payload.put("dataPath", DATA_PATH);
       payload.put("data", "data.json");
       String response = handleModuleCommand("loadData", payload.toString());
-      view.dispatchResponse(response, String.class);
+      view.showMessage(response);
    }
 
    public void noData() {

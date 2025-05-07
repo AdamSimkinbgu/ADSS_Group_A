@@ -2,6 +2,7 @@
 package ServiceLayer;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -37,42 +38,56 @@ public class SystemService extends BaseService implements IService {
    }
 
    private ServiceResponse<String> loadData(String ignored) {
-      ServiceResponse<String> resp;
+      List<String> allErrors = new ArrayList<>();
+
       try (InputStream in = getClass().getResourceAsStream("/data.json")) {
-         if (in == null)
+         if (in == null) {
             throw new IllegalStateException("data.json not on classpath");
+         }
 
          JsonNode root = objectMapper.readTree(in);
 
+         // ─── Suppliers ───────────────────────────────────────────────────
+         int idx = 0;
          for (JsonNode s : root.withArray("suppliers")) {
-            supplierFacade.addSupplier(s.toString());
-         }
+            idx++;
+            String supplierJson = s.toString();
 
-         List<UUID> supplierIds = supplierFacade.getSuppliersWithFullDetail()
-               .stream().map(Supplier::getSupplierId).toList();
-
-         int i = 0;
-         for (JsonNode a : root.withArray("agreements")) {
-            String sid = supplierIds.get(i++).toString();
-            Supplier sup = supplierFacade.getSupplier(
-                  "{\"supplierId\":\"" + sid + "\"}");
-            if (sup == null) {
-               throw new IllegalStateException("No supplier for ID: " + sid);
+            ServiceResponse<Void> valSup = validateJsonPayload(supplierJson, Supplier.class);
+            if (valSup.getError() != null && !valSup.getError().isEmpty()) {
+               allErrors.add("Supplier[" + idx + "]: " + valSup.getError());
+               continue;
             }
 
-            ObjectNode copy = ((ObjectNode) a).deepCopy();
-            copy.put("supplierName", sup.getName());
-            copy.put("supplierId", sid);
-
-            agreementFacade.createAgreement(copy.toString());
+            supplierFacade.addSupplier(supplierJson);
          }
 
-         resp = ServiceResponse.ok("Data loaded successfully");
+         // ─── Agreements ─────────────────────────────────────────────────
+         idx = 0;
+         for (JsonNode a : root.withArray("agreements")) {
+            idx++;
+            String agreementJson = a.toString();
+
+            ServiceResponse<Void> valAgr = validateJsonPayload(agreementJson, Agreement.class);
+            if (valAgr.getError() != null && !valAgr.getError().isEmpty()) {
+               allErrors.add("Agreement[" + idx + "]: " + valAgr.getError());
+               continue;
+            }
+
+            agreementFacade.createAgreement(agreementJson);
+         }
+
+         // ─── Build summary response ──────────────────────────────────────
+         if (!allErrors.isEmpty()) {
+            return ServiceResponse.error(
+                  "Load completed with errors: " + String.join("; ", allErrors));
+         } else {
+            return ServiceResponse.ok("Data loaded successfully");
+         }
 
       } catch (Exception e) {
-         resp = ServiceResponse.error("Load failed: " + e.getMessage());
+         return ServiceResponse.error("Load failed: " + e.getMessage());
       }
-      return resp;
    }
 
    private ServiceResponse<String> noData(String json) {

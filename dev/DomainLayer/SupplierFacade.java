@@ -6,9 +6,7 @@ import java.util.*;
 
 import DomainLayer.Classes.Supplier;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SupplierFacade {
@@ -18,30 +16,11 @@ public class SupplierFacade {
 
    public void addSupplier(String json) {
       try {
-         // Parse into tree so we can extract supplierId if present:
          ObjectNode root = (ObjectNode) mapper.readTree(json);
-         System.out.println("Loading supplier: " + root);
-         // Pull out supplierId (if it exists), or null otherwise
-         JsonNode idNode = root.remove("supplierId");
-         UUID id = idNode != null
-               ? UUID.fromString(idNode.asText())
-               : null;
-         System.out.println("Supplier ID: " + id);
-         // Bind the rest into your normal constructor
          Supplier sup = mapper.treeToValue(root, Supplier.class);
-
-         // Store
          suppliers.put(sup.getSupplierId(), sup);
-      } catch (MismatchedInputException e) {
-         // this will show you exactly which JSON field was unexpected or
-         // couldn’t map to the constructor
-         System.err.println("JSON parse error: " + e.getOriginalMessage());
-         System.err.println(" at: " + e.getPathReference());
-         e.printStackTrace();
-         throw new RuntimeException("Supplier JSON parse failed", e);
       } catch (Exception e) {
-         // e.printStackTrace();
-         throw new RuntimeException("Supplier JSON parse failed", e);
+         throw new RuntimeException("JSON parse error: ", e);
       }
    }
 

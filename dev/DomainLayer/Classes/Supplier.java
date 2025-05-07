@@ -30,6 +30,7 @@ public class Supplier implements Serializable {
     */
    @JsonCreator
    public Supplier(
+         @JsonProperty(value = "supplierId", required = false) UUID supplierId,
          @JsonProperty("name") String name,
          @JsonProperty("taxNumber") String taxNumber,
          @JsonProperty("address") Address address,
@@ -37,14 +38,18 @@ public class Supplier implements Serializable {
          @JsonProperty("contacts") List<ContactInfo> contacts,
          @JsonProperty("products") List<SupplierProduct> products,
          @JsonProperty("agreements") List<Agreement> agreements) {
-      this.supplierId = UUID.nameUUIDFromBytes((name + ":" + taxNumber).getBytes(StandardCharsets.UTF_8));
+      this.supplierId = (supplierId != null)
+            ? supplierId
+            : UUID.nameUUIDFromBytes(
+                  (name + ":" + taxNumber)
+                        .getBytes(StandardCharsets.UTF_8));
       this.name = name;
       this.taxNumber = taxNumber;
       this.address = address;
       this.paymentDetails = paymentDetails;
-      this.contacts = contacts != null ? contacts : new ArrayList<>();
-      this.products = products != null ? products : new ArrayList<>();
-      this.agreements = agreements != null ? agreements : new ArrayList<>();
+      this.contacts = (contacts != null ? contacts : new ArrayList<>());
+      this.products = (products != null ? products : new ArrayList<>());
+      this.agreements = (agreements != null ? agreements : new ArrayList<>());
    }
 
    // ───────────────────────────────────────────────────────────────────────
