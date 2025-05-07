@@ -1,77 +1,68 @@
 package DomainLayer.Classes;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OrderItem {
-
-    private String itemId;
-    private String itemName;
+public class OrderItem implements Serializable {
+    private UUID orderItemId;
+    private String productId;
     private int quantity;
-    private double price;
-    private double discount;
-    private double finalPrice;
-
-    public OrderItem(String itemId, String itemName, int quantity, double price, double discount, double finalPrice) {
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.quantity = quantity;
-        this.price = price;
-        this.discount = discount;
-        this.finalPrice = finalPrice;
-    }
+    private BigDecimal unitPrice;
 
     public OrderItem() {
     }
 
-    public String getItemId() {
-        return itemId;
+    @JsonCreator
+    public OrderItem(
+            @JsonProperty(value = "orderItemId", required = false) UUID orderItemId,
+            @JsonProperty(value = "productId", required = true) String productId,
+            @JsonProperty(value = "quantity", required = true) int quantity,
+            @JsonProperty(value = "unitPrice", required = true) BigDecimal unitPrice) {
+        this.orderItemId = (orderItemId != null)
+                ? orderItemId
+                : UUID.nameUUIDFromBytes((productId + ":" + quantity).getBytes());
+        this.productId = productId;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
     }
 
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    @JsonProperty("quantity")
-    public int getQuantity() {
-        return quantity;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    @JsonProperty("price")
-    public double getPrice() {
-        return price;
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public UUID getOrderItemId() {
+        return orderItemId;
     }
 
-    @JsonProperty("discount")
-    public double getDiscount() {
-        return discount;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setDiscount(double discount) {
-        this.discount = discount;
+    public int getQuantity() {
+        return quantity;
     }
 
-    @JsonProperty("finalPrice")
-    public double getFinalPrice() {
-        return finalPrice;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setFinalPrice(double finalPrice) {
-        this.finalPrice = finalPrice;
+    @Override
+    public String toString() {
+        return "OrderItem{id=" + orderItemId +
+                ", productId='" + productId + '\'' +
+                ", qty=" + quantity +
+                ", unitPrice=" + unitPrice + '}';
     }
 }

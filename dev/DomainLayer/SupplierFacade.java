@@ -5,6 +5,7 @@ import java.security.InvalidParameterException;
 import java.util.*;
 
 import DomainLayer.Classes.Supplier;
+import DomainLayer.Classes.SupplierProduct;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class SupplierFacade {
    // In-memory map of suppliers by their UUID
    private final Map<UUID, Supplier> suppliers = new HashMap<>();
+   private final Map<UUID, SupplierProduct> supplierProducts = new HashMap<>();
    private ObjectMapper mapper = new ObjectMapper();
 
    public void addSupplier(String json) {

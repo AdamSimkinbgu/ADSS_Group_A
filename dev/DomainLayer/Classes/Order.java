@@ -4,119 +4,100 @@ import DomainLayer.Enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public class Order {
+public class Order implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private UUID orderId;
-    private String supplierName;
     private UUID supplierId;
-    private String supplierAddress;
-    private LocalDateTime orderDate;
-    private String contactPhone;
-    private OrderStatus orderStatus;
-    private List<OrderItem> orderItems;
+    private LocalDate orderDate;
+    private List<OrderItem> items;
+    private EnumSet<OrderStatus> status;
 
     public Order() {
-        this.orderId = UUID.randomUUID();
-        this.supplierName = "";
-        this.supplierId = null;
-        this.supplierAddress = "";
-        this.orderDate = LocalDateTime.now();
-        this.contactPhone = "";
-        this.orderStatus = OrderStatus.PENDING;
-        this.orderItems = new ArrayList<>();
+        this.items = new ArrayList<>();
+        this.status = EnumSet.noneOf(OrderStatus.class);
     }
 
     @JsonCreator
     public Order(
-            @JsonProperty("supplierName") String supplierName,
-            @JsonProperty("supplierId") UUID supplierId,
-            @JsonProperty("supplierAddress") String supplierAddress,
-            @JsonProperty("orderDate") LocalDateTime orderDate,
-            @JsonProperty("contactPhone") String contactPhone,
-            @JsonProperty("orderStatus") OrderStatus orderStatus,
-            @JsonProperty("orderItems") List<OrderItem> orderItems
-    ) {
-        this.orderId = UUID.randomUUID();
-        this.supplierName = supplierName;
-        this.supplierId = supplierId;
-        this.supplierAddress = supplierAddress;
-        this.orderDate = (orderDate != null) ? orderDate : LocalDateTime.now();
-        this.contactPhone = contactPhone;
-        this.orderStatus = (orderStatus != null) ? orderStatus : OrderStatus.PENDING;
-        this.orderItems = (orderItems != null) ? orderItems : new ArrayList<>();
+            @JsonProperty(value = "orderId", required = false) UUID orderId,
+            @JsonProperty(value = "supplierId", required = true) UUID supplierId,
+            @JsonProperty(value = "orderDate", required = true) LocalDate orderDate,
+            @JsonProperty(value = "items", required = true) List<OrderItem> items,
+            @JsonProperty(value = "status", required = true) EnumSet<OrderStatus> status) {
+        this.orderId = (orderId != null)
+                ? orderId
+                : UUID.randomUUID();
+        setSupplierId(supplierId);
+        setOrderDate(orderDate);
+        setItems(items);
+        setStatus(status);
     }
 
-    // Getters and setters
+    @JsonProperty("supplierId")
+    public void setSupplierId(UUID supplierId) {
+        if (supplierId == null) {
+            throw new IllegalArgumentException("supplierId must not be null");
+        }
+        this.supplierId = supplierId;
+    }
+
+    @JsonProperty("orderDate")
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    @JsonProperty("items")
+    public void setItems(List<OrderItem> items) {
+        if (items == null) {
+            this.items = new ArrayList<>();
+        } else {
+            this.items = new ArrayList<>(items);
+        }
+    }
+
+    @JsonProperty("status")
+    public void setStatus(EnumSet<OrderStatus> status) {
+        if (status == null) {
+            this.status = EnumSet.noneOf(OrderStatus.class);
+        } else {
+            this.status = EnumSet.copyOf(status);
+        }
+    }
 
     public UUID getOrderId() {
         return orderId;
-    }
-
-    public String getSupplierName() {
-        return supplierName;
-    }
-
-    public void setSupplierName(String supplierName) {
-        this.supplierName = supplierName;
     }
 
     public UUID getSupplierId() {
         return supplierId;
     }
 
-    public void setSupplierId(UUID supplierId) {
-        this.supplierId = supplierId;
-    }
-
-    public String getSupplierAddress() {
-        return supplierAddress;
-    }
-
-    public void setSupplierAddress(String supplierAddress) {
-        this.supplierAddress = supplierAddress;
-    }
-
-    public LocalDateTime getOrderDate() {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
+    public List<OrderItem> getItems() {
+        return items;
     }
 
-    public String getContactPhone() {
-        return contactPhone;
+    public EnumSet<OrderStatus> getStatus() {
+        return status;
     }
 
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
-    public void addOrderItem(OrderItem item) {
-        if (orderItems == null) {
-            orderItems = new ArrayList<>();
-        }
-        orderItems.add(item);
+    @Override
+    public String toString() {
+        return "Order{id=" + orderId +
+                ", supplierId=" + supplierId +
+                ", date=" + orderDate +
+                ", items=" + items +
+                ", status=" + status + '}';
     }
 }
