@@ -36,6 +36,7 @@ public class SupplierAndAgreementController extends AbstractController {
          view.showOptions(menu.get(0), menu.subList(0, menu.size()));
          handleAgreementMenuChoice();
       });
+      controllerMenuOptions.put("3", () -> System.out.println("Returning to the main menu..."));
       supplierOptions.put("1", this::createSupplier);
       supplierOptions.put("2", this::updateSupplier);
       supplierOptions.put("3", this::deleteSupplier);

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import PresentationLayer.AbstractController;
 import PresentationLayer.View;
 import ServiceLayer.SystemService;
+import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 /**
  * Controller for System-level commands.
@@ -53,11 +54,13 @@ public class SystemController extends AbstractController {
       payload.put("dataPath", DATA_PATH);
       payload.put("data", "data.json");
       String response = handleModuleCommand("loadData", payload.toString());
-      view.showMessage(response);
+      view.dispatchResponse(response, ServiceResponse.class);
    }
 
    public void noData() {
-      view.showMessage("Starting with no data.");
+      view.showMessage("No data loaded.");
+      String response = handleModuleCommand("noData", "");
+      view.dispatchResponse(response, ServiceResponse.class);
    }
 
    public void getAllData() {
