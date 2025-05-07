@@ -13,7 +13,7 @@
      {
        "supplierId": "aaaaaaaa-2222-2222-2222-222222222222",
        "name": "Supplier B",
-       "taxNumber": "222-222-222",
+       "taxNumber": "222-222",
        "address": { "street": "2 Beta Ave", "city": "Beta Town", "buildingNumber": "2" },
        "paymentDetails": { "bankAccountNumber": "0002", "paymentMethod": "CREDIT_CARD", "paymentTerm": "N60" },
        "contacts": [],
