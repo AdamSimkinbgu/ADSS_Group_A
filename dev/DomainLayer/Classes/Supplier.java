@@ -25,16 +25,19 @@ public class Supplier implements Serializable {
    private List<SupplierProduct> products;
    private List<Agreement> agreements;
 
+   public Supplier() {
+   }
+
    /**
     * JSON constructor for Jackson.
     */
    @JsonCreator
    public Supplier(
          @JsonProperty(value = "supplierId", required = false) UUID supplierId,
-         @JsonProperty("name") String name,
-         @JsonProperty("taxNumber") String taxNumber,
-         @JsonProperty("address") Address address,
-         @JsonProperty("paymentDetails") PaymentDetails paymentDetails,
+         @JsonProperty(value = "name", required = true) String name,
+         @JsonProperty(value = "taxNumber", required = true) String taxNumber,
+         @JsonProperty(value = "address", required = true) Address address,
+         @JsonProperty(value = "paymentDetails", required = true) PaymentDetails paymentDetails,
          @JsonProperty("contacts") List<ContactInfo> contacts,
          @JsonProperty("products") List<SupplierProduct> products,
          @JsonProperty("agreements") List<Agreement> agreements) {
@@ -61,9 +64,9 @@ public class Supplier implements Serializable {
       return supplierId;
    }
 
-   public void setSupplierId(String supplierId) {
+   public void setSupplierId(UUID supplierId) {
       try {
-         this.supplierId = UUID.fromString(supplierId);
+         this.supplierId = supplierId;
       } catch (IllegalArgumentException e) {
          throw new IllegalArgumentException("Invalid UUID format: " + supplierId, e);
       }
@@ -105,8 +108,14 @@ public class Supplier implements Serializable {
       return contacts;
    }
 
-   public void setContacts(List<ContactInfo> contacts) {
-      this.contacts = contacts;
+   @JsonProperty("contacts")
+   public void setContacts(List<ContactInfo> newOnes) {
+      if (newOnes == null)
+         return;
+      if (this.contacts == null) {
+         this.contacts = new ArrayList<>();
+      }
+      this.contacts.addAll(newOnes);
    }
 
    public List<SupplierProduct> getProducts() {
