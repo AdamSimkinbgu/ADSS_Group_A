@@ -30,14 +30,22 @@ public class OrderItem implements Serializable {
         this.unitPrice = unitPrice;
     }
 
+    @JsonProperty("orderItemId")
+    public void setOrderItemId(UUID orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+
+    @JsonProperty("productId")
     public void setProductId(String productId) {
         this.productId = productId;
     }
 
+    @JsonProperty("quantity")
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
+    @JsonProperty("unitPrice")
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }

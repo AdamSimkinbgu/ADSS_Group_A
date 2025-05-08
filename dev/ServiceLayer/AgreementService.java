@@ -2,6 +2,7 @@
 package ServiceLayer;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,7 +52,12 @@ public class AgreementService extends BaseService implements IService {
          }
 
          root.put("supplierName", sup.getName());
-         agreementFacade.createAgreement(root.toString());
+         UUID agreementId = agreementFacade.createAgreement(root.toString());
+         String supUpdate = objectMapper.createObjectNode()
+               .put("supplierId", supplierId)
+               .put("agreementId", agreementId.toString())
+               .toString();
+         supplierFacade.addAgreementToSupplier(supUpdate);
          resp = ServiceResponse.ok(true);
       } catch (JsonProcessingException e) {
          resp = ServiceResponse.error(

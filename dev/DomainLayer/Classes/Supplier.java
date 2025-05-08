@@ -2,7 +2,6 @@
 package DomainLayer.Classes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -23,7 +22,7 @@ public class Supplier implements Serializable {
    private PaymentDetails paymentDetails;
    private List<ContactInfo> contacts;
    private List<SupplierProduct> products;
-   private List<Agreement> agreements;
+   private List<UUID> agreements;
 
    public Supplier() {
    }
@@ -40,7 +39,7 @@ public class Supplier implements Serializable {
          @JsonProperty(value = "paymentDetails", required = true) PaymentDetails paymentDetails,
          @JsonProperty("contacts") List<ContactInfo> contacts,
          @JsonProperty("products") List<SupplierProduct> products,
-         @JsonProperty("agreements") List<Agreement> agreements) {
+         @JsonProperty("agreements") List<UUID> agreements) {
       this.supplierId = (supplierId != null)
             ? supplierId
             : UUID.nameUUIDFromBytes(
@@ -121,11 +120,11 @@ public class Supplier implements Serializable {
       this.products = products;
    }
 
-   public List<Agreement> getAgreements() {
+   public List<UUID> getAgreements() {
       return agreements;
    }
 
-   public void setAgreements(List<Agreement> agreements) {
+   public void setAgreements(List<UUID> agreements) {
       this.agreements = agreements;
    }
 

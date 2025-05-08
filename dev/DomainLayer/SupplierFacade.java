@@ -114,6 +114,7 @@ public class SupplierFacade {
 
          SupplierProduct p = mapper.treeToValue(node, SupplierProduct.class);
          s.getProducts().add(p);
+         supplierProducts.put(p.getProductId(), p);
          return true;
       } catch (MismatchedInputException e) {
          throw new RuntimeException("Product JSON parse failed: " + e.getOriginalMessage(), e);
@@ -169,6 +170,21 @@ public class SupplierFacade {
          return new ArrayList<>(s.getProducts());
       } catch (Exception e) {
          throw new RuntimeException("List products failed", e);
+      }
+   }
+
+   public boolean addAgreementToSupplier(String supUpdate) {
+      try {
+         var node = mapper.readTree(supUpdate);
+         UUID sid = UUID.fromString(node.get("supplierId").asText());
+         Supplier s = suppliers.get(sid);
+         if (s == null)
+            throw new RuntimeException("Supplier not found: " + sid);
+         String agreementId = node.get("agreementId").asText();
+         s.getAgreements().add(UUID.fromString(agreementId));
+         return true;
+      } catch (Exception e) {
+         throw new RuntimeException("Add agreement failed", e);
       }
    }
 }

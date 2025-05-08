@@ -7,22 +7,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
 public class Order implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     private UUID orderId;
     private UUID supplierId;
     private LocalDate orderDate;
     private List<OrderItem> items;
-    private EnumSet<OrderStatus> status;
+    private OrderStatus status;
 
     public Order() {
         this.items = new ArrayList<>();
-        this.status = EnumSet.noneOf(OrderStatus.class);
     }
 
     @JsonCreator
@@ -31,21 +27,18 @@ public class Order implements Serializable {
             @JsonProperty(value = "supplierId", required = true) UUID supplierId,
             @JsonProperty(value = "orderDate", required = true) LocalDate orderDate,
             @JsonProperty(value = "items", required = true) List<OrderItem> items,
-            @JsonProperty(value = "status", required = true) EnumSet<OrderStatus> status) {
+            @JsonProperty(value = "status", required = false) OrderStatus status) {
         this.orderId = (orderId != null)
                 ? orderId
                 : UUID.randomUUID();
-        setSupplierId(supplierId);
-        setOrderDate(orderDate);
-        setItems(items);
-        setStatus(status);
+        this.supplierId = supplierId;
+        this.orderDate = orderDate;
+        this.items = items;
+        this.status = OrderStatus.PENDING;
     }
 
     @JsonProperty("supplierId")
     public void setSupplierId(UUID supplierId) {
-        if (supplierId == null) {
-            throw new IllegalArgumentException("supplierId must not be null");
-        }
         this.supplierId = supplierId;
     }
 
@@ -64,12 +57,8 @@ public class Order implements Serializable {
     }
 
     @JsonProperty("status")
-    public void setStatus(EnumSet<OrderStatus> status) {
-        if (status == null) {
-            this.status = EnumSet.noneOf(OrderStatus.class);
-        } else {
-            this.status = EnumSet.copyOf(status);
-        }
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public UUID getOrderId() {
@@ -88,7 +77,7 @@ public class Order implements Serializable {
         return items;
     }
 
-    public EnumSet<OrderStatus> getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 

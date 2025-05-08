@@ -117,12 +117,6 @@ public class SupplierAndAgreementController extends AbstractController {
       }
    }
 
-   private void showAndHandleProductMenu() {
-      List<String> menu = showProductMenu();
-      view.showOptions(menu.get(0), menu.subList(1, menu.size()));
-      handleProductMenuChoice();
-   }
-
    public List<String> showProductMenu() {
       return List.of(
             "Please choose an option:",
@@ -332,6 +326,10 @@ public class SupplierAndAgreementController extends AbstractController {
 
       ObjectNode payload = mapper.createObjectNode();
       String supplierId = view.readLine("Supplier ID:");
+      if (service.execute("checkSupplierExists", "{\"supplierId\":\"" + supplierId + "\"}").getValue() == null) {
+         view.showError("Supplier doesn't exist, agreement creation cancelled.");
+         return;
+      }
       payload.put("supplierId", supplierId);
       Boolean selfSupply = requestBoolean("Is this a self-supply agreement (true/false):");
       payload.put("selfSupply", selfSupply);

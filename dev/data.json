@@ -8,7 +8,7 @@
        "paymentDetails": { "bankAccountNumber": "0001", "paymentMethod": "BANK_TRANSFER", "paymentTerm": "N30" },
        "contacts": [],
        "products": [],
-       "agreements": []
+       "agreements": ["bbbbbbbb-1111-1111-1111-111111111111"]
      },
      {
        "supplierId": "aaaaaaaa-2222-2222-2222-222222222222",
@@ -18,7 +18,7 @@
        "paymentDetails": { "bankAccountNumber": "0002", "paymentMethod": "CREDIT_CARD", "paymentTerm": "N60" },
        "contacts": [],
        "products": [],
-       "agreements": []
+       "agreements": ["bbbbbbbb-2222-2222-2222-222222222222"]
      },
      {
        "supplierId": "aaaaaaaa-3333-3333-3333-333333333333",
@@ -28,7 +28,7 @@
        "paymentDetails": { "bankAccountNumber": "0003", "paymentMethod": "CASH_ON_DELIVERY", "paymentTerm": "COD" },
        "contacts": [],
        "products": [],
-       "agreements": []
+       "agreements": ["bbbbbbbb-3333-3333-3333-333333333333"]
      }
    ],
  

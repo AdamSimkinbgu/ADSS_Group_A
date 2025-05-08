@@ -11,10 +11,11 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 public class AgreementFacade extends BaseFacade {
     private final Map<UUID, Agreement> agreements = new HashMap<>();
 
-    public void createAgreement(String json) {
+    public UUID createAgreement(String json) {
         try {
             Agreement agr = mapper.readValue(json, Agreement.class);
             agreements.put(agr.getAgreementId(), agr);
+            return agr.getAgreementId();
         } catch (MismatchedInputException e) {
             System.err.println("JSON parse error: " + e.getOriginalMessage());
             System.err.println("    at: " + e.getPathReference());

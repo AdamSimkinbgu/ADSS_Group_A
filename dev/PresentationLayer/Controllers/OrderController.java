@@ -1,7 +1,14 @@
 package PresentationLayer.Controllers;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import DomainLayer.Classes.Order;
 import PresentationLayer.AbstractController;
 import PresentationLayer.View;
 import ServiceLayer.OrderService;
@@ -10,12 +17,11 @@ import ServiceLayer.OrderService;
  * Controller for Order-related commands.
  */
 public class OrderController extends AbstractController {
-   private final OrderService orderService;
 
    public OrderController(View view, OrderService orderService) {
       super(view, orderService);
       this.implemented = true;
-      this.orderService = orderService;
+      this.service = orderService;
       controllerMenuOptions.put("1", this::createOrder);
       controllerMenuOptions.put("2", this::updateOrder);
       controllerMenuOptions.put("3", this::deleteOrder);
@@ -35,64 +41,73 @@ public class OrderController extends AbstractController {
    }
 
    public void createOrder() {
-      view.showMessage("Sorry, this method is not implemented yet.");
-      return;
-      // view.showMessage("Enter supplier ID:");
-      // String supplierId = view.readLine().trim();
-      // view.showMessage("Enter supplier name:");
-      // String supplierName = view.readLine().trim();
-      // view.showMessage("Enter supplier address:");
-      // String supplierAddress = view.readLine().trim();
-      // view.showMessage("Enter contact phone:");
-      // String contactPhone = view.readLine().trim();
+      view.showMessage("Creating a new order…");
+      ObjectNode payload = initCreateOrderPayload();
+      if (payload == null)
+         return;
+      String resp = handleModuleCommand("addOrder", payload.toString());
+      view.dispatchResponse(resp, Order.class);
+   }
 
-      // view.showMessage("How many items in this order?");
-      // int itemCount = Integer.parseInt(view.readLine().trim());
-      // List<Map<String, Object>> items = new ArrayList<>(itemCount);
+   private ObjectNode initCreateOrderPayload() {
+      ObjectNode payload = mapper.createObjectNode();
 
-      // for (int i = 1; i <= itemCount; i++) {
-      // view.showMessage("=== Item " + i + " ===");
-      // view.showMessage("Item ID:");
-      // String itemId = view.readLine().trim();
-      // view.showMessage("Item name:");
-      // String itemName = view.readLine().trim();
-      // view.showMessage("Quantity:");
-      // int quantity = Integer.parseInt(view.readLine().trim());
-      // view.showMessage("List price:");
-      // double price = Double.parseDouble(view.readLine().trim());
-      // view.showMessage("Discount (as percent, e.g. 10 for 10%):");
-      // double discount = Double.parseDouble(view.readLine().trim());
-      // // חישוב מחיר סופי
-      // double finalPrice = price - (price * discount / 100.0);
+      // 1) supplierId
+      String supplierId = view.readLine("Supplier ID for this order:");
+      String lookupJson = String.format("{\"supplierId\":\"%s\"}", supplierId);
+      try {
+         String existsJson = serialize(service.execute("checkSupplierExists", lookupJson));
+         if (!mapper.readTree(existsJson).get("value").asBoolean()) {
+            view.showError("No such supplier – order cancelled.");
+            return null;
+         }
+      } catch (Exception e) {
+         view.showError("Error checking supplier: " + e.getMessage());
+         return null;
+      }
+      payload.put("supplierId", supplierId);
 
-      // Map<String, Object> itemMap = new LinkedHashMap<>();
-      // itemMap.put("itemId", itemId);
-      // itemMap.put("itemName", itemName);
-      // itemMap.put("quantity", quantity);
-      // itemMap.put("price", price);
-      // itemMap.put("discount", discount);
-      // itemMap.put("finalPrice", finalPrice);
-      // items.add(itemMap);
-      // }
+      // 2) today’s date
+      payload.put("orderDate", LocalDate.now().toString());
 
-      // Map<String, Object> orderMap = new LinkedHashMap<>();
-      // orderMap.put("supplierName", supplierName);
-      // orderMap.put("supplierId", supplierId);
-      // orderMap.put("supplierAddress", supplierAddress);
-      // orderMap.put("orderDate", LocalDateTime.now().toString());
-      // orderMap.put("contactPhone", contactPhone);
-      // orderMap.put("orderStatus", null);
-      // orderMap.put("orderItems", items);
+      // 3) line items
+      ArrayNode items = mapper.createArrayNode();
+      view.showMessage("Enter order line items (at least one).");
+      while (true) {
+         ObjectNode line = mapper.createObjectNode();
+         String productId = view.readLine("  Product ID:");
+         line.put("productId", productId);
 
-      // String json;
-      // try {
-      // json = mapper.writeValueAsString(orderMap);
-      // } catch (JsonProcessingException e) {
-      // view.showError("Failed to serialize order JSON: " + e.getMessage());
-      // return;
-      // }
-      // String response = handleModuleCommand("addOrder", json);
-      // view.dispatchResponse(response, Order.class);
+         String qtyStr = view.readLine("  Quantity:");
+         try {
+            int qty = Integer.parseInt(qtyStr);
+            line.put("quantity", qty);
+         } catch (NumberFormatException ex) {
+            view.showError("  Invalid quantity, try again.");
+            continue;
+         }
+
+         String priceStr = view.readLine("  Unit price:");
+         try {
+            BigDecimal bd = new BigDecimal(priceStr);
+            line.put("unitPrice", bd);
+         } catch (NumberFormatException ex) {
+            view.showError("  Invalid price, try again.");
+            continue;
+         }
+
+         items.add(line);
+
+         if (!requestBoolean("Add another line item? (y/n)")) {
+            break;
+         }
+      }
+      payload.set("items", items);
+
+      // 4) any other fields?
+      // payload.put("notes", view.readLine("Order notes (optional):"));
+
+      return payload;
    }
 
    public void updateOrder() {

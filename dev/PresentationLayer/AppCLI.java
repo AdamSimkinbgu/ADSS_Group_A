@@ -8,6 +8,7 @@ import java.util.Scanner;
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
 import PresentationLayer.Controllers.OrderController;
+import PresentationLayer.Controllers.SupplierAggregateController;
 import PresentationLayer.Controllers.SupplierAndAgreementController;
 import PresentationLayer.Controllers.SystemController;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,13 +22,15 @@ public class AppCLI implements View {
    private OrderController ordersController;
    private SupplierAndAgreementController suppliersController;
    private SystemController systemController;
+   private SupplierAggregateController SAContoller;
    private String userInput;
    private static final int TITLE = 0;
    private static final String CMD_MAIN = "0";
    private static final String CMD_SUPPLIER = "1";
    private static final String CMD_ORDER = "2";
    private static final String CMD_SYSTEM = "3";
-   private static final String CMD_EXIT = "4";
+   private static final String CMD_AGGREGATECONT = "4";
+   private static final String CMD_EXIT = "5";
    private static final String CMD_INVALID = "?";
    private String selectedModule = CMD_SYSTEM;
    public static final Scanner scanner = new Scanner(System.in);
@@ -64,7 +67,7 @@ public class AppCLI implements View {
       SupplierService supplierService = new SupplierService(supplierFacade, agreementService);
       OrderService orderService = new OrderService(orderFacade);
       SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
-
+      this.SAContoller = new SupplierAggregateController(this, supplierService, agreementService, orderService);
       this.suppliersController = new SupplierAndAgreementController(this, supplierService);
       this.ordersController = new OrderController(this, orderService);
       this.systemController = new SystemController(dataPath, systemService, this);
@@ -72,6 +75,7 @@ public class AppCLI implements View {
       moduleSelection.put(CMD_SUPPLIER, suppliersController::handleModuleMenu);
       moduleSelection.put(CMD_ORDER, ordersController::handleModuleMenu);
       moduleSelection.put(CMD_SYSTEM, systemController::handleModuleMenu);
+      moduleSelection.put(CMD_AGGREGATECONT, SAContoller::handleModuleMenu);
       moduleSelection.put(CMD_EXIT, () -> {
          System.out.println("Exiting the system...");
          System.exit(0);
@@ -146,6 +150,7 @@ public class AppCLI implements View {
             "Suppliers and Agreements",
             "Orders",
             "System",
+            "SupplierAggregateController - MOST UPDATED",
             "Exit");
    }
 

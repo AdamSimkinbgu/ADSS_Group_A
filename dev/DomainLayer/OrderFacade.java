@@ -1,12 +1,11 @@
 package DomainLayer;
 
 import DomainLayer.Classes.Order;
-import DomainLayer.Classes.Supplier;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import java.util.*;
 
-public class OrderFacade {
+public class OrderFacade extends BaseFacade {
 
     private final Map<UUID, Order> orders;
     private final SupplierFacade supplierFacade; // קישור ל-SupplierFacade
@@ -16,34 +15,18 @@ public class OrderFacade {
         this.supplierFacade = supplierFacade;
     }
 
-    public Order createOrder(String json) {
+    public Order addOrder(String json) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> tempMap = mapper.readValue(json, Map.class);
-            String supplierIdStr = (String) tempMap.get("supplierId");
-            String contactPhone = (String) tempMap.get("contactPhone");
-            String orderItemsStr = (String) tempMap.get("orderItems");
-
-            if (supplierIdStr == null) {
-                throw new IllegalArgumentException("Supplier ID is missing from the order JSON.");
-            }
-            UUID supplierId = UUID.fromString(supplierIdStr);
-            Supplier supplier = supplierFacade.getSupplier(supplierIdStr);
-            String newJson = String.format(
-                    "{\"supplierId\":\"%s\",\"supplierName\":\"%s\",\"supplierAddress\":\"%s\",\"contactPhone\":\"%s\",\"orderItems\":%s}",
-                    supplier.getSupplierId().toString(),
-                    supplier.getName(),
-                    supplier.getAddress(),
-                    contactPhone,
-                    orderItemsStr);
-            Order order = mapper.readValue(newJson, Order.class);
-            orders.put(order.getOrderId(), order);
-            return order;
-
+            Order o = mapper.readValue(json, Order.class);
+            orders.put(o.getOrderId(), o);
+            return o;
+        } catch (MismatchedInputException e) {
+            System.err.println("JSON parse error: " + e.getOriginalMessage());
+            System.err.println("  at: " + e.getPathReference());
+            throw new RuntimeException("Order JSON parse failed", e);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create order: " + e.getMessage(), e);
+            throw new RuntimeException("Order creation failed", e);
         }
-
     }
 
     public Order getOrder(UUID orderId) {
