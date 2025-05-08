@@ -1,5 +1,6 @@
 package PresentationLayer.Controllers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -22,6 +23,7 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 public class SupplierAndAgreementController extends AbstractController {
    protected Map<String, Runnable> supplierOptions = new HashMap<>();
    protected Map<String, Runnable> agreementOptions = new HashMap<>();
+   protected Map<String, Runnable> productOptions = new HashMap<>();
 
    public SupplierAndAgreementController(View view, SupplierService supplierService) {
       super(view, supplierService);
@@ -36,7 +38,12 @@ public class SupplierAndAgreementController extends AbstractController {
          view.showOptions(menu.get(0), menu.subList(0, menu.size()));
          handleAgreementMenuChoice();
       });
-      controllerMenuOptions.put("3", () -> System.out.println("Returning to the main menu..."));
+      controllerMenuOptions.put("3", () -> {
+         List<String> menu = showProductMenu();
+         view.showOptions(menu.get(0), menu.subList(0, menu.size()));
+         handleProductMenuChoice();
+      });
+      controllerMenuOptions.put("4", () -> System.out.println("Returning to the main menu..."));
       supplierOptions.put("1", this::createSupplier);
       supplierOptions.put("2", this::updateSupplier);
       supplierOptions.put("3", this::deleteSupplier);
@@ -44,6 +51,12 @@ public class SupplierAndAgreementController extends AbstractController {
       supplierOptions.put("5", this::viewAllSuppliers);
       supplierOptions.put("6", () -> System.out.println("Returning to the main menu..."));
       supplierOptions.put("?", () -> System.out.println("Invalid choice. Please try again."));
+      productOptions.put("1", this::addProduct);
+      productOptions.put("2", this::updateProduct);
+      productOptions.put("3", this::deleteProduct);
+      productOptions.put("4", this::listProducts);
+      productOptions.put("5", () -> System.out.println("Returning to the main menu..."));
+      productOptions.put("?", () -> System.out.println("Invalid choice. Please try again."));
       agreementOptions.put("1", this::createAgreement);
       agreementOptions.put("2", this::updateAgreement);
       agreementOptions.put("3", this::deleteAgreement);
@@ -58,6 +71,7 @@ public class SupplierAndAgreementController extends AbstractController {
             "Please choose an option:",
             "Supplier Menu",
             "Agreement Menu",
+            "Product Menu",
             "Back to Main Menu");
    }
 
@@ -101,6 +115,28 @@ public class SupplierAndAgreementController extends AbstractController {
       } else {
          agreementOptions.get("?").run();
       }
+   }
+
+   private void showAndHandleProductMenu() {
+      List<String> menu = showProductMenu();
+      view.showOptions(menu.get(0), menu.subList(1, menu.size()));
+      handleProductMenuChoice();
+   }
+
+   public List<String> showProductMenu() {
+      return List.of(
+            "Please choose an option:",
+            "Add Product",
+            "Update Product",
+            "Delete Product",
+            "List Products",
+            "Back to Main Menu");
+   }
+
+   private void handleProductMenuChoice() {
+      String choice = view.readLine();
+      Runnable action = productOptions.getOrDefault(choice, productOptions.get("?"));
+      action.run();
    }
 
    public void createSupplier() {
@@ -443,6 +479,70 @@ public class SupplierAndAgreementController extends AbstractController {
       }
 
       return supplyDays;
+   }
+
+   private void addProduct() {
+      view.showMessage("Adding a new product...");
+      String sid = view.readLine("Supplier ID:");
+      if (sid == null || sid.isEmpty()) {
+         view.showError("Supplier ID cannot be empty.");
+         return;
+      }
+      if (!doesSupplierExists("{\"supplierId\":\"" + sid + "\"}")) {
+         view.showError("Supplier doesn't exist, product creation cancelled.");
+         return;
+      }
+
+      ObjectNode p = mapper.createObjectNode();
+      p.put("supplierId", sid);
+
+      String name = view.readLine("Name:");
+      p.put("name", name);
+      String supplierCatalogNumber = view.readLine("Supplier catalog number:");
+      p.put("supplierCatalogNumber", supplierCatalogNumber);
+      String manufacturerName = view.readLine("Manufacturer name:");
+      p.put("manufacturerName", manufacturerName);
+      BigDecimal price = new BigDecimal(view.readLine("Price:"));
+      // p.put(String, BigDecimal) creates a JSON numeric node
+      p.put("price", price);
+
+      String resp = handleModuleCommand("addProduct", p.toString());
+      view.dispatchResponse(resp, Boolean.class);
+   }
+
+   private void updateProduct() {
+      view.showMessage("Updating a product...");
+      String sid = view.readLine("Supplier ID:");
+      ObjectNode p = mapper.createObjectNode();
+      p.put("supplierId", sid);
+      p.put("productId", view.readLine("Product ID to update:"));
+      if (requestBoolean("Change name? (y/n)")) {
+         p.put("name", view.readLine("New name:"));
+      }
+      if (requestBoolean("Change price? (y/n)")) {
+         p.put("price", view.readLine("New price:"));
+      }
+      String resp = handleModuleCommand("updateProduct", p.toString());
+      view.dispatchResponse(resp, Boolean.class);
+   }
+
+   private void deleteProduct() {
+      view.showMessage("Deleting a product...");
+      String sid = view.readLine("Supplier ID:");
+      ObjectNode p = mapper.createObjectNode();
+      p.put("supplierId", sid);
+      p.put("productId", view.readLine("Product ID to remove:"));
+      String resp = handleModuleCommand("removeProduct", p.toString());
+      view.dispatchResponse(resp, Boolean.class);
+   }
+
+   private void listProducts() {
+      view.showMessage("Listing products for a supplier...");
+      String sid = view.readLine("Supplier ID:");
+      ObjectNode p = mapper.createObjectNode();
+      p.put("supplierId", sid);
+      String resp = handleModuleCommand("listProducts", p.toString());
+      view.dispatchResponse(resp, List.class /* or SupplierProduct[].class */);
    }
 
 }

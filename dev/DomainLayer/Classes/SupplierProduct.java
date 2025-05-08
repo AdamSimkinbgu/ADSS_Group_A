@@ -18,9 +18,13 @@ import java.util.UUID;
 public class SupplierProduct implements Serializable {
    private UUID supplierId;
    private UUID productId;
+   private String name;
    private String supplierCatalogNumber;
    private BigDecimal price;
    private String manufacturerName;
+
+   public SupplierProduct() {
+   }
 
    /** Jackson constructor */
    @JsonCreator
@@ -28,12 +32,14 @@ public class SupplierProduct implements Serializable {
          @JsonProperty("supplierId") UUID supplierId,
          @JsonProperty(value = "productId", required = false) UUID productId,
          @JsonProperty("supplierCatalogNumber") String supplierCatalogNumber,
+         @JsonProperty("name") String name,
          @JsonProperty("price") BigDecimal price,
          @JsonProperty("manufacturerName") String manufacturerName) {
       this.supplierId = Objects.requireNonNull(supplierId, "supplierId");
       this.supplierCatalogNumber = Objects.requireNonNull(supplierCatalogNumber, "supplierCatalogNumber");
       this.productId = UUID.nameUUIDFromBytes(
             (supplierId.toString() + ":" + supplierCatalogNumber).getBytes());
+      this.name = name;
       this.price = Objects.requireNonNull(price, "price");
       this.manufacturerName = manufacturerName;
    }
@@ -46,6 +52,7 @@ public class SupplierProduct implements Serializable {
       return supplierId;
    }
 
+   @JsonProperty("supplierId")
    public void setSupplierId(UUID supplierId) {
       this.supplierId = supplierId;
    }
@@ -54,14 +61,25 @@ public class SupplierProduct implements Serializable {
       return productId;
    }
 
+   @JsonProperty("productId")
    public void setProductId(UUID productId) {
       this.productId = productId;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   @JsonProperty("name")
+   public void setName(String name) {
+      this.name = name;
    }
 
    public String getSupplierCatalogNumber() {
       return supplierCatalogNumber;
    }
 
+   @JsonProperty("supplierCatalogNumber")
    public void setSupplierCatalogNumber(String supplierCatalogNumber) {
       this.supplierCatalogNumber = supplierCatalogNumber;
    }
@@ -70,6 +88,7 @@ public class SupplierProduct implements Serializable {
       return price;
    }
 
+   @JsonProperty("price")
    public void setPrice(BigDecimal price) {
       this.price = price;
    }
@@ -78,24 +97,9 @@ public class SupplierProduct implements Serializable {
       return manufacturerName;
    }
 
+   @JsonProperty("manufacturerName")
    public void setManufacturerName(String manufacturerName) {
       this.manufacturerName = manufacturerName;
-   }
-
-   public void setSupplierId(String supplierId) {
-      try {
-         this.supplierId = UUID.fromString(supplierId);
-      } catch (IllegalArgumentException e) {
-         throw new IllegalArgumentException("Invalid UUID format: " + supplierId, e);
-      }
-   }
-
-   public void setProductId(String productId) {
-      try {
-         this.productId = UUID.fromString(productId);
-      } catch (IllegalArgumentException e) {
-         throw new IllegalArgumentException("Invalid UUID format: " + productId, e);
-      }
    }
 
    // ────────────────────────────────────────────────────────

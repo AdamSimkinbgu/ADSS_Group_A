@@ -8,6 +8,7 @@ import DomainLayer.Classes.Supplier;
 import DomainLayer.Classes.SupplierProduct;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SupplierFacade {
@@ -100,5 +101,74 @@ public class SupplierFacade {
 
    public List<Supplier> getSuppliersWithFullDetail() {
       return new ArrayList<>(suppliers.values());
+   }
+
+   public boolean addProductToSupplier(String json) {
+      try {
+         // payload must include supplierId + product fields
+         var node = mapper.readTree(json);
+         UUID sid = UUID.fromString(node.get("supplierId").asText());
+         Supplier s = suppliers.get(sid);
+         if (s == null)
+            return false;
+
+         SupplierProduct p = mapper.treeToValue(node, SupplierProduct.class);
+         s.getProducts().add(p);
+         return true;
+      } catch (MismatchedInputException e) {
+         throw new RuntimeException("Product JSON parse failed: " + e.getOriginalMessage(), e);
+      } catch (Exception e) {
+         throw new RuntimeException("Add product failed", e);
+      }
+   }
+
+   public boolean updateProductOnSupplier(String json) {
+      try {
+         var node = mapper.readTree(json);
+         UUID sid = UUID.fromString(node.get("supplierId").asText());
+         String pid = node.get("productId").asText();
+         Supplier s = suppliers.get(sid);
+         if (s == null)
+            return false;
+
+         SupplierProduct updated = mapper.treeToValue(node, SupplierProduct.class);
+         var prods = s.getProducts();
+         for (int i = 0; i < prods.size(); i++) {
+            if (prods.get(i).getProductId().equals(pid)) {
+               prods.set(i, updated);
+               return true;
+            }
+         }
+         return false;
+      } catch (Exception e) {
+         throw new RuntimeException("Update product failed", e);
+      }
+   }
+
+   public boolean removeProductFromSupplier(String json) {
+      try {
+         var map = mapper.readValue(json, Map.class);
+         UUID sid = UUID.fromString((String) map.get("supplierId"));
+         String pid = (String) map.get("productId");
+         Supplier s = suppliers.get(sid);
+         if (s == null)
+            return false;
+         return s.getProducts().removeIf(p -> p.getProductId().equals(pid));
+      } catch (Exception e) {
+         throw new RuntimeException("Remove product failed", e);
+      }
+   }
+
+   public List<SupplierProduct> listProductsForSupplier(String json) {
+      try {
+         var map = mapper.readValue(json, Map.class);
+         UUID sid = UUID.fromString((String) map.get("supplierId"));
+         Supplier s = suppliers.get(sid);
+         if (s == null)
+            return List.of();
+         return new ArrayList<>(s.getProducts());
+      } catch (Exception e) {
+         throw new RuntimeException("List products failed", e);
+      }
    }
 }

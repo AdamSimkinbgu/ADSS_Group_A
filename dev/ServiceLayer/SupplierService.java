@@ -8,6 +8,7 @@ import java.util.function.Function;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import DomainLayer.Classes.Supplier;
+import DomainLayer.Classes.SupplierProduct;
 import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -33,6 +34,10 @@ public class SupplierService extends BaseService implements IService {
       serviceFunctions.put("getAgreement", agreementService::getAgreement);
       serviceFunctions.put("getAllAgreements", agreementService::getAllAgreements);
       serviceFunctions.put("checkAgreementExists", agreementService::checkAgreementExists);
+      serviceFunctions.put("addProduct", this::addProduct);
+      serviceFunctions.put("updateProduct", this::updateProduct);
+      serviceFunctions.put("removeProduct", this::removeProduct);
+      serviceFunctions.put("listProducts", this::listProducts);
       serviceFunctions.put("?", this::commandDoesNotExist);
    }
 
@@ -143,5 +148,50 @@ public class SupplierService extends BaseService implements IService {
          resp = ServiceResponse.error(e.getMessage());
       }
       return resp;
+   }
+
+   private ServiceResponse<?> addProduct(String json) {
+      // validate the JSON payload against SupplierProduct setters
+      var v = validatePatchViaSetters(json, SupplierProduct.class);
+      if (v.isFailure())
+         return v;
+
+      try {
+         boolean ok = supplierFacade.addProductToSupplier(json);
+         return ServiceResponse.ok(ok);
+      } catch (Exception e) {
+         return ServiceResponse.error(e.getMessage());
+      }
+   }
+
+   private ServiceResponse<?> updateProduct(String json) {
+      var v = validatePatchViaSetters(json, SupplierProduct.class);
+      if (v.isFailure())
+         return v;
+
+      try {
+         boolean ok = supplierFacade.updateProductOnSupplier(json);
+         return ServiceResponse.ok(ok);
+      } catch (Exception e) {
+         return ServiceResponse.error(e.getMessage());
+      }
+   }
+
+   private ServiceResponse<?> removeProduct(String json) {
+      try {
+         boolean ok = supplierFacade.removeProductFromSupplier(json);
+         return ServiceResponse.ok(ok);
+      } catch (Exception e) {
+         return ServiceResponse.error(e.getMessage());
+      }
+   }
+
+   private ServiceResponse<?> listProducts(String json) {
+      try {
+         var list = supplierFacade.listProductsForSupplier(json);
+         return ServiceResponse.ok(list);
+      } catch (Exception e) {
+         return ServiceResponse.error(e.getMessage());
+      }
    }
 }
