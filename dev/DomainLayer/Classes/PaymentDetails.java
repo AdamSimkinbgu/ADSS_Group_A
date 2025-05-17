@@ -15,11 +15,10 @@ public class PaymentDetails {
       private final PaymentMethod paymentMethod;
       private final PaymentTerm paymentTerm;
 
-      @JsonCreator
       public PaymentDetails(
-                  @JsonProperty("bankAccountNumber") String bankAccountNumber,
-                  @JsonProperty("paymentMethod") PaymentMethod paymentMethod,
-                  @JsonProperty("paymentTerm") PaymentTerm paymentTerm) {
+                  String bankAccountNumber,
+                  PaymentMethod paymentMethod,
+                  PaymentTerm paymentTerm) {
             this.bankAccountNumber = bankAccountNumber;
             this.paymentMethod = paymentMethod;
             this.paymentTerm = paymentTerm;

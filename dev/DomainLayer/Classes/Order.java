@@ -21,13 +21,12 @@ public class Order implements Serializable {
         this.items = new ArrayList<>();
     }
 
-    @JsonCreator
     public Order(
-            @JsonProperty(value = "orderId", required = false) UUID orderId,
-            @JsonProperty(value = "supplierId", required = true) UUID supplierId,
-            @JsonProperty(value = "orderDate", required = true) LocalDate orderDate,
-            @JsonProperty(value = "items", required = true) List<OrderItem> items,
-            @JsonProperty(value = "status", required = false) OrderStatus status) {
+            UUID orderId,
+            UUID supplierId,
+            LocalDate orderDate,
+            List<OrderItem> items,
+            OrderStatus status) {
         this.orderId = (orderId != null)
                 ? orderId
                 : UUID.randomUUID();
@@ -37,17 +36,14 @@ public class Order implements Serializable {
         this.status = OrderStatus.PENDING;
     }
 
-    @JsonProperty("supplierId")
     public void setSupplierId(UUID supplierId) {
         this.supplierId = supplierId;
     }
 
-    @JsonProperty("orderDate")
     public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
     }
 
-    @JsonProperty("items")
     public void setItems(List<OrderItem> items) {
         if (items == null) {
             this.items = new ArrayList<>();
@@ -56,7 +52,6 @@ public class Order implements Serializable {
         }
     }
 
-    @JsonProperty("status")
     public void setStatus(OrderStatus status) {
         this.status = status;
     }

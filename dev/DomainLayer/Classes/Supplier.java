@@ -27,19 +27,15 @@ public class Supplier implements Serializable {
    public Supplier() {
    }
 
-   /**
-    * JSON constructor for Jackson.
-    */
-   @JsonCreator
    public Supplier(
-         @JsonProperty(value = "supplierId", required = false) UUID supplierId,
-         @JsonProperty(value = "name", required = true) String name,
-         @JsonProperty(value = "taxNumber", required = true) String taxNumber,
-         @JsonProperty(value = "address", required = true) Address address,
-         @JsonProperty(value = "paymentDetails", required = true) PaymentDetails paymentDetails,
-         @JsonProperty("contacts") List<ContactInfo> contacts,
-         @JsonProperty("products") List<SupplierProduct> products,
-         @JsonProperty("agreements") List<UUID> agreements) {
+         UUID supplierId,
+         String name,
+         String taxNumber,
+         Address address,
+         PaymentDetails paymentDetails,
+         List<ContactInfo> contacts,
+         List<SupplierProduct> products,
+         List<UUID> agreements) {
       this.supplierId = (supplierId != null)
             ? supplierId
             : UUID.nameUUIDFromBytes(
@@ -102,7 +98,6 @@ public class Supplier implements Serializable {
       return contacts;
    }
 
-   @JsonProperty("contacts")
    public void setContacts(List<ContactInfo> newOnes) {
       if (newOnes == null)
          return;

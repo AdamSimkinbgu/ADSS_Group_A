@@ -16,12 +16,11 @@ public class OrderItem implements Serializable {
     public OrderItem() {
     }
 
-    @JsonCreator
     public OrderItem(
-            @JsonProperty(value = "orderItemId", required = false) UUID orderItemId,
-            @JsonProperty(value = "productId", required = true) String productId,
-            @JsonProperty(value = "quantity", required = true) int quantity,
-            @JsonProperty(value = "unitPrice", required = true) BigDecimal unitPrice) {
+            UUID orderItemId,
+            String productId,
+            int quantity,
+            BigDecimal unitPrice) {
         this.orderItemId = (orderItemId != null)
                 ? orderItemId
                 : UUID.nameUUIDFromBytes((productId + ":" + quantity).getBytes());
@@ -30,22 +29,18 @@ public class OrderItem implements Serializable {
         this.unitPrice = unitPrice;
     }
 
-    @JsonProperty("orderItemId")
     public void setOrderItemId(UUID orderItemId) {
         this.orderItemId = orderItemId;
     }
 
-    @JsonProperty("productId")
     public void setProductId(String productId) {
         this.productId = productId;
     }
 
-    @JsonProperty("quantity")
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    @JsonProperty("unitPrice")
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }

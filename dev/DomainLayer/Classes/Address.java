@@ -8,10 +8,7 @@ public class Address {
       private String city;
       private String buildingNumber;
 
-      @JsonCreator
-      public Address(@JsonProperty("street") String street,
-                  @JsonProperty("city") String city,
-                  @JsonProperty("buildingNumber") String buildingNumber) {
+      public Address(String street, String city, String buildingNumber) {
             this.street = street;
             this.city = city;
             this.buildingNumber = buildingNumber;

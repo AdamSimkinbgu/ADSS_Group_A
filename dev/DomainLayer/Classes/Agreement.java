@@ -33,19 +33,15 @@ public class Agreement implements Serializable {
     private List<BillofQuantitiesItem> billOfQuantities;
     private boolean hasFixedSupplyDays;
 
-    /**
-     * JSON constructor for Jackson.
-     */
-    @JsonCreator
     public Agreement(
-            @JsonProperty(value = "agreementId", required = false) UUID agreementId,
-            @JsonProperty("supplierId") UUID supplierId,
-            @JsonProperty("supplierName") String supplierName,
-            @JsonProperty("selfSupply") boolean selfSupply,
-            @JsonProperty("supplyDays") EnumSet<WeekofDay> supplyDays,
-            @JsonProperty("agreementStartDate") LocalDate agreementStartDate,
-            @JsonProperty("agreementEndDate") LocalDate agreementEndDate,
-            @JsonProperty("hasFixedSupplyDays") boolean hasFixedSupplyDays) {
+            UUID agreementId,
+            UUID supplierId,
+            String supplierName,
+            boolean selfSupply,
+            EnumSet<WeekofDay> supplyDays,
+            LocalDate agreementStartDate,
+            LocalDate agreementEndDate,
+            boolean hasFixedSupplyDays) {
         if (agreementEndDate.isBefore(agreementStartDate)) {
             throw new IllegalArgumentException("End date before start date");
         }

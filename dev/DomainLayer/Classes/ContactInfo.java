@@ -10,18 +10,13 @@ public class ContactInfo {
    private String email;
    private String phone;
 
-   /** No-arg ctor for Jackson’s setter‐based binding or merging. */
    public ContactInfo() {
    }
 
-   /**
-    * Full‐arg constructor for Jackson’s @JsonCreator binding.
-    */
-   @JsonCreator
    public ContactInfo(
-         @JsonProperty(value = "name", required = true) String name,
-         @JsonProperty(value = "email", required = true) String email,
-         @JsonProperty(value = "phone", required = true) String phone) {
+         String name,
+         String email,
+         String phone) {
       setName(name);
       setEmail(email);
       setPhone(phone);

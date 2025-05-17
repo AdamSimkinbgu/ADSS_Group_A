@@ -31,62 +31,30 @@ public abstract class AbstractController {
     * @return the last JSON response returned by the service
     */
    public String getLastServiceResponse() {
-      return lastServiceResponse;
+      return null;
    }
 
    public AbstractController(View view, IService service) {
       this.view = view;
       this.service = service;
       this.implemented = false;
-      mapper.registerModule(new JavaTimeModule());
-      // serialize/deserialize dates as ISO-strings, not timestamps
-      mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-      controllerMenuOptions.put("?", () -> {
-         System.out.println("Invalid choice. Please try again.");
-      });
    }
 
    public abstract List<String> showMenu();
 
    protected void handleModuleMenu() {
-      while (true) {
-         List<String> menu = showMenu();
-         view.showOptions(menu.get(0), menu.subList(0, menu.size()));
-         String choice = view.readLine();
-         Runnable action = controllerMenuOptions.get(choice);
-         if (!implemented) {
-            System.out.println("This module is not implemented yet.");
-            break;
-         }
-         if (action != null) {
-            action.run();
-            break;
-         } else {
-            controllerMenuOptions.get("?").run();
-         }
-      }
+
    }
 
    public String handleModuleCommand(String function, String JsonDTO) {
-      lastServiceResponse = serialize(service.execute(function, JsonDTO));
-      return lastServiceResponse;
+      return null;
    }
 
    protected <T> String serialize(ServiceResponse<T> resp) {
-      try {
-         return mapper.writeValueAsString(resp);
-      } catch (JsonProcessingException e) {
-         return "{\"value\":null,\"error\":\"Serialization error\"}";
-      }
+      return null;
    }
 
    protected boolean requestBoolean(String message) {
-      String input = view.readLine(message);
-      if (input.toLowerCase().equals("y") || input.toLowerCase().equals("yes"))
-         return true;
-      else if (input.toLowerCase().equals("n") || input.toLowerCase().equals("no"))
-         return false;
-      return Boolean.parseBoolean(input);
+      return false;
    }
 }

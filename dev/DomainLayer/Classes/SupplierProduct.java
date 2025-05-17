@@ -8,13 +8,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Represents how a given Supplier offers a given Product.
- * • supplierId – which Supplier
- * • productId – which Product
- * • supplierCatalogNumber – the supplier’s own SKU/code
- * • price – base unit price
- */
 public class SupplierProduct implements Serializable {
    private UUID supplierId;
    private UUID productId;
@@ -26,15 +19,13 @@ public class SupplierProduct implements Serializable {
    public SupplierProduct() {
    }
 
-   /** Jackson constructor */
-   @JsonCreator
    public SupplierProduct(
-         @JsonProperty("supplierId") UUID supplierId,
-         @JsonProperty(value = "productId", required = false) UUID productId,
-         @JsonProperty("supplierCatalogNumber") String supplierCatalogNumber,
-         @JsonProperty("name") String name,
-         @JsonProperty("price") BigDecimal price,
-         @JsonProperty("manufacturerName") String manufacturerName) {
+         UUID supplierId,
+         UUID productId,
+         String supplierCatalogNumber,
+         String name,
+         BigDecimal price,
+         String manufacturerName) {
       this.supplierId = Objects.requireNonNull(supplierId, "supplierId");
       this.supplierCatalogNumber = Objects.requireNonNull(supplierCatalogNumber, "supplierCatalogNumber");
       this.productId = UUID.nameUUIDFromBytes(
@@ -52,7 +43,6 @@ public class SupplierProduct implements Serializable {
       return supplierId;
    }
 
-   @JsonProperty("supplierId")
    public void setSupplierId(UUID supplierId) {
       this.supplierId = supplierId;
    }
@@ -61,7 +51,6 @@ public class SupplierProduct implements Serializable {
       return productId;
    }
 
-   @JsonProperty("productId")
    public void setProductId(UUID productId) {
       this.productId = productId;
    }
@@ -70,7 +59,6 @@ public class SupplierProduct implements Serializable {
       return name;
    }
 
-   @JsonProperty("name")
    public void setName(String name) {
       this.name = name;
    }
@@ -79,7 +67,6 @@ public class SupplierProduct implements Serializable {
       return supplierCatalogNumber;
    }
 
-   @JsonProperty("supplierCatalogNumber")
    public void setSupplierCatalogNumber(String supplierCatalogNumber) {
       this.supplierCatalogNumber = supplierCatalogNumber;
    }
@@ -88,7 +75,6 @@ public class SupplierProduct implements Serializable {
       return price;
    }
 
-   @JsonProperty("price")
    public void setPrice(BigDecimal price) {
       this.price = price;
    }
@@ -97,7 +83,6 @@ public class SupplierProduct implements Serializable {
       return manufacturerName;
    }
 
-   @JsonProperty("manufacturerName")
    public void setManufacturerName(String manufacturerName) {
       this.manufacturerName = manufacturerName;
    }
