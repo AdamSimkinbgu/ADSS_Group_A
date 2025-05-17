@@ -57,32 +57,13 @@ public class AppCLI implements View {
 
    @Override
    public void showError(String msg) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'showError'");
+      System.err.println(msg);
    }
 
    @Override
-   public <T> void dispatchResponse(String rawJson, Class<T> valueType) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'dispatchResponse'");
-   }
-
-   @Override
-   public void showOptions(String title, List<String> options) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'showOptions'");
-   }
-
-   @Override
-   public String readLine() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'readLine'");
-   }
-
-   @Override
-   public String readLine(String message) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'readLine'");
+   public String readLine(String prompt) {
+      showMessage(prompt);
+      return scanner.nextLine();
    }
 
 }

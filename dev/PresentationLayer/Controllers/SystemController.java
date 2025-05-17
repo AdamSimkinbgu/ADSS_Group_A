@@ -20,7 +20,7 @@ public class SystemController extends AbstractController {
    public SystemController(String data, SystemService systemService, View view) {
       super(view, systemService);
       this.implemented = true;
-      File f = new File("data.json");
+      File f = new File(data);
       if (!f.exists()) {
          view.showError("Can't find data.json in " + f.getAbsolutePath());
       } else {

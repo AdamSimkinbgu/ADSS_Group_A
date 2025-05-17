@@ -3,7 +3,7 @@ import PresentationLayer.AppCLI;
 public class Main {
    public static void main(String[] args) {
       // we should change this so that the data path is optional
-      String[] fakeargs = new String[] { "fake/data/path" }; // For testing purposes
+      String[] fakeargs = new String[] { "dev/data.json" }; // For testing purposes
       if (fakeargs.length != 1 || fakeargs[0].isEmpty()) {
          System.err.println("Please provide the data path as an argument.");
          System.exit(1);
