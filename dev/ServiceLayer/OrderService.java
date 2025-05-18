@@ -22,26 +22,26 @@ public class OrderService extends BaseService implements IService {
 
    @Override
    public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<Order> addOrder(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<Order> updateOrder(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<Boolean> removeOrder(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<Order> getOrder(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<List<Order>> viewAllOrders(String ignored) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 }

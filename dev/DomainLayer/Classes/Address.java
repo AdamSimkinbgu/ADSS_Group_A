@@ -1,9 +1,11 @@
 package DomainLayer.Classes;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Address {
+public class Address implements Serializable {
       private String street;
       private String city;
       private String buildingNumber;

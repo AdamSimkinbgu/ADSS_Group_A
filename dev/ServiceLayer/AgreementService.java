@@ -27,31 +27,31 @@ public class AgreementService extends BaseService implements IService {
 
    @Override
    public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> addAgreement(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> updateAgreement(String updateJson) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> removeAgreement(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> getAgreement(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> getAllAgreements(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> checkAgreementExists(String lookupJson) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
 }

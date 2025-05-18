@@ -28,18 +28,18 @@ public class SystemService extends BaseService implements IService {
 
    @Override
    public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<String> loadData(String ignored) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<String> noData(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<String> getAllData(String ignored) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 }

@@ -1,6 +1,6 @@
 package PresentationLayer;
 
-import java.util.List;
+import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public interface View {
    String readLine(String prompt);
@@ -12,4 +12,6 @@ public interface View {
    void showMessage(String msg);
 
    void showError(String err);
+
+   void dispatchResponse(ServiceResponse<?> res);
 }

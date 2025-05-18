@@ -1,6 +1,8 @@
 package DTOs;
 
-public record SupplierDTO(String name, String taxNumber, AddressDTO address, ContactInfoDTO contactInfo,
-      PaymentDetailsDTO paymentDetails) {
+import java.util.List;
+
+public record SupplierDTO(String name, String taxNumber, AddressDTO address, List<ContactInfoDTO> contactInfo,
+            PaymentDetailsDTO paymentDetails) {
 
 }

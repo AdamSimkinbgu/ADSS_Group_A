@@ -1,28 +1,14 @@
 package ServiceLayer.Interfaces_and_Abstracts;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
-/**
- * A generic envelope for all service responses.
- * 
- * @param <T> the type of the successful payload
- */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceResponse<T> {
-   @JsonProperty("value")
    private T value;
+   private List<String> errors;
 
-   @JsonProperty("error")
-   private String error;
-
-   public ServiceResponse() {
-   }
-
-   public ServiceResponse(T value, String error) {
+   public ServiceResponse(T value, List<String> errors) {
       this.value = value;
-      this.error = error;
+      this.errors = errors;
    }
 
    public T getValue() {
@@ -33,29 +19,23 @@ public class ServiceResponse<T> {
       this.value = value;
    }
 
-   public String getError() {
-      return error;
+   public List<String> getError() {
+      return errors;
    }
 
-   public void setError(String error) {
-      this.error = error;
+   public void setError(List<String> errors) {
+      this.errors = errors;
    }
 
-   @JsonIgnore
    public boolean isSuccess() {
-      return error == null;
-   }
-
-   @JsonIgnore
-   public boolean isFailure() {
-      return error != null;
+      return errors == null;
    }
 
    public static <T> ServiceResponse<T> ok(T value) {
       return new ServiceResponse<>(value, null);
    }
 
-   public static <T> ServiceResponse<T> error(String error) {
-      return new ServiceResponse<>(null, error);
+   public static <T> ServiceResponse<T> fail(List<String> errors) {
+      return new ServiceResponse<>(null, errors);
    }
 }

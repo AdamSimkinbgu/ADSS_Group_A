@@ -1,11 +1,12 @@
 package DomainLayer.Classes;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ContactInfo {
+public class ContactInfo implements Serializable {
    private String name;
    private String email;
    private String phone;

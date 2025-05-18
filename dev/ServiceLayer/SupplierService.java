@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import DTOs.SupplierDTO;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.Classes.SupplierProduct;
 import DomainLayer.SupplierFacade;
@@ -17,56 +18,50 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
  * Service layer for Supplier operations, wrapping all responses in a
  * ServiceResponse<T> envelope.
  */
-public class SupplierService extends BaseService implements IService {
+public class SupplierService extends BaseService {
    private final SupplierFacade supplierFacade;
 
    public SupplierService(SupplierFacade facade) {
       this.supplierFacade = facade;
    }
 
-   @Override
-   public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> createSupplier(SupplierDTO supplierDTO) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   // example function
-   private ServiceResponse<?> addSupplier(String creationJson) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> updateSupplier(String updateJson) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> updateSupplier(String updateJson) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> removeSupplier(String id) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> removeSupplier(String id) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> getSupplierDetails(String id) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> getSupplierDetails(String id) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> getAllSuppliers(String id) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> getAllSuppliers(String id) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> checkSupplierExists(String infoToCheck) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> checkSupplierExists(String infoToCheck) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> addProduct(String json) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> addProduct(String json) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> updateProduct(String json) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> updateProduct(String json) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> removeProduct(String json) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<?> removeProduct(String json) {
-      return ServiceResponse.error("Not implemented");
-   }
-
-   private ServiceResponse<?> listProducts(String json) {
-      return ServiceResponse.error("Not implemented");
+   public ServiceResponse<?> listProducts(String json) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 }

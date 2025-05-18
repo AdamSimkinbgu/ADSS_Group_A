@@ -31,7 +31,7 @@ public abstract class BaseService {
    }
 
    public ServiceResponse<String> commandDoesNotExist(String data) {
-      return ServiceResponse.error("Command does not exist.");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
 }

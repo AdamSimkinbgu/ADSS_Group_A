@@ -66,4 +66,13 @@ public class AppCLI implements View {
       return scanner.nextLine();
    }
 
+   @Override
+   public void dispatchResponse(ServiceResponse<?> res) {
+      if (res.isSuccess()) {
+         showMessage("Operation successful: " + res.getValue());
+      } else {
+         showError("Operation failed: " + res.getError());
+      }
+   }
+
 }

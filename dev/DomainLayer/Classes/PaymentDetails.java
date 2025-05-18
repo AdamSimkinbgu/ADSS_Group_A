@@ -1,5 +1,7 @@
 package DomainLayer.Classes;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,7 +11,7 @@ import DomainLayer.Enums.PaymentTerm;
 /**
  * All payment‐related settings for a supplier in one immutable type.
  */
-public class PaymentDetails {
+public class PaymentDetails implements Serializable {
 
       private final String bankAccountNumber;
       private final PaymentMethod paymentMethod;
