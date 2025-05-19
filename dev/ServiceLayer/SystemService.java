@@ -12,10 +12,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import DomainLayer.*;
 import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
-import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
-public class SystemService extends BaseService implements IService {
+public class SystemService extends BaseService {
    private final SupplierFacade supplierFacade;
    private final OrderFacade orderFacade;
    private final AgreementFacade agreementFacade;
@@ -24,11 +23,6 @@ public class SystemService extends BaseService implements IService {
       this.supplierFacade = supplierFacade;
       this.orderFacade = orderFacade;
       this.agreementFacade = agreementFacade;
-   }
-
-   @Override
-   public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<String> loadData(String ignored) {

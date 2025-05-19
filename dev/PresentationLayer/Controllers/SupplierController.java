@@ -1,10 +1,8 @@
 package PresentationLayer.Controllers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import PresentationLayer.AbstractController;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
 import PresentationLayer.CLIs.Commands.CreateSupplierCMD;
@@ -20,7 +18,7 @@ public class SupplierController {
       commands.put("1", new CreateSupplierCMD(view, supplierService));
    }
 
-   public void run() {
+   public void start() {
       while (true) {
          view.showMessage("Supplier Management Menu");
          view.showMessage("1. Create Supplier");
@@ -41,14 +39,9 @@ public class SupplierController {
                view.showMessage("An error occurred: " + e.getMessage());
             }
          } else {
-            invalid();
+            view.showError("Invalid option");
          }
 
       }
    }
-
-   private void invalid() {
-      view.showError("Invalid option");
-   }
-
 }

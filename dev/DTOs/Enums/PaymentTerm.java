@@ -1,4 +1,4 @@
-package DomainLayer.Enums;
+package DTOs.Enums;
 
 public enum PaymentTerm {
    N30,

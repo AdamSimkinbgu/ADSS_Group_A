@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import DTOs.Enums.*;
 import DomainLayer.AgreementFacade;
 import DomainLayer.SupplierFacade;
-import DomainLayer.Enums.*;
 import ServiceLayer.SupplierService;
 
 import com.fasterxml.jackson.databind.SerializationFeature;

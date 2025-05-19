@@ -19,7 +19,7 @@ public class ServiceResponse<T> {
       this.value = value;
    }
 
-   public List<String> getError() {
+   public List<String> getErrors() {
       return errors;
    }
 

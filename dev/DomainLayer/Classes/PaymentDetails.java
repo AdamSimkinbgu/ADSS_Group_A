@@ -2,11 +2,9 @@ package DomainLayer.Classes;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import DomainLayer.Enums.PaymentMethod;
-import DomainLayer.Enums.PaymentTerm;
+import DTOs.PaymentDetailsDTO;
+import DTOs.Enums.PaymentMethod;
+import DTOs.Enums.PaymentTerm;
 
 /**
  * All payment‐related settings for a supplier in one immutable type.
@@ -16,6 +14,12 @@ public class PaymentDetails implements Serializable {
       private final String bankAccountNumber;
       private final PaymentMethod paymentMethod;
       private final PaymentTerm paymentTerm;
+
+      public PaymentDetails(PaymentDetailsDTO paymentDetails) {
+            this.bankAccountNumber = paymentDetails.bankAccountNumber();
+            this.paymentMethod = paymentDetails.paymentMethod();
+            this.paymentTerm = paymentDetails.paymentTerm();
+      }
 
       public PaymentDetails(
                   String bankAccountNumber,

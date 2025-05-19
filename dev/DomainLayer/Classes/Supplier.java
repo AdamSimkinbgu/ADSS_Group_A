@@ -1,14 +1,13 @@
 
 package DomainLayer.Classes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import DTOs.*;
 
 /**
  * Supplier entity representing a vendor in the system.
@@ -24,7 +23,21 @@ public class Supplier implements Serializable {
    private List<SupplierProduct> products;
    private List<UUID> agreements;
 
-   public Supplier() {
+   public Supplier(
+         String name,
+         String taxNumber,
+         AddressDTO address,
+         PaymentDetailsDTO paymentDetails,
+         List<ContactInfoDTO> contacts,
+         List<SupplierProductDTO> products,
+         List<UUID> agreements) {
+      this.supplierId = UUID.nameUUIDFromBytes(
+            (name + ":" + taxNumber)
+                  .getBytes(StandardCharsets.UTF_8));
+      this.name = name;
+      this.taxNumber = taxNumber;
+      this.address = new Address(address);
+      this.paymentDetails = new PaymentDetails(paymentDetails);
    }
 
    public Supplier(

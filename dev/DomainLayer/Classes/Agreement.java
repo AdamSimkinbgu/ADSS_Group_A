@@ -5,7 +5,8 @@ package DomainLayer.Classes;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import DomainLayer.Enums.WeekofDay;
+
+import DTOs.Enums.WeekofDay;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;

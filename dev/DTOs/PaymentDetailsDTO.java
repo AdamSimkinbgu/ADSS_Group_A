@@ -1,5 +1,8 @@
 package DTOs;
 
-public record PaymentDetailsDTO(String bankAccountNumber, String paymentMethod, String paymentTerm) {
+import DTOs.Enums.PaymentMethod;
+import DTOs.Enums.PaymentTerm;
+
+public record PaymentDetailsDTO(String bankAccountNumber, PaymentMethod paymentMethod, PaymentTerm paymentTerm) {
 
 }

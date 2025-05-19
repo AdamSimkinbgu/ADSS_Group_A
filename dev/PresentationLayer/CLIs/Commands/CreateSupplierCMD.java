@@ -1,9 +1,7 @@
 package PresentationLayer.CLIs.Commands;
 
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import DTOs.SupplierDTO;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
 import PresentationLayer.CLIs.Forms.SupplierForm;
@@ -26,9 +24,11 @@ public final class CreateSupplierCMD implements CommandInterface {
       form.fill().ifPresent(dto -> {
          ServiceResponse<?> res = service.createSupplier(dto);
          if (res.isSuccess()) {
-            view.showMessage("Supplier created successfully.");
+            view.showMessage("-- Supplier created successfully --" + dto);
          } else {
-            view.showError("Failed to create supplier: " + res.getError());
+            view.showError("-- Failed to create supplier --");
+            AtomicInteger counter = new AtomicInteger(1);
+            res.getErrors().forEach(error -> view.showError(counter.getAndIncrement() + ". " + error));
          }
       });
    }

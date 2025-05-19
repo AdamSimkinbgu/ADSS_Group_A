@@ -2,35 +2,19 @@
 package ServiceLayer;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Function;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import DomainLayer.AgreementFacade;
-import DomainLayer.SupplierFacade;
-import ServiceLayer.Interfaces_and_Abstracts.IService;
+
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
-import DomainLayer.Classes.Agreement;
-import DomainLayer.Classes.Supplier;
 
-public class AgreementService extends BaseService implements IService {
+public class AgreementService extends BaseService {
    private final AgreementFacade agreementFacade;
-   private final SupplierFacade supplierFacade;
 
-   public AgreementService(AgreementFacade agreementFacade, SupplierFacade supplierFacade) {
+   public AgreementService(AgreementFacade agreementFacade) {
       this.agreementFacade = agreementFacade;
-      this.supplierFacade = supplierFacade;
    }
 
-   @Override
-   public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.fail(List.of("Not implemented"));
-   }
-
-   public ServiceResponse<?> addAgreement(String json) {
+   public ServiceResponse<?> createAgreement(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 

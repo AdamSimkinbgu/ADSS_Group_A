@@ -1,23 +1,27 @@
 package DomainLayer;
 
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 import java.util.*;
 
 import DomainLayer.Classes.Supplier;
 import DomainLayer.Classes.SupplierProduct;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import DTOs.SupplierDTO;
 
 public class SupplierFacade {
-   // In-memory map of suppliers by their UUID
    private final Map<UUID, Supplier> suppliers = new HashMap<>();
    private final Map<UUID, SupplierProduct> supplierProducts = new HashMap<>();
 
-   public void addSupplier(String json) {
-      // TODO: Implement this method
+   public Supplier createSupplier(SupplierDTO supplierDTO) {
+      if (supplierDTO == null) {
+         throw new InvalidParameterException("SupplierDTO cannot be null");
+      }
+
+      Supplier supplier = new Supplier(supplierDTO.getName(), supplierDTO.getTaxNumber(),
+            supplierDTO.getAddress(), supplierDTO.getPaymentDetails(),
+            supplierDTO.getContacts(), supplierDTO.getProducts(), supplierDTO.getAgreements());
+      suppliers.put(supplier.getSupplierId(), supplier);
+      return supplier;
    }
 
    public boolean removeSupplier(String json) {

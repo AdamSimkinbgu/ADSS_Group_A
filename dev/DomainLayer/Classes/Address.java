@@ -2,13 +2,18 @@ package DomainLayer.Classes;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import DTOs.AddressDTO;
 
 public class Address implements Serializable {
       private String street;
       private String city;
       private String buildingNumber;
+
+      public Address(AddressDTO address) {
+            this.street = address.street();
+            this.city = address.city();
+            this.buildingNumber = address.buildingNumber();
+      }
 
       public Address(String street, String city, String buildingNumber) {
             this.street = street;

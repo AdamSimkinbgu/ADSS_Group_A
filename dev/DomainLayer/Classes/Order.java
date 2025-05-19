@@ -1,8 +1,9 @@
 package DomainLayer.Classes;
 
-import DomainLayer.Enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import DTOs.Enums.OrderStatus;
 
 import java.io.Serializable;
 import java.time.LocalDate;

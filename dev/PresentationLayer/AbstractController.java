@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import ServiceLayer.Interfaces_and_Abstracts.IService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public abstract class AbstractController {
@@ -20,7 +17,6 @@ public abstract class AbstractController {
    protected Map<String, Consumer<String>> serviceMenuOptions = new HashMap<>();
    protected Map<Class<?>, List<String>> classFieldNames = new HashMap<>();
    protected static final ObjectMapper mapper = new ObjectMapper();
-   protected IService service;
    protected final View view;
    protected boolean implemented;
 
@@ -34,9 +30,8 @@ public abstract class AbstractController {
       return null;
    }
 
-   public AbstractController(View view, IService service) {
+   public AbstractController(View view) {
       this.view = view;
-      this.service = service;
       this.implemented = false;
    }
 

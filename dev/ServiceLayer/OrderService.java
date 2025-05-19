@@ -2,17 +2,14 @@
 package ServiceLayer;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.function.Function;
 
 import DomainLayer.OrderFacade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import DomainLayer.Classes.Order;
 
-public class OrderService extends BaseService implements IService {
+public class OrderService extends BaseService {
    private final ObjectMapper objectMapper = new ObjectMapper();
    private final OrderFacade orderFacade;
 
@@ -20,12 +17,7 @@ public class OrderService extends BaseService implements IService {
       this.orderFacade = orderFacade;
    }
 
-   @Override
-   public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.fail(List.of("Not implemented"));
-   }
-
-   private ServiceResponse<Order> addOrder(String json) {
+   private ServiceResponse<Order> createOrder(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 

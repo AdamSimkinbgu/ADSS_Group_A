@@ -1,53 +1,60 @@
 package PresentationLayer;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
-import PresentationLayer.Controllers.OrderController;
-import PresentationLayer.Controllers.SupplierAggregateController;
-import PresentationLayer.Controllers.SupplierAndAgreementController;
-import PresentationLayer.Controllers.SystemController;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import DomainLayer.SupplierFacade;
+import PresentationLayer.Controllers.SupplierController;
 import ServiceLayer.*;
-import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class AppCLI implements View {
-   private OrderController ordersController;
-   private SupplierAndAgreementController suppliersController;
-   private SystemController systemController;
-   private SupplierAggregateController SAContoller;
+   private final SupplierController supplierController;
 
    public static final Scanner scanner = new Scanner(System.in);
    private final ObjectMapper mapper = new ObjectMapper();
 
    public AppCLI(String dataPath) {
-      // Initialize controllers
-      // Initialize the facades and services
       SupplierFacade supplierFacade = new SupplierFacade();
       AgreementFacade agreementFacade = new AgreementFacade();
       OrderFacade orderFacade = new OrderFacade(supplierFacade);
-      AgreementService agreementService = new AgreementService(agreementFacade, supplierFacade);
+      AgreementService agreementService = new AgreementService(agreementFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
       OrderService orderService = new OrderService(orderFacade);
       SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
-      this.SAContoller = new SupplierAggregateController(this, supplierService, agreementService, orderService);
-      this.suppliersController = new SupplierAndAgreementController(this, supplierService);
-      this.ordersController = new OrderController(this, orderService);
-      this.systemController = new SystemController(dataPath, systemService, this);
-
-      run();
+      // Initialize the controllers
+      this.supplierController = new SupplierController(this, supplierService);
+      start();
    }
 
-   private void run() {
-      // @TODO: Add a loop to keep the application running until the user chooses to
-      // exit
+   private void start() {
+      while (true) {
+         showMessage("Welcome to the Supplier Management System");
+         showMessage("1. Supplier Management");
+         showMessage("2. Agreement Management");
+         showMessage("3. Order Management");
+         showMessage("Type 'exit' to quit.");
+
+         String choice = readLine("Choose an option: ").toLowerCase();
+         if (choice.equals("exit")) {
+            break;
+         }
+         switch (choice) {
+            case "1":
+               supplierController.start();
+               break;
+            case "2":
+               // agreementController.start();
+               break;
+            case "3":
+               // orderController.start();
+               break;
+            default:
+               showError("Invalid option");
+         }
+      }
    }
 
    @Override
@@ -64,15 +71,6 @@ public class AppCLI implements View {
    public String readLine(String prompt) {
       showMessage(prompt);
       return scanner.nextLine();
-   }
-
-   @Override
-   public void dispatchResponse(ServiceResponse<?> res) {
-      if (res.isSuccess()) {
-         showMessage("Operation successful: " + res.getValue());
-      } else {
-         showError("Operation failed: " + res.getError());
-      }
    }
 
 }

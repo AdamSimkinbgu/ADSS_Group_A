@@ -11,8 +11,8 @@ import DTOs.SupplierDTO;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.Classes.SupplierProduct;
 import DomainLayer.SupplierFacade;
-import ServiceLayer.Interfaces_and_Abstracts.IService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
+import ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValidator;
 
 /**
  * Service layer for Supplier operations, wrapping all responses in a
@@ -20,13 +20,25 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
  */
 public class SupplierService extends BaseService {
    private final SupplierFacade supplierFacade;
+   private final SupplierValidator supplierValidator = new SupplierValidator();
 
    public SupplierService(SupplierFacade facade) {
       this.supplierFacade = facade;
+
    }
 
    public ServiceResponse<?> createSupplier(SupplierDTO supplierDTO) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      ServiceResponse<List<String>> response = supplierValidator.validate(supplierDTO);
+      if (response.isSuccess()) {
+         try {
+            Supplier supplier = supplierFacade.createSupplier(supplierDTO);
+            return ServiceResponse.ok(supplier);
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to create supplier: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
    }
 
    public ServiceResponse<?> updateSupplier(String updateJson) {
