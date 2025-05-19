@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SupplierDTO {
+      private String id;
       private String name;
       private String taxNumber;
       private AddressDTO address;
@@ -11,6 +12,25 @@ public class SupplierDTO {
       private List<ContactInfoDTO> contacts;
       private List<SupplierProductDTO> products;
       private List<UUID> agreements;
+
+      public SupplierDTO(
+                  String id,
+                  String name,
+                  String taxNumber,
+                  AddressDTO address,
+                  PaymentDetailsDTO paymentDetails,
+                  List<ContactInfoDTO> contacts,
+                  List<SupplierProductDTO> products,
+                  List<UUID> agreements) {
+            this.id = id;
+            this.name = name;
+            this.taxNumber = taxNumber;
+            this.address = address;
+            this.paymentDetails = paymentDetails;
+            this.contacts = contacts;
+            this.products = products;
+            this.agreements = agreements;
+      }
 
       public SupplierDTO(
                   String name,
@@ -88,14 +108,16 @@ public class SupplierDTO {
       @Override
       public String toString() {
             return "SupplierDTO{" +
-                        "name='" + name + '\'' +
-                        ", taxNumber='" + taxNumber + '\'' +
-                        ", address=" + address +
-                        ", paymentDetails=" + paymentDetails +
-                        ", contacts=" + contacts +
-                        ", products=" + products +
-                        ", agreements=" + agreements +
-                        '}';
+                        id != null ? "id='" + id + '\'' + ", "
+                                    : "" +
+                                                "name='" + name + '\'' +
+                                                ", taxNumber='" + taxNumber + '\'' +
+                                                ", address=" + address +
+                                                ", paymentDetails=" + paymentDetails +
+                                                ", contacts=" + contacts +
+                                                ", products=" + products +
+                                                ", agreements=" + agreements +
+                                                '}';
       }
 
       @Override

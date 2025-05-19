@@ -9,7 +9,7 @@ import DomainLayer.Classes.SupplierProduct;
 import DTOs.SupplierDTO;
 
 public class SupplierFacade {
-   private final Map<UUID, Supplier> suppliers = new HashMap<>();
+   private final Map<String, Supplier> suppliers = new HashMap<>();
    private final Map<UUID, SupplierProduct> supplierProducts = new HashMap<>();
 
    public Supplier createSupplier(SupplierDTO supplierDTO) {
@@ -40,10 +40,6 @@ public class SupplierFacade {
       return false; // TODO: Implement this method
    }
 
-   public List<Supplier> getSuppliersWithFullDetail() {
-      return new ArrayList<>(suppliers.values());
-   }
-
    public boolean addProductToSupplier(String json) {
       return false; // TODO: Implement this method
 
@@ -64,4 +60,16 @@ public class SupplierFacade {
    public boolean addAgreementToSupplier(String supUpdate) {
       return false; // TODO: Implement this method
    }
+
+   public List<SupplierDTO> getAllSuppliers() {
+      List<SupplierDTO> supplierDTOs = new ArrayList<>();
+      for (Supplier supplier : suppliers.values()) {
+         SupplierDTO dto = new SupplierDTO(supplier.getSupplierId(), supplier.getName(), supplier.getTaxNumber(),
+               supplier.getAddress(), supplier.getPaymentDetails(), supplier.getContacts(), supplier.getProducts(),
+               supplier.getAgreements());
+         supplierDTOs.add(dto);
+      }
+      return supplierDTOs;
+   }
+
 }

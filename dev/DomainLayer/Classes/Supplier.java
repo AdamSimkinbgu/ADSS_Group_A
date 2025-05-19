@@ -67,8 +67,8 @@ public class Supplier implements Serializable {
    // Getters and setters
    // ───────────────────────────────────────────────────────────────────────
 
-   public UUID getSupplierId() {
-      return supplierId;
+   public String getSupplierId() {
+      return supplierId.toString();
    }
 
    public void setSupplierId(UUID supplierId) {
@@ -91,24 +91,24 @@ public class Supplier implements Serializable {
       this.taxNumber = taxNumber;
    }
 
-   public Address getAddress() {
-      return address;
+   public AddressDTO getAddress() {
+      return AddressDTO.fromAddress(address);
    }
 
    public void setAddress(Address address) {
       this.address = address;
    }
 
-   public PaymentDetails getPaymentDetails() {
-      return paymentDetails;
+   public PaymentDetailsDTO getPaymentDetails() {
+      return PaymentDetailsDTO.fromPaymentDetails(paymentDetails);
    }
 
    public void setPaymentDetails(PaymentDetails paymentDetails) {
       this.paymentDetails = paymentDetails;
    }
 
-   public List<ContactInfo> getContacts() {
-      return contacts;
+   public List<ContactInfoDTO> getContacts() {
+      return ContactInfoDTO.fromContactInfoList(contacts);
    }
 
    public void setContacts(List<ContactInfo> newOnes) {
@@ -120,8 +120,8 @@ public class Supplier implements Serializable {
       this.contacts.addAll(newOnes);
    }
 
-   public List<SupplierProduct> getProducts() {
-      return products;
+   public List<SupplierProductDTO> getProducts() {
+      return SupplierProductDTO.fromSupplierProductList(products);
    }
 
    public void setProducts(List<SupplierProduct> products) {

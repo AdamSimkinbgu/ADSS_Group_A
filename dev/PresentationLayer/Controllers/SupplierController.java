@@ -6,6 +6,7 @@ import java.util.Map;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
 import PresentationLayer.CLIs.Commands.CreateSupplierCMD;
+import PresentationLayer.CLIs.Commands.ViewAllSuppliersCMD;
 import ServiceLayer.SupplierService;
 
 public class SupplierController {
@@ -16,6 +17,7 @@ public class SupplierController {
       this.view = view;
       this.commands = new HashMap<>();
       commands.put("1", new CreateSupplierCMD(view, supplierService));
+      commands.put("4", new ViewAllSuppliersCMD(view, supplierService));
    }
 
    public void start() {

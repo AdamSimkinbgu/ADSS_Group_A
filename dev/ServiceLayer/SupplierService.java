@@ -53,8 +53,13 @@ public class SupplierService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   public ServiceResponse<?> getAllSuppliers(String id) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<List<SupplierDTO>> getAllSuppliers() {
+      try {
+         List<SupplierDTO> suppliers = supplierFacade.getAllSuppliers();
+         return ServiceResponse.ok(suppliers);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve suppliers: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<?> checkSupplierExists(String infoToCheck) {
