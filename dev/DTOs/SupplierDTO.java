@@ -40,6 +40,10 @@ public class SupplierDTO {
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
                   List<UUID> agreements) {
+            this.id = UUID.nameUUIDFromBytes(
+                        (name + ":" + taxNumber)
+                                    .getBytes())
+                        .toString();
             this.name = name;
             this.taxNumber = taxNumber;
             this.address = address;

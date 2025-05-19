@@ -44,23 +44,29 @@ public class Supplier implements Serializable {
          UUID supplierId,
          String name,
          String taxNumber,
-         Address address,
-         PaymentDetails paymentDetails,
-         List<ContactInfo> contacts,
-         List<SupplierProduct> products,
+         AddressDTO address,
+         PaymentDetailsDTO paymentDetails,
+         List<ContactInfoDTO> contacts,
+         List<SupplierProductDTO> products,
          List<UUID> agreements) {
-      this.supplierId = (supplierId != null)
-            ? supplierId
-            : UUID.nameUUIDFromBytes(
-                  (name + ":" + taxNumber)
-                        .getBytes(StandardCharsets.UTF_8));
+      this.supplierId = supplierId;
       this.name = name;
       this.taxNumber = taxNumber;
-      this.address = address;
-      this.paymentDetails = paymentDetails;
-      this.contacts = (contacts != null ? contacts : new ArrayList<>());
-      this.products = (products != null ? products : new ArrayList<>());
-      this.agreements = (agreements != null ? agreements : new ArrayList<>());
+      this.address = new Address(address);
+      this.paymentDetails = new PaymentDetails(paymentDetails);
+      this.contacts = new ArrayList<>();
+      if (contacts != null) {
+         for (ContactInfoDTO contact : contacts) {
+            this.contacts.add(new ContactInfo(contact));
+         }
+      }
+      this.products = new ArrayList<>();
+      if (products != null) {
+         for (SupplierProductDTO product : products) {
+            this.products.add(new SupplierProduct(product));
+         }
+      }
+      this.agreements = agreements;
    }
 
    // ───────────────────────────────────────────────────────────────────────

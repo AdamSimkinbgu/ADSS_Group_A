@@ -16,7 +16,6 @@ public class SupplierFacade {
       if (supplierDTO == null) {
          throw new InvalidParameterException("SupplierDTO cannot be null");
       }
-
       Supplier supplier = new Supplier(supplierDTO.getName(), supplierDTO.getTaxNumber(),
             supplierDTO.getAddress(), supplierDTO.getPaymentDetails(),
             supplierDTO.getContacts(), supplierDTO.getProducts(), supplierDTO.getAgreements());

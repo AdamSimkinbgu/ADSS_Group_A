@@ -1,7 +1,6 @@
 package DomainLayer.Classes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import DTOs.SupplierProductDTO;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,7 +15,13 @@ public class SupplierProduct implements Serializable {
    private BigDecimal price;
    private String manufacturerName;
 
-   public SupplierProduct() {
+   public SupplierProduct(SupplierProductDTO supplierProduct) {
+      this.supplierId = supplierProduct.supplierId();
+      this.productId = supplierProduct.productId();
+      this.name = supplierProduct.name();
+      this.supplierCatalogNumber = supplierProduct.supplierCatalogNumber();
+      this.price = supplierProduct.price();
+      this.manufacturerName = supplierProduct.manufacturerName();
    }
 
    public SupplierProduct(

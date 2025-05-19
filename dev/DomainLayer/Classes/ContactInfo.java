@@ -3,15 +3,17 @@ package DomainLayer.Classes;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import DTOs.ContactInfoDTO;
 
 public class ContactInfo implements Serializable {
    private String name;
    private String email;
    private String phone;
 
-   public ContactInfo() {
+   public ContactInfo(ContactInfoDTO contactInfo) {
+      this.name = contactInfo.name();
+      this.email = contactInfo.email();
+      this.phone = contactInfo.phone();
    }
 
    public ContactInfo(
