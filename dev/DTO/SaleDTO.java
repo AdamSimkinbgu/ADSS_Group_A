@@ -1,19 +1,15 @@
-package Service;
+package DTO;
 
 import Domain.SaleDomain;
 
-import java.util.Date;
 import java.util.HashMap;
 
-public class SaleService {
-    int saleID;
-    float salePrice;
+public class SaleDTO {
 
+    float salePrice;
     HashMap<Integer,Integer> products; //// hashmap(ID,saleQuantity) ////
 
-    public int getSaleID() {
-        return saleID;
-    }
+
     public float getSalePrice() {
         return salePrice;
     }
@@ -21,16 +17,15 @@ public class SaleService {
         return products;
     }
 
-    public SaleService(){}
+    public SaleDTO(){}
 
-    public SaleService(HashMap<Integer,Integer> prod){
-        saleID = 0;
+    public SaleDTO(HashMap<Integer,Integer> prod){
+
         salePrice = 0;
         products = new HashMap<>(prod);
     }
 
-    public SaleService(SaleDomain other){
-        saleID = other.getSaleID();
+    public SaleDTO(SaleDomain other){
         salePrice = other.getPrice();
         products = new HashMap<>();
 

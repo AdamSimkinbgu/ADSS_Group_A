@@ -1,7 +1,7 @@
 package Service;
 
+import DTO.*;
 import Domain.MainDomain;
-import Domain.ProductDomain;
 import Domain.SaleDomain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
