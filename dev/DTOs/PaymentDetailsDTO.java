@@ -9,8 +9,8 @@ public record PaymentDetailsDTO(String bankAccountNumber, PaymentMethod paymentM
    public static PaymentDetailsDTO fromPaymentDetails(PaymentDetails paymentDetails) {
       return new PaymentDetailsDTO(
             paymentDetails.getBankAccountNumber(),
-            paymentDetails.getPaymentMethod(),
-            paymentDetails.getPaymentTerm());
+            PaymentMethod.valueOf(paymentDetails.getPaymentMethod().name()),
+            PaymentTerm.valueOf(paymentDetails.getPaymentTerm().name()));
    }
 
 }

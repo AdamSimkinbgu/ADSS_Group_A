@@ -26,47 +26,47 @@ public class SupplierService extends BaseService implements IService {
 
    @Override
    public ServiceResponse<?> execute(String serviceOption, String data) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    // example function
    private ServiceResponse<?> addSupplier(String creationJson) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> updateSupplier(String updateJson) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> removeSupplier(String id) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> getSupplierDetails(String id) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> getAllSuppliers(String id) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> checkSupplierExists(String infoToCheck) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> addProduct(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> updateProduct(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> removeProduct(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    private ServiceResponse<?> listProducts(String json) {
-      return ServiceResponse.error("Not implemented");
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 }

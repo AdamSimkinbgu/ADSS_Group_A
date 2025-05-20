@@ -7,11 +7,11 @@ import DomainLayer.OrderFacade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import DomainLayer.SupplierFacade;
-import PresentationLayer.Controllers.SupplierController;
+// import PresentationLayer.Controllers.SupplierController;
 import ServiceLayer.*;
 
 public class AppCLI implements View {
-   private final SupplierController supplierController;
+   // private final SupplierController supplierController;
 
    public static final Scanner scanner = new Scanner(System.in);
    private final ObjectMapper mapper = new ObjectMapper();
@@ -20,12 +20,12 @@ public class AppCLI implements View {
       SupplierFacade supplierFacade = new SupplierFacade();
       AgreementFacade agreementFacade = new AgreementFacade();
       OrderFacade orderFacade = new OrderFacade(supplierFacade);
-      AgreementService agreementService = new AgreementService(agreementFacade);
+      // AgreementService agreementService = new AgreementService(agreementFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
       OrderService orderService = new OrderService(orderFacade);
       SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
       // Initialize the controllers
-      this.supplierController = new SupplierController(this, supplierService);
+      // this.supplierController = new SupplierController(this, supplierService);
       start();
    }
 
@@ -43,7 +43,7 @@ public class AppCLI implements View {
          }
          switch (choice) {
             case "1":
-               supplierController.start();
+               // supplierController.start();
                break;
             case "2":
                // agreementController.start();
