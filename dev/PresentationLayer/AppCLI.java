@@ -20,10 +20,11 @@ public class AppCLI implements View {
       SupplierFacade supplierFacade = new SupplierFacade();
       AgreementFacade agreementFacade = new AgreementFacade();
       OrderFacade orderFacade = new OrderFacade(supplierFacade);
-      AgreementService agreementService = new AgreementService(agreementFacade);
+      // AgreementService agreementService = new AgreementService(agreementFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
-      OrderService orderService = new OrderService(orderFacade);
-      SystemService systemService = new SystemService(supplierFacade, orderFacade, agreementFacade);
+      // OrderService orderService = new OrderService(orderFacade);
+      // SystemService systemService = new SystemService(supplierFacade, orderFacade,
+      // agreementFacade);
       // Initialize the controllers
       this.supplierController = new SupplierController(this, supplierService);
       start();

@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import DTOs.*;
-import DTOs.Enums.WeekofDay;
+import DTOs.Enums.DayofWeek;
 
 /**
  * Supplier entity representing a vendor in the system.
@@ -19,7 +19,7 @@ public class Supplier implements Serializable {
    private String taxNumber;
    private Address address;
    private boolean selfSupply;
-   private EnumSet<WeekofDay> supplyDays;
+   private EnumSet<DayofWeek> supplyDays;
    private PaymentDetails paymentDetails;
    private List<ContactInfo> contacts;
    private List<SupplierProduct> products;
@@ -30,6 +30,10 @@ public class Supplier implements Serializable {
       this.name = supplier.getName();
       this.taxNumber = supplier.getTaxNumber();
       this.address = new Address(supplier.getAddress());
+      this.selfSupply = supplier.isSelfSupply();
+      this.supplyDays = (supplier.getSupplyDays() != null && !supplier.getSupplyDays().isEmpty())
+            ? EnumSet.copyOf(supplier.getSupplyDays())
+            : EnumSet.noneOf(DayofWeek.class);
       this.paymentDetails = new PaymentDetails(supplier.getPaymentDetails());
       this.contacts = new ArrayList<>();
       if (supplier.getContacts() != null) {
@@ -58,7 +62,7 @@ public class Supplier implements Serializable {
          AddressDTO address,
          PaymentDetailsDTO paymentDetails,
          boolean selfSupply,
-         EnumSet<WeekofDay> supplyDays,
+         EnumSet<DayofWeek> supplyDays,
          List<ContactInfoDTO> contacts,
          List<SupplierProductDTO> products,
          List<Integer> agreements) {
@@ -70,7 +74,7 @@ public class Supplier implements Serializable {
       this.selfSupply = selfSupply;
       this.supplyDays = (supplyDays != null && !supplyDays.isEmpty())
             ? EnumSet.copyOf(supplyDays)
-            : EnumSet.noneOf(WeekofDay.class);
+            : EnumSet.noneOf(DayofWeek.class);
       this.contacts = new ArrayList<>();
       if (contacts != null) {
          for (ContactInfoDTO contact : contacts) {
@@ -93,7 +97,7 @@ public class Supplier implements Serializable {
          AddressDTO address,
          PaymentDetailsDTO paymentDetails,
          boolean selfSupply,
-         EnumSet<WeekofDay> supplyDays,
+         EnumSet<DayofWeek> supplyDays,
          List<ContactInfoDTO> contacts,
          List<SupplierProductDTO> products,
          List<Integer> agreements) {
@@ -105,7 +109,7 @@ public class Supplier implements Serializable {
       this.selfSupply = selfSupply;
       this.supplyDays = (supplyDays != null && !supplyDays.isEmpty())
             ? EnumSet.copyOf(supplyDays)
-            : EnumSet.noneOf(WeekofDay.class);
+            : EnumSet.noneOf(DayofWeek.class);
       this.contacts = new ArrayList<>();
       if (contacts != null) {
          for (ContactInfoDTO contact : contacts) {
@@ -225,7 +229,7 @@ public class Supplier implements Serializable {
       return selfSupply;
    }
 
-   public EnumSet<WeekofDay> getSupplyDays() {
+   public EnumSet<DayofWeek> getSupplyDays() {
       return supplyDays;
    }
 
@@ -233,7 +237,7 @@ public class Supplier implements Serializable {
       this.selfSupply = selfSupply;
    }
 
-   public void setSupplyDays(EnumSet<WeekofDay> supplyDays) {
+   public void setSupplyDays(EnumSet<DayofWeek> supplyDays) {
       this.supplyDays = supplyDays;
    }
 }

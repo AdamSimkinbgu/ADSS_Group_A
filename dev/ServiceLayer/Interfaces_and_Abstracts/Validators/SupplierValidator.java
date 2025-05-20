@@ -9,7 +9,7 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class SupplierValidator implements IValidator<SupplierDTO> {
    @Override
-   public ServiceResponse<List<String>> validate(SupplierDTO target) {
+   public ServiceResponse<List<String>> validateCreateDTO(SupplierDTO target) {
       List<String> errors = new ArrayList<String>();
       if (target == null) {
          errors.add("SupplierDTO cannot be null");
@@ -57,5 +57,22 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
          }
       }
       return errors.isEmpty() ? ServiceResponse.ok(null) : ServiceResponse.fail(errors);
+   }
+
+   @Override
+   public ServiceResponse<?> validateUpdateDTO(SupplierDTO target) {
+      return validateCreateDTO(target);
+      // Reusing the create validation logic for update
+      // as the same rules apply.
+   }
+
+   @Override
+   public ServiceResponse<?> validateRemoveDTO(int id) {
+      return id > 0 ? ServiceResponse.ok(null) : ServiceResponse.fail(List.of("Invalid supplier ID"));
+   }
+
+   @Override
+   public ServiceResponse<?> validateGetDTO(int id) {
+      return id > 0 ? ServiceResponse.ok(null) : ServiceResponse.fail(List.of("Invalid supplier ID"));
    }
 }

@@ -10,7 +10,7 @@ import DTOs.SupplierDTO;
 
 public class SupplierFacade {
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
-   private final Map<Integer, SupplierProduct> supplierProducts = new HashMap<>();
+   private final Map<Integer, List<SupplierProduct>> supplierProducts = new HashMap<>();
 
    public Supplier createSupplier(SupplierDTO supplierDTO) {
       if (supplierDTO == null) {
@@ -25,16 +25,25 @@ public class SupplierFacade {
       return supplier;
    }
 
-   public boolean removeSupplier(String json) {
-      return false; // TODO: Implement this method
+   public boolean removeSupplier(int supplierID) {
+      Supplier supplier = suppliers.remove(supplierID);
+      if (supplier == null) {
+         return false;
+      }
+      supplierProducts.remove(supplierID);
+      return true;
    }
 
    public boolean updateSupplier(Supplier updated) {
       return false; // TODO: Implement this method
    }
 
-   public Supplier getSupplier(String jsonOfID) {
-      return null; // TODO: Implement this method
+   public Supplier getSupplier(int supplierID) {
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      return supplier;
    }
 
    public boolean supplierExists(String json) {

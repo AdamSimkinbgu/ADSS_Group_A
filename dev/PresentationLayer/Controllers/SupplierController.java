@@ -6,6 +6,7 @@ import java.util.Map;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
 import PresentationLayer.CLIs.Commands.CreateSupplierCMD;
+import PresentationLayer.CLIs.Commands.RemoveSupplierCMD;
 import PresentationLayer.CLIs.Commands.ViewAllSuppliersCMD;
 import ServiceLayer.SupplierService;
 
@@ -17,6 +18,8 @@ public class SupplierController {
       this.view = view;
       this.commands = new HashMap<>();
       commands.put("1", new CreateSupplierCMD(view, supplierService));
+      // commands.put("2", new UpdateSupplierCMD(view, supplierService));
+      commands.put("3", new RemoveSupplierCMD(view, supplierService));
       commands.put("4", new ViewAllSuppliersCMD(view, supplierService));
    }
 
@@ -25,7 +28,7 @@ public class SupplierController {
          view.showMessage("Supplier Management Menu");
          view.showMessage("1. Create Supplier");
          view.showMessage("2. Update Supplier");
-         view.showMessage("3. Delete Supplier");
+         view.showMessage("3. Remove Supplier");
          view.showMessage("4. List Suppliers");
          view.showMessage("Type 'return' to go back.");
 

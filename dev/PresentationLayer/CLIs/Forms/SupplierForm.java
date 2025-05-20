@@ -4,7 +4,7 @@ package PresentationLayer.CLIs.Forms;
 import DTOs.*;
 import DTOs.Enums.PaymentMethod;
 import DTOs.Enums.PaymentTerm;
-import DTOs.Enums.WeekofDay;
+import DTOs.Enums.DayofWeek;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.InteractiveForm;
 
@@ -50,7 +50,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                         // throwing Cancelled.
                   }
             }
-            EnumSet<WeekofDay> supplyDays = EnumSet.noneOf(WeekofDay.class);
+            EnumSet<DayofWeek> supplyDays = EnumSet.noneOf(DayofWeek.class);
             if (selfSupply) {
                   view.showMessage("-- Supply days --");
                   String[] days = view.readLine("Select days (1-7, separated by spaces): ").split(" ");
@@ -59,10 +59,10 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                               int dayNumber = Integer.parseInt(day);
                               if (dayNumber < 1 || dayNumber > 7) {
                                     view.showError("Invalid day number: " + day);
-                              } else if (supplyDays.contains(WeekofDay.values()[dayNumber - 1])) {
-                                    supplyDays.remove(WeekofDay.values()[dayNumber - 1]);
+                              } else if (supplyDays.contains(DayofWeek.values()[dayNumber - 1])) {
+                                    supplyDays.remove(DayofWeek.values()[dayNumber - 1]);
                               } else {
-                                    supplyDays.add(WeekofDay.values()[dayNumber - 1]);
+                                    supplyDays.add(DayofWeek.values()[dayNumber - 1]);
                               }
                         } catch (NumberFormatException e) {
                               view.showError("Invalid input: " + day);

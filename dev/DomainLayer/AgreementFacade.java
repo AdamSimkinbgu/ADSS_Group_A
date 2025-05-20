@@ -4,10 +4,6 @@ import java.util.*;
 
 import DomainLayer.Classes.Agreement;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-
 public class AgreementFacade extends BaseFacade {
     private final Map<UUID, Agreement> agreements = new HashMap<>();
 

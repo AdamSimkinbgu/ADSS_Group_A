@@ -1,6 +1,6 @@
 package DTOs.Enums;
 
-public enum WeekofDay {
+public enum DayofWeek {
    SUNDAY,
    MONDAY,
    TUESDAY,

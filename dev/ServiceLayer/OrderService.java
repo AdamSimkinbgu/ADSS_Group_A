@@ -10,7 +10,6 @@ import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import DomainLayer.Classes.Order;
 
 public class OrderService extends BaseService {
-   private final ObjectMapper objectMapper = new ObjectMapper();
    private final OrderFacade orderFacade;
 
    public OrderService(OrderFacade orderFacade) {

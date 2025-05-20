@@ -2,9 +2,8 @@ package DTOs;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
-import DTOs.Enums.WeekofDay;
+import DTOs.Enums.DayofWeek;
 import DomainLayer.Classes.Supplier;
 
 public class SupplierDTO {
@@ -13,7 +12,7 @@ public class SupplierDTO {
       private String taxNumber;
       private AddressDTO address;
       private boolean selfSupply;
-      private EnumSet<WeekofDay> supplyDays;
+      private EnumSet<DayofWeek> supplyDays;
       private PaymentDetailsDTO paymentDetails;
       private List<ContactInfoDTO> contacts;
       private List<SupplierProductDTO> products;
@@ -25,7 +24,7 @@ public class SupplierDTO {
                   String taxNumber,
                   AddressDTO address,
                   boolean selfSupply,
-                  EnumSet<WeekofDay> supplyDays,
+                  EnumSet<DayofWeek> supplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
@@ -47,7 +46,7 @@ public class SupplierDTO {
                   String taxNumber,
                   AddressDTO address,
                   boolean selfSupply,
-                  EnumSet<WeekofDay> supplyDays,
+                  EnumSet<DayofWeek> supplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
@@ -141,6 +140,8 @@ public class SupplierDTO {
                         "  \"name\": \"" + name + "\",\n" +
                         "  \"taxNumber\": \"" + taxNumber + "\",\n" +
                         "  \"address\": " + address.toString() + ",\n" +
+                        "  \"selfSupply\": " + selfSupply + ",\n" +
+                        "  \"supplyDays\": " + supplyDays.toString() + ",\n" +
                         "  \"paymentDetails\": " + paymentDetails.toString() + ",\n" +
                         "  \"contacts\": " + contacts.toString() + ",\n" +
                         "  \"products\": " + products.toString() + ",\n" +
@@ -182,5 +183,13 @@ public class SupplierDTO {
             result = 31 * result + products.hashCode();
             result = 31 * result + agreements.hashCode();
             return result;
+      }
+
+      public boolean isSelfSupply() {
+            return selfSupply;
+      }
+
+      public EnumSet<DayofWeek> getSupplyDays() {
+            return supplyDays;
       }
 }

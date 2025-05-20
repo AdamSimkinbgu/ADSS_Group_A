@@ -1,13 +1,12 @@
 package DomainLayer;
 
 import DomainLayer.Classes.Order;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import java.util.*;
 
 public class OrderFacade extends BaseFacade {
 
-    private final Map<UUID, Order> orders;
+    private final Map<Integer, Order> orders;
     private final SupplierFacade supplierFacade;
 
     public OrderFacade(SupplierFacade supplierFacade) {
@@ -19,7 +18,7 @@ public class OrderFacade extends BaseFacade {
         return null; // TODO: Implement this method
     }
 
-    public Order getOrder(UUID orderId) {
+    public Order getOrder(Integer orderId) {
         return null; // TODO: Implement this method
 
     }

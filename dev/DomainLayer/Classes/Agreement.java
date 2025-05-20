@@ -3,12 +3,9 @@
  */
 package DomainLayer.Classes;
 
-import DTOs.Enums.WeekofDay;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 /**

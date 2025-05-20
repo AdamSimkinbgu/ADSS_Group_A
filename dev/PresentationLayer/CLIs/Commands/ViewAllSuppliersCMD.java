@@ -23,6 +23,10 @@ public class ViewAllSuppliersCMD implements CommandInterface {
       ServiceResponse<List<SupplierDTO>> res = supplierService.getAllSuppliers();
       if (res.isSuccess()) {
          view.showMessage("-- Suppliers --");
+         if (res.getValue().isEmpty()) {
+            view.showMessage("No suppliers found.");
+            return;
+         }
          AtomicInteger counter = new AtomicInteger(1);
          res.getValue().forEach(supplier -> {
             view.showMessage(counter.getAndIncrement() + ". " + supplier);

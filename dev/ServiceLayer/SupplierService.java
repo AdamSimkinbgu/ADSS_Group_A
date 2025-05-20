@@ -22,7 +22,7 @@ public class SupplierService extends BaseService {
    }
 
    public ServiceResponse<?> createSupplier(SupplierDTO supplierDTO) {
-      ServiceResponse<List<String>> response = supplierValidator.validate(supplierDTO);
+      ServiceResponse<List<String>> response = supplierValidator.validateCreateDTO(supplierDTO);
       if (response.isSuccess()) {
          try {
             Supplier supplier = supplierFacade.createSupplier(supplierDTO);
@@ -39,12 +39,40 @@ public class SupplierService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   public ServiceResponse<?> removeSupplier(String id) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<?> removeSupplier(int id) {
+      ServiceResponse<?> response = supplierValidator.validateRemoveDTO(id);
+      if (response.isSuccess()) {
+         try {
+            boolean removed = supplierFacade.removeSupplier(id);
+            if (removed) {
+               return ServiceResponse.ok("Supplier removed successfully");
+            } else {
+               return ServiceResponse.fail(List.of("Supplier not found"));
+            }
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to remove supplier: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
    }
 
-   public ServiceResponse<?> getSupplierDetails(String id) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<?> getSupplierDetails(int id) {
+      ServiceResponse<?> response = supplierValidator.validateGetDTO(id);
+      if (response.isSuccess()) {
+         try {
+            Supplier supplier = supplierFacade.getSupplier(id);
+            if (supplier != null) {
+               return ServiceResponse.ok(supplier);
+            } else {
+               return ServiceResponse.fail(List.of("Supplier not found"));
+            }
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to retrieve supplier: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
    }
 
    public ServiceResponse<List<SupplierDTO>> getAllSuppliers() {
@@ -57,22 +85,22 @@ public class SupplierService extends BaseService {
    }
 
    public ServiceResponse<?> checkSupplierExists(String infoToCheck) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 
    public ServiceResponse<?> addProduct(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 
    public ServiceResponse<?> updateProduct(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 
    public ServiceResponse<?> removeProduct(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 
    public ServiceResponse<?> listProducts(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 }
