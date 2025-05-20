@@ -24,7 +24,7 @@ public final class CreateSupplierCMD implements CommandInterface {
       form.fill().ifPresent(dto -> {
          ServiceResponse<?> res = service.createSupplier(dto);
          if (res.isSuccess()) {
-            view.showMessage("-- Supplier created successfully --" + dto);
+            view.showMessage("-- Supplier created successfully --\n" + dto);
          } else {
             view.showError("-- Failed to create supplier --");
             AtomicInteger counter = new AtomicInteger(1);

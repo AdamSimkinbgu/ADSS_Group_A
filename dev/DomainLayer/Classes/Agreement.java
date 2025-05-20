@@ -3,18 +3,13 @@
  */
 package DomainLayer.Classes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import DTOs.Enums.WeekofDay;
 
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Entity representing a contract (Agreement) with a Supplier.
@@ -22,60 +17,46 @@ import java.util.UUID;
  */
 
 public class Agreement implements Serializable {
-
-    private UUID agreementId;
-    private UUID supplierId;
+    private static int nextAgreementID = 1;
+    private int agreementId;
+    private int supplierId;
     private String supplierName;
     private boolean valid;
-    private boolean selfSupply;
-    private EnumSet<WeekofDay> supplyDays;
     private LocalDate agreementStartDate;
     private LocalDate agreementEndDate;
-    private List<BillofQuantitiesItem> billOfQuantities;
+    private List<BillofQuantitiesItem> billOfQuantitiesItems;
     private boolean hasFixedSupplyDays;
 
     public Agreement(
-            UUID agreementId,
-            UUID supplierId,
+            int agreementId,
+            int supplierId,
             String supplierName,
-            boolean selfSupply,
-            EnumSet<WeekofDay> supplyDays,
             LocalDate agreementStartDate,
             LocalDate agreementEndDate,
             boolean hasFixedSupplyDays) {
         if (agreementEndDate.isBefore(agreementStartDate)) {
             throw new IllegalArgumentException("End date before start date");
         }
-        this.agreementId = (agreementId != null)
-                ? agreementId
-                : UUID.nameUUIDFromBytes(
-                        (supplierId.toString()
-                                + ":" + agreementStartDate
-                                + ":" + agreementEndDate)
-                                .getBytes(StandardCharsets.UTF_8));
+        this.agreementId = nextAgreementID++;
 
         this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.valid = true;
-        this.selfSupply = selfSupply;
-        this.supplyDays = (supplyDays != null && !supplyDays.isEmpty())
-                ? EnumSet.copyOf(supplyDays)
-                : EnumSet.noneOf(WeekofDay.class);
         this.agreementStartDate = agreementStartDate;
         this.agreementEndDate = agreementEndDate;
         this.hasFixedSupplyDays = hasFixedSupplyDays;
-        this.billOfQuantities = new ArrayList<>();
+        this.billOfQuantitiesItems = new ArrayList<>();
     }
 
     // ───────────────────────────────────────────────────────────────────────
     // Getters
     // ───────────────────────────────────────────────────────────────────────
 
-    public UUID getAgreementId() {
+    public int getAgreementId() {
         return agreementId;
     }
 
-    public UUID getSupplierId() {
+    public int getSupplierId() {
         return supplierId;
     }
 
@@ -87,14 +68,6 @@ public class Agreement implements Serializable {
         return valid;
     }
 
-    public boolean isSelfSupply() {
-        return selfSupply;
-    }
-
-    public EnumSet<WeekofDay> getSupplyDays() {
-        return supplyDays;
-    }
-
     public LocalDate getAgreementStartDate() {
         return agreementStartDate;
     }
@@ -103,8 +76,8 @@ public class Agreement implements Serializable {
         return agreementEndDate;
     }
 
-    public List<BillofQuantitiesItem> getBillOfQuantities() {
-        return billOfQuantities;
+    public List<BillofQuantitiesItem> getBillOfQuantitiesItems() {
+        return billOfQuantitiesItems;
     }
 
     public boolean hasFixedSupplyDays() {
@@ -115,20 +88,20 @@ public class Agreement implements Serializable {
     // Setters
     // ───────────────────────────────────────────────────────────────────────
 
+    public void setAgreementId(int agreementId) {
+        this.agreementId = agreementId;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
+
     public void setSupplierName(String supplierName) {
         this.supplierName = supplierName;
     }
 
     public void setValid(boolean valid) {
         this.valid = valid;
-    }
-
-    public void setSelfSupply(boolean selfSupply) {
-        this.selfSupply = selfSupply;
-    }
-
-    public void setSupplyDays(EnumSet<WeekofDay> supplyDays) {
-        this.supplyDays = supplyDays;
     }
 
     public void setAgreementStartDate(LocalDate agreementStartDate) {
@@ -143,39 +116,74 @@ public class Agreement implements Serializable {
         this.hasFixedSupplyDays = hasFixedSupplyDays;
     }
 
-    public void setBillOfQuantities(List<BillofQuantitiesItem> billOfQuantities) {
-        this.billOfQuantities = billOfQuantities;
+    public void setBillOfQuantitiesItems(List<BillofQuantitiesItem> billOfQuantities) {
+        this.billOfQuantitiesItems = billOfQuantities;
     }
 
     // ───────────────────────────────────────────────────────────────────────
     // BoQ methods
     // ───────────────────────────────────────────────────────────────────────
 
-    /**
-     * Add or update a BoQ entry storage; calculation moves to Order.
-     */
     public void addBillOfQuantitiesItem(BillofQuantitiesItem item) {
-        this.billOfQuantities.removeIf(b -> b.getId().equals(item.getId()));
-        this.billOfQuantities.add(item);
+        if (item == null) {
+            throw new IllegalArgumentException("Bill of Quantities item cannot be null");
+        }
+        if (this.billOfQuantitiesItems == null) {
+            this.billOfQuantitiesItems = new ArrayList<>();
+        }
+        for (BillofQuantitiesItem existingItem : this.billOfQuantitiesItems) {
+            if (existingItem.equals(item) && existingItem.getQuantity() == item.getQuantity()) {
+                // Update the existing item with the new quantity
+                existingItem.setDiscountPercent(item.getDiscountPercent());
+                return;
+            }
+        }
+        // If it doesn't exist, or if the quantity is different, add it to the list
+        this.billOfQuantitiesItems.add(item);
     }
 
-    public void removeBillOfQuantitiesItem(UUID itemId) {
-        this.billOfQuantities.removeIf(item -> item.getId().equals(itemId));
+    public void removeBillOfQuantitiesItem(int itemId) {
+        if (this.billOfQuantitiesItems != null) {
+            this.billOfQuantitiesItems.removeIf(item -> item.getProductID() == itemId);
+        }
     }
 
     @Override
     public String toString() {
-        return "Agreement{" +
-                "agreementId=" + agreementId +
-                ", supplierId=" + supplierId +
-                ", supplierName='" + supplierName + '\'' +
-                ", valid=" + valid +
-                ", selfSupply=" + selfSupply +
-                ", supplyDays=" + supplyDays +
-                ", agreementStartDate=" + agreementStartDate +
-                ", agreementEndDate=" + agreementEndDate +
-                ", billOfQuantities=" + billOfQuantities +
-                ", hasFixedSupplyDays=" + hasFixedSupplyDays +
-                '}';
+        return "{\n" +
+                "   \"agreementId\": " + agreementId + ",\n" +
+                "   \"supplierId\": " + supplierId + ",\n" +
+                "   \"supplierName\": \"" + supplierName + "\",\n" +
+                "   \"valid\": " + valid + ",\n" +
+                "   \"agreementStartDate\": \"" + agreementStartDate + "\",\n" +
+                "   \"agreementEndDate\": \"" + agreementEndDate + "\",\n" +
+                "   \"billOfQuantitiesItems\": " + billOfQuantitiesItems + "\n" +
+                "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Agreement))
+            return false;
+
+        Agreement agreement = (Agreement) o;
+
+        if (agreementId != agreement.agreementId)
+            return false;
+        if (supplierId != agreement.supplierId)
+            return false;
+        if (valid != agreement.valid)
+            return false;
+        if (hasFixedSupplyDays != agreement.hasFixedSupplyDays)
+            return false;
+        if (!supplierName.equals(agreement.supplierName))
+            return false;
+        if (!agreementStartDate.equals(agreement.agreementStartDate))
+            return false;
+        if (!agreementEndDate.equals(agreement.agreementEndDate))
+            return false;
+        return billOfQuantitiesItems.equals(agreement.billOfQuantitiesItems);
     }
 }

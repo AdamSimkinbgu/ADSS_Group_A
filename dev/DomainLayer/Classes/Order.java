@@ -1,43 +1,60 @@
 package DomainLayer.Classes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import DTOs.Enums.OrderStatus;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Order implements Serializable {
-    private UUID orderId;
-    private UUID supplierId;
+    private static int nextOrderID = 1;
+    private int orderId;
+    private int supplierId;
     private LocalDate orderDate;
-    private List<OrderItem> items;
+    private List<OrderItemLine> items;
     private OrderStatus status;
 
-    public Order() {
-        this.items = new ArrayList<>();
+    // load constructor
+    public Order(
+            int orderId,
+            int supplierId,
+            LocalDate orderDate,
+            List<OrderItemLine> items,
+            OrderStatus status) {
+        this.orderId = orderId;
+        this.supplierId = supplierId;
+        this.orderDate = orderDate;
+        this.items = items;
+        this.status = status;
     }
 
+    // create constructor
     public Order(
-            UUID orderId,
-            UUID supplierId,
+            int supplierId,
             LocalDate orderDate,
-            List<OrderItem> items,
+            List<OrderItemLine> items,
             OrderStatus status) {
-        this.orderId = (orderId != null)
-                ? orderId
-                : UUID.randomUUID();
+        this.orderId = nextOrderID++;
+        this.supplierId = supplierId;
+        this.orderDate = orderDate;
+        this.items = items;
+        this.status = status;
+    }
+
+    // create constructor with default status
+    public Order(
+            int supplierId,
+            LocalDate orderDate,
+            List<OrderItemLine> items) {
+        this.orderId = nextOrderID++;
         this.supplierId = supplierId;
         this.orderDate = orderDate;
         this.items = items;
         this.status = OrderStatus.PENDING;
     }
 
-    public void setSupplierId(UUID supplierId) {
+    public void setSupplierId(int supplierId) {
         this.supplierId = supplierId;
     }
 
@@ -45,7 +62,7 @@ public class Order implements Serializable {
         this.orderDate = orderDate;
     }
 
-    public void setItems(List<OrderItem> items) {
+    public void setItems(List<OrderItemLine> items) {
         if (items == null) {
             this.items = new ArrayList<>();
         } else {
@@ -57,11 +74,11 @@ public class Order implements Serializable {
         this.status = status;
     }
 
-    public UUID getOrderId() {
+    public int getOrderId() {
         return orderId;
     }
 
-    public UUID getSupplierId() {
+    public int getSupplierId() {
         return supplierId;
     }
 
@@ -69,7 +86,7 @@ public class Order implements Serializable {
         return orderDate;
     }
 
-    public List<OrderItem> getItems() {
+    public List<OrderItemLine> getItems() {
         return items;
     }
 
@@ -79,10 +96,12 @@ public class Order implements Serializable {
 
     @Override
     public String toString() {
-        return "Order{id=" + orderId +
-                ", supplierId=" + supplierId +
-                ", date=" + orderDate +
-                ", items=" + items +
-                ", status=" + status + '}';
+        return "{\n" +
+                "   \"orderId\": " + orderId + ",\n" +
+                "   \"supplierId\": " + supplierId + ",\n" +
+                "   \"orderDate\": \"" + orderDate + "\",\n" +
+                "   \"items\": " + items + ",\n" +
+                "   \"status\": \"" + status.getDisplayName() + "\"\n" +
+                "}";
     }
 }

@@ -2,76 +2,93 @@ package DomainLayer.Classes;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.UUID;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BillofQuantitiesItem implements Serializable {
-
-   private UUID id;
+   private int lineInBillID;
    private String description;
    private int quantity;
-   private BigDecimal unitPrice;
-
-   public BillofQuantitiesItem() {
-   }
+   private BigDecimal discountPercent;
+   private int productID;
 
    public BillofQuantitiesItem(
-         UUID id,
-         String description,
+         int lineInBillId,
+         String productName,
+         int productID,
          int quantity,
-         BigDecimal unitPrice) {
-      this.id = (id != null)
-            ? id
-            : UUID.nameUUIDFromBytes((description + ":" + quantity).getBytes());
-      setDescription(description);
-      setQuantity(quantity);
-      setUnitPrice(unitPrice);
-   }
-
-   public void setDescription(String description) {
-      if (description == null || description.isBlank()) {
-         throw new IllegalArgumentException("description must not be blank");
-      }
-      this.description = description;
-   }
-
-   public void setQuantity(int quantity) {
-      if (quantity < 0) {
-         throw new IllegalArgumentException("quantity must be >= 0");
-      }
+         BigDecimal discountPrecent) {
+      this.lineInBillID = lineInBillId;
+      this.description = productName;
+      this.productID = productID;
       this.quantity = quantity;
+      this.discountPercent = discountPrecent;
+
    }
 
-   public void setUnitPrice(BigDecimal unitPrice) {
-      if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) < 0) {
-         throw new IllegalArgumentException("unitPrice must be non-negative");
-      }
-      this.unitPrice = unitPrice;
+   public int getLineInBillID() {
+      return lineInBillID;
    }
 
-   public UUID getId() {
-      return id;
+   public void setLineInBillID(int lineInBillID) {
+      this.lineInBillID = lineInBillID;
    }
 
    public String getDescription() {
       return description;
    }
 
+   public void setDescription(String description) {
+      this.description = description;
+   }
+
+   public int getProductID() {
+      return productID;
+   }
+
+   public void setProductID(int productID) {
+      this.productID = productID;
+   }
+
    public int getQuantity() {
       return quantity;
    }
 
-   public BigDecimal getUnitPrice() {
-      return unitPrice;
+   public void setQuantity(int quantity) {
+      this.quantity = quantity;
+   }
+
+   public void setDiscountPercent(BigDecimal unitPrice) {
+      this.discountPercent = unitPrice;
+   }
+
+   public BigDecimal getDiscountPercent() {
+      return discountPercent;
    }
 
    @Override
    public String toString() {
-      return "BillOfQuantitiesItem{id=" + id +
-            ", desc='" + description + '\'' +
-            ", qty=" + quantity +
-            ", unitPrice=" + unitPrice + '}';
+      return "{\n" +
+            "   \"lineInBillID\": " + lineInBillID + ",\n" +
+            "   \"description\": \"" + description + "\",\n" +
+            "   \"quantity\": " + quantity + ",\n" +
+            "   \"discountPercent\": " + discountPercent + "\n" +
+            "}";
+   }
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o)
+         return true;
+      if (!(o instanceof BillofQuantitiesItem))
+         return false;
+
+      BillofQuantitiesItem that = (BillofQuantitiesItem) o;
+
+      if (lineInBillID != that.lineInBillID)
+         return false;
+      if (quantity != that.quantity)
+         return false;
+      if (productID != that.productID)
+         return false;
+      return discountPercent.equals(that.discountPercent);
    }
 }

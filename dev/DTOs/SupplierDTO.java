@@ -1,31 +1,41 @@
 package DTOs;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
+import DTOs.Enums.WeekofDay;
+import DomainLayer.Classes.Supplier;
+
 public class SupplierDTO {
-      private String id;
+      private int id;
       private String name;
       private String taxNumber;
       private AddressDTO address;
+      private boolean selfSupply;
+      private EnumSet<WeekofDay> supplyDays;
       private PaymentDetailsDTO paymentDetails;
       private List<ContactInfoDTO> contacts;
       private List<SupplierProductDTO> products;
-      private List<UUID> agreements;
+      private List<Integer> agreements;
 
       public SupplierDTO(
-                  String id,
+                  int id,
                   String name,
                   String taxNumber,
                   AddressDTO address,
+                  boolean selfSupply,
+                  EnumSet<WeekofDay> supplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
-                  List<UUID> agreements) {
+                  List<Integer> agreements) {
             this.id = id;
             this.name = name;
             this.taxNumber = taxNumber;
             this.address = address;
+            this.selfSupply = selfSupply;
+            this.supplyDays = supplyDays;
             this.paymentDetails = paymentDetails;
             this.contacts = contacts;
             this.products = products;
@@ -36,21 +46,35 @@ public class SupplierDTO {
                   String name,
                   String taxNumber,
                   AddressDTO address,
+                  boolean selfSupply,
+                  EnumSet<WeekofDay> supplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
-                  List<UUID> agreements) {
-            this.id = UUID.nameUUIDFromBytes(
-                        (name + ":" + taxNumber)
-                                    .getBytes())
-                        .toString();
+                  List<Integer> agreements) {
+            this.id = -1; // Default value for new suppliers
             this.name = name;
             this.taxNumber = taxNumber;
             this.address = address;
+            this.selfSupply = selfSupply;
+            this.supplyDays = supplyDays;
             this.paymentDetails = paymentDetails;
             this.contacts = contacts;
             this.products = products;
             this.agreements = agreements;
+      }
+
+      public SupplierDTO(Supplier supplier) {
+            this.id = supplier.getSupplierId();
+            this.name = supplier.getName();
+            this.taxNumber = supplier.getTaxNumber();
+            this.address = AddressDTO.fromAddress(supplier.getAddress());
+            this.selfSupply = supplier.isSelfSupply();
+            this.supplyDays = supplier.getSupplyDays();
+            this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
+            this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
+            this.products = SupplierProductDTO.fromSupplierProductList(supplier.getProducts());
+            this.agreements = supplier.getAgreements();
       }
 
       public String getName() {
@@ -101,27 +125,27 @@ public class SupplierDTO {
             this.products = products;
       }
 
-      public List<UUID> getAgreements() {
+      public List<Integer> getAgreements() {
             return agreements;
       }
 
-      public void setAgreements(List<UUID> agreements) {
+      public void setAgreements(List<Integer> agreements) {
             this.agreements = agreements;
       }
 
       @Override
       public String toString() {
-            return "SupplierDTO{" +
-                        id != null ? "id='" + id + '\'' + ", "
-                                    : "" +
-                                                "name='" + name + '\'' +
-                                                ", taxNumber='" + taxNumber + '\'' +
-                                                ", address=" + address +
-                                                ", paymentDetails=" + paymentDetails +
-                                                ", contacts=" + contacts +
-                                                ", products=" + products +
-                                                ", agreements=" + agreements +
-                                                '}';
+            // pretty json format
+            return "{\n" +
+                        "  \"id\": " + id + ",\n" +
+                        "  \"name\": \"" + name + "\",\n" +
+                        "  \"taxNumber\": \"" + taxNumber + "\",\n" +
+                        "  \"address\": " + address.toString() + ",\n" +
+                        "  \"paymentDetails\": " + paymentDetails.toString() + ",\n" +
+                        "  \"contacts\": " + contacts.toString() + ",\n" +
+                        "  \"products\": " + products.toString() + ",\n" +
+                        "  \"agreements\": " + agreements.toString() + "\n" +
+                        '}';
       }
 
       @Override

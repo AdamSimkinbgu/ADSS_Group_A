@@ -9,16 +9,18 @@ import DomainLayer.Classes.SupplierProduct;
 import DTOs.SupplierDTO;
 
 public class SupplierFacade {
-   private final Map<String, Supplier> suppliers = new HashMap<>();
-   private final Map<UUID, SupplierProduct> supplierProducts = new HashMap<>();
+   private final Map<Integer, Supplier> suppliers = new HashMap<>();
+   private final Map<Integer, SupplierProduct> supplierProducts = new HashMap<>();
 
    public Supplier createSupplier(SupplierDTO supplierDTO) {
       if (supplierDTO == null) {
          throw new InvalidParameterException("SupplierDTO cannot be null");
       }
-      Supplier supplier = new Supplier(supplierDTO.getName(), supplierDTO.getTaxNumber(),
-            supplierDTO.getAddress(), supplierDTO.getPaymentDetails(),
-            supplierDTO.getContacts(), supplierDTO.getProducts(), supplierDTO.getAgreements());
+      Supplier supplier = new Supplier(supplierDTO);
+      if (suppliers.values().stream()
+            .anyMatch(existingSupplier -> existingSupplier.getName().equalsIgnoreCase(supplier.getName()))) {
+         throw new IllegalArgumentException("Supplier with the same name already exists");
+      }
       suppliers.put(supplier.getSupplierId(), supplier);
       return supplier;
    }
@@ -63,9 +65,7 @@ public class SupplierFacade {
    public List<SupplierDTO> getAllSuppliers() {
       List<SupplierDTO> supplierDTOs = new ArrayList<>();
       for (Supplier supplier : suppliers.values()) {
-         SupplierDTO dto = new SupplierDTO(supplier.getSupplierId(), supplier.getName(), supplier.getTaxNumber(),
-               supplier.getAddress(), supplier.getPaymentDetails(), supplier.getContacts(), supplier.getProducts(),
-               supplier.getAgreements());
+         SupplierDTO dto = new SupplierDTO(supplier);
          supplierDTOs.add(dto);
       }
       return supplierDTOs;

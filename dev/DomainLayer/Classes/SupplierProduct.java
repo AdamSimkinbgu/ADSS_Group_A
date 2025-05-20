@@ -5,19 +5,19 @@ import DTOs.SupplierProductDTO;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.UUID;
 
 public class SupplierProduct implements Serializable {
-   private UUID supplierId;
-   private UUID productId;
+   private static int nextProductID = 1;
+   // private int supplierId;
+   private int productId;
    private String name;
    private String supplierCatalogNumber;
    private BigDecimal price;
    private String manufacturerName;
 
    public SupplierProduct(SupplierProductDTO supplierProduct) {
-      this.supplierId = supplierProduct.supplierId();
-      this.productId = supplierProduct.productId();
+      // this.supplierId = supplierProduct.supplierId();
+      this.productId = nextProductID++;
       this.name = supplierProduct.name();
       this.supplierCatalogNumber = supplierProduct.supplierCatalogNumber();
       this.price = supplierProduct.price();
@@ -25,16 +25,13 @@ public class SupplierProduct implements Serializable {
    }
 
    public SupplierProduct(
-         UUID supplierId,
-         UUID productId,
+         int productId,
          String supplierCatalogNumber,
          String name,
          BigDecimal price,
          String manufacturerName) {
-      this.supplierId = Objects.requireNonNull(supplierId, "supplierId");
       this.supplierCatalogNumber = Objects.requireNonNull(supplierCatalogNumber, "supplierCatalogNumber");
-      this.productId = UUID.nameUUIDFromBytes(
-            (supplierId.toString() + ":" + supplierCatalogNumber).getBytes());
+      this.productId = nextProductID++;
       this.name = name;
       this.price = Objects.requireNonNull(price, "price");
       this.manufacturerName = manufacturerName;
@@ -44,19 +41,11 @@ public class SupplierProduct implements Serializable {
    // Getters & Setters
    // ────────────────────────────────────────────────────────
 
-   public UUID getSupplierId() {
-      return supplierId;
-   }
-
-   public void setSupplierId(UUID supplierId) {
-      this.supplierId = supplierId;
-   }
-
-   public UUID getProductId() {
+   public int getProductId() {
       return productId;
    }
 
-   public void setProductId(UUID productId) {
+   public void setProductId(int productId) {
       this.productId = productId;
    }
 
@@ -103,23 +92,24 @@ public class SupplierProduct implements Serializable {
       if (!(o instanceof SupplierProduct))
          return false;
       SupplierProduct that = (SupplierProduct) o;
-      return supplierId.equals(that.supplierId) &&
-            productId.equals(that.productId) &&
+      return productId == that.productId &&
             supplierCatalogNumber.equals(that.supplierCatalogNumber);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash(supplierId, productId, supplierCatalogNumber);
+      return Objects.hash(productId, supplierCatalogNumber);
    }
 
    @Override
    public String toString() {
-      return "SupplierProduct[" +
-            "supplierId=" + supplierId +
-            ", productId=" + productId +
-            ", catalogNumber='" + supplierCatalogNumber + '\'' +
-            ", price=" + price +
-            ']';
+      // pretty json format
+      return "{\n" +
+            "   \"productId\": " + productId + ",\n" +
+            "   \"supplierCatalogNumber\": \"" + supplierCatalogNumber + "\",\n" +
+            "   \"name\": \"" + name + "\",\n" +
+            "   \"price\": " + price + ",\n" +
+            "   \"manufacturerName\": \"" + manufacturerName + "\"\n" +
+            "}";
    }
 }

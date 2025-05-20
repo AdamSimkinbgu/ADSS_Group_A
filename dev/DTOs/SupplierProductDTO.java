@@ -7,8 +7,7 @@ import java.util.UUID;
 import DomainLayer.Classes.SupplierProduct;
 
 public record SupplierProductDTO(
-            UUID supplierId,
-            UUID productId,
+            int productId,
             String supplierCatalogNumber,
             String name,
             BigDecimal price,
@@ -17,7 +16,6 @@ public record SupplierProductDTO(
       public static List<SupplierProductDTO> fromSupplierProductList(List<SupplierProduct> products) {
             return products.stream()
                         .map(product -> new SupplierProductDTO(
-                                    product.getSupplierId(),
                                     product.getProductId(),
                                     product.getSupplierCatalogNumber(),
                                     product.getName(),

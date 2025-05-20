@@ -54,11 +54,11 @@ public class ContactInfo implements Serializable {
 
    @Override
    public String toString() {
-      return "ContactInfo{" +
-            "name='" + name + '\'' +
-            ", email='" + email + '\'' +
-            ", phone='" + phone + '\'' +
-            '}';
+      return "{" +
+            "\"name\": \"" + name + "\"," +
+            "\"email\": \"" + email + "\"," +
+            "\"phone\": \"" + phone + "\"" +
+            "}";
    }
 
    @Override

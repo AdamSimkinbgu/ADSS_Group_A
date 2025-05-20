@@ -43,10 +43,26 @@ public class PaymentDetails implements Serializable {
       }
 
       public String toString() {
-            return "PaymentDetails{" +
-                        "bankAccountNumber='" + bankAccountNumber + '\'' +
-                        ", paymentMethod=" + paymentMethod +
-                        ", paymentTerm=" + paymentTerm +
-                        '}';
+            return "{" +
+                        "\"bankAccountNumber\": \"" + bankAccountNumber + "\"," +
+                        "\"paymentMethod\": \"" + paymentMethod + "\"," +
+                        "\"paymentTerm\": \"" + paymentTerm + "\"" +
+                        "}";
+      }
+
+      @Override
+      public boolean equals(Object o) {
+            if (this == o)
+                  return true;
+            if (!(o instanceof PaymentDetails))
+                  return false;
+
+            PaymentDetails that = (PaymentDetails) o;
+
+            if (!bankAccountNumber.equals(that.bankAccountNumber))
+                  return false;
+            if (paymentMethod != that.paymentMethod)
+                  return false;
+            return paymentTerm == that.paymentTerm;
       }
 }

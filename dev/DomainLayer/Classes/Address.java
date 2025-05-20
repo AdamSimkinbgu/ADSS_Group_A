@@ -33,12 +33,29 @@ public class Address implements Serializable {
             return buildingNumber;
       }
 
+      @Override
+      public boolean equals(Object o) {
+            if (this == o)
+                  return true;
+            if (!(o instanceof Address))
+                  return false;
+
+            Address address = (Address) o;
+
+            if (!street.equals(address.street))
+                  return false;
+            if (!city.equals(address.city))
+                  return false;
+            return buildingNumber.equals(address.buildingNumber);
+      }
+
+      @Override
       public String toString() {
-            return "Address{" +
-                        "street='" + street + '\'' +
-                        ", city='" + city + '\'' +
-                        ", buildingNumber='" + buildingNumber + '\'' +
-                        '}';
+            return "{" +
+                        "\"street\": \"" + street + "\"," +
+                        "\"city\": \"" + city + "\"," +
+                        "\"buildingNumber\": \"" + buildingNumber + "\"" +
+                        "}";
       }
 
 }
