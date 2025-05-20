@@ -1,2 +1,4 @@
-package DTO;public class SupplyDTO {
+package DTO;
+
+public class SupplyDTO {
 }

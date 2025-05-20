@@ -110,7 +110,7 @@ public class ProductDomain {
             TotalInStore += supply.getQuantityWarehouse();
             }
         if(TotalInStore < minimalAmountStock){
-            ret = minimalAmountStock - TotalInStore;
+            ret = 2 * minimalAmountStock - TotalInStore;
         }
 
         reStockStore();
