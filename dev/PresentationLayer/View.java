@@ -1,17 +1,13 @@
 package PresentationLayer;
 
-import java.util.List;
-
 public interface View {
+   String readLine(String prompt);
+
+   default String readLine() {
+      return readLine("");
+   }
+
    void showMessage(String msg);
 
-   void showError(String msg);
-
-   <T> void dispatchResponse(String rawJson, Class<T> valueType);
-
-   void showOptions(String title, List<String> options);
-
-   String readLine();
-
-   String readLine(String message);
+   void showError(String err);
 }
