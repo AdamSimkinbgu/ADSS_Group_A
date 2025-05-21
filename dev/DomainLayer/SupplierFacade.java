@@ -7,6 +7,7 @@ import DomainLayer.Classes.Supplier;
 import DomainLayer.Classes.SupplierProduct;
 
 import DTOs.SupplierDTO;
+import DTOs.SupplierProductDTO;
 
 public class SupplierFacade {
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
@@ -18,10 +19,12 @@ public class SupplierFacade {
       }
       Supplier supplier = new Supplier(supplierDTO);
       if (suppliers.values().stream()
-            .anyMatch(existingSupplier -> existingSupplier.getName().equalsIgnoreCase(supplier.getName()))) {
-         throw new IllegalArgumentException("Supplier with the same name already exists");
+            .anyMatch(existingSupplier -> existingSupplier.getTaxNumber().equalsIgnoreCase(supplier.getTaxNumber()))) {
+         throw new IllegalArgumentException("Supplier with the same tax number already exists");
       }
+      // insert info into runtime memory
       suppliers.put(supplier.getSupplierId(), supplier);
+      supplierProducts.put(supplier.getSupplierId(), supplier.getProducts());
       return supplier;
    }
 
@@ -34,16 +37,37 @@ public class SupplierFacade {
       return true;
    }
 
-   public boolean updateSupplier(Supplier updated) {
-      return false; // TODO: Implement this method
-   }
-
-   public Supplier getSupplier(int supplierID) {
+   public SupplierDTO updateSupplier(SupplierDTO supplierDTO, int supplierID) {
+      if (supplierDTO == null) {
+         throw new InvalidParameterException("SupplierDTO cannot be null");
+      }
       Supplier supplier = suppliers.get(supplierID);
       if (supplier == null) {
          throw new IllegalArgumentException("Supplier not found");
       }
-      return supplier;
+      // check what needs to be updated and update it
+      List<BeanPatch<SupplierDTO, Supplier, ?>> rules = List.of(
+            BeanPatch.of(SupplierDTO::getName, Supplier::getName, Supplier::setName),
+            BeanPatch.of(SupplierDTO::getTaxNumber, Supplier::getTaxNumber, Supplier::setTaxNumber),
+            BeanPatch.of(SupplierDTO::getAddress, Supplier::getAddress, Supplier::setAddress),
+            BeanPatch.of(SupplierDTO::isSelfSupply, Supplier::isSelfSupply, Supplier::setSelfSupply),
+            BeanPatch.of(SupplierDTO::getSupplyDays, Supplier::getSupplyDays, Supplier::setSupplyDays),
+            BeanPatch.of(SupplierDTO::getPaymentDetails, Supplier::getPaymentDetails, Supplier::setPaymentDetails),
+            BeanPatch.of(SupplierDTO::getContactsList, Supplier::getContacts, Supplier::setContacts),
+            BeanPatch.of(SupplierDTO::getProductsList, Supplier::getProducts, Supplier::setProducts),
+            BeanPatch.of(SupplierDTO::getAgreements, Supplier::getAgreements, Supplier::setAgreements));
+
+      // ─── single loop, no reflection ───
+      rules.forEach(rule -> rule.apply(supplierDTO, supplier));
+      return new SupplierDTO(supplier);
+   }
+
+   public SupplierDTO getSupplier(int supplierID) {
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      return new SupplierDTO(supplier);
    }
 
    public boolean supplierExists(String json) {
@@ -63,12 +87,21 @@ public class SupplierFacade {
       return false; // TODO: Implement this method
    }
 
-   public List<SupplierProduct> listProductsForSupplier(String json) {
-      return null; // TODO: Implement this method
+   public List<SupplierProductDTO> listProductsForSupplier(int supplierID) {
+      List<SupplierProduct> products = supplierProducts.get(supplierID);
+      if (products == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      return SupplierProductDTO.fromSupplierProductList(products);
+
    }
 
-   public boolean addAgreementToSupplier(String supUpdate) {
-      return false; // TODO: Implement this method
+   public void addAgreementToSupplier(int supplierID, int agreementID) {
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      supplier.addAgreement(agreementID);
    }
 
    public List<SupplierDTO> getAllSuppliers() {

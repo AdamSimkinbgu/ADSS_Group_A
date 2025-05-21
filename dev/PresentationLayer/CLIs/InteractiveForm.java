@@ -14,7 +14,7 @@ public abstract class InteractiveForm<T> {
     }
 
     /** blocks until user cancels or we have a valid object */
-    public Optional<T> fill() {
+    public Optional<T> fillBuild() {
         try {
             return Optional.of(build());
         } catch (Cancelled e) {
@@ -23,7 +23,18 @@ public abstract class InteractiveForm<T> {
         }
     }
 
+    public Optional<T> fillUpdate(T dto) {
+        try {
+            return Optional.of(update(dto));
+        } catch (Cancelled e) {
+            view.showMessage("Cancelled.");
+            return Optional.empty();
+        }
+    }
+
     protected abstract T build() throws Cancelled;
+
+    protected abstract T update(T dto) throws Cancelled;
 
     /* ---------- convenience helpers ---------- */
 

@@ -13,6 +13,7 @@ public class SupplierProduct implements Serializable {
    private String name;
    private String supplierCatalogNumber;
    private BigDecimal price;
+   private BigDecimal Weight;
    private String manufacturerName;
 
    public SupplierProduct(SupplierProductDTO supplierProduct) {
@@ -21,6 +22,7 @@ public class SupplierProduct implements Serializable {
       this.name = supplierProduct.name();
       this.supplierCatalogNumber = supplierProduct.supplierCatalogNumber();
       this.price = supplierProduct.price();
+      this.Weight = supplierProduct.weight();
       this.manufacturerName = supplierProduct.manufacturerName();
    }
 
@@ -71,6 +73,14 @@ public class SupplierProduct implements Serializable {
 
    public void setPrice(BigDecimal price) {
       this.price = price;
+   }
+
+   public BigDecimal getWeight() {
+      return Weight;
+   }
+
+   public void setWeight(BigDecimal weight) {
+      Weight = weight;
    }
 
    public String getManufacturerName() {

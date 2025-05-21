@@ -4,17 +4,14 @@ import java.util.Scanner;
 
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import DomainLayer.SupplierFacade;
-import PresentationLayer.Controllers.SupplierController;
+import PresentationLayer.CLIs.Controllers.SupplierController;
 import ServiceLayer.*;
 
 public class AppCLI implements View {
    private final SupplierController supplierController;
 
    public static final Scanner scanner = new Scanner(System.in);
-   private final ObjectMapper mapper = new ObjectMapper();
 
    public AppCLI(String dataPath) {
       SupplierFacade supplierFacade = new SupplierFacade();

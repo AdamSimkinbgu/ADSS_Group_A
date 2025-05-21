@@ -4,7 +4,11 @@ import java.util.EnumSet;
 import java.util.List;
 
 import DTOs.Enums.DayofWeek;
+import DomainLayer.Classes.Address;
+import DomainLayer.Classes.ContactInfo;
+import DomainLayer.Classes.PaymentDetails;
 import DomainLayer.Classes.Supplier;
+import DomainLayer.Classes.SupplierProduct;
 
 public class SupplierDTO {
       private int id;
@@ -92,16 +96,24 @@ public class SupplierDTO {
             this.taxNumber = taxNumber;
       }
 
-      public AddressDTO getAddress() {
+      public AddressDTO getAddressDTO() {
             return address;
+      }
+
+      public Address getAddress() {
+            return new Address(address);
       }
 
       public void setAddress(AddressDTO address) {
             this.address = address;
       }
 
-      public PaymentDetailsDTO getPaymentDetails() {
+      public PaymentDetailsDTO getPaymentDetailsDTO() {
             return paymentDetails;
+      }
+
+      public PaymentDetails getPaymentDetails() {
+            return new PaymentDetails(paymentDetails);
       }
 
       public void setPaymentDetails(PaymentDetailsDTO paymentDetails) {
@@ -112,12 +124,20 @@ public class SupplierDTO {
             return contacts;
       }
 
+      public List<ContactInfo> getContactsList() {
+            return ContactInfoDTO.toContactInfoList(contacts);
+      }
+
       public void setContacts(List<ContactInfoDTO> contacts) {
             this.contacts = contacts;
       }
 
       public List<SupplierProductDTO> getProducts() {
             return products;
+      }
+
+      public List<SupplierProduct> getProductsList() {
+            return SupplierProductDTO.toSupplierProductList(products);
       }
 
       public void setProducts(List<SupplierProductDTO> products) {
@@ -191,5 +211,13 @@ public class SupplierDTO {
 
       public EnumSet<DayofWeek> getSupplyDays() {
             return supplyDays;
+      }
+
+      public void setSelfSupply(boolean selfSupply) {
+            this.selfSupply = selfSupply;
+      }
+
+      public void setSupplyDays(EnumSet<DayofWeek> supplyDays) {
+            this.supplyDays = supplyDays;
       }
 }

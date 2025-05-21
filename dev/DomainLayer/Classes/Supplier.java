@@ -25,35 +25,35 @@ public class Supplier implements Serializable {
    private List<SupplierProduct> products;
    private List<Integer> agreements;
 
-   public Supplier(SupplierDTO supplier) {
+   public Supplier(SupplierDTO supplierDTO) {
       this.supplierId = nextSupplierID++;
-      this.name = supplier.getName();
-      this.taxNumber = supplier.getTaxNumber();
-      this.address = new Address(supplier.getAddress());
-      this.selfSupply = supplier.isSelfSupply();
-      this.supplyDays = (supplier.getSupplyDays() != null && !supplier.getSupplyDays().isEmpty())
-            ? EnumSet.copyOf(supplier.getSupplyDays())
+      this.name = supplierDTO.getName();
+      this.taxNumber = supplierDTO.getTaxNumber();
+      this.address = new Address(supplierDTO.getAddressDTO());
+      this.selfSupply = supplierDTO.isSelfSupply();
+      this.supplyDays = (supplierDTO.getSupplyDays() != null && !supplierDTO.getSupplyDays().isEmpty())
+            ? EnumSet.copyOf(supplierDTO.getSupplyDays())
             : EnumSet.noneOf(DayofWeek.class);
-      this.paymentDetails = new PaymentDetails(supplier.getPaymentDetails());
+      this.paymentDetails = new PaymentDetails(supplierDTO.getPaymentDetailsDTO());
       this.contacts = new ArrayList<>();
-      if (supplier.getContacts() != null) {
-         for (ContactInfoDTO contact : supplier.getContacts()) {
+      if (supplierDTO.getContacts() != null) {
+         for (ContactInfoDTO contact : supplierDTO.getContacts()) {
             this.contacts.add(new ContactInfo(contact));
          }
       }
       this.products = new ArrayList<>();
-      if (supplier.getProducts() != null) {
-         for (SupplierProductDTO product : supplier.getProducts()) {
+      if (supplierDTO.getProducts() != null) {
+         for (SupplierProductDTO product : supplierDTO.getProducts()) {
             this.products.add(new SupplierProduct(product));
          }
       }
       this.products = new ArrayList<>();
-      if (supplier.getProducts() != null) {
-         for (SupplierProductDTO product : supplier.getProducts()) {
+      if (supplierDTO.getProducts() != null) {
+         for (SupplierProductDTO product : supplierDTO.getProducts()) {
             this.products.add(new SupplierProduct(product));
          }
       }
-      this.agreements = supplier.getAgreements();
+      this.agreements = supplierDTO.getAgreements();
    }
 
    public Supplier(
@@ -196,6 +196,13 @@ public class Supplier implements Serializable {
 
    public void setAgreements(List<Integer> agreements) {
       this.agreements = agreements;
+   }
+
+   public void addAgreement(int agreement) {
+      if (this.agreements == null) {
+         this.agreements = new ArrayList<>();
+      }
+      this.agreements.add(agreement);
    }
 
    @Override

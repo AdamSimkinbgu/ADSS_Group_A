@@ -29,29 +29,29 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
          } else if (!target.getTaxNumber().matches("^5\\d{8}$")) {
             errors.add("Supplier tax number must start with 5 and be 9 digits long");
          }
-         if (target.getAddress() == null) {
+         if (target.getAddressDTO() == null) {
             errors.add("Supplier address cannot be null");
          } else {
-            if (target.getAddress().street() == null) {
+            if (target.getAddressDTO().street() == null) {
                errors.add("Supplier address street cannot be null");
-            } else if (target.getAddress().street().isEmpty()) {
+            } else if (target.getAddressDTO().street().isEmpty()) {
                errors.add("Supplier address street cannot be empty");
-            } else if (!target.getAddress().street().matches("^[a-zA-Z0-9 ]+$")) {
+            } else if (!target.getAddressDTO().street().matches("^[a-zA-Z0-9 ]+$")) {
                errors.add("Supplier address street can only contain letters, numbers, and spaces");
             }
 
-            if (target.getAddress().city() == null) {
+            if (target.getAddressDTO().city() == null) {
                errors.add("Supplier address city cannot be null");
-            } else if (target.getAddress().city().isEmpty()) {
+            } else if (target.getAddressDTO().city().isEmpty()) {
                errors.add("Supplier address city cannot be empty");
-            } else if (!target.getAddress().city().matches("^[a-zA-Z ]+$")) {
+            } else if (!target.getAddressDTO().city().matches("^[a-zA-Z ]+$")) {
                errors.add("Supplier address city can only contain letters and spaces");
             }
-            if (target.getAddress().buildingNumber() == null) {
+            if (target.getAddressDTO().buildingNumber() == null) {
                errors.add("Supplier address building number cannot be null");
-            } else if (target.getAddress().buildingNumber().isEmpty()) {
+            } else if (target.getAddressDTO().buildingNumber().isEmpty()) {
                errors.add("Supplier address building number cannot be empty");
-            } else if (!target.getAddress().buildingNumber().matches("^[0-9]+$")) {
+            } else if (!target.getAddressDTO().buildingNumber().matches("^[0-9]+$")) {
                errors.add("Supplier address building number can only contain numbers");
             }
          }
@@ -60,7 +60,7 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
    }
 
    @Override
-   public ServiceResponse<?> validateUpdateDTO(SupplierDTO target) {
+   public ServiceResponse<List<String>> validateUpdateDTO(SupplierDTO target) {
       return validateCreateDTO(target);
       // Reusing the create validation logic for update
       // as the same rules apply.

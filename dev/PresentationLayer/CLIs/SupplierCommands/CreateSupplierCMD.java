@@ -1,4 +1,4 @@
-package PresentationLayer.CLIs.Commands;
+package PresentationLayer.CLIs.SupplierCommands;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +21,7 @@ public final class CreateSupplierCMD implements CommandInterface {
 
    @Override
    public void execute() {
-      form.fill().ifPresent(dto -> {
+      form.fillBuild().ifPresent(dto -> {
          ServiceResponse<?> res = service.createSupplier(dto);
          if (res.isSuccess()) {
             view.showMessage("-- Supplier created successfully --\n" + dto);

@@ -1,13 +1,14 @@
-package PresentationLayer.Controllers;
+package PresentationLayer.CLIs.Controllers;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
-import PresentationLayer.CLIs.Commands.CreateSupplierCMD;
-import PresentationLayer.CLIs.Commands.RemoveSupplierCMD;
-import PresentationLayer.CLIs.Commands.ViewAllSuppliersCMD;
+import PresentationLayer.CLIs.SupplierCommands.CreateSupplierCMD;
+import PresentationLayer.CLIs.SupplierCommands.RemoveSupplierCMD;
+import PresentationLayer.CLIs.SupplierCommands.UpdateSupplierCMD;
+import PresentationLayer.CLIs.SupplierCommands.ViewAllSuppliersCMD;
 import ServiceLayer.SupplierService;
 
 public class SupplierController {
@@ -18,7 +19,7 @@ public class SupplierController {
       this.view = view;
       this.commands = new HashMap<>();
       commands.put("1", new CreateSupplierCMD(view, supplierService));
-      // commands.put("2", new UpdateSupplierCMD(view, supplierService));
+      commands.put("2", new UpdateSupplierCMD(view, supplierService));
       commands.put("3", new RemoveSupplierCMD(view, supplierService));
       commands.put("4", new ViewAllSuppliersCMD(view, supplierService));
    }

@@ -2,7 +2,6 @@ package DTOs;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 import DomainLayer.Classes.SupplierProduct;
 
@@ -11,6 +10,7 @@ public record SupplierProductDTO(
             String supplierCatalogNumber,
             String name,
             BigDecimal price,
+            BigDecimal weight,
             String manufacturerName) {
 
       public static List<SupplierProductDTO> fromSupplierProductList(List<SupplierProduct> products) {
@@ -20,7 +20,20 @@ public record SupplierProductDTO(
                                     product.getSupplierCatalogNumber(),
                                     product.getName(),
                                     product.getPrice(),
+                                    product.getWeight(),
                                     product.getManufacturerName()))
                         .toList();
+      }
+
+      public static List<SupplierProduct> toSupplierProductList(List<SupplierProductDTO> products) {
+            return products.stream()
+                        .map(product -> new SupplierProduct(
+                                    product.productId(),
+                                    product.supplierCatalogNumber(),
+                                    product.name(),
+                                    product.price(),
+                                    product.manufacturerName()))
+                        .toList();
+
       }
 }

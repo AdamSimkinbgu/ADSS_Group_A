@@ -3,6 +3,7 @@ package ServiceLayer;
 import java.util.List;
 
 import DTOs.SupplierDTO;
+import DTOs.SupplierProductDTO;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -35,8 +36,18 @@ public class SupplierService extends BaseService {
       }
    }
 
-   public ServiceResponse<?> updateSupplier(String updateJson) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<?> updateSupplier(SupplierDTO supplierDTO, int supplierID) {
+      ServiceResponse<List<String>> response = supplierValidator.validateUpdateDTO(supplierDTO);
+      if (response.isSuccess()) {
+         try {
+            SupplierDTO updatedSupplier = supplierFacade.updateSupplier(supplierDTO, supplierID);
+            return ServiceResponse.ok(updatedSupplier);
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to update supplier: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
    }
 
    public ServiceResponse<?> removeSupplier(int id) {
@@ -57,11 +68,11 @@ public class SupplierService extends BaseService {
       }
    }
 
-   public ServiceResponse<?> getSupplierDetails(int id) {
-      ServiceResponse<?> response = supplierValidator.validateGetDTO(id);
+   public ServiceResponse<SupplierDTO> getSupplierByID(int supplierID) {
+      ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
       if (response.isSuccess()) {
          try {
-            Supplier supplier = supplierFacade.getSupplier(id);
+            SupplierDTO supplier = supplierFacade.getSupplier(supplierID);
             if (supplier != null) {
                return ServiceResponse.ok(supplier);
             } else {
@@ -100,7 +111,18 @@ public class SupplierService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 
-   public ServiceResponse<?> listProducts(String json) {
-      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
+   public ServiceResponse<?> listProducts(int supplierID) {
+      ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
+      if (response.isSuccess()) {
+         try {
+            List<SupplierProductDTO> products = supplierFacade.listProductsForSupplier(supplierID);
+            return ServiceResponse.ok(products);
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to retrieve products: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
+
    }
 }
