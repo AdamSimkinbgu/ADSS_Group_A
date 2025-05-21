@@ -18,7 +18,7 @@ public class OrderFacade extends BaseFacade {
         return null; // TODO: Implement this method
     }
 
-    public Order getOrder(Integer orderId) {
+    public Order getOrder(int orderID) {
         return null; // TODO: Implement this method
 
     }
@@ -27,7 +27,7 @@ public class OrderFacade extends BaseFacade {
         return null; // TODO: Implement this method
     }
 
-    public void deleteOrder(UUID orderId) {
+    public void deleteOrder(int orderID) {
         // TODO: Implement this method
     }
 

@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import DTOs.AgreementDTO;
+import DTOs.BillofQuantitiesItemDTO;
+
 /**
  * Entity representing a contract (Agreement) with a Supplier.
  *
@@ -25,24 +28,43 @@ public class Agreement implements Serializable {
     private boolean hasFixedSupplyDays;
 
     public Agreement(
-            int agreementId,
             int supplierId,
             String supplierName,
             LocalDate agreementStartDate,
             LocalDate agreementEndDate,
-            boolean hasFixedSupplyDays) {
+            boolean hasFixedSupplyDays,
+            List<BillofQuantitiesItem> billOfQuantitiesItems) {
         if (agreementEndDate.isBefore(agreementStartDate)) {
             throw new IllegalArgumentException("End date before start date");
         }
         this.agreementId = nextAgreementID++;
-
         this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.valid = true;
         this.agreementStartDate = agreementStartDate;
         this.agreementEndDate = agreementEndDate;
         this.hasFixedSupplyDays = hasFixedSupplyDays;
+        this.billOfQuantitiesItems = billOfQuantitiesItems;
+    }
+
+    public Agreement(AgreementDTO agreementDTO) {
+        this.agreementId = nextAgreementID++;
+        this.supplierId = agreementDTO.getSupplierId();
+        this.supplierName = agreementDTO.getSupplierName();
+        this.valid = true;
+        this.agreementStartDate = agreementDTO.getAgreementStartDate();
+        this.agreementEndDate = agreementDTO.getAgreementEndDate();
+        this.hasFixedSupplyDays = agreementDTO.isHasFixedSupplyDays();
         this.billOfQuantitiesItems = new ArrayList<>();
+        for (BillofQuantitiesItemDTO itemDTO : agreementDTO.getBillOfQuantitiesItems()) {
+            BillofQuantitiesItem item = new BillofQuantitiesItem(
+                    itemDTO.getLineInBillID(),
+                    itemDTO.getItemName(),
+                    itemDTO.getItemId(),
+                    itemDTO.getQuantity(),
+                    itemDTO.getDiscountPercent());
+            this.billOfQuantitiesItems.add(item);
+        }
     }
 
     // ───────────────────────────────────────────────────────────────────────

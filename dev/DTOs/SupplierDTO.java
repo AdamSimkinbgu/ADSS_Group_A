@@ -72,7 +72,7 @@ public class SupplierDTO {
             this.name = supplier.getName();
             this.taxNumber = supplier.getTaxNumber();
             this.address = AddressDTO.fromAddress(supplier.getAddress());
-            this.selfSupply = supplier.isSelfSupply();
+            this.selfSupply = supplier.getSelfSupply();
             this.supplyDays = supplier.getSupplyDays();
             this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
             this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
@@ -205,7 +205,7 @@ public class SupplierDTO {
             return result;
       }
 
-      public boolean isSelfSupply() {
+      public boolean getSelfSupply() {
             return selfSupply;
       }
 

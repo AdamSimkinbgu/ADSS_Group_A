@@ -51,7 +51,7 @@ public class Order implements Serializable {
         this.supplierId = supplierId;
         this.orderDate = orderDate;
         this.items = items;
-        this.status = OrderStatus.PENDING;
+        this.status = OrderStatus.SENT;
     }
 
     public void setSupplierId(int supplierId) {
@@ -101,7 +101,7 @@ public class Order implements Serializable {
                 "   \"supplierId\": " + supplierId + ",\n" +
                 "   \"orderDate\": \"" + orderDate + "\",\n" +
                 "   \"items\": " + items + ",\n" +
-                "   \"status\": \"" + status.getDisplayName() + "\"\n" +
+                "   \"status\": \"" + status + "\"\n" +
                 "}";
     }
 }

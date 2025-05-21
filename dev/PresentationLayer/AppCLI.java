@@ -5,11 +5,13 @@ import java.util.Scanner;
 import DomainLayer.AgreementFacade;
 import DomainLayer.OrderFacade;
 import DomainLayer.SupplierFacade;
+import PresentationLayer.CLIs.Controllers.AgreementController;
 import PresentationLayer.CLIs.Controllers.SupplierController;
 import ServiceLayer.*;
 
 public class AppCLI implements View {
    private final SupplierController supplierController;
+   private final AgreementController agreementController;
 
    public static final Scanner scanner = new Scanner(System.in);
 
@@ -17,13 +19,14 @@ public class AppCLI implements View {
       SupplierFacade supplierFacade = new SupplierFacade();
       AgreementFacade agreementFacade = new AgreementFacade();
       OrderFacade orderFacade = new OrderFacade(supplierFacade);
-      // AgreementService agreementService = new AgreementService(agreementFacade);
+      AgreementService agreementService = new AgreementService(agreementFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
       // OrderService orderService = new OrderService(orderFacade);
       // SystemService systemService = new SystemService(supplierFacade, orderFacade,
       // agreementFacade);
       // Initialize the controllers
       this.supplierController = new SupplierController(this, supplierService);
+      this.agreementController = new AgreementController(this, agreementService, supplierService);
       start();
    }
 
@@ -44,7 +47,7 @@ public class AppCLI implements View {
                supplierController.start();
                break;
             case "2":
-               // agreementController.start();
+               agreementController.start();
                break;
             case "3":
                // orderController.start();

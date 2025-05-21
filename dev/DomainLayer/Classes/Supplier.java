@@ -30,7 +30,7 @@ public class Supplier implements Serializable {
       this.name = supplierDTO.getName();
       this.taxNumber = supplierDTO.getTaxNumber();
       this.address = new Address(supplierDTO.getAddressDTO());
-      this.selfSupply = supplierDTO.isSelfSupply();
+      this.selfSupply = supplierDTO.getSelfSupply();
       this.supplyDays = (supplierDTO.getSupplyDays() != null && !supplierDTO.getSupplyDays().isEmpty())
             ? EnumSet.copyOf(supplierDTO.getSupplyDays())
             : EnumSet.noneOf(DayofWeek.class);
@@ -232,7 +232,7 @@ public class Supplier implements Serializable {
             taxNumber.equals(supplier.taxNumber);
    }
 
-   public boolean isSelfSupply() {
+   public boolean getSelfSupply() {
       return selfSupply;
    }
 

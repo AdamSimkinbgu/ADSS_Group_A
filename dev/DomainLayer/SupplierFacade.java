@@ -50,7 +50,7 @@ public class SupplierFacade {
             BeanPatch.of(SupplierDTO::getName, Supplier::getName, Supplier::setName),
             BeanPatch.of(SupplierDTO::getTaxNumber, Supplier::getTaxNumber, Supplier::setTaxNumber),
             BeanPatch.of(SupplierDTO::getAddress, Supplier::getAddress, Supplier::setAddress),
-            BeanPatch.of(SupplierDTO::isSelfSupply, Supplier::isSelfSupply, Supplier::setSelfSupply),
+            BeanPatch.of(SupplierDTO::getSelfSupply, Supplier::getSelfSupply, Supplier::setSelfSupply),
             BeanPatch.of(SupplierDTO::getSupplyDays, Supplier::getSupplyDays, Supplier::setSupplyDays),
             BeanPatch.of(SupplierDTO::getPaymentDetails, Supplier::getPaymentDetails, Supplier::setPaymentDetails),
             BeanPatch.of(SupplierDTO::getContactsList, Supplier::getContacts, Supplier::setContacts),
