@@ -135,7 +135,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
             view.showMessage("Updating supplier... (enter 'cancel' to cancel)");
             // we have the dto, now we ask the user for what he wants to change
             switch (askNonEmpty(
-                        "What do you want to change? (name, taxNumber, address, selfSupply, supplyDays, paymentDetails, contacts, products)")) {
+                        "What do you want to change? (name, taxNumber, address, selfSupply, supplyDays, paymentDetails, contacts)")) {
                   case "name" -> supplierDTO.setName(askNonEmpty("New name: "));
                   case "taxNumber" -> supplierDTO.setTaxNumber(askNonEmpty("New tax number: "));
                   case "address" -> {
@@ -210,30 +210,6 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                                           askNonEmpty("  Phone: ")));
                         }
                         supplierDTO.setContacts(contacts);
-                  }
-                  case "products" -> {
-                        List<SupplierProductDTO> products = new ArrayList<>();
-                        view.showMessage("-- Products --");
-                        while (view.readLine("Add product? (y/n): ").equalsIgnoreCase("y")) {
-                              try {
-                                    int productId = Integer.parseInt(askNonEmpty("  Product ID: "));
-                                    String supplierCatalogNumber = askNonEmpty("  Supplier catalog number: ");
-                                    String productName = askNonEmpty("  Product name: ");
-                                    BigDecimal price = new BigDecimal(askNonEmpty("  Price: "));
-                                    BigDecimal weight = new BigDecimal(askNonEmpty("  Weight: "));
-                                    String manufacturerName = askNonEmpty("  Manufacturer name: ");
-                                    products.add(new SupplierProductDTO(
-                                                productId,
-                                                supplierCatalogNumber,
-                                                productName,
-                                                price,
-                                                weight,
-                                                manufacturerName));
-                              } catch (NumberFormatException e) {
-                                    view.showError("Invalid input: " + e.getMessage());
-                              }
-                        }
-                        supplierDTO.setProducts(products);
                   }
                   default -> view.showError("Invalid input, please try again.");
             }

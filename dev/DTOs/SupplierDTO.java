@@ -1,5 +1,6 @@
 package DTOs;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -220,4 +221,20 @@ public class SupplierDTO {
       public void setSupplyDays(EnumSet<DayofWeek> supplyDays) {
             this.supplyDays = supplyDays;
       }
+
+      public SupplierDTO addAgreement(AgreementDTO agreementDTO) {
+            if (this.agreements == null) {
+                  this.agreements = new ArrayList<>();
+            }
+            this.agreements.add(agreementDTO.getAgreementId());
+            return this;
+      }
+
+      public SupplierDTO removeAgreement(int agreementId) {
+            if (this.agreements != null) {
+                  this.agreements.removeIf(agreement -> agreement == agreementId);
+            }
+            return this;
+      }
+
 }

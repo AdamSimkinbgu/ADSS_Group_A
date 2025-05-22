@@ -72,7 +72,7 @@ public class SupplierService extends BaseService {
       ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
       if (response.isSuccess()) {
          try {
-            SupplierDTO supplier = supplierFacade.getSupplier(supplierID);
+            SupplierDTO supplier = supplierFacade.getSupplierDTO(supplierID);
             if (supplier != null) {
                return ServiceResponse.ok(supplier);
             } else {

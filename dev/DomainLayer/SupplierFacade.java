@@ -11,7 +11,7 @@ import DTOs.SupplierProductDTO;
 
 public class SupplierFacade {
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
-   private final Map<Integer, List<SupplierProduct>> supplierProducts = new HashMap<>();
+   private final Map<Integer, Set<SupplierProduct>> supplierProducts = new HashMap<>();
 
    public Supplier createSupplier(SupplierDTO supplierDTO) {
       if (supplierDTO == null) {
@@ -24,7 +24,11 @@ public class SupplierFacade {
       }
       // insert info into runtime memory
       suppliers.put(supplier.getSupplierId(), supplier);
-      supplierProducts.put(supplier.getSupplierId(), supplier.getProducts());
+      supplierProducts.put(supplier.getSupplierId(), new HashSet<>());
+      Set<SupplierProduct> products = supplierProducts.computeIfAbsent(supplier.getSupplierId(), k -> new HashSet<>());
+      for (SupplierProductDTO product : supplierDTO.getProducts()) {
+         products.add(new SupplierProduct(product));
+      }
       return supplier;
    }
 
@@ -62,7 +66,7 @@ public class SupplierFacade {
       return new SupplierDTO(supplier);
    }
 
-   public SupplierDTO getSupplier(int supplierID) {
+   public SupplierDTO getSupplierDTO(int supplierID) {
       Supplier supplier = suppliers.get(supplierID);
       if (supplier == null) {
          throw new IllegalArgumentException("Supplier not found");
@@ -70,30 +74,42 @@ public class SupplierFacade {
       return new SupplierDTO(supplier);
    }
 
-   public boolean supplierExists(String json) {
-      return false; // TODO: Implement this method
-   }
-
-   public boolean addProductToSupplier(String json) {
-      return false; // TODO: Implement this method
-
+   public void addProductToSupplier(int supplierID, SupplierProductDTO product) {
+      if (product == null) {
+         throw new IllegalArgumentException("Product cannot be null");
+      }
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      SupplierProduct supplierProduct = new SupplierProduct(product);
+      Set<SupplierProduct> products = supplierProducts.computeIfAbsent(supplierID, k -> new HashSet<>());
+      supplier.addProduct(supplierProduct); // TODO: change this to only add id
+      products.add(supplierProduct);
    }
 
    public boolean updateProductOnSupplier(String json) {
       return false; // TODO: Implement this method
    }
 
-   public boolean removeProductFromSupplier(String json) {
-      return false; // TODO: Implement this method
+   public void removeProductFromSupplier(int supplierID, SupplierProductDTO product) {
+      if (product == null) {
+         throw new IllegalArgumentException("Product cannot be null");
+      }
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      Set<SupplierProduct> products = supplierProducts.get(supplierID);
+      if (products != null) {
+         products.removeIf(p -> p.getProductId() == product.productId());
+         supplier.removeProduct(product.productId());
+      }
+
    }
 
    public List<SupplierProductDTO> listProductsForSupplier(int supplierID) {
-      List<SupplierProduct> products = supplierProducts.get(supplierID);
-      if (products == null) {
-         throw new IllegalArgumentException("Supplier not found");
-      }
-      return SupplierProductDTO.fromSupplierProductList(products);
-
+      return SupplierProductDTO.fromSupplierProductList(supplierProducts.get(supplierID).stream().toList());
    }
 
    public void addAgreementToSupplier(int supplierID, int agreementID) {
@@ -111,6 +127,25 @@ public class SupplierFacade {
          supplierDTOs.add(dto);
       }
       return supplierDTOs;
+   }
+
+   public void addProductToSupplierProductMap(int supplierID, SupplierProductDTO product) {
+      if (product == null) {
+         throw new IllegalArgumentException("Product cannot be null");
+      }
+      SupplierProduct supplierProduct = new SupplierProduct(product);
+      Set<SupplierProduct> products = supplierProducts.computeIfAbsent(supplierID, k -> new HashSet<>());
+      products.add(supplierProduct);
+   }
+
+   public void removeProductFromSupplierProductMap(int supplierID, SupplierProductDTO product) {
+      if (product == null) {
+         throw new IllegalArgumentException("Product cannot be null");
+      }
+      Set<SupplierProduct> products = supplierProducts.get(supplierID);
+      if (products != null) {
+         products.removeIf(p -> p.getProductId() == product.productId());
+      }
    }
 
 }

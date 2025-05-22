@@ -2,6 +2,8 @@ package DTOs;
 
 import java.math.BigDecimal;
 
+import DomainLayer.Classes.BillofQuantitiesItem;
+
 public class BillofQuantitiesItemDTO {
    private int lineInBillID;
    private String itemName;
@@ -16,6 +18,14 @@ public class BillofQuantitiesItemDTO {
       this.itemId = itemId;
       this.quantity = quantity;
       this.discountPercent = discountPercent;
+   }
+
+   public BillofQuantitiesItemDTO(BillofQuantitiesItem item) {
+      this.lineInBillID = item.getLineInBillID();
+      this.itemName = item.getDescription();
+      this.itemId = item.getProductID();
+      this.quantity = item.getQuantity();
+      this.discountPercent = item.getDiscountPercent();
    }
 
    public int getLineInBillID() {

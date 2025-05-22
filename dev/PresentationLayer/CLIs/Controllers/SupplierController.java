@@ -22,6 +22,7 @@ public class SupplierController {
       commands.put("2", new UpdateSupplierCMD(view, supplierService));
       commands.put("3", new RemoveSupplierCMD(view, supplierService));
       commands.put("4", new ViewAllSuppliersCMD(view, supplierService));
+
    }
 
    public void start() {

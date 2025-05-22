@@ -247,4 +247,17 @@ public class Supplier implements Serializable {
    public void setSupplyDays(EnumSet<DayofWeek> supplyDays) {
       this.supplyDays = supplyDays;
    }
+
+   public void addProduct(SupplierProduct supplierProduct) {
+      if (this.products == null) {
+         this.products = new ArrayList<>();
+      }
+      this.products.add(supplierProduct);
+   }
+
+   public void removeProduct(int productId) {
+      if (this.products != null) {
+         this.products.removeIf(product -> product.getProductId() == productId);
+      }
+   }
 }

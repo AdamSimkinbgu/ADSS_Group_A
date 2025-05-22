@@ -101,6 +101,7 @@ public class AgreementDTO {
             "  \"agreementStartDate\": \"" + agreementStartDate + "\",\n" +
             "  \"agreementEndDate\": \"" + agreementEndDate + "\",\n" +
             "  \"hasFixedSupplyDays\": " + hasFixedSupplyDays + "\n" +
+            "  \"billOfQuantitiesItems\": " + billOfQuantitiesItems + "\n" +
             "}";
    }
 

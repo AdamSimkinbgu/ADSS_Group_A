@@ -13,4 +13,9 @@ public record PaymentDetailsDTO(String bankAccountNumber, PaymentMethod paymentM
             PaymentTerm.valueOf(paymentDetails.getPaymentTerm().name()));
    }
 
+   public static PaymentDetailsDTO create(String bankAccountNumber, PaymentMethod paymentMethod,
+         PaymentTerm paymentTerm) {
+      return new PaymentDetailsDTO(bankAccountNumber, paymentMethod, paymentTerm);
+   }
+
 }

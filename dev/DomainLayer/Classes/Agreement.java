@@ -58,12 +58,12 @@ public class Agreement implements Serializable {
         this.billOfQuantitiesItems = new ArrayList<>();
         for (BillofQuantitiesItemDTO itemDTO : agreementDTO.getBillOfQuantitiesItems()) {
             BillofQuantitiesItem item = new BillofQuantitiesItem(
-                    itemDTO.getLineInBillID(),
+                    -1, // Default value for line in bill ID
                     itemDTO.getItemName(),
                     itemDTO.getItemId(),
                     itemDTO.getQuantity(),
                     itemDTO.getDiscountPercent());
-            this.billOfQuantitiesItems.add(item);
+            addBillOfQuantitiesItem(item); // will set the line in bill ID correctly
         }
     }
 
@@ -158,6 +158,7 @@ public class Agreement implements Serializable {
             }
         }
         // If it doesn't exist, or if the quantity is different, add it to the list
+        item.setLineInBillID(this.billOfQuantitiesItems.size() + 1); // increment line in bill ID because its new
         this.billOfQuantitiesItems.add(item);
     }
 

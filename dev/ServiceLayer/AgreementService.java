@@ -30,8 +30,21 @@ public class AgreementService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   public ServiceResponse<?> removeAgreement(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<?> removeAgreement(int agreementID) {
+      if (agreementID <= 0) {
+         return ServiceResponse.fail(List.of("Agreement ID must be a positive integer"));
+      }
+      try {
+         boolean removed = agreementFacade.removeAgreement(agreementID);
+         if (removed) {
+            return ServiceResponse.ok("Agreement removed successfully");
+         } else {
+            return ServiceResponse.fail(List.of("Failed to remove agreement: Agreement ID not found"));
+         }
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to remove agreement: " + e.getMessage()));
+      }
+
    }
 
    public ServiceResponse<?> getAgreement(String json) {
@@ -44,6 +57,21 @@ public class AgreementService extends BaseService {
 
    public ServiceResponse<?> checkAgreementExists(String lookupJson) {
       return ServiceResponse.fail(List.of("Not implemented"));
+   }
+
+   public ServiceResponse<List<AgreementDTO>> getAgreementsBySupplierId(int supplierId) {
+      if (supplierId <= 0) {
+         return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
+      }
+      try {
+         List<AgreementDTO> agreements = agreementFacade.getAgreementsBySupplierId(supplierId);
+         if (agreements.isEmpty()) {
+            return ServiceResponse.fail(List.of("No agreements found for supplier ID: " + supplierId));
+         }
+         return ServiceResponse.ok(agreements);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve agreements: " + e.getMessage()));
+      }
    }
 
 }
