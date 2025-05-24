@@ -29,7 +29,7 @@ class SupplierTest {
 
    @BeforeEach
    void setUp() {
-      supplierFacade = new SupplierFacade();
+      supplierFacade = new SupplierFacade(false, "");
       agreementFacade = new AgreementFacade();
       mapper = new ObjectMapper();
       mapper.registerModule(new JavaTimeModule());

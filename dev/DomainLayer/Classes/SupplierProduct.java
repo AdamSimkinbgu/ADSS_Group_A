@@ -7,23 +7,25 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class SupplierProduct implements Serializable {
-   private static int nextProductID = 1;
+   private static int nextProductID = 100;
    // private int supplierId;
-   private int productId;
+   private int internalProductIdForInternalUsageOnly;
    private String name;
    private String supplierCatalogNumber;
    private BigDecimal price;
    private BigDecimal Weight;
+   private int expiresInDays;
    private String manufacturerName;
 
    public SupplierProduct(SupplierProductDTO supplierProduct) {
       // this.supplierId = supplierProduct.supplierId();
-      this.productId = nextProductID++;
-      this.name = supplierProduct.name();
-      this.supplierCatalogNumber = supplierProduct.supplierCatalogNumber();
-      this.price = supplierProduct.price();
-      this.Weight = supplierProduct.weight();
-      this.manufacturerName = supplierProduct.manufacturerName();
+      this.internalProductIdForInternalUsageOnly = supplierProduct.getProductId();
+      this.name = supplierProduct.getName();
+      this.supplierCatalogNumber = supplierProduct.getSupplierCatalogNumber();
+      this.price = supplierProduct.getPrice();
+      this.Weight = supplierProduct.getWeight();
+      this.expiresInDays = supplierProduct.getExpiresInDays();
+      this.manufacturerName = supplierProduct.getManufacturerName();
    }
 
    public SupplierProduct(
@@ -31,11 +33,15 @@ public class SupplierProduct implements Serializable {
          String supplierCatalogNumber,
          String name,
          BigDecimal price,
+         BigDecimal weight,
+         int expiresInDays,
          String manufacturerName) {
       this.supplierCatalogNumber = Objects.requireNonNull(supplierCatalogNumber, "supplierCatalogNumber");
-      this.productId = nextProductID++;
+      this.internalProductIdForInternalUsageOnly = productId;
       this.name = name;
       this.price = Objects.requireNonNull(price, "price");
+      this.Weight = Objects.requireNonNull(weight, "weight");
+      this.expiresInDays = expiresInDays;
       this.manufacturerName = manufacturerName;
    }
 
@@ -44,11 +50,11 @@ public class SupplierProduct implements Serializable {
    // ────────────────────────────────────────────────────────
 
    public int getProductId() {
-      return productId;
+      return internalProductIdForInternalUsageOnly;
    }
 
    public void setProductId(int productId) {
-      this.productId = productId;
+      this.internalProductIdForInternalUsageOnly = productId;
    }
 
    public String getName() {
@@ -102,24 +108,30 @@ public class SupplierProduct implements Serializable {
       if (!(o instanceof SupplierProduct))
          return false;
       SupplierProduct that = (SupplierProduct) o;
-      return productId == that.productId &&
+      return internalProductIdForInternalUsageOnly == that.internalProductIdForInternalUsageOnly &&
             supplierCatalogNumber.equals(that.supplierCatalogNumber);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash(productId, supplierCatalogNumber);
+      return Objects.hash(internalProductIdForInternalUsageOnly, supplierCatalogNumber);
    }
 
    @Override
    public String toString() {
       // pretty json format
       return "{\n" +
-            "   \"productId\": " + productId + ",\n" +
+            "   \"productId\": " + internalProductIdForInternalUsageOnly + ",\n" +
             "   \"supplierCatalogNumber\": \"" + supplierCatalogNumber + "\",\n" +
             "   \"name\": \"" + name + "\",\n" +
             "   \"price\": " + price + ",\n" +
+            "   \"weight\": " + Weight + ",\n" +
+            "   \"expiresInDays\": " + expiresInDays + ",\n" +
             "   \"manufacturerName\": \"" + manufacturerName + "\"\n" +
             "}";
+   }
+
+   public int getExpiresInDays() {
+      return expiresInDays;
    }
 }

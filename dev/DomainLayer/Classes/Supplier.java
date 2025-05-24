@@ -22,7 +22,7 @@ public class Supplier implements Serializable {
    private EnumSet<DayofWeek> supplyDays;
    private PaymentDetails paymentDetails;
    private List<ContactInfo> contacts;
-   private List<SupplierProduct> products;
+   private List<Integer> products;
    private List<Integer> agreements;
 
    public Supplier(SupplierDTO supplierDTO) {
@@ -36,21 +36,15 @@ public class Supplier implements Serializable {
             : EnumSet.noneOf(DayofWeek.class);
       this.paymentDetails = new PaymentDetails(supplierDTO.getPaymentDetailsDTO());
       this.contacts = new ArrayList<>();
-      if (supplierDTO.getContacts() != null) {
-         for (ContactInfoDTO contact : supplierDTO.getContacts()) {
+      if (supplierDTO.getContactsInfoDTOList() != null) {
+         for (ContactInfoDTO contact : supplierDTO.getContactsInfoDTOList()) {
             this.contacts.add(new ContactInfo(contact));
          }
       }
       this.products = new ArrayList<>();
       if (supplierDTO.getProducts() != null) {
-         for (SupplierProductDTO product : supplierDTO.getProducts()) {
-            this.products.add(new SupplierProduct(product));
-         }
-      }
-      this.products = new ArrayList<>();
-      if (supplierDTO.getProducts() != null) {
-         for (SupplierProductDTO product : supplierDTO.getProducts()) {
-            this.products.add(new SupplierProduct(product));
+         for (Integer productId : supplierDTO.getProducts().stream().map(SupplierProductDTO::getProductId).toList()) {
+            this.products.add(productId);
          }
       }
       this.agreements = supplierDTO.getAgreements();
@@ -84,7 +78,7 @@ public class Supplier implements Serializable {
       this.products = new ArrayList<>();
       if (products != null) {
          for (SupplierProductDTO product : products) {
-            this.products.add(new SupplierProduct(product));
+            this.products.add(product.getProductId());
          }
       }
       this.agreements = agreements;
@@ -119,7 +113,7 @@ public class Supplier implements Serializable {
       this.products = new ArrayList<>();
       if (products != null) {
          for (SupplierProductDTO product : products) {
-            this.products.add(new SupplierProduct(product));
+            this.products.add(product.getProductId());
          }
       }
       this.agreements = agreements;
@@ -182,11 +176,11 @@ public class Supplier implements Serializable {
       this.contacts.addAll(newOnes);
    }
 
-   public List<SupplierProduct> getProducts() {
+   public List<Integer> getProducts() {
       return products;
    }
 
-   public void setProducts(List<SupplierProduct> products) {
+   public void setProducts(List<Integer> products) {
       this.products = products;
    }
 
@@ -248,7 +242,7 @@ public class Supplier implements Serializable {
       this.supplyDays = supplyDays;
    }
 
-   public void addProduct(SupplierProduct supplierProduct) {
+   public void addProduct(int supplierProduct) {
       if (this.products == null) {
          this.products = new ArrayList<>();
       }
@@ -257,7 +251,7 @@ public class Supplier implements Serializable {
 
    public void removeProduct(int productId) {
       if (this.products != null) {
-         this.products.removeIf(product -> product.getProductId() == productId);
+         this.products.removeIf(p -> p == productId);
       }
    }
 }

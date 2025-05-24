@@ -17,7 +17,7 @@ import DTOs.BillofQuantitiesItemDTO;
  */
 
 public class Agreement implements Serializable {
-    private static int nextAgreementID = 1;
+    private static int nextAgreementID = 10;
     private int agreementId;
     private int supplierId;
     private String supplierName;

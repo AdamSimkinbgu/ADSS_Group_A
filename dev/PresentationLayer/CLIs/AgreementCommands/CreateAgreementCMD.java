@@ -24,7 +24,7 @@ public class CreateAgreementCMD implements CommandInterface {
       this.agreementService = agreementService;
       this.supplierService = supplierService;
       this.form = new AgreementForm(view);
-      fakeLoadAgreement();
+      // fakeLoadAgreement();
    }
 
    @Override

@@ -38,4 +38,12 @@ public class ServiceResponse<T> {
    public static <T> ServiceResponse<T> fail(List<String> errors) {
       return new ServiceResponse<>(null, errors);
    }
+
+   @Override
+   public String toString() {
+      return "{\n" +
+            "   \"value\": " + (value != null ? value.toString() : "null") + ",\n" +
+            "   \"errors\": " + (errors != null ? errors.toString() : "null") + "\n" +
+            "}";
+   }
 }

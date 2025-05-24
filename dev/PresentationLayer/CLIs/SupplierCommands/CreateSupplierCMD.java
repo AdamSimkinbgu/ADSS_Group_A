@@ -1,15 +1,7 @@
 package PresentationLayer.CLIs.SupplierCommands;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import DTOs.AddressDTO;
-import DTOs.PaymentDetailsDTO;
-import DTOs.SupplierDTO;
-import DTOs.Enums.DayofWeek;
-import DTOs.Enums.PaymentMethod;
-import DTOs.Enums.PaymentTerm;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
 import PresentationLayer.CLIs.Forms.SupplierForm;
@@ -25,7 +17,6 @@ public final class CreateSupplierCMD implements CommandInterface {
       this.view = view;
       this.service = supplierService;
       this.form = new SupplierForm(view);
-      fakeLoadSupplier();
    }
 
    @Override
@@ -43,27 +34,5 @@ public final class CreateSupplierCMD implements CommandInterface {
             res.getErrors().forEach(error -> view.showError(counter.getAndIncrement() + ". " + error));
          }
       });
-   }
-
-   public void fakeLoadSupplier() {
-      SupplierDTO supplierDTO = new SupplierDTO(
-            1,
-            "Supplier Name",
-            "523456789",
-            new AddressDTO("Street", "City", "123"),
-            true,
-            EnumSet.noneOf(DayofWeek.class),
-            new PaymentDetailsDTO("46546", PaymentMethod.CASH, PaymentTerm.N30),
-            new ArrayList<>(),
-            new ArrayList<>(),
-            new ArrayList<>());
-      ServiceResponse<?> res = service.createSupplier(supplierDTO);
-      if (res.isSuccess()) {
-         view.showMessage("-- Supplier created successfully --\n" + supplierDTO);
-      } else {
-         view.showError("-- Failed to create supplier --");
-         AtomicInteger counter = new AtomicInteger(1);
-         res.getErrors().forEach(error -> view.showError(counter.getAndIncrement() + ". " + error));
-      }
    }
 }

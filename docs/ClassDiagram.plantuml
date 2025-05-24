@@ -1,0 +1,55 @@
+@startuml CommandPatternInADSS
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+'────────────────────────── Presentation layer ──────────────────────────
+package "presentation.cli" {
+
+  '---- Command hierarchy
+  interface CommandInterface {
+      +execute()
+  }
+  class CreateSupplierCmd
+  class CreateAgreementCmd
+  class UpdateProductCmd
+  CommandInterface <|.. CreateSupplierCmd
+  CommandInterface <|.. CreateAgreementCmd
+  CommandInterface <|.right. UpdateProductCmd
+
+  '---- Invokers (menus)
+  class SupplierCLI {
+      -commands : Map<String,CommandInterface>
+      +run()              'reads choice, executes cmd
+  }
+  class AgreementCLI {
+      -commands : Map<String,CommandInterface>
+      +run()
+  }
+
+  SupplierCLI --> CommandInterface  : dispatches
+  AgreementCLI --> CommandInterface : dispatches
+}
+
+'────────────────────────── Service layer ───────────────────────────────
+package "service" {
+  class SupplierService
+  class AgreementService
+}
+
+'──────── Receiver link (ConcreteCommand ➜ Service) ─────────
+CreateSupplierCmd --> SupplierService   : receiver
+CreateAgreementCmd --> AgreementService : receiver
+UpdateProductCmd --> SupplierService
+
+'────────────────────────── Client / Bootstrap ─────────────
+class ConsoleRouter {
+    +start()   'builds CLIs, injects commands
+}
+ConsoleRouter --> SupplierCLI : configures
+ConsoleRouter --> AgreementCLI
+
+note right of UpdateProductCmd
+  «…many other ConcreteCommand classes\n  follow same pattern…»
+end note
+@enduml

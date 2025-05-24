@@ -34,57 +34,20 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                         askNonEmpty("Building no.: "));
 
             /* self supply */
-            boolean selfSupply;
-            while (true) {
-                  String selfSupplyUserString = askNonEmpty("Self supply? (y/n): ").toLowerCase();
-                  if (selfSupplyUserString.contains("y") || selfSupplyUserString.contains("yes")
-                              || selfSupplyUserString.contains("true") || selfSupplyUserString.contains("t")) {
-                        selfSupply = true;
-                        break;
-                  } else if (selfSupplyUserString.contains("n") || selfSupplyUserString.contains("no")
-                              || selfSupplyUserString.contains("false") || selfSupplyUserString.contains("f")) {
-                        selfSupply = false;
-                        break;
-                  } else {
-                        view.showError("Invalid input: " + selfSupplyUserString + ". Please enter 'y' or 'n'.");
-                        // If the user types 'cancel' at the prompt, askNonEmpty should handle it by
-                        // throwing Cancelled.
-                  }
-            }
+            boolean selfSupply = askBoolean("Self supply? (y/n): ");
             EnumSet<DayofWeek> supplyDays = EnumSet.noneOf(DayofWeek.class);
             if (selfSupply) {
-                  view.showMessage("-- Supply days --");
-                  String[] days = view.readLine("Select days (1-7, separated by spaces): ").split(" ");
-                  for (String day : days) {
-                        try {
-                              int dayNumber = Integer.parseInt(day);
-                              if (dayNumber < 1 || dayNumber > 7) {
-                                    view.showError("Invalid day number: " + day);
-                              } else if (supplyDays.contains(DayofWeek.values()[dayNumber - 1])) {
-                                    supplyDays.remove(DayofWeek.values()[dayNumber - 1]);
-                              } else {
-                                    supplyDays.add(DayofWeek.values()[dayNumber - 1]);
-                              }
-                        } catch (NumberFormatException e) {
-                              view.showError("Invalid input: " + day);
-                        }
-                  }
+                  view.showMessage("Self supply selected.");
+                  supplyDays = askDaysOfWeek("Supply days (1 - Sunday, 2 - Monday, ...): ");
+            } else {
+                  view.showMessage("Self supply not selected.");
             }
-
+      
             /* payment details */
-            view.showMessage("-- Payment details --");
-            PaymentDetailsDTO payment;
-            while (true) {
-                  try {
-                        payment = new PaymentDetailsDTO(
-                                    askNonEmpty("Bank account: "),
-                                    PaymentMethod.valueOf(askNonEmpty("Method (CASH/CARD/...): ").toUpperCase()),
-                                    PaymentTerm.valueOf(askNonEmpty("Term (N30/…): ").toUpperCase()));
-                        break;
-                  } catch (IllegalArgumentException e) {
-                        view.showError("Invalid input: " + e.getMessage());
-                  }
-            }
+            PaymentDetailsDTO payment = new PaymentDetailsDTO(
+                        askNonEmpty("Bank account number: "),
+                        PaymentMethod.valueOf(askNonEmpty("Payment method (CASH/CARD/...): ").toUpperCase()),
+                        PaymentTerm.valueOf(askNonEmpty("Payment term (N30/…): ").toUpperCase()));
 
             /* contacts (0-n) */
             List<ContactInfoDTO> contacts = new ArrayList<>();
@@ -100,18 +63,19 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
             view.showMessage("-- Products --");
             while (view.readLine("Add product? (y/n): ").equalsIgnoreCase("y")) {
                   try {
-                        int productId = Integer.parseInt(askNonEmpty("  Product ID: "));
                         String supplierCatalogNumber = askNonEmpty("  Supplier catalog number: ");
                         String productName = askNonEmpty("  Product name: ");
-                        BigDecimal price = new BigDecimal(askNonEmpty("  Price: "));
-                        BigDecimal weight = new BigDecimal(askNonEmpty("  Weight: "));
+                        BigDecimal price = askBigDecimal("  Price: ");
+                        BigDecimal weight = askBigDecimal("  Weight: ");
+                        int expiresInDays = askInt("  Expires in days: ");
                         String manufacturerName = askNonEmpty("  Manufacturer name: ");
                         products.add(new SupplierProductDTO(
-                                    productId,
+                                    0,
                                     supplierCatalogNumber,
                                     productName,
                                     price,
                                     weight,
+                                    expiresInDays,
                                     manufacturerName));
                   } catch (NumberFormatException e) {
                         view.showError("Invalid input: " + e.getMessage());
@@ -139,77 +103,48 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                   case "name" -> supplierDTO.setName(askNonEmpty("New name: "));
                   case "taxNumber" -> supplierDTO.setTaxNumber(askNonEmpty("New tax number: "));
                   case "address" -> {
-                        AddressDTO address = new AddressDTO(
-                                    askNonEmpty("Street: "),
-                                    askNonEmpty("City: "),
-                                    askNonEmpty("Building no.: "));
-                        supplierDTO.setAddress(address);
+                        AddressDTO address = supplierDTO.getAddressDTO();
+                        address.setStreet(askNonEmpty("New street: "));
+                        address.setCity(askNonEmpty("New city: "));
+                        address.setBuildingNumber(askNonEmpty("New building no.: "));
                   }
-                  case "selfSupply" -> {
-                        boolean selfSupply;
-                        while (true) {
-                              String selfSupplyUserString = askNonEmpty("Self supply? (y/n): ").toLowerCase();
-                              if (selfSupplyUserString.contains("y") || selfSupplyUserString.contains("yes")
-                                          || selfSupplyUserString.contains("true")
-                                          || selfSupplyUserString.contains("t")) {
-                                    selfSupply = true;
-                                    break;
-                              } else if (selfSupplyUserString.contains("n") || selfSupplyUserString.contains("no")
-                                          || selfSupplyUserString.contains("false")
-                                          || selfSupplyUserString.contains("f")) {
-                                    selfSupply = false;
-                                    break;
-                              } else {
-                                    view.showError("Invalid input: " + selfSupplyUserString
-                                                + ". Please enter 'y' or 'n'.");
-                              }
-                        }
-                        supplierDTO.setSelfSupply(selfSupply);
-                  }
-                  case "supplyDays" -> {
-                        EnumSet<DayofWeek> supplyDays = EnumSet.noneOf(DayofWeek.class);
-                        String[] days = view.readLine("Select days (1-7, separated by spaces): ").split(" ");
-                        for (String day : days) {
-                              try {
-                                    int dayNumber = Integer.parseInt(day);
-                                    if (dayNumber < 1 || dayNumber > 7) {
-                                          view.showError("Invalid day number: " + day);
-                                    } else if (supplyDays.contains(DayofWeek.values()[dayNumber - 1])) {
-                                          supplyDays.remove(DayofWeek.values()[dayNumber - 1]);
-                                    } else {
-                                          supplyDays.add(DayofWeek.values()[dayNumber - 1]);
-                                    }
-                              } catch (NumberFormatException e) {
-                                    view.showError("Invalid input: " + day + " - " + e.getMessage());
-                              }
-                        }
-                        supplierDTO.setSupplyDays(supplyDays);
-                  }
+                  case "selfSupply" -> supplierDTO.setSelfSupply(askBoolean("New self supply? (y/n): "));
+                  case "supplyDays" -> supplierDTO.setSupplyDays(
+                              askDaysOfWeek("New supply days (1 - Sunday, 2 - Monday, ...): "));
                   case "paymentDetails" -> {
-                        PaymentDetailsDTO payment;
-                        while (true) {
-                              try {
-                                    payment = new PaymentDetailsDTO(
-                                                askNonEmpty("Bank account: "),
-                                                PaymentMethod.valueOf(
-                                                            askNonEmpty("Method (CASH/CARD/...): ").toUpperCase()),
-                                                PaymentTerm.valueOf(askNonEmpty("Term (N30/…): ").toUpperCase()));
-                                    break;
-                              } catch (IllegalArgumentException e) {
-                                    view.showError("Invalid input: " + e.getMessage());
-                              }
-                        }
-                        supplierDTO.setPaymentDetails(payment);
+                        PaymentDetailsDTO payment = supplierDTO.getPaymentDetailsDTO();
+                        payment.setBankAccountNumber(askNonEmpty("New bank account: "));
+                        payment.setPaymentMethod((PaymentMethod.valueOf(askNonEmpty("New method (CASH/CARD/...): ").toUpperCase())));
+                        payment.setPaymentTerm(PaymentTerm.valueOf(askNonEmpty("New term (N30/…): ").toUpperCase()));
                   }
                   case "contacts" -> {
-                        List<ContactInfoDTO> contacts = new ArrayList<>();
+                        List<ContactInfoDTO> contacts = supplierDTO.getContactsInfoDTOList();
                         while (view.readLine("Add contact? (y/n): ").equalsIgnoreCase("y")) {
                               contacts.add(new ContactInfoDTO(
                                           askNonEmpty("  Name: "),
                                           askNonEmpty("  Email: "),
                                           askNonEmpty("  Phone: ")));
                         }
-                        supplierDTO.setContacts(contacts);
+                  }
+                  case "products" -> {
+                        List<SupplierProductDTO> products = supplierDTO.getProducts();
+                        for (SupplierProductDTO product : products) {
+                              view.showMessage(product.toString());
+                        }
+                        int productId =  askInt("Enter product ID to update: ");
+                        SupplierProductDTO product = products.stream()
+                                    .filter(p -> p.getProductId() == productId)
+                                    .findFirst()
+                                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                        switch (askNonEmpty(
+                                    "What do you want to change? (supplierCatalogNumber, productName, price, weight, expiresInDays, manufacturerName)")) {
+                              case "supplierCatalogNumber" -> product.setSupplierCatalogNumber(askNonEmpty("New supplier catalog number: "));
+                              case "productName" -> product.setName(askNonEmpty("New product name: "));
+                              case "price" -> product.setPrice(askBigDecimal("New price: "));
+                              case "weight" -> product.setWeight(askBigDecimal("New weight: "));
+                              case "expiresInDays" -> product.setExpiresInDays(askInt("New expires in days: "));
+                              case "manufacturerName" -> product.setManufacturerName(askNonEmpty("New manufacturer name: "));
+                        }
                   }
                   default -> view.showError("Invalid input, please try again.");
             }

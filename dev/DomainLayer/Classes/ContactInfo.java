@@ -11,9 +11,9 @@ public class ContactInfo implements Serializable {
    private String phone;
 
    public ContactInfo(ContactInfoDTO contactInfo) {
-      this.name = contactInfo.name();
-      this.email = contactInfo.email();
-      this.phone = contactInfo.phone();
+      this.name = contactInfo.getName();
+      this.email = contactInfo.getEmail();
+      this.phone = contactInfo.getPhone();
    }
 
    public ContactInfo(

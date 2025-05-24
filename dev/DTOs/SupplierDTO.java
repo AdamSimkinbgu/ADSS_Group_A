@@ -9,7 +9,6 @@ import DomainLayer.Classes.Address;
 import DomainLayer.Classes.ContactInfo;
 import DomainLayer.Classes.PaymentDetails;
 import DomainLayer.Classes.Supplier;
-import DomainLayer.Classes.SupplierProduct;
 
 public class SupplierDTO {
       private int id;
@@ -77,7 +76,7 @@ public class SupplierDTO {
             this.supplyDays = supplier.getSupplyDays();
             this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
             this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
-            this.products = SupplierProductDTO.fromSupplierProductList(supplier.getProducts());
+            this.products = new ArrayList<>();
             this.agreements = supplier.getAgreements();
       }
 
@@ -121,11 +120,11 @@ public class SupplierDTO {
             this.paymentDetails = paymentDetails;
       }
 
-      public List<ContactInfoDTO> getContacts() {
+      public List<ContactInfoDTO> getContactsInfoDTOList() {
             return contacts;
       }
 
-      public List<ContactInfo> getContactsList() {
+      public List<ContactInfo> getContactsInfoList() {
             return ContactInfoDTO.toContactInfoList(contacts);
       }
 
@@ -137,9 +136,14 @@ public class SupplierDTO {
             return products;
       }
 
-      public List<SupplierProduct> getProductsList() {
-            return SupplierProductDTO.toSupplierProductList(products);
+      public List<Integer> getProductIdsList() {
+            List<Integer> productIds = new ArrayList<>();
+            for (SupplierProductDTO product : products) {
+                  productIds.add(product.getProductId());
+            }
+            return productIds;
       }
+
 
       public void setProducts(List<SupplierProductDTO> products) {
             this.products = products;

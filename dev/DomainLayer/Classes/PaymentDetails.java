@@ -16,9 +16,9 @@ public class PaymentDetails implements Serializable {
       private final PaymentTerm paymentTerm;
 
       public PaymentDetails(PaymentDetailsDTO paymentDetails) {
-            this.bankAccountNumber = paymentDetails.bankAccountNumber();
-            this.paymentMethod = paymentDetails.paymentMethod();
-            this.paymentTerm = paymentDetails.paymentTerm();
+            this.bankAccountNumber = paymentDetails.getBankAccountNumber();
+            this.paymentMethod = paymentDetails.getPaymentMethod();
+            this.paymentTerm = paymentDetails.getPaymentTerm();
       }
 
       public PaymentDetails(

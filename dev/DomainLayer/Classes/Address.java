@@ -10,9 +10,9 @@ public class Address implements Serializable {
       private String buildingNumber;
 
       public Address(AddressDTO address) {
-            this.street = address.street();
-            this.city = address.city();
-            this.buildingNumber = address.buildingNumber();
+            this.buildingNumber = address.getBuildingNumber();
+            this.street = address.getStreet();
+            this.city = address.getCity();
       }
 
       public Address(String street, String city, String buildingNumber) {
@@ -21,16 +21,28 @@ public class Address implements Serializable {
             this.buildingNumber = buildingNumber;
       }
 
+      public String getBuildingNumber() {
+            return buildingNumber;
+      }
+
+      public void setBuildingNumber(String buildingNumber) {
+            this.buildingNumber = buildingNumber;
+      }
+
       public String getStreet() {
             return street;
+      }
+
+      public void setStreet(String street) {
+            this.street = street;
       }
 
       public String getCity() {
             return city;
       }
 
-      public String getBuildingNumber() {
-            return buildingNumber;
+      public void setCity(String city) {
+            this.city = city;
       }
 
       @Override

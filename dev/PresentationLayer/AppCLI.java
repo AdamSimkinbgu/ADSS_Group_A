@@ -15,8 +15,8 @@ public class AppCLI implements View {
 
    public static final Scanner scanner = new Scanner(System.in);
 
-   public AppCLI(String dataPath) {
-      SupplierFacade supplierFacade = new SupplierFacade();
+   public AppCLI(String configJson) {
+      SupplierFacade supplierFacade = new SupplierFacade(true, configJson);
       AgreementFacade agreementFacade = new AgreementFacade();
       OrderFacade orderFacade = new OrderFacade(supplierFacade);
       AgreementService agreementService = new AgreementService(agreementFacade);

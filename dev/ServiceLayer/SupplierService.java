@@ -7,6 +7,7 @@ import DTOs.SupplierProductDTO;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.SupplierFacade;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
+import ServiceLayer.Interfaces_and_Abstracts.Validators.ProductValidator;
 import ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValidator;
 
 /**
@@ -16,6 +17,7 @@ import ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValidator;
 public class SupplierService extends BaseService {
    private final SupplierFacade supplierFacade;
    private final SupplierValidator supplierValidator = new SupplierValidator();
+   private final ProductValidator productValidator = new ProductValidator();
 
    public SupplierService(SupplierFacade facade) {
       this.supplierFacade = facade;
@@ -27,7 +29,7 @@ public class SupplierService extends BaseService {
       if (response.isSuccess()) {
          try {
             Supplier supplier = supplierFacade.createSupplier(supplierDTO);
-            return ServiceResponse.ok(supplier);
+            return ServiceResponse.ok("Supplier created successfully with ID: " + supplier.getSupplierId());
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to create supplier: " + e.getMessage()));
          }
@@ -40,8 +42,8 @@ public class SupplierService extends BaseService {
       ServiceResponse<List<String>> response = supplierValidator.validateUpdateDTO(supplierDTO);
       if (response.isSuccess()) {
          try {
-            SupplierDTO updatedSupplier = supplierFacade.updateSupplier(supplierDTO, supplierID);
-            return ServiceResponse.ok(updatedSupplier);
+            supplierFacade.updateSupplier(supplierDTO, supplierID);
+            return ServiceResponse.ok("Supplier with ID " + supplierID + " updated successfully");
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to update supplier: " + e.getMessage()));
          }
@@ -56,7 +58,7 @@ public class SupplierService extends BaseService {
          try {
             boolean removed = supplierFacade.removeSupplier(id);
             if (removed) {
-               return ServiceResponse.ok("Supplier removed successfully");
+               return ServiceResponse.ok("Supplier with ID " + id + " removed successfully");
             } else {
                return ServiceResponse.fail(List.of("Supplier not found"));
             }
@@ -95,12 +97,46 @@ public class SupplierService extends BaseService {
       }
    }
 
-   public ServiceResponse<?> checkSupplierExists(String infoToCheck) {
-      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
+   public ServiceResponse<?> checkSupplierExists(int supplierID) {
+   ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
+      if (response.isSuccess()) {
+         try {
+            boolean exists = supplierFacade.checkSupplierExists(supplierID);
+            if (exists) {
+               return ServiceResponse.ok("Supplier with ID " + supplierID + " exists");
+            } else {
+               return ServiceResponse.fail(List.of("Supplier with ID " + supplierID + " does not exist"));
+            }
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to check supplier existence: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
    }
 
-   public ServiceResponse<?> addProduct(String json) {
-      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
+   public ServiceResponse<?> addProductToSupplier(SupplierProductDTO productDTO, int supplierID) {
+      ServiceResponse<?> response = productValidator.validateCreateDTO(productDTO);
+      if (response.isSuccess()) {
+         try {
+            // Validate that the supplier exists before adding the product
+            ServiceResponse<?> supplierResponse = supplierValidator.validateGetDTO(supplierID);
+            if (!supplierResponse.isSuccess()) {
+               return ServiceResponse.fail(supplierResponse.getErrors());
+            }
+            SupplierDTO supplier = supplierFacade.getSupplierDTO(supplierID);
+            if (supplier == null) {
+               return ServiceResponse.fail(List.of("Supplier with ID " + supplierID + " does not exist"));
+            }
+            supplierFacade.addProductToSupplier(productDTO, supplierID);
+            return ServiceResponse.ok("Product added successfully to supplier with ID " + supplierID);
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to add product: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
+      
    }
 
    public ServiceResponse<?> updateProduct(String json) {
