@@ -98,7 +98,7 @@ public class SupplierService extends BaseService {
    }
 
    public ServiceResponse<?> checkSupplierExists(int supplierID) {
-   ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
+      ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
       if (response.isSuccess()) {
          try {
             boolean exists = supplierFacade.checkSupplierExists(supplierID);
@@ -128,7 +128,7 @@ public class SupplierService extends BaseService {
             if (supplier == null) {
                return ServiceResponse.fail(List.of("Supplier with ID " + supplierID + " does not exist"));
             }
-            supplierFacade.addProductToSupplier(productDTO, supplierID);
+            supplierFacade.addProductToSupplierAndMemory(supplierID, productDTO);
             return ServiceResponse.ok("Product added successfully to supplier with ID " + supplierID);
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to add product: " + e.getMessage()));
@@ -136,22 +136,34 @@ public class SupplierService extends BaseService {
       } else {
          return ServiceResponse.fail(response.getErrors());
       }
-      
+
    }
 
    public ServiceResponse<?> updateProduct(String json) {
       return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
    }
 
-   public ServiceResponse<?> removeProduct(String json) {
-      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
+   public ServiceResponse<?> removeProduct(int productID, int supplierID) {
+      if (productID < 0) {
+         return ServiceResponse.fail(List.of("Product ID must be a positive integer"));
+      }
+      if (supplierID < 0) {
+         return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
+      }
+      try {
+         supplierFacade.removeProductFromSupplierAndMemory(supplierID, productID);
+         return ServiceResponse
+               .ok("Product with ID " + productID + " removed successfully from supplier with ID " + supplierID);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to remove product: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<?> listProducts(int supplierID) {
       ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
       if (response.isSuccess()) {
          try {
-            List<SupplierProductDTO> products = supplierFacade.listProductsForSupplier(supplierID);
+            List<SupplierProductDTO> products = supplierFacade.getSupplierProducts(supplierID);
             return ServiceResponse.ok(products);
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to retrieve products: " + e.getMessage()));
@@ -159,6 +171,5 @@ public class SupplierService extends BaseService {
       } else {
          return ServiceResponse.fail(response.getErrors());
       }
-
    }
 }

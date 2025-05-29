@@ -8,6 +8,7 @@ import DomainLayer.*;
 import PresentationLayer.CLIs.*;
 import PresentationLayer.CLIs.Commands.AgreementCommands.*;
 import PresentationLayer.CLIs.Commands.ProductCommands.CreateProductCMD;
+import PresentationLayer.CLIs.Commands.ProductCommands.RemoveProductCMD;
 import PresentationLayer.CLIs.Commands.SupplierCommands.*;
 import PresentationLayer.CLIs.Controllers.*;
 import ServiceLayer.*;
@@ -65,8 +66,7 @@ public class AppCLI implements View {
       commands.put("CreateProductCMD", new CreateProductCMD(this, supplierService));
       // commands.put("UpdateProductCMD", new UpdateProductCMD(this,
       // supplierService));
-      // commands.put("RemoveProductCMD", new RemoveProductCMD(this,
-      // supplierService));
+      commands.put("RemoveProductCMD", new RemoveProductCMD(this, supplierService));
       // commands.put("ViewAllProductsCMD", new ViewAllProductsCMD(this,
       // supplierService));
       return commands;

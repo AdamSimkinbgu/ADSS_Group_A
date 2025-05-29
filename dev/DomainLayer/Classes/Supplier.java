@@ -248,9 +248,11 @@ public class Supplier implements Serializable {
       this.products.add(supplierProduct);
    }
 
-   public void removeProduct(int productId) {
+   public boolean removeProduct(int productId) {
       if (this.products != null) {
          this.products.removeIf(p -> p == productId);
+         return true;
       }
+      return false;
    }
 }

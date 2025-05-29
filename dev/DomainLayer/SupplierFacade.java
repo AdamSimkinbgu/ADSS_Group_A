@@ -19,10 +19,11 @@ public class SupplierFacade {
    private static int nextSupplierID;
    private static int nextProductID;
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
-   private final Map<Integer, Set<SupplierProduct>> supplierProducts = new HashMap<>(); // used to find all the products
-                                                                                        // for a supplier
-   private final Map<SupplierProduct, List<Integer>> supplierProductMap = new HashMap<>(); // used to find all the
-                                                                                           // suppliers for a product
+   private final Map<Integer, Set<Integer>> supplierIDsToTheirProductIDs = new HashMap<>(); // used to find all the
+                                                                                            // products
+   // for a supplier
+   private final Map<Integer, List<Integer>> productIDsToTheirSupplierIDs = new HashMap<>(); // used to find all the
+   // suppliers for a product
    private final Set<SupplierProduct> productCagalog = new HashSet<>(); // used to find all the products available in
                                                                         // the system
 
@@ -74,27 +75,39 @@ public class SupplierFacade {
       supplier3.addProduct(product1.getProductId());
       supplier3.addProduct(product3.getProductId());
       // Add products to supplierProducts map
-      supplierProducts.computeIfAbsent(supplier1.getSupplierId(), k -> new HashSet<>()).add(product1);
-      supplierProducts.computeIfAbsent(supplier1.getSupplierId(), k -> new HashSet<>()).add(product2);
-      supplierProducts.computeIfAbsent(supplier2.getSupplierId(), k -> new HashSet<>()).add(product2);
-      supplierProducts.computeIfAbsent(supplier2.getSupplierId(), k -> new HashSet<>()).add(product3);
-      supplierProducts.computeIfAbsent(supplier3.getSupplierId(), k -> new HashSet<>()).add(product1);
-      supplierProducts.computeIfAbsent(supplier3.getSupplierId(), k -> new HashSet<>()).add(product3);
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplier1.getSupplierId(), k -> new HashSet<>())
+            .add(product1.getProductId());
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplier1.getSupplierId(), k -> new HashSet<>())
+            .add(product2.getProductId());
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplier2.getSupplierId(), k -> new HashSet<>())
+            .add(product2.getProductId());
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplier2.getSupplierId(), k -> new HashSet<>())
+            .add(product3.getProductId());
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplier3.getSupplierId(), k -> new HashSet<>())
+            .add(product1.getProductId());
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplier3.getSupplierId(), k -> new HashSet<>())
+            .add(product3.getProductId());
       // Add products to productCatalog
       productCagalog.add(product1);
       productCagalog.add(product2);
       productCagalog.add(product3);
       // Add products to supplierProductMap
-      supplierProductMap.computeIfAbsent(product1, k -> new ArrayList<>()).add(supplier1.getSupplierId());
-      supplierProductMap.computeIfAbsent(product2, k -> new ArrayList<>()).add(supplier1.getSupplierId());
-      supplierProductMap.computeIfAbsent(product2, k -> new ArrayList<>()).add(supplier2.getSupplierId());
-      supplierProductMap.computeIfAbsent(product3, k -> new ArrayList<>()).add(supplier2.getSupplierId());
-      supplierProductMap.computeIfAbsent(product1, k -> new ArrayList<>()).add(supplier3.getSupplierId());
-      supplierProductMap.computeIfAbsent(product3, k -> new ArrayList<>()).add(supplier3.getSupplierId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(product1.getProductId(), k -> new ArrayList<>())
+            .add(supplier1.getSupplierId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(product2.getProductId(), k -> new ArrayList<>())
+            .add(supplier1.getSupplierId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(product2.getProductId(), k -> new ArrayList<>())
+            .add(supplier2.getSupplierId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(product3.getProductId(), k -> new ArrayList<>())
+            .add(supplier2.getSupplierId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(product1.getProductId(), k -> new ArrayList<>())
+            .add(supplier3.getSupplierId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(product3.getProductId(), k -> new ArrayList<>())
+            .add(supplier3.getSupplierId());
       // debug print
       System.out.println("Initialized suppliers: " + suppliers);
-      System.out.println("Initialized supplier products: " + supplierProducts);
-      System.out.println("Initialized supplier product map: " + supplierProductMap);
+      System.out.println("Initialized supplier products: " + supplierIDsToTheirProductIDs);
+      System.out.println("Initialized supplier product map: " + productIDsToTheirSupplierIDs);
       System.out.println("Initialized product catalog: " + productCagalog);
       System.out.println("Next supplier ID: " + nextSupplierID);
       System.out.println("Next product ID: " + nextProductID);
@@ -111,21 +124,23 @@ public class SupplierFacade {
       }
       // insert info into runtime memory
       suppliers.put(supplier.getSupplierId(), supplier);
-      supplierProducts.put(supplier.getSupplierId(), new HashSet<>());
-      Set<SupplierProduct> products = supplierProducts.computeIfAbsent(supplier.getSupplierId(), k -> new HashSet<>());
+      supplierIDsToTheirProductIDs.put(supplier.getSupplierId(), new HashSet<>());
+      Set<Integer> products = supplierIDsToTheirProductIDs.computeIfAbsent(supplier.getSupplierId(),
+            k -> new HashSet<>());
       for (SupplierProductDTO product : supplierDTO.getProducts()) {
          SupplierProduct actualProduct = new SupplierProduct(product);
          // -VVV- this is used to find all the products for a supplier
-         products.add(actualProduct);
+         products.add(actualProduct.getProductId());
          // -VVV- this is used to find all the suppliers for a product
-         supplierProductMap.computeIfAbsent(actualProduct, k -> new ArrayList<>()).add(supplier.getSupplierId());
+         productIDsToTheirSupplierIDs.computeIfAbsent(actualProduct.getProductId(), k -> new ArrayList<>())
+               .add(supplier.getSupplierId());
          // -VVV- this is used to find all the products available in the system
          productCagalog.add(actualProduct);
       }
       // debug print
       System.out.println("Supplier created: " + supplier);
       System.out.println("Supplier products: " + products);
-      System.out.println("Supplier product map: " + supplierProductMap);
+      System.out.println("Supplier product map: " + productIDsToTheirSupplierIDs);
       System.out.println("Product catalog: " + productCagalog);
       return supplier;
    }
@@ -135,14 +150,14 @@ public class SupplierFacade {
       if (supplier == null) {
          return false;
       }
-      supplierProducts.remove(supplierID);
-      for (SupplierProduct product : supplierProducts.get(supplierID)) {
-         List<Integer> suppliersForProduct = supplierProductMap.get(product);
+      supplierIDsToTheirProductIDs.remove(supplierID);
+      for (Integer productID : supplierIDsToTheirProductIDs.get(supplierID)) {
+         List<Integer> suppliersForProduct = productIDsToTheirSupplierIDs.get(productID);
          if (suppliersForProduct != null) {
             suppliersForProduct.removeIf(id -> id == supplierID);
             if (suppliersForProduct.isEmpty()) {
-               supplierProductMap.remove(product);
-               productCagalog.remove(product);
+               productIDsToTheirSupplierIDs.remove(productID);
+               productCagalog.removeIf(p -> p.getProductId() == productID);
             }
          }
       }
@@ -185,57 +200,6 @@ public class SupplierFacade {
       return supplierDTO;
    }
 
-   private List<SupplierProductDTO> getSupplierProducts(int supplierID) {
-      Set<SupplierProduct> products = supplierProducts.get(supplierID);
-      if (products == null) {
-         return Collections.emptyList();
-      }
-      return SupplierProductDTO.fromSupplierProductList(products.stream().toList());
-   }
-
-   public void addProductToSupplier(SupplierProductDTO product, int supplierID) {
-      if (product == null) {
-         throw new IllegalArgumentException("Product cannot be null");
-      }
-      Supplier supplier = suppliers.get(supplierID);
-      if (supplier == null) {
-         throw new IllegalArgumentException("Supplier not found");
-      }
-      product.setProductId(nextProductID++);
-      SupplierProduct supplierProduct = new SupplierProduct(product);
-      Set<SupplierProduct> products = supplierProducts.computeIfAbsent(supplierID, k -> new HashSet<>());
-      supplier.addProduct(supplierProduct.getProductId());
-      products.add(supplierProduct);
-      supplierProductMap.computeIfAbsent(supplierProduct, k -> new ArrayList<>()).add(supplierID);
-      productCagalog.add(supplierProduct);
-      // debug print
-      System.out.println("Product added to supplier: " + supplier);
-      System.out.println("Supplier products for supplier ID " + supplierID + ": " + supplierProducts.get(supplierID));
-      System.out.println("Supplier product map for product ID " + supplierProduct.getProductId() + ": "
-            + supplierProductMap.get(supplierProduct));
-      System.out.println("Product catalog: " + productCagalog);
-   }
-
-   public void removeProductFromSupplier(int supplierID, SupplierProductDTO product) {
-      if (product == null) {
-         throw new IllegalArgumentException("Product cannot be null");
-      }
-      Supplier supplier = suppliers.get(supplierID);
-      if (supplier == null) {
-         throw new IllegalArgumentException("Supplier not found");
-      }
-      Set<SupplierProduct> products = supplierProducts.get(supplierID);
-      if (products != null) {
-         products.removeIf(p -> p.getProductId() == product.getProductId());
-         supplier.removeProduct(product.getProductId());
-      }
-
-   }
-
-   public List<SupplierProductDTO> listProductsForSupplier(int supplierID) {
-      return SupplierProductDTO.fromSupplierProductList(supplierProducts.get(supplierID).stream().toList());
-   }
-
    public void addAgreementToSupplier(int supplierID, int agreementID) {
       Supplier supplier = suppliers.get(supplierID);
       if (supplier == null) {
@@ -252,23 +216,75 @@ public class SupplierFacade {
       return supplierDTOs;
    }
 
-   public void addProductToSupplierProductMap(int supplierID, SupplierProductDTO product) {
+   public void addProductToSupplierAndMemory(int supplierID, SupplierProductDTO product) {
       if (product == null) {
          throw new IllegalArgumentException("Product cannot be null");
       }
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      if (supplierIDsToTheirProductIDs.containsKey(supplierID)
+            && supplierIDsToTheirProductIDs.get(supplierID).contains(product.getProductId())) {
+         throw new IllegalArgumentException("Product already exists for this supplier");
+      }
+      // add product to supplier
+      product.setProductId(nextProductID++);
       SupplierProduct supplierProduct = new SupplierProduct(product);
-      Set<SupplierProduct> products = supplierProducts.computeIfAbsent(supplierID, k -> new HashSet<>());
-      products.add(supplierProduct);
+      supplier.addProduct(supplierProduct.getProductId());
+      supplierIDsToTheirProductIDs.computeIfAbsent(supplierID, k -> new HashSet<>())
+            .add(supplierProduct.getProductId());
+      productIDsToTheirSupplierIDs.computeIfAbsent(supplierProduct.getProductId(), k -> new ArrayList<>())
+            .add(supplierID);
+      productCagalog.add(supplierProduct); // if already exists, it will not be added again
+      // debug print
+      // System.out.println("Product added to supplier: " + supplier);
+      // System.out.println("Supplier products: " +
+      // supplierIDsToTheirProductIDs.get(supplierID));
+      // System.out.println("Product IDs to their supplier IDs: " +
+      // productIDsToTheirSupplierIDs);
+      // System.out.println("Product catalog: " + productCagalog);
    }
 
-   public void removeProductFromSupplierProductMap(int supplierID, SupplierProductDTO product) {
-      if (product == null) {
-         throw new IllegalArgumentException("Product cannot be null");
+   public void removeProductFromSupplierAndMemory(int supplierID, int product) {
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
       }
-      Set<SupplierProduct> products = supplierProducts.get(supplierID);
-      if (products != null) {
-         products.removeIf(p -> p.getProductId() == product.getProductId());
+      if (!supplierIDsToTheirProductIDs.containsKey(supplierID)
+            || !supplierIDsToTheirProductIDs.get(supplierID).contains(product)) {
+         throw new IllegalArgumentException("Product not found for this supplier");
       }
+      supplier.removeProduct(product);
+      supplierIDsToTheirProductIDs.get(supplierID).remove(product);
+      List<Integer> suppliersForProduct = productIDsToTheirSupplierIDs.get(product);
+      if (suppliersForProduct != null) {
+         suppliersForProduct.removeIf(id -> id == supplierID);
+         if (suppliersForProduct.isEmpty()) {
+            productIDsToTheirSupplierIDs.remove(product);
+            productCagalog.removeIf(p -> p.getProductId() == product);
+         }
+      }
+   }
+
+   public List<SupplierProductDTO> getSupplierProducts(int supplierID) {
+      Set<Integer> products = supplierIDsToTheirProductIDs.get(supplierID);
+      if (products == null) {
+         return Collections.emptyList();
+      }
+      List<SupplierProduct> supplierProductsToReturn = new ArrayList<>();
+      for (Integer productID : products) {
+         SupplierProduct supplierProduct = productCagalog.stream()
+               .filter(p -> p.getProductId() == productID)
+               .findFirst()
+               .orElse(null);
+         if (supplierProduct != null) {
+            supplierProductsToReturn.add(supplierProduct);
+         }
+      }
+      return supplierProductsToReturn.stream()
+            .map(SupplierProductDTO::new)
+            .toList();
    }
 
    public boolean checkSupplierExists(int supplierID) {
