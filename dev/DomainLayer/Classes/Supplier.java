@@ -41,12 +41,11 @@ public class Supplier implements Serializable {
             this.contacts.add(new ContactInfo(contact));
          }
       }
-      this.products = new ArrayList<>();
-      if (supplierDTO.getProducts() != null) {
-         for (Integer productId : supplierDTO.getProducts().stream().map(SupplierProductDTO::getProductId).toList()) {
-            this.products.add(productId);
-         }
-      }
+      this.products = supplierDTO.getProducts() != null
+            ? new ArrayList<>(supplierDTO.getProducts().stream()
+                  .map(SupplierProductDTO::getProductId)
+                  .toList())
+            : new ArrayList<>();
       this.agreements = supplierDTO.getAgreements();
    }
 

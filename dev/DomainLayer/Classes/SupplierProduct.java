@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class SupplierProduct implements Serializable {
-   private static int nextProductID = 100;
    // private int supplierId;
    private int internalProductIdForInternalUsageOnly;
    private String name;

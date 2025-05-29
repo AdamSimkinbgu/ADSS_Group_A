@@ -13,22 +13,25 @@ public class AgreementFacade extends BaseFacade {
         Agreement agreement = new Agreement(agreementDTO);
         agreementDTO.setAgreementId(agreement.getAgreementId());
         agreements
-                .computeIfAbsent(agreement.getSupplierId(), k -> new ArrayList<>())
-                .add(agreement);
+                .computeIfAbsent(agreement.getSupplierId(), k -> new ArrayList<>());
+        agreements.get(agreement.getSupplierId()).add(agreement);
         return agreementDTO;
     }
 
-    public boolean removeAgreement(int agreementID) {
-        for (List<Agreement> supplierAgreements : agreements.values()) {
-            for (Iterator<Agreement> iterator = supplierAgreements.iterator(); iterator.hasNext();) {
-                Agreement agreement = iterator.next();
-                if (agreement.getAgreementId() == agreementID) {
-                    iterator.remove();
-                    return true;
-                }
+    public boolean removeAgreement(int agreementID, int supplierID) {
+        List<Agreement> supplierAgreements = agreements.get(supplierID);
+        if (supplierAgreements == null) {
+            return false;
+        }
+        Iterator<Agreement> iterator = supplierAgreements.iterator();
+        while (iterator.hasNext()) {
+            Agreement agreement = iterator.next();
+            if (agreement.getAgreementId() == agreementID) {
+                iterator.remove();
+                return true;
             }
         }
-        return false; // Agreement not found
+        return false;
     }
 
     public boolean updateAgreement(AgreementDTO updated) {

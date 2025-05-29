@@ -15,13 +15,16 @@ import DTOs.Enums.PaymentMethod;
 import DTOs.Enums.PaymentTerm;
 
 public class SupplierFacade {
-   private static  String configPath;
+   private static String configPath;
    private static int nextSupplierID;
    private static int nextProductID;
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
-   private final Map<Integer, Set<SupplierProduct>> supplierProducts = new HashMap<>(); // used to find all the products for a supplier
-   private final Map<SupplierProduct, List<Integer>> supplierProductMap = new HashMap<>(); // used to find all the suppliers for a product
-   private final Set<SupplierProduct> productCagalog = new HashSet<>(); // used to find all the products available in the system
+   private final Map<Integer, Set<SupplierProduct>> supplierProducts = new HashMap<>(); // used to find all the products
+                                                                                        // for a supplier
+   private final Map<SupplierProduct, List<Integer>> supplierProductMap = new HashMap<>(); // used to find all the
+                                                                                           // suppliers for a product
+   private final Set<SupplierProduct> productCagalog = new HashSet<>(); // used to find all the products available in
+                                                                        // the system
 
    public SupplierFacade(boolean initialize, String configJson) {
       if (configJson == null) {
@@ -39,25 +42,31 @@ public class SupplierFacade {
    }
 
    private void initialize() {
-      Supplier supplier1 = new Supplier(nextSupplierID++, "Supplier 1", "512345678", new AddressDTO("Street 1", "City 1", "Building 1"),
-               new PaymentDetailsDTO("123456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30),
-               true, EnumSet.of(DayofWeek.MONDAY, DayofWeek.WEDNESDAY), new ArrayList<>(),
-               new ArrayList<>(), new ArrayList<>());
-      Supplier supplier2 = new Supplier(nextSupplierID++, "Supplier 2", "587654321", new AddressDTO("Street 2", "City 2", "Building 2"),
-               new PaymentDetailsDTO("654321", PaymentMethod.CASH, PaymentTerm.N60),
-               false, EnumSet.of(DayofWeek.TUESDAY, DayofWeek.THURSDAY), new ArrayList<>(),
-               new ArrayList<>(), new ArrayList<>());
-      Supplier supplier3 = new Supplier(nextSupplierID++, "Supplier 3", "518273645", new AddressDTO("Street 3", "City 3", "Building 3"),
-               new PaymentDetailsDTO("162534", PaymentMethod.CASH_ON_DELIVERY, PaymentTerm.N60),
-               true, EnumSet.of(DayofWeek.FRIDAY), new ArrayList<>(),
-               new ArrayList<>(), new ArrayList<>());
-      suppliers.put(1, supplier1);
-      suppliers.put(2, supplier2);
-      suppliers.put(3, supplier3);
+      Supplier supplier1 = new Supplier(nextSupplierID++, "Supplier 1", "512345678",
+            new AddressDTO("Street 1", "City 1", "Building 1"),
+            new PaymentDetailsDTO("123456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30),
+            true, EnumSet.of(DayofWeek.MONDAY, DayofWeek.WEDNESDAY), new ArrayList<>(),
+            new ArrayList<>(), new ArrayList<>());
+      Supplier supplier2 = new Supplier(nextSupplierID++, "Supplier 2", "587654321",
+            new AddressDTO("Street 2", "City 2", "Building 2"),
+            new PaymentDetailsDTO("654321", PaymentMethod.CASH, PaymentTerm.N60),
+            false, EnumSet.of(DayofWeek.TUESDAY, DayofWeek.THURSDAY), new ArrayList<>(),
+            new ArrayList<>(), new ArrayList<>());
+      Supplier supplier3 = new Supplier(nextSupplierID++, "Supplier 3", "518273645",
+            new AddressDTO("Street 3", "City 3", "Building 3"),
+            new PaymentDetailsDTO("162534", PaymentMethod.CASH_ON_DELIVERY, PaymentTerm.N60),
+            true, EnumSet.of(DayofWeek.FRIDAY), new ArrayList<>(),
+            new ArrayList<>(), new ArrayList<>());
+      suppliers.put(0, supplier1);
+      suppliers.put(1, supplier2);
+      suppliers.put(2, supplier3);
       // Add products to suppliers
-      SupplierProduct product1 = new SupplierProduct(nextProductID++, "123456", "Product 1", new BigDecimal("10.00"), new BigDecimal("1.0"), 30, "Manufacturer 1");
-      SupplierProduct product2 = new SupplierProduct(nextProductID++, "654321", "Product 2", new BigDecimal("20.00"), new BigDecimal("2.0"), 60, "Manufacturer 2");
-      SupplierProduct product3 = new SupplierProduct(nextProductID++, "789012", "Product 3", new BigDecimal("30.00"), new BigDecimal("3.0"), 90, "Manufacturer 3");
+      SupplierProduct product1 = new SupplierProduct(nextProductID++, "123456", "Product 1", new BigDecimal("10.00"),
+            new BigDecimal("1.0"), 30, "Manufacturer 1");
+      SupplierProduct product2 = new SupplierProduct(nextProductID++, "654321", "Product 2", new BigDecimal("20.00"),
+            new BigDecimal("2.0"), 60, "Manufacturer 2");
+      SupplierProduct product3 = new SupplierProduct(nextProductID++, "789012", "Product 3", new BigDecimal("30.00"),
+            new BigDecimal("3.0"), 90, "Manufacturer 3");
       supplier1.addProduct(product1.getProductId());
       supplier1.addProduct(product2.getProductId());
       supplier2.addProduct(product2.getProductId());
@@ -89,7 +98,7 @@ public class SupplierFacade {
       System.out.println("Initialized product catalog: " + productCagalog);
       System.out.println("Next supplier ID: " + nextSupplierID);
       System.out.println("Next product ID: " + nextProductID);
-      }
+   }
 
    public Supplier createSupplier(SupplierDTO supplierDTO) {
       if (supplierDTO == null) {
@@ -107,7 +116,7 @@ public class SupplierFacade {
       for (SupplierProductDTO product : supplierDTO.getProducts()) {
          SupplierProduct actualProduct = new SupplierProduct(product);
          // -VVV- this is used to find all the products for a supplier
-         products.add(actualProduct); 
+         products.add(actualProduct);
          // -VVV- this is used to find all the suppliers for a product
          supplierProductMap.computeIfAbsent(actualProduct, k -> new ArrayList<>()).add(supplier.getSupplierId());
          // -VVV- this is used to find all the products available in the system
@@ -157,7 +166,7 @@ public class SupplierFacade {
             BeanPatch.of(SupplierDTO::getSupplyDays, Supplier::getSupplyDays, Supplier::setSupplyDays),
             BeanPatch.of(SupplierDTO::getPaymentDetails, Supplier::getPaymentDetails, Supplier::setPaymentDetails),
             BeanPatch.of(SupplierDTO::getContactsInfoList, Supplier::getContacts, Supplier::setContacts),
-            BeanPatch.of(SupplierDTO::getProductIdsList, Supplier::getProducts, Supplier::setProducts),
+            BeanPatch.of(SupplierDTO::getProductIDs, Supplier::getProducts, Supplier::setProducts),
             BeanPatch.of(SupplierDTO::getAgreements, Supplier::getAgreements, Supplier::setAgreements));
 
       // ─── single loop, no reflection ───
@@ -169,7 +178,19 @@ public class SupplierFacade {
       if (supplier == null) {
          throw new IllegalArgumentException("Supplier not found");
       }
-      return new SupplierDTO(supplier);
+      SupplierDTO supplierDTO = new SupplierDTO(supplier);
+      // add products to the DTO
+      List<SupplierProductDTO> productDTOs = getSupplierProducts(supplierID);
+      supplierDTO.setProducts(productDTOs);
+      return supplierDTO;
+   }
+
+   private List<SupplierProductDTO> getSupplierProducts(int supplierID) {
+      Set<SupplierProduct> products = supplierProducts.get(supplierID);
+      if (products == null) {
+         return Collections.emptyList();
+      }
+      return SupplierProductDTO.fromSupplierProductList(products.stream().toList());
    }
 
    public void addProductToSupplier(SupplierProductDTO product, int supplierID) {
@@ -190,14 +211,10 @@ public class SupplierFacade {
       // debug print
       System.out.println("Product added to supplier: " + supplier);
       System.out.println("Supplier products for supplier ID " + supplierID + ": " + supplierProducts.get(supplierID));
-      System.out.println("Supplier product map for product ID " + supplierProduct.getProductId() + ": " + supplierProductMap.get(supplierProduct));
+      System.out.println("Supplier product map for product ID " + supplierProduct.getProductId() + ": "
+            + supplierProductMap.get(supplierProduct));
       System.out.println("Product catalog: " + productCagalog);
    }
-
-   // suppliers will now hold only the ids of the products
-   // public boolean updateProductOnSupplier(String json) {
-   //    return false; // TODO: Implement this method
-   // }
 
    public void removeProductFromSupplier(int supplierID, SupplierProductDTO product) {
       if (product == null) {
@@ -230,8 +247,7 @@ public class SupplierFacade {
    public List<SupplierDTO> getAllSuppliers() {
       List<SupplierDTO> supplierDTOs = new ArrayList<>();
       for (Supplier supplier : suppliers.values()) {
-         SupplierDTO dto = new SupplierDTO(supplier);
-         supplierDTOs.add(dto);
+         supplierDTOs.add(getSupplierDTO(supplier.getSupplierId()));
       }
       return supplierDTOs;
    }

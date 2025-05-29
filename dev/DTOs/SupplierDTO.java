@@ -76,8 +76,17 @@ public class SupplierDTO {
             this.supplyDays = supplier.getSupplyDays();
             this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
             this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
+            // to add the products we need to add them after the creation of the supplier
             this.products = new ArrayList<>();
             this.agreements = supplier.getAgreements();
+      }
+
+      public int getId() {
+            return id;
+      }
+
+      public void setId(int id) {
+            this.id = id;
       }
 
       public String getName() {
@@ -136,14 +145,13 @@ public class SupplierDTO {
             return products;
       }
 
-      public List<Integer> getProductIdsList() {
+      public List<Integer> getProductIDs() {
             List<Integer> productIds = new ArrayList<>();
             for (SupplierProductDTO product : products) {
                   productIds.add(product.getProductId());
             }
             return productIds;
       }
-
 
       public void setProducts(List<SupplierProductDTO> products) {
             this.products = products;
