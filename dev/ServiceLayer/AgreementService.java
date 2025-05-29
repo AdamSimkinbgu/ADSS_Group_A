@@ -30,21 +30,24 @@ public class AgreementService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   public ServiceResponse<?> removeAgreement(int agreementID) {
-      if (agreementID <= 0) {
+   public ServiceResponse<?> removeAgreement(int agreementID, int supplierID) {
+      if (agreementID < 0) {
          return ServiceResponse.fail(List.of("Agreement ID must be a positive integer"));
       }
+      if (supplierID < 0) {
+         return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
+      }
       try {
-         boolean removed = agreementFacade.removeAgreement(agreementID);
+         boolean removed = agreementFacade.removeAgreement(agreementID, supplierID);
          if (removed) {
             return ServiceResponse.ok("Agreement removed successfully");
          } else {
-            return ServiceResponse.fail(List.of("Failed to remove agreement: Agreement ID not found"));
+            return ServiceResponse
+                  .fail(List.of("Failed to remove agreement: Agreement not found or supplier mismatch"));
          }
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to remove agreement: " + e.getMessage()));
       }
-
    }
 
    public ServiceResponse<?> getAgreement(String json) {
@@ -60,7 +63,7 @@ public class AgreementService extends BaseService {
    }
 
    public ServiceResponse<List<AgreementDTO>> getAgreementsBySupplierId(int supplierId) {
-      if (supplierId <= 0) {
+      if (supplierId < 0) {
          return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
       }
       try {

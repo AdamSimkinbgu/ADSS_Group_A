@@ -58,14 +58,14 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
                errors.add("Supplier payment details bank account number cannot be null");
             } else if (target.getPaymentDetails().getBankAccountNumber().isEmpty()) {
                errors.add("Supplier payment details bank account number cannot be empty");
-            } else if (!target.getPaymentDetails().getBankAccountNumber().matches("^[0-9]{6}")) 
+            } else if (!target.getPaymentDetails().getBankAccountNumber().matches("^[0-9]{6}"))
                errors.add("Supplier payment details bank account number must be 6 digits long");
             if (target.getPaymentDetails().getPaymentMethod() == null) {
                errors.add("Supplier payment details payment method cannot be null");
             }
             if (target.getPaymentDetails().getPaymentTerm() == null) {
                errors.add("Supplier payment details payment term cannot be null");
-            }   
+            }
          }
          if (target.getContactsInfoDTOList() == null) {
             errors.add("Supplier contact person cannot be null");
@@ -84,14 +84,16 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
                } else if (contact.getPhone().isEmpty()) {
                   errors.add("Supplier contact person phone number cannot be empty");
                } else if (!contact.getPhone().matches("^05\\d-\\d{3}-\\d{4}$")) {
-                  errors.add("Supplier contact person phone number must start with 05 and be in the format 05X-XXX-XXXX");
+                  errors.add(
+                        "Supplier contact person phone number must start with 05 and be in the format 05X-XXX-XXXX");
                }
                if (contact.getEmail() == null) {
                   errors.add("Supplier contact person email cannot be null");
                } else if (contact.getEmail().isEmpty()) {
                   errors.add("Supplier contact person email cannot be empty");
                } else if (!contact.getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-                  errors.add("Please enter a valid email address (e.g. user@example.com). It may only use letters, numbers and . _ % + – before the @, and must include a domain with a valid extension (like .com, .net).");
+                  errors.add(
+                        "Please enter a valid email address (e.g. user@example.com). It may only use letters, numbers and . _ % + – before the @, and must include a domain with a valid extension (like .com, .net).");
                }
             }
          }
@@ -114,11 +116,11 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
 
    @Override
    public ServiceResponse<?> validateRemoveDTO(int id) {
-      return id > 0 ? ServiceResponse.ok(null) : ServiceResponse.fail(List.of("Invalid supplier ID"));
+      return id >= 0 ? ServiceResponse.ok(null) : ServiceResponse.fail(List.of("Invalid supplier ID"));
    }
 
    @Override
    public ServiceResponse<?> validateGetDTO(int id) {
-      return id > 0 ? ServiceResponse.ok(null) : ServiceResponse.fail(List.of("Invalid supplier ID"));
+      return id >= 0 ? ServiceResponse.ok(null) : ServiceResponse.fail(List.of("Invalid supplier ID"));
    }
 }
