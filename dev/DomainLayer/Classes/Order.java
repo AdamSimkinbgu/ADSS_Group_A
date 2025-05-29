@@ -14,6 +14,10 @@ public class Order implements Serializable {
     private LocalDate orderDate;
     private List<OrderItemLine> items;
     private OrderStatus status;
+    private String supplierName;
+    private Address address ;
+    private String contactPhoneNumber ;
+
 
     // load constructor
     public Order(
