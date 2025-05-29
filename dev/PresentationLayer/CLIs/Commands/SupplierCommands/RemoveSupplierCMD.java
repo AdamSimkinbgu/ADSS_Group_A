@@ -1,4 +1,4 @@
-package PresentationLayer.CLIs.SupplierCommands;
+package PresentationLayer.CLIs.Commands.SupplierCommands;
 
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;

@@ -1,0 +1,48 @@
+package PresentationLayer.CLIs.Controllers;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import PresentationLayer.View;
+import PresentationLayer.CLIs.CommandInterface;
+
+public class ProductController {
+   private final View view;
+   private final Map<String, CommandInterface> productCommands;
+
+   public ProductController(View view, Map<String, CommandInterface> commands) {
+      this.view = view;
+      this.productCommands = new HashMap<>();
+      productCommands.put("1", commands.get("CreateProductCMD"));
+      productCommands.put("2", commands.get("UpdateProductCMD"));
+      productCommands.put("3", commands.get("RemoveProductCMD"));
+      productCommands.put("4", commands.get("ViewAllProductsCMD"));
+   }
+
+   public void start() {
+      while (true) {
+         view.showMessage("Product Management Menu");
+         view.showMessage("1. Create Product");
+         view.showMessage("2. Update Product");
+         view.showMessage("3. Remove Product");
+         view.showMessage("4. List Products");
+         view.showMessage("Type 'return' to go back.");
+
+         String choice = view.readLine("Choose an option: ").toLowerCase();
+         if (choice.equals("return")) {
+            break;
+         }
+         CommandInterface command = productCommands.getOrDefault(choice, null);
+         if (command != null) {
+            try {
+               command.execute();
+            } catch (Exception e) {
+               view.showMessage("An error occurred: " + e.getMessage());
+            }
+         } else {
+            view.showError("Invalid option");
+         }
+      }
+   }
+
+}

@@ -5,26 +5,18 @@ import java.util.Map;
 
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
-import PresentationLayer.CLIs.SupplierCommands.AddProductCMD;
-import PresentationLayer.CLIs.SupplierCommands.CreateSupplierCMD;
-import PresentationLayer.CLIs.SupplierCommands.RemoveSupplierCMD;
-import PresentationLayer.CLIs.SupplierCommands.UpdateSupplierCMD;
-import PresentationLayer.CLIs.SupplierCommands.ViewAllSuppliersCMD;
-import ServiceLayer.SupplierService;
 
-public class SupplierController {
+public class SupplierController{
    private final View view;
-   private final Map<String, CommandInterface> commands;
+   private final Map<String, CommandInterface> supplierCommands;
 
-   public SupplierController(View view, SupplierService supplierService) {
+   public SupplierController(View view, Map<String, CommandInterface> commands) {
       this.view = view;
-      this.commands = new HashMap<>();
-      commands.put("1", new CreateSupplierCMD(view, supplierService));
-      commands.put("2", new UpdateSupplierCMD(view, supplierService));
-      commands.put("3", new RemoveSupplierCMD(view, supplierService));
-      commands.put("4", new ViewAllSuppliersCMD(view, supplierService));
-      commands.put("5", new AddProductCMD(view, supplierService));
-
+      this.supplierCommands = new HashMap<>();
+      supplierCommands.put("1", commands.get("CreateSupplierCMD"));
+      supplierCommands.put("2", commands.get("UpdateSupplierCMD"));
+      supplierCommands.put("3", commands.get("RemoveSupplierCMD"));
+      supplierCommands.put("4", commands.get("ViewAllSuppliersCMD"));
    }
 
    public void start() {
@@ -34,14 +26,13 @@ public class SupplierController {
          view.showMessage("2. Update Supplier");
          view.showMessage("3. Remove Supplier");
          view.showMessage("4. List Suppliers");
-         view.showMessage("5. Add Product to Supplier");
          view.showMessage("Type 'return' to go back.");
 
          String choice = view.readLine("Choose an option: ").toLowerCase();
          if (choice.equals("return")) {
             break;
          }
-         CommandInterface command = commands.getOrDefault(choice, null);
+         CommandInterface command = supplierCommands.getOrDefault(choice, null);
          if (command != null) {
             try {
                command.execute();

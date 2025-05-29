@@ -1,4 +1,4 @@
-package PresentationLayer.CLIs.SupplierCommands;
+package PresentationLayer.CLIs.Commands.SupplierCommands;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +19,7 @@ public class ViewAllSuppliersCMD implements CommandInterface {
    }
 
    @Override
-   public void execute() throws Exception {
+   public void execute() {
       ServiceResponse<List<SupplierDTO>> res = supplierService.getAllSuppliers();
       if (res.isSuccess()) {
          view.showMessage("-- Suppliers --");
@@ -31,6 +31,10 @@ public class ViewAllSuppliersCMD implements CommandInterface {
          res.getValue().forEach(supplier -> {
             view.showMessage(counter.getAndIncrement() + ". " + supplier);
          });
+      } else {
+         view.showError("-- Failed to retrieve suppliers --");
+         AtomicInteger counter = new AtomicInteger(1);
+         res.getErrors().forEach(error -> view.showError(counter.getAndIncrement() + ". " + error));
       }
    }
 

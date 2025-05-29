@@ -1,4 +1,4 @@
-package PresentationLayer.CLIs.SupplierCommands;
+package PresentationLayer.CLIs.Commands.SupplierCommands;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

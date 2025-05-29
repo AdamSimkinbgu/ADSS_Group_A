@@ -5,9 +5,9 @@ import java.util.Map;
 
 import PresentationLayer.View;
 import PresentationLayer.CLIs.CommandInterface;
-import PresentationLayer.CLIs.AgreementCommands.CreateAgreementCMD;
-import PresentationLayer.CLIs.AgreementCommands.RemoveAgreementCMD;
-import PresentationLayer.CLIs.AgreementCommands.ViewAgreementsBySupplierIdCMD;
+import PresentationLayer.CLIs.Commands.AgreementCommands.CreateAgreementCMD;
+import PresentationLayer.CLIs.Commands.AgreementCommands.RemoveAgreementCMD;
+import PresentationLayer.CLIs.Commands.AgreementCommands.ViewAgreementsBySupplierIdCMD;
 import ServiceLayer.AgreementService;
 import ServiceLayer.SupplierService;
 
