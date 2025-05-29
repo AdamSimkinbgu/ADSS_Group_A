@@ -8,7 +8,6 @@ import DTOs.Enums.DayofWeek;
 import PresentationLayer.View;
 import PresentationLayer.CLIs.InteractiveForm;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -42,7 +41,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
             } else {
                   view.showMessage("Self supply not selected.");
             }
-      
+
             /* payment details */
             PaymentDetailsDTO payment = new PaymentDetailsDTO(
                         askNonEmpty("Bank account number: "),
@@ -59,28 +58,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
             }
 
             /* products (0-n) */
-            List<SupplierProductDTO> products = new ArrayList<>();
-            view.showMessage("-- Products --");
-            while (view.readLine("Add product? (y/n): ").equalsIgnoreCase("y")) {
-                  try {
-                        String supplierCatalogNumber = askNonEmpty("  Supplier catalog number: ");
-                        String productName = askNonEmpty("  Product name: ");
-                        BigDecimal price = askBigDecimal("  Price: ");
-                        BigDecimal weight = askBigDecimal("  Weight: ");
-                        int expiresInDays = askInt("  Expires in days: ");
-                        String manufacturerName = askNonEmpty("  Manufacturer name: ");
-                        products.add(new SupplierProductDTO(
-                                    0,
-                                    supplierCatalogNumber,
-                                    productName,
-                                    price,
-                                    weight,
-                                    expiresInDays,
-                                    manufacturerName));
-                  } catch (NumberFormatException e) {
-                        view.showError("Invalid input: " + e.getMessage());
-                  }
-            }
+            // we no longer ask for products here, as they are managed separately
 
             return new SupplierDTO(
                         name,
@@ -90,7 +68,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                         supplyDays,
                         payment,
                         contacts,
-                        products,
+                        new ArrayList<>(),
                         new ArrayList<>());
       }
 
@@ -114,7 +92,8 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                   case "paymentDetails" -> {
                         PaymentDetailsDTO payment = supplierDTO.getPaymentDetailsDTO();
                         payment.setBankAccountNumber(askNonEmpty("New bank account: "));
-                        payment.setPaymentMethod((PaymentMethod.valueOf(askNonEmpty("New method (CASH/CARD/...): ").toUpperCase())));
+                        payment.setPaymentMethod(
+                                    (PaymentMethod.valueOf(askNonEmpty("New method (CASH/CARD/...): ").toUpperCase())));
                         payment.setPaymentTerm(PaymentTerm.valueOf(askNonEmpty("New term (N30/…): ").toUpperCase()));
                   }
                   case "contacts" -> {
@@ -126,26 +105,31 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                                           askNonEmpty("  Phone: ")));
                         }
                   }
-                  case "products" -> {
-                        List<SupplierProductDTO> products = supplierDTO.getProducts();
-                        for (SupplierProductDTO product : products) {
-                              view.showMessage(product.toString());
-                        }
-                        int productId =  askInt("Enter product ID to update: ");
-                        SupplierProductDTO product = products.stream()
-                                    .filter(p -> p.getProductId() == productId)
-                                    .findFirst()
-                                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-                        switch (askNonEmpty(
-                                    "What do you want to change? (supplierCatalogNumber, productName, price, weight, expiresInDays, manufacturerName)")) {
-                              case "supplierCatalogNumber" -> product.setSupplierCatalogNumber(askNonEmpty("New supplier catalog number: "));
-                              case "productName" -> product.setName(askNonEmpty("New product name: "));
-                              case "price" -> product.setPrice(askBigDecimal("New price: "));
-                              case "weight" -> product.setWeight(askBigDecimal("New weight: "));
-                              case "expiresInDays" -> product.setExpiresInDays(askInt("New expires in days: "));
-                              case "manufacturerName" -> product.setManufacturerName(askNonEmpty("New manufacturer name: "));
-                        }
-                  }
+                  // case "products" -> {
+                  // List<SupplierProductDTO> products = supplierDTO.getProducts();
+                  // for (SupplierProductDTO product : products) {
+                  // view.showMessage(product.toString());
+                  // }
+                  // int productId = askInt("Enter product ID to update: ");
+                  // SupplierProductDTO product = products.stream()
+                  // .filter(p -> p.getProductId() == productId)
+                  // .findFirst()
+                  // .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+                  // switch (askNonEmpty(
+                  // "What do you want to change? (supplierCatalogNumber, productName, price,
+                  // weight, expiresInDays, manufacturerName)")) {
+                  // case "supplierCatalogNumber" ->
+                  // product.setSupplierCatalogNumber(askNonEmpty("New supplier catalog number:
+                  // "));
+                  // case "productName" -> product.setName(askNonEmpty("New product name: "));
+                  // case "price" -> product.setPrice(askBigDecimal("New price: "));
+                  // case "weight" -> product.setWeight(askBigDecimal("New weight: "));
+                  // case "expiresInDays" -> product.setExpiresInDays(askInt("New expires in days:
+                  // "));
+                  // case "manufacturerName" -> product.setManufacturerName(askNonEmpty("New
+                  // manufacturer name: "));
+                  // }
+                  // }
                   default -> view.showError("Invalid input, please try again.");
             }
             return supplierDTO;

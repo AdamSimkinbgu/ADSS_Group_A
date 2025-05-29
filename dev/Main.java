@@ -15,7 +15,6 @@ public class Main {
       } else if (!fakeargs[0].isEmpty() && fakeargs.length == 1) {
          System.out.println("Data path provided: " + fakeargs[0]);
       }
-
-      AppCLI app = new AppCLI(fakeargs[0]);
+      new AppCLI(fakeargs[0]);
    }
 }
