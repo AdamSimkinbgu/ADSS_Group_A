@@ -18,7 +18,7 @@ public class AgreementController {
    public AgreementController(View view, AgreementService agreementService, SupplierService supplierService) {
       this.view = view;
       this.commands = new HashMap<>();
-      commands.put("1", new CreateAgreementCMD(view, agreementService, supplierService));
+      commands.put("1", new CreateAgreementCMD(view, agreementService));
       // commands.put("2", new UpdateAgreementCMD(view, agreementService));
       commands.put("3", new RemoveAgreementCMD(view, agreementService, supplierService));
       // commands.put("4", new GetAgreementCMD(view, agreementService));

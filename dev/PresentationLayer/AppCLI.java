@@ -9,6 +9,8 @@ import PresentationLayer.CLIs.*;
 import PresentationLayer.CLIs.Commands.AgreementCommands.*;
 import PresentationLayer.CLIs.Commands.ProductCommands.CreateProductCMD;
 import PresentationLayer.CLIs.Commands.ProductCommands.RemoveProductCMD;
+import PresentationLayer.CLIs.Commands.ProductCommands.UpdateProductCMD;
+import PresentationLayer.CLIs.Commands.ProductCommands.ViewAllProductsCMD;
 import PresentationLayer.CLIs.Commands.SupplierCommands.*;
 import PresentationLayer.CLIs.Controllers.*;
 import ServiceLayer.*;
@@ -25,10 +27,13 @@ public class AppCLI implements View {
       // Initialize the facades
       SupplierFacade supplierFacade = new SupplierFacade(true, configJson);
       AgreementFacade agreementFacade = new AgreementFacade();
+      AgreementSupplierController agreementSupplierController = new AgreementSupplierController(agreementFacade,
+            supplierFacade);
+
       // OrderFacade orderFacade = new OrderFacade(supplierFacade);
 
       // Initialize the services
-      AgreementService agreementService = new AgreementService(agreementFacade);
+      AgreementService agreementService = new AgreementService(agreementFacade, agreementSupplierController);
       SupplierService supplierService = new SupplierService(supplierFacade);
       // OrderService orderService = new OrderService(orderFacade);
       // SystemService systemService = new SystemService(supplierFacade, orderFacade,
@@ -41,9 +46,6 @@ public class AppCLI implements View {
       // initializeAgreementCommands(agreementService, supplierService);
       // Map<String, CommandInterface> orderCommands =
       // initializeOrderCommands(orderFacade);
-      // Map<String, CommandInterface> crossSystemCommands =
-      // initializeCrossSystemCommands(
-      // supplierService, agreementService, orderFacade);
 
       // Initialize the controllers
       this.supplierController = new SupplierController(this, supplierCommands);
@@ -64,18 +66,16 @@ public class AppCLI implements View {
    private Map<String, CommandInterface> initializeProductCommands(SupplierService supplierService) {
       Map<String, CommandInterface> commands = new HashMap<>();
       commands.put("CreateProductCMD", new CreateProductCMD(this, supplierService));
-      // commands.put("UpdateProductCMD", new UpdateProductCMD(this,
-      // supplierService));
+      commands.put("UpdateProductCMD", new UpdateProductCMD(this, supplierService));
       commands.put("RemoveProductCMD", new RemoveProductCMD(this, supplierService));
-      // commands.put("ViewAllProductsCMD", new ViewAllProductsCMD(this,
-      // supplierService));
+      commands.put("ViewAllProductsCMD", new ViewAllProductsCMD(this, supplierService));
       return commands;
    }
 
    private Map<String, CommandInterface> initializeAgreementCommands(AgreementService agreementService,
          SupplierService supplierService) {
       Map<String, CommandInterface> commands = new HashMap<>();
-      commands.put("CreateAgreementCMD", new CreateAgreementCMD(this, agreementService, supplierService));
+      commands.put("CreateAgreementCMD", new CreateAgreementCMD(this, agreementService));
       // commands.put("UpdateAgreementCMD", new UpdateAgreementCMD(this,
       // agreementService));
       commands.put("RemoveAgreementCMD", new RemoveAgreementCMD(this, agreementService, supplierService));
@@ -90,12 +90,6 @@ public class AppCLI implements View {
       // commands.put("RemoveOrderCMD", new RemoveOrderCMD(this, orderFacade));
       // commands.put("ViewAllOrdersCMD", new ViewAllOrdersCMD(this, orderFacade));
       return commands;
-   }
-
-   private Map<String, CommandInterface> initializeCrossSystemCommands(SupplierService supplierService,
-         AgreementService agreementService, OrderFacade orderFacade) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'initializeCrossSystemCommands'");
    }
 
    private void start() {

@@ -2,6 +2,7 @@ package ServiceLayer;
 
 import java.util.List;
 
+import DTOs.CatalogProductDTO;
 import DTOs.SupplierDTO;
 import DTOs.SupplierProductDTO;
 import DomainLayer.Classes.Supplier;
@@ -139,16 +140,33 @@ public class SupplierService extends BaseService {
 
    }
 
-   public ServiceResponse<?> updateProduct(String json) {
-      return ServiceResponse.fail(List.of("Not implemented")); // TODO: Implement this method
+   public ServiceResponse<?> updateProduct(SupplierProductDTO productDTO, int supplierID) {
+      ServiceResponse<?> response = productValidator.validateUpdateDTO(productDTO);
+      if (response.isSuccess()) {
+         try {
+            // Validate that the supplier exists before updating the product
+            ServiceResponse<?> supplierResponse = supplierValidator.validateGetDTO(supplierID);
+            if (!supplierResponse.isSuccess()) {
+               return ServiceResponse.fail(supplierResponse.getErrors());
+            }
+            SupplierDTO supplier = supplierFacade.getSupplierDTO(supplierID);
+            if (supplier == null) {
+               return ServiceResponse.fail(List.of("Supplier with ID " + supplierID + " does not exist"));
+            }
+            supplierFacade.updateProductInSupplierAndMemory(supplierID, productDTO);
+            return ServiceResponse.ok("Product updated successfully for supplier with ID " + supplierID);
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to update product: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
    }
 
    public ServiceResponse<?> removeProduct(int productID, int supplierID) {
-      if (productID < 0) {
-         return ServiceResponse.fail(List.of("Product ID must be a positive integer"));
-      }
-      if (supplierID < 0) {
-         return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
+      if (!supplierValidator.validateGetDTO(supplierID).isSuccess()
+            || !productValidator.validateGetDTO(productID).isSuccess()) {
+         return ServiceResponse.fail(List.of("Invalid supplier or product ID"));
       }
       try {
          supplierFacade.removeProductFromSupplierAndMemory(supplierID, productID);
@@ -165,6 +183,33 @@ public class SupplierService extends BaseService {
          try {
             List<SupplierProductDTO> products = supplierFacade.getSupplierProducts(supplierID);
             return ServiceResponse.ok(products);
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to retrieve products: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(response.getErrors());
+      }
+   }
+
+   public ServiceResponse<List<CatalogProductDTO>> getAllProducts() {
+      try {
+         List<CatalogProductDTO> products = supplierFacade.getProductCatalog();
+         return ServiceResponse.ok(products);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve all products: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<List<SupplierProductDTO>> getSupplierProducts(int supplierID) {
+      ServiceResponse<?> response = supplierValidator.validateGetDTO(supplierID);
+      if (response.isSuccess()) {
+         try {
+            List<SupplierProductDTO> products = supplierFacade.getSupplierProducts(supplierID);
+            if (products != null && !products.isEmpty()) {
+               return ServiceResponse.ok(products);
+            } else {
+               return ServiceResponse.fail(List.of("No products found for supplier with ID " + supplierID));
+            }
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to retrieve products: " + e.getMessage()));
          }
