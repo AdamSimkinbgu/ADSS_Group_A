@@ -1,7 +1,7 @@
 package DomainLayer.Classes;
 
 import DTOs.Enums.OrderStatus;
-
+import DTOs.OrderDTO;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ public class Order implements Serializable {
     private int orderId;
     private int supplierId;
     private LocalDate orderDate;
+    private LocalDate creationDate;
     private List<OrderItemLine> items;
     private OrderStatus status;
     private String supplierName;
@@ -56,6 +57,10 @@ public class Order implements Serializable {
         this.orderDate = orderDate;
         this.items = items;
         this.status = OrderStatus.SENT;
+    }
+
+    public Order (OrderDTO orderDTO){
+
     }
 
     public void setSupplierId(int supplierId) {
