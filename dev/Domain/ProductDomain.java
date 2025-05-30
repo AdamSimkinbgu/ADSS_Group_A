@@ -69,7 +69,6 @@ public class ProductDomain {
         productPrice1unit = other.getproductPrice();
         storeShelf = other.getstoreShelf();
         wareHouseShelf = other.getwareHouseShelf();
-        discount = other.getdiscount();
         supplyList = new ArrayList<>();
     }
 

@@ -11,13 +11,32 @@ public class SaleDTO {
     LocalDate date;
     HashMap<Integer,Integer> products; //// hashmap(ID,saleQuantity) ////
 
-
+    //getters
     public float getSalePrice() {
         return salePrice;
     }
     public HashMap<Integer, Integer> getProducts() {
         return products;
     }
+
+    public LocalDate getdate(){
+        return date;
+    }
+
+    //setters
+    public void setsalePrice(float salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public void setdate(LocalDate date){
+        this.date = date;
+    }
+
+    public void setproducts(HashMap<Integer, Integer> products){
+        this.products = products;
+    }
+
+
 
     public SaleDTO(){}
 

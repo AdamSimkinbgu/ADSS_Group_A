@@ -12,6 +12,7 @@ public class SupplyDTO {
     int quantityS;
     int quantityB;
 
+    //getters 
 
     public int getProductID() {
         return productID;
@@ -22,6 +23,45 @@ public class SupplyDTO {
     public LocalDate getExpireDate() {
         return expireDate;
     }
+
+    public int getsId(){
+        return sId
+    }
+
+    public int getquantityS(){
+        return quantityS
+    }
+
+    public int getquantityB(){
+        return quantityB
+    }
+
+    //setters
+
+    public void setProductID(int productID) {
+        this.productID = productID;
+    }
+
+    public void setQuantityWH(int quantityWH) {
+        this.quantityWH = quantityWH;
+    }
+
+    public void setExpireDate(LocalDate expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public void setSId(int sId) {
+        this.sId = sId;
+    }
+
+    public void setQuantityS(int quantityS) {
+        this.quantityS = quantityS;
+    }
+
+    public void setQuantityB(int quantityB) {
+        this.quantityB = quantityB;
+    }
+
 
     public SupplyDTO(){}
 

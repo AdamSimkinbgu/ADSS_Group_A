@@ -24,12 +24,6 @@ public class DiscountDomain {
         discountEnd = eDate;
     }
 
-    public DiscountDomain(DiscountDTO d){
-        percent = d.getPercent();
-        discountStart = d.getDiscountStart();
-        discountEnd = d.getDiscountEnd();
-    }
-
     public DiscountDomain(DiscountDTO other){
         percent = other.getPercent();
         discountStart = other.getDiscountStart();

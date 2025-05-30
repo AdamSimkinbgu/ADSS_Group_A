@@ -23,11 +23,19 @@ public class SaleDomain {
         return itemLs;
     }
 
+    public SaleDomain(){}
+
     public SaleDomain(HashMap<Integer,Integer> items){
         saleID = 0;
         salePrice = 0;
         saleTime = LocalDate.now();
         itemLs = new HashMap<>(items);
+    }
+
+    public SaleDomain(SaleDTO other){
+        salePrice = other.getSalePrice();
+        saleTime = other.getdate();
+        itemLs = other.getProducts();
     }
 
     public void setSaleID(int saleID) {
