@@ -1,6 +1,7 @@
 package Domain;
 
 
+import DTO.DiscountDTO;
 import DTO.ProductDTO;
 import DTO.SupplyDTO;
 import type.Position;
@@ -78,6 +79,9 @@ public class MainDomain {
         for(ProductDomain p: prodMap.values()){
             if(p.getproductName().equals(pName))throw new IllegalArgumentException("Product name alredy in stock");
         }
+
+        //todo add to database
+
         prodMap.put(productCounter,new ProductDomain(productCounter,pName,MfName,MAStore,MAStock,Price,SShalf,WHShelf));
         productCounter++;
         return productCounter - 1;
@@ -87,6 +91,7 @@ public class MainDomain {
     public void UpdateInventoryRestock(){
         SupplyDomain s;
         for(OrderDeliverdDomian o : orders){
+            //todo add to database
             s = new SupplyDomain(supplyCounter++,o.getQuantity(),o.getExDate());
             prodMap.get(o.getpId()).AddSupply(s);
         }
@@ -94,10 +99,12 @@ public class MainDomain {
 
     //VVVVVV
     public SaleDomain UpdateInventorySale(SaleDomain s){
-        for(Integer pIg : s.getItemLs().keySet())if(!prodMap.containsKey(pIg))throw new IllegalArgumentException("invalid product id");
+        for(Integer pIg : s.getItemLs().keySet()){
+            if(!prodMap.containsKey(pIg))throw new IllegalArgumentException("invalid product id");
+        }
 
 
-        float discount = 0;
+        float discount;
         float price = 0;
         for(Integer pIg : s.getItemLs().keySet()){
             discount = 0;
@@ -206,27 +213,32 @@ public class MainDomain {
     }
 
     //VVVVVV
-    public void AddDiscount(int pId, float percent, LocalDate time){
-        if(!prodMap.containsKey(pId))throw new IllegalArgumentException("pId invalid");
+    public void AddDiscount(DiscountDTO dis){
+        if(dis.getpId()!=-1) {
 
-        DiscountDomain d = new DiscountDomain(percent,time);
-        prodMap.get(pId).AddDiscount(d);
-        disLst.add(d);
-    }
+            if (!prodMap.containsKey(dis.getpId())) throw new IllegalArgumentException("pId invalid");
 
-    //VVVVVV
-    public void AddDiscount(String name, float percent, LocalDate time){
+            DiscountDomain d = new DiscountDomain(dis.getPercent(),dis.getDiscountEnd());
 
-        DiscountDomain d = new DiscountDomain(percent,time);
+            //todo save to the data base
 
-        for(CategoryDomain c: categoryLst){
-            if(c.Isin(name)){
-                c.AddDiscount(d,name);
-                disLst.add(d);
-                return;
-            }
+            prodMap.get(dis.getpId()).AddDiscount(d);
+            disLst.add(d);
         }
-        throw new IllegalArgumentException("No category by that name");
+        else {
+            DiscountDomain d = new DiscountDomain(dis.getPercent(),dis.getDiscountEnd());
+
+            for(CategoryDomain c: categoryLst){
+                if(c.Isin(dis.getCatName())){
+                    //todo add to the database
+                    c.AddDiscount(d, dis.getCatName());
+                    disLst.add(d);
+                    return;
+                }
+            }
+            throw new IllegalArgumentException("No category by that name");
+        }
+
     }
 
     //VVVVVV

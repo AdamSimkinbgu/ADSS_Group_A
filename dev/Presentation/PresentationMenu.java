@@ -361,13 +361,19 @@ public class PresentationMenu {
                     return;
                 }
 
-                String response = ms.AddDiscount(pId,percent,date);
+                DiscountDTO d = new DiscountDTO(percent,date,pId);
+
+                String json = om.writeValueAsString(d);
+                String response = ms.AddDiscount(json);
                 System.out.println(response);
             } else if (pOrc == 2) {
                 System.out.println("Enter the name of the category: ");
                 String CatName = scanner.nextLine();
 
-                String response = ms.AddDiscount(CatName,percent,date);
+                DiscountDTO d = new DiscountDTO(percent,date,CatName);
+                String json = om.writeValueAsString(d);
+
+                String response = ms.AddDiscount(json);
                 System.out.println(response);
             }
             else System.out.println("Invalid input");

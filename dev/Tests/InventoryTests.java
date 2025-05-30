@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,14 +42,21 @@ public class InventoryTests {
     public void testUpdateInventoryRestockValidProduct() {
         main.AddProduct("Butter", "Tnuva", 2, 2, 7.0f, new Position(1,1), new Position(2,2));
         LocalDate expDate = LocalDate.now().plusDays(7);
-        assertDoesNotThrow(() -> main.UpdateInventoryRestock(new SupplyDTO(0, 5, expDate)));
+
+        List<SupplyDTO> ls = new ArrayList<>();
+        ls.add(new SupplyDTO(99, 10, expDate));
+        main.DeliverOrder(ls);
+        assertDoesNotThrow(() -> main.UpdateInventoryRestock());
     }
 
     @Test
     public void testUpdateInventoryRestockInvalidProductThrowsException() {
         LocalDate expDate = LocalDate.now().plusDays(7);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            main.UpdateInventoryRestock(new SupplyDTO(99, 10, expDate));
+            List<SupplyDTO> ls = new ArrayList<>();
+            ls.add(new SupplyDTO(99, 10, expDate));
+            main.DeliverOrder(ls);
+            main.UpdateInventoryRestock();
         });
         assertTrue(exception.getMessage().contains("no product with this ip"));
     }

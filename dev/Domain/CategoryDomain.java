@@ -1,6 +1,8 @@
 package Domain;
 
 
+import DTO.CategoryDTO;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +23,26 @@ public class CategoryDomain {
         for(CategoryDomain c :subCategoryLs)dis +=c.getDiscount(pId);
         return dis;
     }
+    public List<CategoryDomain> getSubCategoryLs() {
+        return subCategoryLs;
+    }
+    public List<Integer> getProductLs() {
+        return productLs;
+    }
 
     public CategoryDomain(String catName){
         name = catName;
         productLs = new ArrayList<>();
         subCategoryLs = new ArrayList<>();
+    }
+
+    public CategoryDomain(CategoryDTO other){
+        name = other.getName();
+        productLs = other.getProduct();
+        subCategoryLs = new ArrayList<>();
+        for(CategoryDTO c:other.getSubs()){
+            subCategoryLs.add(new CategoryDomain(c));
+        }
     }
 
     public boolean Isin(String item){

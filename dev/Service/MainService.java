@@ -72,23 +72,18 @@ public class MainService {
         }
     }
 
-    public String AddDiscount(int pid, float percent, LocalDate time){
+    public String AddDiscount(String json){
+        int pid = 0;
         try{
-            md.AddDiscount(pid,percent,time);
+            DiscountDTO d = om.readValue(json,DiscountDTO.class);
+            md.AddDiscount(d);
             return "Discount Added successfully";
-        }catch (IllegalArgumentException e){
+        }
+        catch (Exception e){
             return "Unable to add discount: " + e.getMessage();
         }
     }
 
-    public String AddDiscount(String name, float percent,LocalDate time) {
-        try{
-            md.AddDiscount(name,percent,time);
-            return "Discount Added successfully";
-        }catch (IllegalArgumentException e){
-            return "Unable to add discount: " + e.getMessage();
-        }
-    }
 
     public String AddNewCategory(String name){
         try{

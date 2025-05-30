@@ -1,5 +1,7 @@
 package Domain;
 
+import DTO.DiscountDTO;
+
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
@@ -22,5 +24,10 @@ public class DiscountDomain {
         discountEnd = eDate;
     }
 
+    public DiscountDomain(DiscountDTO d){
+        percent = d.getPercent();
+        discountStart = d.getDiscountStart();
+        discountEnd = d.getDiscountEnd();
+    }
 
 }
