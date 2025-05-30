@@ -1,9 +1,7 @@
 package Presentation;
 
-import Service.MainService;
-import Service.ProductService;
-import Service.SaleService;
-import Service.SupplyService;
+import DTO.*;
+import Service.*;
 import type.Position;
 
 import java.time.LocalDate;
@@ -28,7 +26,7 @@ public class PresentationMenu {
     }
 
     public void Menu(){
-        int choice =0;
+        int choice;
         while (true){
             choice = PMainMenu();
 
@@ -79,7 +77,7 @@ public class PresentationMenu {
     }
     //VVVVVVVVV
     private int PMainMenu(){
-        int choice =0;
+        int choice;
         Scanner scanner = new Scanner(System.in);
         // Print menu
         System.out.println("==== Main Menu ====");
@@ -106,11 +104,15 @@ public class PresentationMenu {
     private void AddProduct(){
         Scanner scanner = new Scanner(System.in);
 
+        //todo get the product list
+
         //get name
+        //todo remove
         System.out.println("Enter product name: ");
         String name = scanner.nextLine();
 
         //get manufacturer name
+        //todo remove
         System.out.println("Enter manufacturer name: ");
         String manName = scanner.nextLine();
 
@@ -176,6 +178,7 @@ public class PresentationMenu {
 
         ProductService newProd = new ProductService(name,manName,minAStore,minAStock,price,srShelf,srLane,wShelf,wLane);
 
+        //todo switch to dto
 
         try {
             String message = om.writeValueAsString(newProd);
@@ -188,6 +191,8 @@ public class PresentationMenu {
 
     }
 
+
+    //todo remove or change to restoke
     //VVVVVVVV
     private void AddSupply(){
         Scanner scanner = new Scanner(System.in);
@@ -220,9 +225,9 @@ public class PresentationMenu {
                 System.out.println("Date is in the past. Please enter a valid future date.");
                 return;
             }
-            SupplyService newSup = new SupplyService(pId,quantity,date);
+            SupplyDTO newSup = new SupplyDTO(pId,quantity,date);
 
-            String response = ms.AddSupply(newSup.getProductID(),newSup.getQuantityWarehouse(),newSup.getExpireDate());
+            String response = ms.AddSupply(newSup);
             System.out.println(response);
 
         //}catch (JsonProcessingException e) {

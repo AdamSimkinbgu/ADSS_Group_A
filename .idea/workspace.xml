@@ -10,7 +10,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="jar">
+      <change afterPath="$PROJECT_DIR$/dev/DAO/CategoryDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/DAO/ProductDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/DAO/SaleDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/DAO/SupplyDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/DTO/CategoryDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/DTO/ProductDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/DTO/ProductDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/DTO/SupplyDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/DTO/SupplyDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/MainDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/SupplyDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Service/MainService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Tests/InventoryTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Tests/InventoryTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +33,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Record" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>

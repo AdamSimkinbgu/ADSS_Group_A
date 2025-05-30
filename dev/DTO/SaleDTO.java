@@ -2,11 +2,13 @@ package DTO;
 
 import Domain.SaleDomain;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 
 public class SaleDTO {
 
     float salePrice;
+    LocalDate date;
     HashMap<Integer,Integer> products; //// hashmap(ID,saleQuantity) ////
 
 
@@ -27,8 +29,9 @@ public class SaleDTO {
 
     public SaleDTO(SaleDomain other){
         salePrice = other.getPrice();
-        products = new HashMap<>();
+        date = other.getSaleTime();
 
+        products = new HashMap<>();
         for(Integer i : other.getItemLs().keySet())products.put(i,other.getItemLs().get(i));
     }
 }

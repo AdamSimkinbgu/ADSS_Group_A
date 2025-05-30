@@ -22,6 +22,8 @@ public class MainService {
         md.InventoryInitialization();
     }
 
+
+    //???
     public String AddProduct(String message ){
         try{
             ProductService p = om.readValue(message,ProductService.class);
@@ -38,10 +40,10 @@ public class MainService {
         }
     }
 
-    public String AddSupply(int pId , int quantity , ChronoLocalDate ex){
+    public String AddSupply(SupplyDTO s){
         try{
             //SupplyService sup = om.readValue(json,SupplyService.class);
-            md.UpdateInventoryRestock(pId, quantity, ex);
+            md.UpdateInventoryRestock(s);
             return "Supply added successfully.";
         }
         catch (IllegalArgumentException e){

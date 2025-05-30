@@ -9,7 +9,7 @@ public class SupplyDomain {
     private int id;
     private int quantityWarehouse;
     private int quantityStore;
-    private ChronoLocalDate expierDate;
+    private LocalDate expierDate;
     private int quantityBad;
 
     public int getId() {
@@ -25,11 +25,11 @@ public class SupplyDomain {
         IsEx();
         return quantityBad;
     }
-    public ChronoLocalDate getExpierDate() {
+    public LocalDate getExpierDate() {
         return expierDate;
     }
 
-    public SupplyDomain(int Id,int qw, ChronoLocalDate ex){
+    public SupplyDomain(int Id,int qw, LocalDate ex){
         id=Id;
         quantityWarehouse = qw;
         quantityStore = 0;
@@ -50,7 +50,7 @@ public class SupplyDomain {
     public void setQuantityBad(int quantityBad) {
         this.quantityBad = quantityBad;
     }
-    public void setExpierDate(ChronoLocalDate expierDate) {
+    public void setExpierDate(LocalDate expierDate) {
         this.expierDate = expierDate;
     }
 

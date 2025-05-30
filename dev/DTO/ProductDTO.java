@@ -1,6 +1,8 @@
 package DTO;
 
+import Domain.DiscountDomain;
 import Domain.ProductDomain;
+import type.Position;
 
 public class ProductDTO {
 
@@ -8,6 +10,11 @@ public class ProductDTO {
     String productName;
     String manufacturerName;
     float productPrice;
+    private int minimalAmountStore;
+    private int minimalAmountStock;
+    private Position wareHouseShelf;
+    private Position storeShelf;
+    private DiscountDomain discount;
 
 
     public int getproductId() { return productId;}

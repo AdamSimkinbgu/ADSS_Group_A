@@ -2,6 +2,7 @@ package Tests;
 
 import Domain.MainDomain;
 import Domain.ProductDomain;
+import DTO.*;
 import type.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,15 +39,15 @@ public class InventoryTests {
     @Test
     public void testUpdateInventoryRestockValidProduct() {
         main.AddProduct("Butter", "Tnuva", 2, 2, 7.0f, new Position(1,1), new Position(2,2));
-        ChronoLocalDate expDate = ChronoLocalDate.from(LocalDate.now().plusDays(7));
-        assertDoesNotThrow(() -> main.UpdateInventoryRestock(0, 5, expDate));
+        LocalDate expDate = LocalDate.now().plusDays(7);
+        assertDoesNotThrow(() -> main.UpdateInventoryRestock(new SupplyDTO(0, 5, expDate)));
     }
 
     @Test
     public void testUpdateInventoryRestockInvalidProductThrowsException() {
-        ChronoLocalDate expDate = ChronoLocalDate.from(LocalDate.now().plusDays(7));
+        LocalDate expDate = LocalDate.now().plusDays(7);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            main.UpdateInventoryRestock(99, 10, expDate);
+            main.UpdateInventoryRestock(new SupplyDTO(99, 10, expDate));
         });
         assertTrue(exception.getMessage().contains("no product with this ip"));
     }
