@@ -14,18 +14,18 @@ public class ProductDTO {
     private int minimalAmountStock;
     private Position wareHouseShelf;
     private Position storeShelf;
-    private DiscountDomain discount;
+
 
     // getters
     public int getproductId() { return productId;}
     public String getproductName() { return productName;}
     public String getmanufacturerName() { return manufacturerName;}
     public float getproductPrice() { return productPrice;}
-    public int getminimalAmountStore() { return minimalAmountStore};
-    public int getminimalAmountStock() { return minimalAmountStock};
-    public Position getwareHouseShelf() { return wareHouseShelf};
-    public Position getstoreShelf() { return storeShelf};
-    public DiscountDomain getdiscount() { return discount};
+    public int getminimalAmountStore() { return minimalAmountStore;}
+    public int getminimalAmountStock() { return minimalAmountStock;}
+    public Position getwareHouseShelf() { return wareHouseShelf;}
+    public Position getstoreShelf() { return storeShelf;}
+
 
 
     // Setters
@@ -61,11 +61,6 @@ public class ProductDTO {
         this.storeShelf = storeShelf;
     }
 
-    public void setDiscount(DiscountDomain discount) {
-        this.discount = discount;
-    }
-
-
     public ProductDTO(){}
 
     public ProductDTO(String pName,String MfName, float PPrice){
@@ -83,7 +78,7 @@ public class ProductDTO {
         minimalAmountStock = other.getminimalAmountStock();
         wareHouseShelf = other.getwareHouseShelf();
         storeShelf = other.getstoreShelf();
-        discount = other.getdiscount();
+
         }
 
 }

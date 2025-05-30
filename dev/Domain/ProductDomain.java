@@ -1,5 +1,6 @@
 package Domain;
 
+import DTO.ProductDTO;
 import type.Position;
 
 import java.time.LocalDate;
@@ -60,9 +61,9 @@ public class ProductDomain {
     }
 
     public ProductDomain(ProductDTO other){
-        productID = other.getproductID();
+        productID = other.getproductId();
         productName = other.getproductName();
-        manufactuerName = other.getmanufactuerName();
+        manufactuerName = other.getmanufacturerName();
         minimalAmountStore = other.getminimalAmountStore();
         minimalAmountStock = other.getminimalAmountStock();
         productPrice1unit = other.getproductPrice();

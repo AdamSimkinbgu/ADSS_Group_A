@@ -2,6 +2,7 @@ package Domain;
 
 
 import DAO.*;
+import DTO.CategoryDTO;
 import DTO.DiscountDTO;
 import DTO.ProductDTO;
 import DTO.SupplyDTO;
@@ -43,41 +44,40 @@ public class MainDomain {
 
     //todo all
     public void InventoryInitialization(){
-        ProductDomain p = new ProductDomain(productCounter,"Milk 3%","Tara",8,20,(float)7.5,new Position(3,7),new Position(4,5));
-        prodMap.put(productCounter,p);
-        productCounter++;
 
-        p = new ProductDomain(productCounter,"ChokiMilk","Tara",5,20,(float)17.5,new Position(3,6),new Position(4,6));
-        prodMap.put(productCounter,p);
-        productCounter++;
+        //uplode product
+        List<ProductDTO> pls = Pdao.GetAll();
+        for(ProductDTO p : pls){
+            prodMap.put(p.getproductId(),new ProductDomain(p));
+        }
 
-        p = new ProductDomain(productCounter,"Gauda 4%","Tnuva",5,25,(float)37.9,new Position(2,6),new Position(3,6));
-        prodMap.put(productCounter,p);
-        productCounter++;
+        //uplode orders
+        orders = ODdao.GetAll();
 
-        p = new ProductDomain(productCounter,"Hameck","Tnuva",5,25,(float)25.9,new Position(2,7),new Position(3,3));
-        prodMap.put(productCounter,p);
-        productCounter++;
+        //uplode category
+        List<CategoryDTO> cls = Cdao.getAll();
+        for(CategoryDTO c: cls){
+            categoryLst.add(new CategoryDomain(c));
+        }
 
-        AddCategory("Milk Product");
-        AddCategory("Cheese");
-        AddCategory("Milk Drink");
+        List<DiscountDTO> dls = Ddao.getAll();
+        for(DiscountDTO d :dls){
+            DiscountDomain dis = new DiscountDomain(d);
+            if(d.getpId() != -1){
+                prodMap.get(d.getpId()).AddDiscount(dis);
+            }
+            else {
+                for(CategoryDomain c: categoryLst){
+                    if(c.Isin(d.getCatName())){
+                        //todo add to the database
+                        c.AddDiscount(dis, d.getCatName());
+                        break;
+                    }
+                }
+            }
+            disLst.add(dis);
+        }
 
-        AddToCategory("Milk Product","Cheese");
-        AddToCategory("Milk Product","Milk Drink");
-
-        AddToCategory("Milk Drink",0);
-        AddToCategory("Milk Drink",1);
-        AddToCategory("Cheese",2);
-        AddToCategory("Cheese",3);
-
-        List<SupplyDTO> ls = new ArrayList<>();
-        ls.add(new SupplyDTO(0,70,LocalDate.of(2029,11,11)));
-        ls.add(new SupplyDTO(2,70,LocalDate.of(2029,11,11)));
-        ls.add(new SupplyDTO(3,70,LocalDate.of(2029,11,11)));
-        ls.add(new SupplyDTO(1,70,LocalDate.of(2029,11,11)));
-        DeliverOrder(ls);
-        UpdateInventoryRestock();
 
         //todo
     }

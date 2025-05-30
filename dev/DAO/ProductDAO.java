@@ -1,5 +1,15 @@
 package DAO;
 
-public interface ProductDAO {
+import DTO.ProductDTO;
 
+import java.util.List;
+
+public interface ProductDAO {
+    public void Add(ProductDTO p);
+
+    public List<ProductDTO> GetAll();
+
+    public void Set(ProductDTO p);
+
+    public void Delete(ProductDTO p);
 }
