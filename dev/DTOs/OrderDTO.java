@@ -2,8 +2,8 @@ package DTOs;
 
 import DTOs.Enums.OrderStatus;
 import DomainLayer.Classes.Address;
-import DomainLayer.Classes.Order;
 import DomainLayer.Classes.OrderItemLine;
+import DomainLayer.Classes.Order;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -10,21 +10,39 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a purchase order, containing supplier details,
+ * delivery information, status, and associated line items.
+ */
 public class Order implements Serializable {
 
     private int orderId;
-    private int supplierId;  // internal? or taxnum ?
+    private int supplierId;
     private String supplierName;
     private LocalDate orderDate;
     private LocalDate creationDate;
-    private Address address ;
-    private String contactPhoneNumber ;
+    private Address address;
+    private String contactPhoneNumber;
     private List<OrderItemLine> items;
     private OrderStatus status;
 
-    public Order() {}
+    /**
+     * Default constructor.
+     * Initializes items list and sets default status to SENT.
+     */
+    public Order() {
+        this.items = new ArrayList<>();
+        this.status = OrderStatus.SENT;
+    }
 
-    public Order( int id , OrderDTO dto) {
+    /**
+     * Constructs an Order from a DTO.
+     * Converts each OrderItemLineDTO into an OrderItemLine.
+     *
+     * @param id  the ID to assign to this order
+     * @param dto the data transfer object containing order data
+     */
+    public Order(int id, OrderDTO dto) {
         this.orderId = id;
         this.supplierId = dto.getSupplierId();
         this.supplierName = dto.getSupplierName();
@@ -50,7 +68,28 @@ public class Order implements Serializable {
         }
     }
 
-    public Order(int orderId, int supplierId, String supplierName, LocalDate orderDate, LocalDate creationDate, Address address, String contactPhoneNumber, List<OrderItemLine> items, OrderStatus status) {
+    /**
+     * Full constructor for loading or creating an order with all fields.
+     *
+     * @param orderId              the unique order identifier
+     * @param supplierId           the supplier's internal ID
+     * @param supplierName         the name of the supplier
+     * @param orderDate            the expected delivery date
+     * @param creationDate         the date the order was created
+     * @param address              the delivery address
+     * @param contactPhoneNumber   the contact phone for the order
+     * @param items                the list of order line items
+     * @param status               the current status of the order
+     */
+    public Order(int orderId,
+                 int supplierId,
+                 String supplierName,
+                 LocalDate orderDate,
+                 LocalDate creationDate,
+                 Address address,
+                 String contactPhoneNumber,
+                 List<OrderItemLine> items,
+                 OrderStatus status) {
         this.orderId = orderId;
         this.supplierId = supplierId;
         this.supplierName = supplierName;
@@ -58,117 +97,252 @@ public class Order implements Serializable {
         this.creationDate = creationDate;
         this.address = address;
         this.contactPhoneNumber = contactPhoneNumber;
-        this.items = items;
+        this.items = items != null ? new ArrayList<>(items) : new ArrayList<>();
         this.status = status;
     }
 
-    //// Get and Set
+    /**
+     * @return the current status of the order
+     */
     public OrderStatus getStatus() {
         return status;
     }
 
+    /**
+     * Sets the current status of the order.
+     *
+     * @param status the status to set
+     */
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    /**
+     * @return the unique identifier of the order
+     */
     public int getOrderId() {
         return orderId;
     }
 
+    /**
+     * @return the supplier's internal identifier
+     */
     public int getSupplierId() {
         return supplierId;
     }
+
+    /**
+     * @return the name of the supplier
+     */
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    /**
+     * Sets the name of the supplier.
+     *
+     * @param supplierName the supplier name to set
+     */
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    /**
+     * @return the expected delivery date of the order
+     */
     public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public List<OrderItemLine> getAllItems() {
-        return items;
-    }
-
-    public String getSupplierName() { return supplierName; }
-    public LocalDate getCreationDate() { return creationDate; }
-    public Address getAddress() { return address; }
-
-
-    public void setAddress(Address address) { this.address = address; }
-
-    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
-
-    public void setCreationDate(LocalDate creationDate) { this.creationDate = creationDate; }
-
-    protected void setOrderId(int orderId) { this.orderId = orderId; }
-
-    public void setStatus(OrderStatus status) {this.status = status; }
-
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
-    }
-
+    /**
+     * Sets the expected delivery date of the order.
+     *
+     * @param orderDate the delivery date to set
+     */
     public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
     }
 
+    /**
+     * @return the date the order was created
+     */
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    /**
+     * Sets the creation date of the order.
+     *
+     * @param creationDate the creation date to set
+     */
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    /**
+     * @return the delivery address for the order
+     */
+    public Address getAddress() {
+        return address;
+    }
+
+    /**
+     * Sets the delivery address for the order.
+     *
+     * @param address the address to set
+     */
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    /**
+     * @return the contact phone number for the order
+     */
+    public String getContactPhoneNumber() {
+        return contactPhoneNumber;
+    }
+
+    /**
+     * Sets the contact phone number for the order.
+     *
+     * @param contactPhoneNumber the phone number to set
+     */
+    public void setContactPhoneNumber(String contactPhoneNumber) {
+        this.contactPhoneNumber = contactPhoneNumber;
+    }
+
+    /**
+     * @return the list of line items in the order
+     */
+    public List<OrderItemLine> getAllItems() {
+        return items;
+    }
+
+    /**
+     * Sets the list of line items for the order.
+     *
+     * @param items the items to set
+     */
     public void setItems(List<OrderItemLine> items) {
-        if (items == null) {
-            this.items = new ArrayList<>();
-        } else {
-            this.items = new ArrayList<>(items);
+        this.items = items != null ? new ArrayList<>(items) : new ArrayList<>();
+    }
+
+    /**
+     * Adds a new line item to the order.
+     *
+     * @param orderItemLine the line item to add
+     */
+    public void addItem(OrderItemLine orderItemLine) {
+        items.add(orderItemLine);
+    }
+
+    /**
+     * Removes a line item from the order.
+     *
+     * @param orderItemLine the line item to remove
+     */
+    public void removeItem(OrderItemLine orderItemLine) {
+        items.remove(orderItemLine);
+    }
+
+    /**
+     * Adds a new item to the order by specifying its properties.
+     *
+     * @param productId                    the product ID
+     * @param quantity                     the quantity ordered
+     * @param unitPrice                    the price per unit
+     * @param supplierProductCatalogNumber the catalog number from supplier
+     * @param productName                  the name of the product
+     */
+    public void addItem(int productId,
+                        int quantity,
+                        BigDecimal unitPrice,
+                        int supplierProductCatalogNumber,
+                        String productName) {
+        items.add(new OrderItemLine(
+                this.getOrderId(),
+                (items.size() + 1),
+                productId,
+                quantity,
+                unitPrice,
+                supplierProductCatalogNumber,
+                productName
+        ));
+    }
+
+    /**
+     * Removes the line item at the specified index.
+     *
+     * @param lineId the index of the line to remove
+     */
+    public void removeItem(int lineId) {
+        if (lineId >= 0 && lineId < items.size()) {
+            items.remove(lineId);
         }
     }
 
-    public void setContactPhoneNumber(String contactPhoneNumber) { this.contactPhoneNumber = contactPhoneNumber; }
-    public String getContactPhoneNumber() { return contactPhoneNumber; }
-
-    //  don't think its correct
-    public void addItem(OrderItemLine orderItemLine) { items.add(orderItemLine); }
-    public void removeItem(OrderItemLine orderItemLine) { items.remove(orderItemLine); }
-
-    public void addItem(int productId ,int quantity , BigDecimal unitPrice, int supplierProductCatalogNumber ,String productName) { items.add(new OrderItemLine( this.getOrderId(), (items.size() + 1 ), productId, quantity,unitPrice, supplierProductCatalogNumber, productName)) ; }
-    public void removeItem(int lineId) {
-        items.remove(lineId);
-    }
-
+    /**
+     /**
+     * @return a concise string representation of this order
+     */
     @Override
     public String toString() {
-        return "{\n" +
-
-                "   \"orderId\": " + orderId + ",\n" +
-                "   \"supplierId\": " + supplierId + ",\n" +
-                "   \"orderDate\": \"" + orderDate + "\",\n" +
-                "   \"items\": " + items + ",\n" +
-                "   \"status\": \"" + status + "\"\n" +
-                "}";
+        return "Order{id=" + orderId + ", supplierId=" + supplierId + ", status=" + status + "}";
     }
-    public String displayOrderDetails() {
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("=========== Order Details ===========\n");
 
-        sb.append("Supplier Name: ").append(supplierName != null ? supplierName : "Unavailable").append(" | ");
-        sb.append("Address: ").append(address != null ? address.toString() : "Unavailable").append(" | ");
-        sb.append("Order ID: ").append(orderId).append("\n");
+/**
+ * Provides a detailed tabular view of the order.
+ *
+ * @return formatted order details
+ */
+public String displayOrderDetails() {
+    StringBuilder sb = new StringBuilder();
 
-        sb.append("Supplier ID: ").append(supplierId).append(" | ");
-        sb.append("Order Date: ").append(orderDate != null ? orderDate : "Unavailable").append(" | ");
-        sb.append("Contact Phone: ").append(contactPhoneNumber != null ? contactPhoneNumber : "Unavailable").append("\n");
+    sb.append("=========== Order Details =========== ");
 
-        sb.append("\nItems:\n");
-        sb.append("--------------------------------------------------------------------------------------\n");
-        sb.append(String.format("| %-10s | %-20s | %-8s | %-10s | %-8s | %-11s |\n",
-                "Product ID", "Product Name", "Quantity", "Unit Price", "Discount", "Final Price"));
-        sb.append("--------------------------------------------------------------------------------------\n");
+            sb.append("Supplier Name: ")
+                    .append(supplierName != null ? supplierName : "Unavailable")
+                    .append(" | ");
+    sb.append("Address: ")
+            .append(address != null ? address.toString() : "Unavailable")
+            .append(" | ");
+    sb.append("Order ID: ").append(orderId).append(" ");
 
-        for (OrderItemLine item : items) {
-            sb.append(String.format("| %-10d | %-20s | %-8d | %-10.2f | %-8.2f | %-11.2f |\n",
-                    item.getProductId(),
-                    item.getProductName(),
-                    item.getQuantity(),
-                    item.getUnitPrice(),
-                    item.getDiscount(),
-                    item.getFinalPrice()));
-        }
+            sb.append("Supplier ID: ").append(supplierId).append(" | ");
+    sb.append("Order Date: ")
+            .append(orderDate != null ? orderDate : "Unavailable")
+            .append(" | ");
+    sb.append("Contact Phone: ")
+            .append(contactPhoneNumber != null ? contactPhoneNumber : "Unavailable")
+            .append(" Items: ");
 
-        sb.append("--------------------------------------------------------------------------------------\n");
+    sb.append("-------------------------------------------------------------------------------------- ");
+            sb.append(String.format("| %-10s | %-20s | %-8s | %-10s | %-8s | %-11s | ",
+                    "Product ID",
+                    "Product Name",
+                    "Quantity",
+                    "Unit Price",
+                    "Discount",
+                    "Final Price"));
+    sb.append("-------------------------------------------------------------------------------------- ");
 
-        return sb.toString();
+    for (OrderItemLine item : items) {
+        sb.append(String.format("| %-10d | %-20s | %-8d | %-10.2f | %-8.2f | %-11.2f | ",
+                item.getProductId(),
+                item.getProductName(),
+                item.getQuantity(),
+                item.getUnitPrice(),
+                item.getDiscount(),
+                item.getFinalPrice()));
     }
+
+    sb.append("-------------------------------------------------------------------------------------- ");
+
+    return sb.toString();
+    }
+
 
 
 }
+

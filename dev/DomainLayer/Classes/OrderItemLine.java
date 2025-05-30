@@ -201,7 +201,7 @@ public class OrderItemLine implements Serializable {
     }
 
     /**
-     * Provides a JSON-like string representation of this line item.
+     * Provides a  string representation of this line item.
      *
      * @return string representation
      */
