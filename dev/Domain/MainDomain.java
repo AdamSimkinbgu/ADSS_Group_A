@@ -2,10 +2,7 @@ package Domain;
 
 
 import DAO.*;
-import DTO.CategoryDTO;
-import DTO.DiscountDTO;
-import DTO.ProductDTO;
-import DTO.SupplyDTO;
+import DTO.*;
 import type.Position;
 
 import java.time.LocalDate;
@@ -60,6 +57,7 @@ public class MainDomain {
             categoryLst.add(new CategoryDomain(c));
         }
 
+        //uplode discount
         List<DiscountDTO> dls = Ddao.getAll();
         for(DiscountDTO d :dls){
             DiscountDomain dis = new DiscountDomain(d);
@@ -76,6 +74,13 @@ public class MainDomain {
                 }
             }
             disLst.add(dis);
+        }
+
+        //uplode sales
+        List<SaleDTO> sls = Sdao.GetAll();
+        for(SaleDTO s:sls){
+            saleLst.add(new SaleDomain(s));
+
         }
 
 

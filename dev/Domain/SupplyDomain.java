@@ -1,5 +1,7 @@
 package Domain;
 
+import DTO.SupplyDTO;
+
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
 
@@ -39,13 +41,13 @@ public class SupplyDomain {
         expierDate = ex;
     }
 
-    public SupplyDomain(SupplyDTO other){
+    public SupplyDomain(SupplyDTO other) {
         id = other.getsId();
         quantityWarehouse = other.getQuantityWH();
         quantityStore = other.getquantityS();
         quantityBad = other.getquantityB();
         expierDate = other.getExpireDate();
-        
+    }
         
 
     // Setters
