@@ -59,6 +59,20 @@ public class ProductDomain {
         supplyList = new ArrayList<>();
     }
 
+    public ProductDomain(ProductDTO other){
+        productID = other.getproductID();
+        productName = other.getproductName();
+        manufactuerName = other.getmanufactuerName();
+        minimalAmountStore = other.getminimalAmountStore();
+        minimalAmountStock = other.getminimalAmountStock();
+        productPrice1unit = other.getproductPrice();
+        storeShelf = other.getstoreShelf();
+        wareHouseShelf = other.getwareHouseShelf();
+        discount = other.getdiscount();
+        supplyList = new ArrayList<>();
+    }
+
+
     //setters 
     public void setwareHouseShelf(Position wareHouseShelf) {
         this.wareHouseShelf = wareHouseShelf;

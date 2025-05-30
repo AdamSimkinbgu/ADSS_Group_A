@@ -30,4 +30,10 @@ public class DiscountDomain {
         discountEnd = d.getDiscountEnd();
     }
 
+    public DiscountDomain(DiscountDTO other){
+        percent = other.getPercent();
+        discountStart = other.getDiscountStart();
+        discountEnd = other.getDiscountEnd();
+    }
+
 }
