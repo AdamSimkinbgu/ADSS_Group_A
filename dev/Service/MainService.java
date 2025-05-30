@@ -84,7 +84,6 @@ public class MainService {
         }
     }
 
-
     public String AddNewCategory(String name){
         try{
             md.AddCategory(name);

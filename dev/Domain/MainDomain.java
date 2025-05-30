@@ -1,6 +1,7 @@
 package Domain;
 
 
+import DAO.*;
 import DTO.DiscountDTO;
 import DTO.ProductDTO;
 import DTO.SupplyDTO;
@@ -15,6 +16,13 @@ public class MainDomain {
     private int productCounter;
     private int supplyCounter;
     private int saleCounter;
+
+    //Data Acsis Object
+    private ProductDAO Pdao;
+    private OrderDeliverdDAO ODdao;
+    private DiscountDAO Ddao;
+    private CategoryDAO Cdao;
+    private SaleDAO Sdao;
 
     private HashMap<Integer, ProductDomain> prodMap;
     private List<DiscountDomain> disLst;
