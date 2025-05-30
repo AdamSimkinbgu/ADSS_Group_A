@@ -26,7 +26,7 @@ import PresentationLayer.CLIs.Commands.SupplierCommands.CreateSupplierCMD;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
-@ExtendWith(MockitoExtension.class) // ← JUnit-5 extension
+@ExtendWith(MockitoExtension.class)
 class CreateSupplierCmdTest {
 
    @Mock
@@ -56,6 +56,7 @@ class CreateSupplierCmdTest {
             new AddressDTO("Main St", "TLV", "12345"),
             true,
             EnumSet.of(DayofWeek.MONDAY, DayofWeek.WEDNESDAY, DayofWeek.FRIDAY),
+            0, // no supplier ID for creation
             new PaymentDetailsDTO("1234-5678-9012-3456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30),
             List.of(), // contacts
             List.of(), // products
@@ -83,6 +84,7 @@ class CreateSupplierCmdTest {
             new AddressDTO("Main St", "TLV", "12345"), // valid address
             true, // active
             EnumSet.of(DayofWeek.MONDAY, DayofWeek.WEDNESDAY, DayofWeek.FRIDAY), // valid days
+            0,
             new PaymentDetailsDTO("1234-5678-9012-3456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30), // valid payment
                                                                                                       // details
             List.of(), // contacts

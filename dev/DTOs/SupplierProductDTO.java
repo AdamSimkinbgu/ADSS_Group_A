@@ -6,7 +6,7 @@ import java.util.List;
 import DomainLayer.Classes.SupplierProduct;
 
 public class SupplierProductDTO {
-
+      private int supplierId;
       private int productId;
       private String supplierCatalogNumber;
       private String name;
@@ -15,8 +15,10 @@ public class SupplierProductDTO {
       private int expiresInDays;
       private String manufacturerName;
 
-      public SupplierProductDTO(int productId, String supplierCatalogNumber, String name, BigDecimal price,
+      public SupplierProductDTO(int supplierId, int productId, String supplierCatalogNumber, String name,
+                  BigDecimal price,
                   BigDecimal weight, int expiresInDays, String manufacturerName) {
+            this.supplierId = supplierId;
             this.productId = productId;
             this.supplierCatalogNumber = supplierCatalogNumber;
             this.name = name;
@@ -27,6 +29,7 @@ public class SupplierProductDTO {
       }
 
       public SupplierProductDTO(SupplierProduct product) {
+            this.supplierId = product.getSupplierId();
             this.productId = product.getProductId();
             this.supplierCatalogNumber = product.getSupplierCatalogNumber();
             this.name = product.getName();
@@ -36,6 +39,14 @@ public class SupplierProductDTO {
             this.manufacturerName = product.getManufacturerName();
       }
 
+      public int getSupplierId() {
+            return supplierId;
+      }
+
+      public void setSupplierId(int supplierId) {
+            this.supplierId = supplierId;
+      }
+
       public int getProductId() {
             return productId;
       }
@@ -43,7 +54,7 @@ public class SupplierProductDTO {
       public String getSupplierCatalogNumber() {
             return supplierCatalogNumber;
       }
-      
+
       public String getName() {
             return name;
       }
@@ -92,11 +103,10 @@ public class SupplierProductDTO {
             this.manufacturerName = manufacturerName;
       }
 
-      
-
       public static List<SupplierProductDTO> fromSupplierProductList(List<SupplierProduct> products) {
             return products.stream()
                         .map(product -> new SupplierProductDTO(
+                                    product.getSupplierId(),
                                     product.getProductId(),
                                     product.getSupplierCatalogNumber(),
                                     product.getName(),
@@ -110,6 +120,7 @@ public class SupplierProductDTO {
       public static List<SupplierProduct> toSupplierProductList(List<SupplierProductDTO> products) {
             return products.stream()
                         .map(product -> new SupplierProduct(
+                                    product.getSupplierId(),
                                     product.getProductId(),
                                     product.getSupplierCatalogNumber(),
                                     product.getName(),
@@ -128,11 +139,11 @@ public class SupplierProductDTO {
                                     "  \"productId\": %d,\n" +
                                     "  \"supplierCatalogNumber\": \"%s\",\n" +
                                     "  \"name\": \"%s\",\n" +
-                                    "  \"price\": %.2f,\n" +
+                                    "  \"buying price\": %.2f,\n" +
                                     "  \"weight\": %.2f,\n" +
                                     "  \"expiresInDays\": %d,\n" +
                                     "  \"manufacturerName\": \"%s\"\n" +
-                        "}",
+                                    "}",
                         productId,
                         supplierCatalogNumber,
                         name,

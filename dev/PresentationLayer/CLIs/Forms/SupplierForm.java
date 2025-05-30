@@ -42,6 +42,20 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                   view.showMessage("Self supply not selected.");
             }
 
+            int leadSupplyDays;
+            while (true) {
+                  try {
+                        leadSupplyDays = askInt("Lead supply days (number of days before supply): ");
+                        if (leadSupplyDays < 0) {
+                              view.showError("Lead supply days cannot be negative. Please try again.");
+                        } else {
+                              break;
+                        }
+                  } catch (NumberFormatException e) {
+                        view.showError("Invalid input. Please enter a valid number.");
+                  }
+            }
+
             /* payment details */
             PaymentDetailsDTO payment = new PaymentDetailsDTO(
                         askNonEmpty("Bank account number: "),
@@ -66,6 +80,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                         address,
                         selfSupply,
                         supplyDays,
+                        leadSupplyDays,
                         payment,
                         contacts,
                         new ArrayList<>(),
@@ -89,6 +104,22 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                   case "selfSupply" -> supplierDTO.setSelfSupply(askBoolean("New self supply? (y/n): "));
                   case "supplyDays" -> supplierDTO.setSupplyDays(
                               askDaysOfWeek("New supply days (1 - Sunday, 2 - Monday, ...): "));
+                  case "leadSupplyDays" -> {
+                        int leadSupplyDays;
+                        while (true) {
+                              try {
+                                    leadSupplyDays = askInt("New lead supply days (number of days before supply): ");
+                                    if (leadSupplyDays < 0) {
+                                          view.showError("Lead supply days cannot be negative. Please try again.");
+                                    } else {
+                                          supplierDTO.setLeadSupplyDays(leadSupplyDays);
+                                          break;
+                                    }
+                              } catch (NumberFormatException e) {
+                                    view.showError("Invalid input. Please enter a valid number.");
+                              }
+                        }
+                  }
                   case "paymentDetails" -> {
                         PaymentDetailsDTO payment = supplierDTO.getPaymentDetailsDTO();
                         payment.setBankAccountNumber(askNonEmpty("New bank account: "));

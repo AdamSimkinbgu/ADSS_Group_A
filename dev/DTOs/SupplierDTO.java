@@ -17,6 +17,7 @@ public class SupplierDTO {
       private AddressDTO address;
       private boolean selfSupply;
       private EnumSet<DayofWeek> supplyDays;
+      private int leadSupplyDays;
       private PaymentDetailsDTO paymentDetails;
       private List<ContactInfoDTO> contacts;
       private List<SupplierProductDTO> products;
@@ -29,6 +30,7 @@ public class SupplierDTO {
                   AddressDTO address,
                   boolean selfSupply,
                   EnumSet<DayofWeek> supplyDays,
+                  int leadSupplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
@@ -39,6 +41,7 @@ public class SupplierDTO {
             this.address = address;
             this.selfSupply = selfSupply;
             this.supplyDays = supplyDays;
+            this.leadSupplyDays = leadSupplyDays;
             this.paymentDetails = paymentDetails;
             this.contacts = contacts;
             this.products = products;
@@ -51,6 +54,7 @@ public class SupplierDTO {
                   AddressDTO address,
                   boolean selfSupply,
                   EnumSet<DayofWeek> supplyDays,
+                  int leadSupplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
                   List<SupplierProductDTO> products,
@@ -61,6 +65,7 @@ public class SupplierDTO {
             this.address = address;
             this.selfSupply = selfSupply;
             this.supplyDays = supplyDays;
+            this.leadSupplyDays = leadSupplyDays;
             this.paymentDetails = paymentDetails;
             this.contacts = contacts;
             this.products = products;
@@ -74,6 +79,7 @@ public class SupplierDTO {
             this.address = AddressDTO.fromAddress(supplier.getAddress());
             this.selfSupply = supplier.getSelfSupply();
             this.supplyDays = supplier.getSupplyDays();
+            this.leadSupplyDays = supplier.getLeadSupplyDays();
             this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
             this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
             // to add the products we need to add them after the creation of the supplier
@@ -249,4 +255,11 @@ public class SupplierDTO {
             return this;
       }
 
+      public int getLeadSupplyDays() {
+            return leadSupplyDays;
+      }
+
+      public void setLeadSupplyDays(int leadSupplyDays) {
+            this.leadSupplyDays = leadSupplyDays;
+      }
 }

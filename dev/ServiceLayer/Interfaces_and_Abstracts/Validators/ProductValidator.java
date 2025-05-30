@@ -43,21 +43,25 @@ public class ProductValidator implements IValidator<SupplierProductDTO> {
 
    @Override
    public ServiceResponse<?> validateUpdateDTO(SupplierProductDTO target) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'validateUpdateDTO'");
+      return validateCreateDTO(target); // Reuse create validation logic
    }
 
    @Override
    public ServiceResponse<?> validateRemoveDTO(int id) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'validateRemoveDTO'");
+      List<String> errors = new ArrayList<>();
+      if (id < 0) {
+         errors.add("Product ID must be greater than 0");
+      }
+      return errors.isEmpty() ? ServiceResponse.ok(null) : ServiceResponse.fail(errors);
    }
 
    @Override
    public ServiceResponse<?> validateGetDTO(int id) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'validateGetDTO'");
+      List<String> errors = new ArrayList<>();
+      if (id < 0) {
+         errors.add("Product ID must be a positive integer.");
+      }
+      return errors.isEmpty() ? ServiceResponse.ok(null) : ServiceResponse.fail(errors);
    }
-    
-   
+
 }
