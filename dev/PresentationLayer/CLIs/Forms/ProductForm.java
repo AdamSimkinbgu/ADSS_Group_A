@@ -21,6 +21,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
             int expiresInDays = askInt("Expires in (days): ");
             String manufacturerName = askNonEmpty("Manufacturer Name: ");
             return new SupplierProductDTO(
+                        -1, // Assuming supplierId is auto-generated or set later
                         -1, // Assuming productId is auto-generated
                         supplierCatalogNumber,
                         name,
@@ -36,6 +37,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
             switch (askNonEmpty(
                         "What do you want to change? (supplierCatalogNumber, name, price, weight, expiresInDays, manufacturerName)")) {
                   case "supplierCatalogNumber" -> dto = new SupplierProductDTO(
+                              dto.getSupplierId(),
                               dto.getProductId(),
                               askNonEmpty("New Supplier Catalog Number: "),
                               dto.getName(),
@@ -44,6 +46,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               dto.getExpiresInDays(),
                               dto.getManufacturerName());
                   case "name" -> dto = new SupplierProductDTO(
+                              dto.getSupplierId(),
                               dto.getProductId(),
                               dto.getSupplierCatalogNumber(),
                               askNonEmpty("New Product Name: "),
@@ -52,6 +55,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               dto.getExpiresInDays(),
                               dto.getManufacturerName());
                   case "price" -> dto = new SupplierProductDTO(
+                              dto.getSupplierId(),
                               dto.getProductId(),
                               dto.getSupplierCatalogNumber(),
                               dto.getName(),
@@ -60,6 +64,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               dto.getExpiresInDays(),
                               dto.getManufacturerName());
                   case "weight" -> dto = new SupplierProductDTO(
+                              dto.getSupplierId(),
                               dto.getProductId(),
                               dto.getSupplierCatalogNumber(),
                               dto.getName(),
@@ -68,6 +73,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               dto.getExpiresInDays(),
                               dto.getManufacturerName());
                   case "expiresInDays" -> dto = new SupplierProductDTO(
+                              dto.getSupplierId(),
                               dto.getProductId(),
                               dto.getSupplierCatalogNumber(),
                               dto.getName(),
@@ -76,6 +82,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               askInt("New Expires in (days): "),
                               dto.getManufacturerName());
                   case "manufacturerName" -> dto = new SupplierProductDTO(
+                              dto.getSupplierId(),
                               dto.getProductId(),
                               dto.getSupplierCatalogNumber(),
                               dto.getName(),

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class SupplierProduct implements Serializable {
-   // private int supplierId;
+   private int supplierId;
    private int internalProductIdForInternalUsageOnly;
    private String name;
    private String supplierCatalogNumber;
@@ -17,7 +17,7 @@ public class SupplierProduct implements Serializable {
    private String manufacturerName;
 
    public SupplierProduct(SupplierProductDTO supplierProduct) {
-      // this.supplierId = supplierProduct.supplierId();
+      this.supplierId = supplierProduct.getSupplierId();
       this.internalProductIdForInternalUsageOnly = supplierProduct.getProductId();
       this.name = supplierProduct.getName();
       this.supplierCatalogNumber = supplierProduct.getSupplierCatalogNumber();
@@ -28,6 +28,7 @@ public class SupplierProduct implements Serializable {
    }
 
    public SupplierProduct(
+         int supplierId,
          int productId,
          String supplierCatalogNumber,
          String name,
@@ -35,6 +36,7 @@ public class SupplierProduct implements Serializable {
          BigDecimal weight,
          int expiresInDays,
          String manufacturerName) {
+      this.supplierId = supplierId;
       this.supplierCatalogNumber = Objects.requireNonNull(supplierCatalogNumber, "supplierCatalogNumber");
       this.internalProductIdForInternalUsageOnly = productId;
       this.name = name;
@@ -47,6 +49,14 @@ public class SupplierProduct implements Serializable {
    // ────────────────────────────────────────────────────────
    // Getters & Setters
    // ────────────────────────────────────────────────────────
+
+   public int getSupplierId() {
+      return supplierId;
+   }
+
+   public void setSupplierId(int supplierId) {
+      this.supplierId = supplierId;
+   }
 
    public int getProductId() {
       return internalProductIdForInternalUsageOnly;
@@ -132,5 +142,13 @@ public class SupplierProduct implements Serializable {
 
    public int getExpiresInDays() {
       return expiresInDays;
+   }
+
+   public void setExpiresInDays(int expiresInDays) {
+      this.expiresInDays = expiresInDays;
+   }
+
+   public void updateProduct(SupplierProductDTO productDTO) {
+
    }
 }
