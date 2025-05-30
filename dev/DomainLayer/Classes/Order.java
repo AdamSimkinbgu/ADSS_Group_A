@@ -11,13 +11,15 @@ public class Order implements Serializable {
     private static int nextOrderID = 1;
     private int orderId;
     private int supplierId;
+    private String supplierName;
     private LocalDate orderDate;
     private LocalDate creationDate;
-    private List<OrderItemLine> items;
-    private OrderStatus status;
-    private String supplierName;
     private Address address ;
     private String contactPhoneNumber ;
+    private List<OrderItemLine> items;
+    private OrderStatus status;
+
+
 
 
     // load constructor
@@ -63,6 +65,42 @@ public class Order implements Serializable {
 
     }
 
+
+//// Get and Set
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public int getSupplierId() {
+        return supplierId;
+    }
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public List<OrderItemLine> getAllItems() {
+        return items;
+    }
+
+    public String getSupplierName() { return supplierName; }
+    public LocalDate getCreationDate() { return creationDate; }
+    public Address getAddress() { return address; }
+
+
+    public void setAddress(Address address) { this.address = address; }
+
+    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
+
+    public void setCreationDate(LocalDate creationDate) { this.creationDate = creationDate; }
+
+    protected void setOrderId(int orderId) { this.orderId = orderId; }
+
+    public void setStatus(OrderStatus status) {this.status = status; }
+
     public void setSupplierId(int supplierId) {
         this.supplierId = supplierId;
     }
@@ -79,33 +117,18 @@ public class Order implements Serializable {
         }
     }
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
+    public void setContactPhoneNumber(String contactPhoneNumber) { this.contactPhoneNumber = contactPhoneNumber; }
+    public String getContactPhoneNumber() { return contactPhoneNumber; }
 
-    public int getOrderId() {
-        return orderId;
-    }
+    //  don't think its correct
+    public void addItem(OrderItemLine orderItemLine) { items.add(orderItemLine); }
+    public void removeItem(OrderItemLine orderItemLine) { items.remove(orderItemLine); }
 
-    public int getSupplierId() {
-        return supplierId;
-    }
-
-    public LocalDate getOrderDate() {
-        return orderDate;
-    }
-
-    public List<OrderItemLine> getItems() {
-        return items;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
 
     @Override
     public String toString() {
         return "{\n" +
+
                 "   \"orderId\": " + orderId + ",\n" +
                 "   \"supplierId\": " + supplierId + ",\n" +
                 "   \"orderDate\": \"" + orderDate + "\",\n" +
