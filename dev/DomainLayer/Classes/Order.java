@@ -2,15 +2,16 @@ package DomainLayer.Classes;
 
 import DTOs.Enums.OrderStatus;
 import DTOs.OrderDTO;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Order implements Serializable {
-    private static int nextOrderID = 1;
+
     private int orderId;
-    private int supplierId;
+    private int supplierId;  // internal? or taxnum ?
     private String supplierName;
     private LocalDate orderDate;
     private LocalDate creationDate;
@@ -19,51 +20,50 @@ public class Order implements Serializable {
     private List<OrderItemLine> items;
     private OrderStatus status;
 
+    public Order() {}
 
-
-
-    // load constructor
-    public Order(
-            int orderId,
-            int supplierId,
-            LocalDate orderDate,
-            List<OrderItemLine> items,
-            OrderStatus status) {
-        this.orderId = orderId;
-        this.supplierId = supplierId;
-        this.orderDate = orderDate;
-        this.items = items;
-        this.status = status;
-    }
-
-    // create constructor
-    public Order(
-            int supplierId,
-            LocalDate orderDate,
-            List<OrderItemLine> items,
-            OrderStatus status) {
-        this.orderId = nextOrderID++;
-        this.supplierId = supplierId;
-        this.orderDate = orderDate;
-        this.items = items;
-        this.status = status;
-    }
-
-    // create constructor with default status
-    public Order(
-            int supplierId,
-            LocalDate orderDate,
-            List<OrderItemLine> items) {
-        this.orderId = nextOrderID++;
-        this.supplierId = supplierId;
-        this.orderDate = orderDate;
-        this.items = items;
-        this.status = OrderStatus.SENT;
-    }
-
-    public Order (OrderDTO orderDTO){
+    public Order( int id , OrderDTO dto) {
 
     }
+
+//    // load constructor
+//    public Order(
+//            int orderId,
+//            int supplierId,
+//            LocalDate orderDate,
+//            List<OrderItemLine> items,
+//            OrderStatus status) {
+//        this.orderId = orderId;
+//        this.supplierId = supplierId;
+//        this.orderDate = orderDate;
+//        this.items = items;
+//        this.status = status;
+//    }
+//
+//    // create constructor
+//    public Order(
+//            int supplierId,
+//            LocalDate orderDate,
+//            List<OrderItemLine> items,
+//            OrderStatus status) {
+//        this.orderId = nextOrderID++;
+//        this.supplierId = supplierId;
+//        this.orderDate = orderDate;
+//        this.items = items;
+//        this.status = status;
+//    }
+//
+//    // create constructor with default status
+//    public Order(
+//            int supplierId,
+//            LocalDate orderDate,
+//            List<OrderItemLine> items) {
+//        this.orderId = nextOrderID++;
+//        this.supplierId = supplierId;
+//        this.orderDate = orderDate;
+//        this.items = items;
+//        this.status = OrderStatus.SENT;
+//    }
 
 
 //// Get and Set
@@ -136,4 +136,39 @@ public class Order implements Serializable {
                 "   \"status\": \"" + status + "\"\n" +
                 "}";
     }
+    public String displayOrderDetails() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("=========== Order Details ===========\n");
+
+        sb.append("Supplier Name: ").append(supplierName != null ? supplierName : "Unavailable").append(" | ");
+        sb.append("Address: ").append(address != null ? address.toString() : "Unavailable").append(" | ");
+        sb.append("Order ID: ").append(orderId).append("\n");
+
+        sb.append("Supplier ID: ").append(supplierId).append(" | ");
+        sb.append("Order Date: ").append(orderDate != null ? orderDate : "Unavailable").append(" | ");
+        sb.append("Contact Phone: ").append(contactPhoneNumber != null ? contactPhoneNumber : "Unavailable").append("\n");
+
+        sb.append("\nItems:\n");
+        sb.append("--------------------------------------------------------------------------------------\n");
+        sb.append(String.format("| %-10s | %-20s | %-8s | %-10s | %-8s | %-11s |\n",
+                "Product ID", "Product Name", "Quantity", "Unit Price", "Discount", "Final Price"));
+        sb.append("--------------------------------------------------------------------------------------\n");
+
+        for (OrderItemLine item : items) {
+            sb.append(String.format("| %-10d | %-20s | %-8d | %-10.2f | %-8.2f | %-11.2f |\n",
+                    item.getProductId(),
+                    item.getProductName(),
+                    item.getQuantity(),
+                    item.getUnitPrice(),
+                    item.getDiscount(),
+                    item.getFinalPrice()));
+        }
+
+        sb.append("--------------------------------------------------------------------------------------\n");
+
+        return sb.toString();
+    }
+
+
 }

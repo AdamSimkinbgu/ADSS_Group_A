@@ -4,32 +4,32 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class OrderItemLine implements Serializable {
-    private int orderID; // by having this field, we can change the order the item belongs to
+    private int orderId;
+    private int productId;
     private int orderItemLineID;
-    private String productId;
     private int quantity;
     private BigDecimal unitPrice;
     private int supplierProductCatalogNumber;
     private String productName;
-    private String productManufacturerName;
+    private BigDecimal discount ;
+
 
     public OrderItemLine(
             int orderID,
             int orderItemLineID,
-            String productId,
+            int productId,
             int quantity,
             BigDecimal unitPrice,
             int supplierProductCatalogNumber,
-            String productName,
-            String productManufacturerName) {
-        this.orderID = orderID;
+            String productName) {
+        this.orderId = orderID;
         this.orderItemLineID = orderItemLineID;
         this.productId = productId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.supplierProductCatalogNumber = supplierProductCatalogNumber;
         this.productName = productName;
-        this.productManufacturerName = productManufacturerName;
+        //this.productManufacturerName = productManufacturerName;
     }
 
     public int getOrderItemLineID() {
@@ -40,13 +40,11 @@ public class OrderItemLine implements Serializable {
         this.orderItemLineID = orderItemLineID;
     }
 
-    public String getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
-        this.productId = String.valueOf(productId);
-    }
+    public void setProductId(int productId) { this.productId = productId; }
 
     public int getQuantity() {
         return quantity;
@@ -60,24 +58,12 @@ public class OrderItemLine implements Serializable {
         return unitPrice;
     }
 
-    public int getOrderID() {
-        return orderID;
-    }
-
     public int getSupplierProductCatalogNumber() {
         return supplierProductCatalogNumber;
     }
 
     public String getProductName() {
         return productName;
-    }
-
-    public String getProductManufacturerName() {
-        return productManufacturerName;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
     }
 
     public void setQuantity(int quantity) {
@@ -88,21 +74,46 @@ public class OrderItemLine implements Serializable {
         this.unitPrice = unitPrice;
     }
 
-    public void setOrderID(int orderID) {
-        this.orderID = orderID;
+    public int getOrderId() {
+        return orderId;
     }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setSupplierProductCatalogNumber(int supplierProductCatalogNumber) {
+        this.supplierProductCatalogNumber = supplierProductCatalogNumber;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return unitPrice.multiply(discount);    // meby ned to change
+    }
+
 
     @Override
     public String toString() {
         return "{\n" +
-                "   \"orderID\": " + orderID + ",\n" +
                 "   \"orderItemLineID\": " + orderItemLineID + ",\n" +
                 "   \"productId\": \"" + productId + "\",\n" +
                 "   \"quantity\": " + quantity + ",\n" +
                 "   \"unitPrice\": " + unitPrice + ",\n" +
                 "   \"supplierProductCatalogNumber\": " + supplierProductCatalogNumber + ",\n" +
                 "   \"productName\": \"" + productName + "\",\n" +
-                "   \"productManufacturerName\": \"" + productManufacturerName + "\"\n" +
+               // "   \"productManufacturerName\": \"" + productManufacturerName + "\"\n" +
                 "}";
     }
+
 }
