@@ -1,6 +1,7 @@
 package Domain;
 
 
+import DTO.ProductDTO;
 import DTO.SupplyDTO;
 import type.Position;
 
@@ -13,11 +14,12 @@ public class MainDomain {
     private int productCounter;
     private int supplyCounter;
     private int saleCounter;
-    private HashMap<Integer,List<SupplyDomain>> restokeQue;
+
     private HashMap<Integer, ProductDomain> prodMap;
     private List<DiscountDomain> disLst;
     private List<SaleDomain> saleLst;
     private List<CategoryDomain> categoryLst;
+    private List<OrderDeliverdDomian> orders;
 
     public MainDomain() {
         productCounter = 0;
@@ -27,6 +29,7 @@ public class MainDomain {
         disLst = new ArrayList<>();
         saleLst = new ArrayList<>();
         categoryLst = new ArrayList<>();
+        orders = new ArrayList<>();
     }
 
     //todo all
@@ -59,10 +62,13 @@ public class MainDomain {
         AddToCategory("Cheese",2);
         AddToCategory("Cheese",3);
 
-        UpdateInventoryRestock(new SupplyDTO(0,70,LocalDate.of(2029,11,11)));
-        UpdateInventoryRestock(new SupplyDTO(2,70,LocalDate.of(2029,11,11)));
-        UpdateInventoryRestock(new SupplyDTO(3,70,LocalDate.of(2029,11,11)));
-        UpdateInventoryRestock(new SupplyDTO(1,70,LocalDate.of(2029,11,11)));
+        List<SupplyDTO> ls = new ArrayList<>();
+        ls.add(new SupplyDTO(0,70,LocalDate.of(2029,11,11)));
+        ls.add(new SupplyDTO(2,70,LocalDate.of(2029,11,11)));
+        ls.add(new SupplyDTO(3,70,LocalDate.of(2029,11,11)));
+        ls.add(new SupplyDTO(1,70,LocalDate.of(2029,11,11)));
+        DeliverOrder(ls);
+        UpdateInventoryRestock();
 
         //todo
     }
@@ -77,14 +83,13 @@ public class MainDomain {
         return productCounter - 1;
     }
 
-    //todo??
-    public void UpdateInventoryRestock(SupplyDTO s){
-        if(!prodMap.containsKey(s.getProductID())){
-            throw new IllegalArgumentException("no product with this ip");
+    //todo check
+    public void UpdateInventoryRestock(){
+        SupplyDomain s;
+        for(OrderDeliverdDomian o : orders){
+            s = new SupplyDomain(supplyCounter++,o.getQuantity(),o.getExDate());
+            prodMap.get(o.getpId()).AddSupply(s);
         }
-        SupplyDomain sd = new SupplyDomain(supplyCounter++,s.getQuantityWH(),s.getExpireDate());
-        prodMap.get(s.getProductID()).AddSupply(sd);
-
     }
 
     //VVVVVV
@@ -277,13 +282,9 @@ public class MainDomain {
     }
 
 
-    //todo
-    public void AddRecuringOrder(){
-
-    }
 
     //todo
-    public void AddMissingOrder(){
+    public List<SupplyDTO> AddMissingOrder(){
         int missingA;
         List<SupplyDTO> ls = new ArrayList<>();
         for(ProductDomain p:prodMap.values()){
@@ -293,9 +294,27 @@ public class MainDomain {
             }
         }
 
-        //todo call supply func with ls
+        return ls;
 
     }
 
+    public void DeliverOrder(List<SupplyDTO> ls){
+        for(SupplyDTO s:ls){
+            orders.add(new OrderDeliverdDomian(s));
+        }
+    }
 
+    public ArrayList<ProductDTO> cleanCatalog(ArrayList<ProductDTO> ls){
+        for (ProductDTO p : ls){
+            if(prodMap.containsKey(p.getproductId())){
+                ls.remove(p);
+            }
+        }
+
+        return ls;
+    }
+
+    public boolean DoesProdExist(int pid){
+        return prodMap.containsKey(pid);
+    }
 }

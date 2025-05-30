@@ -2,10 +2,12 @@ package Presentation;
 
 import DTO.*;
 import Service.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import type.Position;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +38,7 @@ public class PresentationMenu {
                     AddProduct();
                     break ;
                 case 2:
-                    AddSupply();
+                    MoveOrder();
                     break;
                 case 3:
                     AddSale();
@@ -62,13 +64,19 @@ public class PresentationMenu {
                 case 0:
                     return;
                 case 10:
-                    InvintoryReport();
+                    InventoryReport();
                     break;
                 case 11:
                     MissingReport();
                     break;
                 case 12:
                     BadReport();
+                    break;
+                case 13:
+                    OrderMissing();
+                    break;
+                case 14:
+                    AddRecurringOrder();
                     break;
 
 
@@ -82,7 +90,7 @@ public class PresentationMenu {
         // Print menu
         System.out.println("==== Main Menu ====");
         System.out.println("1. Add New Product");
-        System.out.println("2. Add Supply");
+        System.out.println("2. Move Delivered Supplies to WareHose");
         System.out.println("3. Add Sale");
         System.out.println("4. Add Discount");
         System.out.println("5. Add New Category");
@@ -93,6 +101,8 @@ public class PresentationMenu {
         System.out.println("10. Get Current Inventory Report For Restock");
         System.out.println("11. Get Missing Report For Restock");
         System.out.println("12. Get Bad Product Report");
+        System.out.println("13. Order Missing Product");
+        System.out.println("14. Add A Recurring Order");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
 
@@ -100,21 +110,43 @@ public class PresentationMenu {
         return choice;
     }
 
-    //VVVVVVVV
+    //todo check
     private void AddProduct(){
         Scanner scanner = new Scanner(System.in);
+        StringBuilder table = new StringBuilder();
+        ArrayList<ProductDTO> ls;
+        String name = "",manName = "";
 
-        //todo get the product list
+        String msg = ms.GetProductLst();
+        //print the list
+        try{
+            ls = om.readValue(msg, new TypeReference<ArrayList<ProductDTO>>(){});
+            table.append(String.format("%-15s %-10s %-10s%n", "Id", "Name", "Manufacturer"));
+            for(ProductDTO p : ls){
+                table.append(String.format("%-15d %-10s %-10s%n", p.getproductId(), p.getproductName(), p.getmanufacturerName()));
+            }
+            System.out.println(table.toString());
+        }
+        catch (Exception e){
+            System.out.println();
+            return;
+        }
 
-        //get name
-        //todo remove
-        System.out.println("Enter product name: ");
-        String name = scanner.nextLine();
+        //chose product
+        System.out.println("Enter product id:");
+        int pid = scanner.nextInt();
+        boolean flag = true;
+        do {
+            for (ProductDTO p : ls){
+                if(p.getproductId() == pid)flag = false;
+                name = p.getproductName();
+                manName = p.getmanufacturerName();
+            }
+            if(flag){
+                System.out.println("Invalid ID");
+            }
+        }while (flag);
 
-        //get manufacturer name
-        //todo remove
-        System.out.println("Enter manufacturer name: ");
-        String manName = scanner.nextLine();
 
         //get price
         System.out.println("Enter price: ");
@@ -192,52 +224,16 @@ public class PresentationMenu {
     }
 
 
-    //todo remove or change to restoke
-    //VVVVVVVV
-    private void AddSupply(){
-        Scanner scanner = new Scanner(System.in);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        //get id
-        System.out.println("Enter product id: ");
-        int pId = scanner.nextInt();
-        if(pId < 0){
-            System.out.println("Invalid id ");
-            return;
+    //todo check
+    private void MoveOrder(){
+        try{
+            String msg = ms.MoveOrder();
+            System.out.println(msg);
         }
-
-        //get Quantity
-        System.out.println("Enter quantity: ");
-        int quantity = scanner.nextInt();
-        if(quantity < 0){
-            System.out.println("Invalid quantity");
-            return;
+        catch (Exception e)
+        {
+            System.out.println("Error : " + e.getMessage());
         }
-        scanner.nextLine();//clean the input buffer
-
-
-        //expire date
-        System.out.print("Enter a expire date (yyyy-MM-dd): ");
-        String input = scanner.nextLine();
-        try {
-            LocalDate date = LocalDate.parse(input, formatter);
-            if(LocalDate.now().isAfter(date)){
-                System.out.println("Date is in the past. Please enter a valid future date.");
-                return;
-            }
-            SupplyDTO newSup = new SupplyDTO(pId,quantity,date);
-
-            String response = ms.AddSupply(newSup);
-            System.out.println(response);
-
-        //}catch (JsonProcessingException e) {
-           // System.out.println("Failed to convert supply to JSON: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Invalid date format!");
-
-        }
-        return;
-
     }
 
     //VVVVVVVVV
@@ -460,8 +456,8 @@ public class PresentationMenu {
     }
 
     //VVVVVVVV
-    private void InvintoryReport(){
-        System.out.println(ms.GetcurrentReport());
+    private void InventoryReport(){
+        System.out.println(ms.GetCurrentReport());
     }
 
     //VVVVVVVV
@@ -489,5 +485,27 @@ public class PresentationMenu {
         }catch (Exception e){
             System.out.println(response+ e.getMessage());
         }
+    }
+
+    private void OrderMissing(){
+        String msg = ms.AddMissingOrder();
+        System.out.println(msg);
+    }
+
+    private void AddRecurringOrder(){
+        Scanner scanner = new Scanner(System.in);
+
+
+        System.out.println("Enter product ID: ");
+        int pId  = scanner.nextInt();
+
+        System.out.println("Enter quantity");
+        int quantity = scanner.nextInt();
+
+        System.out.println("Enter a day of the week by number");
+        int day = scanner.nextInt();
+
+        String msg = ms.AddRecurringOrder(pId,quantity,day);
+        System.out.println(msg);
     }
 }

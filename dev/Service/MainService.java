@@ -2,6 +2,8 @@ package Service;
 
 import DTO.*;
 import Domain.MainDomain;
+import Domain.OrderDeliverdDomian;
+import Domain.ProductDomain;
 import Domain.SaleDomain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -10,6 +12,8 @@ import type.Position;
 
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainService {
     private MainDomain md;
@@ -40,11 +44,10 @@ public class MainService {
         }
     }
 
-    public String AddSupply(SupplyDTO s){
+    public String MoveOrder(){
         try{
-            //SupplyService sup = om.readValue(json,SupplyService.class);
-            md.UpdateInventoryRestock(s);
-            return "Supply added successfully.";
+            md.UpdateInventoryRestock();
+            return "Orders Moved successfully.";
         }
         catch (IllegalArgumentException e){
             return e.getMessage();
@@ -152,7 +155,50 @@ public class MainService {
         }
     }
 
-    public String GetcurrentReport(){
+    public String GetCurrentReport(){
         return md.GetCurrentInventoryReport();
+    }
+
+
+
+    public String GetProductLst(){
+        ArrayList<ProductDTO> ls = new ArrayList<>();
+        //todo call the get Catalog func
+
+        ls = md.cleanCatalog(ls);
+
+        try{
+            return om.writeValueAsString(ls);
+        }
+        catch (Exception e){
+            return "Error";
+        }
+    }
+
+
+    public String AddRecurringOrder(int pId, int quantity,int day){
+
+        //todo call supply func
+        return "done?";
+    }
+
+    //todo
+    public String AddMissingOrder(){
+        List<SupplyDTO> Orders = md.AddMissingOrder();
+
+        //todo call supply func with orders
+
+        return "done?";
+
+    }
+
+
+    //Get called by Supplier Domain
+    public String DeliverOrder(List<SupplyDTO> ls){
+        //todo ?? build ls
+
+        md.DeliverOrder(ls);
+
+        return "done";
     }
 }
