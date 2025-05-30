@@ -11,6 +11,8 @@ public class OrderItemLineDTO {
     private int quantity;
     private BigDecimal unitPrice;
     private String productName;
+    private int orderItemLineID;
+    private BigDecimal discount;
 
     public OrderItemLineDTO() {
     }
@@ -79,5 +81,21 @@ public class OrderItemLineDTO {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public int getOrderItemLineID() {
+        return orderItemLineID;
+    }
+
+    public void setOrderItemLineID(int orderItemLineID) {
+        this.orderItemLineID = orderItemLineID;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
     }
 }

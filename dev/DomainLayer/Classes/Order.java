@@ -2,8 +2,10 @@ package DomainLayer.Classes;
 
 import DTOs.Enums.OrderStatus;
 import DTOs.OrderDTO;
+import DTOs.OrderItemLineDTO;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,50 +25,44 @@ public class Order implements Serializable {
     public Order() {}
 
     public Order( int id , OrderDTO dto) {
-
+        this.orderId = id;
+        this.supplierId = dto.getSupplierId();
+        this.supplierName = dto.getSupplierName();
+        this.orderDate = dto.getOrderDate();
+        this.creationDate = dto.getCreationDate();
+        this.address = dto.getAddress();
+        this.contactPhoneNumber = dto.getContactPhoneNumber();
+        this.status = dto.getStatus();
+        this.items = new ArrayList<>();
+        if (dto.getItems() != null) {
+            for (OrderItemLineDTO itemDto : dto.getItems()) {
+                this.items.add(new OrderItemLine(
+                        id,
+                        itemDto.getOrderItemLineID(),
+                        itemDto.getProductId(),
+                        itemDto.getQuantity(),
+                        itemDto.getUnitPrice(),
+                        itemDto.getSupplierProductCatalogNumber(),
+                        itemDto.getProductName(),
+                        itemDto.getDiscount()
+                ));
+            }
+        }
     }
 
-//    // load constructor
-//    public Order(
-//            int orderId,
-//            int supplierId,
-//            LocalDate orderDate,
-//            List<OrderItemLine> items,
-//            OrderStatus status) {
-//        this.orderId = orderId;
-//        this.supplierId = supplierId;
-//        this.orderDate = orderDate;
-//        this.items = items;
-//        this.status = status;
-//    }
-//
-//    // create constructor
-//    public Order(
-//            int supplierId,
-//            LocalDate orderDate,
-//            List<OrderItemLine> items,
-//            OrderStatus status) {
-//        this.orderId = nextOrderID++;
-//        this.supplierId = supplierId;
-//        this.orderDate = orderDate;
-//        this.items = items;
-//        this.status = status;
-//    }
-//
-//    // create constructor with default status
-//    public Order(
-//            int supplierId,
-//            LocalDate orderDate,
-//            List<OrderItemLine> items) {
-//        this.orderId = nextOrderID++;
-//        this.supplierId = supplierId;
-//        this.orderDate = orderDate;
-//        this.items = items;
-//        this.status = OrderStatus.SENT;
-//    }
+    public Order(int orderId, int supplierId, String supplierName, LocalDate orderDate, LocalDate creationDate, Address address, String contactPhoneNumber, List<OrderItemLine> items, OrderStatus status) {
+        this.orderId = orderId;
+        this.supplierId = supplierId;
+        this.supplierName = supplierName;
+        this.orderDate = orderDate;
+        this.creationDate = creationDate;
+        this.address = address;
+        this.contactPhoneNumber = contactPhoneNumber;
+        this.items = items;
+        this.status = status;
+    }
 
-
-//// Get and Set
+    //// Get and Set
     public OrderStatus getStatus() {
         return status;
     }
@@ -124,6 +120,10 @@ public class Order implements Serializable {
     public void addItem(OrderItemLine orderItemLine) { items.add(orderItemLine); }
     public void removeItem(OrderItemLine orderItemLine) { items.remove(orderItemLine); }
 
+    public void addItem(int productId ,int quantity , BigDecimal unitPrice, int supplierProductCatalogNumber ,String productName) { items.add(new OrderItemLine( this.getOrderId(), (items.size() + 1 ), productId, quantity,unitPrice, supplierProductCatalogNumber, productName)) ; }
+    public void removeItem(int lineId) {
+        items.remove(lineId);
+    }
 
     @Override
     public String toString() {
