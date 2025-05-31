@@ -22,7 +22,7 @@ import DTOs.Enums.DayofWeek;
 import DTOs.Enums.PaymentMethod;
 import DTOs.Enums.PaymentTerm;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.Commands.SupplierCommands.CreateSupplierCMD;
+import PresentationLayer.Commands.SupplierCommands.CreateSupplierCMD;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
