@@ -1,6 +1,8 @@
 package Domain;
 
+import DAO.SupplyDAO;
 import DTO.ProductDTO;
+import DTO.SupplyDTO;
 import type.Position;
 
 import java.time.LocalDate;
@@ -20,6 +22,8 @@ public class ProductDomain {
     private Position storeShelf;
     private DiscountDomain discount;
     private List<SupplyDomain> supplyList; //// list of supplies ////
+
+    private SupplyDAO SPdao;
 
 
     public int getproductID() {
@@ -60,6 +64,7 @@ public class ProductDomain {
         supplyList = new ArrayList<>();
     }
 
+    //todo check
     public ProductDomain(ProductDTO other){
         productID = other.getproductId();
         productName = other.getproductName();
@@ -70,6 +75,20 @@ public class ProductDomain {
         storeShelf = other.getstoreShelf();
         wareHouseShelf = other.getwareHouseShelf();
         supplyList = new ArrayList<>();
+
+        //up lode from database
+        List<SupplyDTO> ls = SPdao.GetAll();
+        for(SupplyDTO s:ls){
+            supplyList.add(new SupplyDomain(s));
+        }
+
+        for (SupplyDomain supply: supplyList){
+            if(!supply.IsEx()){
+                SPdao.Set(new SupplyDTO(supply,productID));
+                supplyList.remove(supply);
+            }
+        }
+
     }
 
 
@@ -90,22 +109,27 @@ public class ProductDomain {
 
     //////////////////////////////////////////////////////////////////////////////////
 
-
+    //todo check
     public void AddSupply(SupplyDomain supply){
+        //add to database
+        SPdao.Add(new SupplyDTO(supply,productID));
+
         supplyList.add(supply);
         supplyList.sort(Comparator.comparing(SupplyDomain::getExpierDate));
     }
 
+    //todo check
     public void reStockStore(){
         int all_supp_instore = 0;
         for (SupplyDomain supply: supplyList){
-            supply.IsEx();
             all_supp_instore += supply.getQuantityStore();
         }
         if (all_supp_instore < minimalAmountStore){
             int quant = 2*minimalAmountStore - all_supp_instore;
             for(SupplyDomain supp : supplyList){
                 quant = supp.restock(quant);
+                //add to database
+                SPdao.Set(new SupplyDTO(supp,productID));
                 if(quant == 0)break;
             }
         }
@@ -150,14 +174,21 @@ public class ProductDomain {
         return productPrice1unit*(1-dis);
     }
 
+    //todo check
     public void Buy(int quantity){
-        reStockStore();
+        if (getQuantity() < quantity)throw new IllegalArgumentException("not enough product to complete the sale");
+
         for(SupplyDomain s: supplyList){
-            if (quantity == 0)return;
+            if (quantity == 0)break;
+            //add to database
+            SupplyDTO sdto = new SupplyDTO(s,productID);
+            if(sdto.getquantityS() > quantity)sdto.setQuantityS(sdto.getquantityS() - quantity);
+            else sdto.setQuantityS(0);
+            SPdao.Set(sdto);
+
+
             quantity = s.Buy(quantity);
         }
-        if(quantity != 0 )throw new IllegalArgumentException("not enough product to complete the sale");
-
         reStockStore();
     }
 
@@ -165,6 +196,7 @@ public class ProductDomain {
         for(SupplyDomain s:supplyList){
             if(quantity == 0)break;
             quantity = s.Report(quantity);
+            SPdao.Set(new SupplyDTO(s,productID));
         }
         return GetMissing();
     }

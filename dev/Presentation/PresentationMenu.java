@@ -208,9 +208,8 @@ public class PresentationMenu {
 
         Position wp = new Position(wLane,wShelf);
 
-        ProductService newProd = new ProductService(name,manName,minAStore,minAStock,price,srShelf,srLane,wShelf,wLane);
+        ProductDTO newProd = new ProductDTO(pid,name,manName,minAStore,minAStock,price,wp,sp);
 
-        //todo switch to dto
 
         try {
             String message = om.writeValueAsString(newProd);
@@ -411,14 +410,14 @@ public class PresentationMenu {
             product.put(pId,quantity);
         }
 
-        SaleService s = new SaleService(product);
+        SaleDTO s = new SaleDTO(product);
 
         try {
             String message = om.writeValueAsString(s);
             String response = ms.AddSale(message);
-            s = om.readValue(response,SaleService.class);
+            s = om.readValue(response,SaleDTO.class);
             System.out.println("=====Sale Report=====");
-            System.out.println("Sale id: "+s.getSaleID());
+            System.out.println("Sale id: "+s.getId());
             System.out.println("Sale price: " + s.getSalePrice());
         } catch (Exception e) {
             System.out.println("Error converting product to JSON: " + e.getMessage());

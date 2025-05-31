@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainDomain {
-    private int productCounter;
     private int supplyCounter;
     private int saleCounter;
 
@@ -21,6 +20,7 @@ public class MainDomain {
     private DiscountDAO Ddao;
     private CategoryDAO Cdao;
     private SaleDAO Sdao;
+    private SupplyDAO SPdao;
 
     private HashMap<Integer, ProductDomain> prodMap;
     private List<DiscountDomain> disLst;
@@ -28,8 +28,8 @@ public class MainDomain {
     private List<CategoryDomain> categoryLst;
     private List<OrderDeliverdDomian> orders;
 
+    //todo assign DAOs
     public MainDomain() {
-        productCounter = 0;
         supplyCounter = 0;
         saleCounter = 0;
         prodMap = new HashMap<>();
@@ -39,7 +39,7 @@ public class MainDomain {
         orders = new ArrayList<>();
     }
 
-    //todo all
+    //todo check
     public void InventoryInitialization(){
 
         //uplode product
@@ -67,7 +67,6 @@ public class MainDomain {
             else {
                 for(CategoryDomain c: categoryLst){
                     if(c.Isin(d.getCatName())){
-                        //todo add to the database
                         c.AddDiscount(dis, d.getCatName());
                         break;
                     }
@@ -84,34 +83,40 @@ public class MainDomain {
         }
 
 
-        //todo
+        //todo check
     }
 
-    //VVVVVV
-    public int AddProduct(String pName,String MfName, int MAStore, int MAStock, float Price,Position SShalf,Position WHShelf){
+    //todo
+    public int AddProduct(ProductDTO pdto){
         for(ProductDomain p: prodMap.values()){
-            if(p.getproductName().equals(pName))throw new IllegalArgumentException("Product name alredy in stock");
+            if(p.getproductName().equals(pdto.getproductName()))throw new IllegalArgumentException("Product name alredy in stock");
         }
 
-        //todo add to database
 
-        prodMap.put(productCounter,new ProductDomain(productCounter,pName,MfName,MAStore,MAStock,Price,SShalf,WHShelf));
-        productCounter++;
-        return productCounter - 1;
+        Pdao.Add(pdto);
+
+        prodMap.put(pdto.getproductId(),new ProductDomain(pdto));
+        return 0;
     }
 
     //todo check
     public void UpdateInventoryRestock(){
         SupplyDomain s;
         for(OrderDeliverdDomian o : orders){
-            //todo add to database
-            s = new SupplyDomain(supplyCounter++,o.getQuantity(),o.getExDate());
+            s = new SupplyDomain(supplyCounter,o.getQuantity(),o.getExDate());
+
+            //add to database
+            ODdao.Remove(o);
+            SPdao.Add(new SupplyDTO(s,o.getpId()));
+
             prodMap.get(o.getpId()).AddSupply(s);
+            supplyCounter++;
         }
     }
 
-    //VVVVVV
-    public SaleDomain UpdateInventorySale(SaleDomain s){
+    //todo change database
+    public SaleDTO UpdateInventorySale(SaleDTO sdto){
+        SaleDomain s = new SaleDomain(sdto);
         for(Integer pIg : s.getItemLs().keySet()){
             if(!prodMap.containsKey(pIg))throw new IllegalArgumentException("invalid product id");
         }
@@ -130,7 +135,7 @@ public class MainDomain {
         s.setSalePrice(price);
         s.setSaleID(saleCounter++);
         saleLst.add(s);
-        return s;
+        return new SaleDTO(s);
     }
 
     //VVVVVV
@@ -151,7 +156,7 @@ public class MainDomain {
         return ret.toString();
     }
 
-    //VVVVVV
+    //todo change database
     /*
     * report a bad product
     *
@@ -210,6 +215,12 @@ public class MainDomain {
     public void MoveProduct(int pId, boolean SOrW, Position newP){
         if(!prodMap.containsKey(pId))throw new IllegalArgumentException("pId invalid");
 
+        //change database
+        ProductDTO pdto = new ProductDTO(prodMap.get(pId));
+        if(SOrW)pdto.setStoreShelf(newP);
+        else pdto.setWareHouseShelf(newP);
+        Pdao.Set(pdto);
+
         prodMap.get(pId).moveProduct(SOrW, newP);
 
     }
@@ -225,25 +236,32 @@ public class MainDomain {
         //todo
     }
 
-    //VVVVVV
+    //todo check
     public void AddDiscount(DiscountDTO dis){
+        DiscountDomain d = new DiscountDomain(dis);
+
+        //discount for product
         if(dis.getpId()!=-1) {
 
             if (!prodMap.containsKey(dis.getpId())) throw new IllegalArgumentException("pId invalid");
 
-            DiscountDomain d = new DiscountDomain(dis.getPercent(),dis.getDiscountEnd());
 
-            //todo save to the data base
 
+            //Add to database
+            Ddao.add(dis);
+
+            //add to product
             prodMap.get(dis.getpId()).AddDiscount(d);
             disLst.add(d);
         }
+        //discount for category
         else {
-            DiscountDomain d = new DiscountDomain(dis.getPercent(),dis.getDiscountEnd());
-
             for(CategoryDomain c: categoryLst){
                 if(c.Isin(dis.getCatName())){
-                    //todo add to the database
+                    //Add to database
+                    Ddao.add(dis);
+
+                    //add to category
                     c.AddDiscount(d, dis.getCatName());
                     disLst.add(d);
                     return;
@@ -251,25 +269,31 @@ public class MainDomain {
             }
             throw new IllegalArgumentException("No category by that name");
         }
-
     }
 
-    //VVVVVV
+    //todo check
     public void AddCategory(String newName){
         for(CategoryDomain c : categoryLst){
             if(c.getName().equals(newName))throw new IllegalArgumentException("Name already used.");
         }
+
+        //add to database
+        Cdao.addCategory(newName);
+
+        //add a category
         categoryLst.add(new CategoryDomain(newName));
-        int i =0;
     }
 
-    //VVVVVV
+    //todo check
     public void AddToCategory(String catName,int pId){
 
         if(!prodMap.containsKey(pId))throw new IllegalArgumentException("invalid product id");
 
         for(CategoryDomain c : categoryLst){
             if(c.Isin(catName)){
+                //add to database
+                Cdao.addToCategory(catName,pId);
+                //add to category
                 c.InsertPID(catName,pId);
                 return;
             }
@@ -278,13 +302,21 @@ public class MainDomain {
 
     }
 
-    //VVVVVV
+    //todo check
     public void AddToCategory(String catName,String subCat){
-        boolean flag = false;
+        boolean flag1 = false, flag2 = false;
         CategoryDomain sub = new CategoryDomain("");
+
+        for(CategoryDomain c : categoryLst){
+            if(c.Isin(catName))flag1 = true;
+            if(c.Isin(subCat))flag2 = true;
+        }
+        if(flag1 || flag2)throw new IllegalArgumentException("There is no category by that name");
+
+
+        //remove subCat
         for(CategoryDomain c : categoryLst){
             if(c.Isin(subCat)){
-                flag = true;
                 if(c.getName().equals(subCat)){
                     sub = c;
                     categoryLst.remove(c);
@@ -294,16 +326,19 @@ public class MainDomain {
                 break;
             }
         }
-        if(!flag)throw new IllegalArgumentException("There is no category by that name");
 
 
+        //add to catName
         for(CategoryDomain c : categoryLst){
             if(c.Isin(catName)){
+                //add to database
+                Cdao.addToCategory(catName,subCat);
+                //add to category
                 c.InsertSub(catName,sub);
                 return;
             }
         }
-        throw new IllegalArgumentException("There is no category by that name");
+
     }
 
 
@@ -322,13 +357,21 @@ public class MainDomain {
         return ls;
 
     }
-
+    //todo check
     public void DeliverOrder(List<SupplyDTO> ls){
+        OrderDeliverdDomian o;
         for(SupplyDTO s:ls){
-            orders.add(new OrderDeliverdDomian(s));
+
+            o = new OrderDeliverdDomian(s);
+            //add to database
+            ODdao.Add(o);
+            //add to orders
+            orders.add(o);
         }
     }
 
+    //todo check
+    //remove from catalog all product already in system
     public ArrayList<ProductDTO> cleanCatalog(ArrayList<ProductDTO> ls){
         for (ProductDTO p : ls){
             if(prodMap.containsKey(p.getproductId())){
@@ -339,6 +382,8 @@ public class MainDomain {
         return ls;
     }
 
+
+    //todo check
     public boolean DoesProdExist(int pid){
         return prodMap.containsKey(pid);
     }

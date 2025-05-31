@@ -63,12 +63,18 @@ public class ProductDTO {
 
     public ProductDTO(){}
 
-    public ProductDTO(String pName,String MfName, float PPrice){
-        productId = 0;
+    public ProductDTO(int pId,String pName,String MfName,int minAStore,int minAStock,float PPrice,Position s,Position w){
+        productId = pId;
         productName = pName;
         manufacturerName = MfName;
         productPrice = PPrice;
-        }
+        this.minimalAmountStock = minAStock;
+        this.minimalAmountStore = minAStore;
+        this.storeShelf = s;
+        this.wareHouseShelf = w;
+    }
+
+
     public ProductDTO(ProductDomain other){
         productId = other.getproductID();
         productName = other.getproductName();

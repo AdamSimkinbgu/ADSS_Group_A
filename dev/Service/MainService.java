@@ -2,16 +2,12 @@ package Service;
 
 import DTO.*;
 import Domain.MainDomain;
-import Domain.OrderDeliverdDomian;
-import Domain.ProductDomain;
 import Domain.SaleDomain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import type.Position;
 
-import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +26,9 @@ public class MainService {
     //???
     public String AddProduct(String message ){
         try{
-            ProductService p = om.readValue(message,ProductService.class);
-            Position sS = new Position(p.storeLine,p.storeShelf);
-            Position whS = new Position(p.wareHouseLane,p.wareHouseShelf);
-            int pId = md.AddProduct(p.productName,p.manufacturerName,p.minimalAmoutStore,p.minimalAmoutStock,p.productPrice,sS,whS);
-            return "Product added successfully. \nproduct id:"+pId;
+            ProductDTO p = om.readValue(message,ProductDTO.class);
+            int pId = md.AddProduct(p);
+            return "Product added successfully.";
         }
         catch (IllegalArgumentException e){
             return e.getMessage();
@@ -59,12 +53,9 @@ public class MainService {
 
     public String AddSale(String json){
         try {
-            SaleService sS = om.readValue(json, SaleService.class);
-
-            SaleDomain sD = new SaleDomain(sS.getProducts());
-            sD = md.UpdateInventorySale(sD);
-            sS = new SaleService(sD);
-            return om.writeValueAsString(sS);
+            SaleDTO sdto = om.readValue(json, SaleDTO.class);
+            sdto = md.UpdateInventorySale(sdto);
+            return om.writeValueAsString(sdto);
         }catch (IllegalArgumentException e){
             return "Problem with the list: " + e.getMessage();
         }catch (Exception e){

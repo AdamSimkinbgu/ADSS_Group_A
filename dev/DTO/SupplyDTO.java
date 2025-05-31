@@ -25,15 +25,15 @@ public class SupplyDTO {
     }
 
     public int getsId(){
-        return sId
+        return sId;
     }
 
     public int getquantityS(){
-        return quantityS
+        return quantityS;
     }
 
     public int getquantityB(){
-        return quantityB
+        return quantityB;
     }
 
     //setters
