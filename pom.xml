@@ -68,87 +68,72 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <!-- compile Java sources under dev/ -->
-    <sourceDirectory>${project.basedir}/dev</sourceDirectory>
+<build>
+  <!-- =================================================================== -->
+  <!-- 1) Tell Maven where your sources REALLY are                         -->
+  <!-- =================================================================== -->
+  <sourceDirectory>${project.basedir}/Suppliers/dev</sourceDirectory>
+  <testSourceDirectory>${project.basedir}/Suppliers</testSourceDirectory>
 
+  <resources>
+    <resource>
+      <directory>Suppliers/dev</directory>
+      <includes><include>**/*.json</include></includes>
+    </resource>
+  </resources>
 
-    <!-- plugin definitions -->
-    <plugins>
-      <!-- compiler plugin for Java 17 -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>17</source>
-          <target>17</target>
-        </configuration>
-      </plugin>
+  <!-- =================================================================== -->
+  <!-- 2) One compiler plugin, one Java version                            -->
+  <!-- =================================================================== -->
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.11.0</version>
+      <configuration>
+        <source>21</source>
+        <target>21</target>
+      </configuration>
+    </plugin>
 
-      <!-- shade plugin: produces a single executable jar with dependencies -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <!-- overwrite the default jar with the shaded one -->
-              <shadedArtifactAttached>false</shadedArtifactAttached>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>Main</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+    <!-- ================================================================= -->
+    <!-- 3) Shade *or* Jar.  Use Shade when you want a fat-jar.            -->
+    <!-- ================================================================= -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.4.1</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals><goal>shade</goal></goals>
+          <configuration>
+            <shadedArtifactAttached>false</shadedArtifactAttached>
 
-      <!-- jar plugin to set Main-Class (optional if shading) -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.2</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>PresentationLayer.AppCLI</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
+            <!-- put the fat-jar under release/ -->
+            <outputDirectory>${project.basedir}/Suppliers/release</outputDirectory>
+            <finalName>ADSS2025_v02</finalName>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.2.5</version>
-            <configuration>
-              <!-- let Byte Buddy instrument JDK 23 bytecode -->
-              <argLine>-Dnet.bytebuddy.experimental=true</argLine>
-            </configuration>
-      </plugin>
-    </plugins>
+            <!-- *** main class must match the `package` *** -->
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <mainClass>suppliers.dev.Main</mainClass>
+              </transformer>
+            </transformers>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
 
-    <!-- resource configuration: include JSON files under dev/ -->
-    <resources>
-      <!-- standard resources directory -->
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <!-- include any JSON from dev/ into the jar -->
-      <resource>
-        <directory>${project.basedir}/dev</directory>
-        <includes>
-          <include>**/*.json</include>
-        </includes>
-      </resource>
-    </resources>
-    <finalName>ADSS2025_V02</finalName>
-  </build>
+    <!-- tests -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <version>3.2.5</version>
+      <configuration>
+        <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 </project>
