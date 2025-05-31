@@ -149,5 +149,6 @@
         </includes>
       </resource>
     </resources>
+    <finalName>ADSS2025_V02</finalName>
   </build>
 </project>

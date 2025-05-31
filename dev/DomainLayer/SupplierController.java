@@ -126,12 +126,14 @@ public class SupplierController {
       productCagalog.add(new CatalogProductDTO(product6));
 
       // debug print
-      System.out.println("Initialized suppliers: " + suppliers);
-      System.out.println("Initialized supplier products: " + supplierIDsToTheirProductIDsAndTheirSpesification);
-      System.out.println("Initialized supplier product map: " + productIDsToTheirSupplierIDs);
-      System.out.println("Initialized product catalog: " + productCagalog);
-      System.out.println("Next supplier ID: " + nextSupplierID);
-      System.out.println("Next product ID: " + nextProductID);
+      // System.out.println("Initialized suppliers: " + suppliers);
+      // System.out.println("Initialized supplier products: " +
+      // supplierIDsToTheirProductIDsAndTheirSpesification);
+      // System.out.println("Initialized supplier product map: " +
+      // productIDsToTheirSupplierIDs);
+      // System.out.println("Initialized product catalog: " + productCagalog);
+      // System.out.println("Next supplier ID: " + nextSupplierID);
+      // System.out.println("Next product ID: " + nextProductID);
    }
 
    public Supplier createSupplier(SupplierDTO supplierDTO) {

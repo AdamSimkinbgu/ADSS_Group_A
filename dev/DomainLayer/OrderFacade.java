@@ -7,10 +7,10 @@ import java.util.*;
 public class OrderFacade extends BaseFacade {
 
     private final Map<Integer, Order> orders;
-    private final SupplierFacade supplierFacade;
+    private final SupplierController supplierFacade;
     private static int nextOrderID = 1;
 
-    public OrderFacade(SupplierFacade supplierFacade) {
+    public OrderFacade(SupplierController supplierFacade) {
         this.orders = new HashMap<>();
         this.supplierFacade = supplierFacade;
     }
