@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.security.InvalidParameterException;
 import java.util.*;
 
+import DomainLayer.Classes.Agreement;
 import DomainLayer.Classes.Supplier;
 import DomainLayer.Classes.SupplierProduct;
 import DTOs.AddressDTO;
+import DTOs.AgreementDTO;
+import DTOs.BillofQuantitiesItemDTO;
 import DTOs.CatalogProductDTO;
 import DTOs.PaymentDetailsDTO;
 import DTOs.SupplierDTO;
@@ -15,10 +18,11 @@ import DTOs.Enums.DayofWeek;
 import DTOs.Enums.PaymentMethod;
 import DTOs.Enums.PaymentTerm;
 
-public class SupplierFacade {
+public class SupplierController {
    private String configPath;
    private static int nextSupplierID;
    private static int nextProductID;
+   private AgreementFacade agreementFacade;
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
    // Map of supplier IDs to their products and prices
    private final Map<Integer, Map<Integer, SupplierProduct>> supplierIDsToTheirProductIDsAndTheirSpesification = new HashMap<>();
@@ -28,7 +32,8 @@ public class SupplierFacade {
    private final Set<CatalogProductDTO> productCagalog = new HashSet<>(); // used to find all the products available in
                                                                           // the system
 
-   public SupplierFacade(boolean initialize, String configJson) {
+   public SupplierController(boolean initialize, String configJson, AgreementFacade agreementFacade) {
+      this.agreementFacade = agreementFacade;
       if (configJson == null) {
          this.configPath = "config.json";
       } else {
@@ -350,6 +355,116 @@ public class SupplierFacade {
       return productCagalog.stream()
             .sorted(Comparator.comparing(CatalogProductDTO::productId))
             .toList();
+   }
+
+   public AgreementDTO createAgreement(AgreementDTO agreementDTO) {
+      if (agreementDTO == null) {
+         throw new InvalidParameterException("AgreementDTO cannot be null");
+      }
+      Supplier supplier = suppliers.get(agreementDTO.getSupplierId());
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found for ID: " + agreementDTO.getSupplierId());
+      }
+      agreementDTO.setSupplierName(supplier.getName());
+
+      for (int i = 0; i < agreementDTO.getBillOfQuantitiesItems().size(); i++) {
+         int productId = agreementDTO.getBillOfQuantitiesItems().get(i).getProductId();
+         BillofQuantitiesItemDTO item = agreementDTO.getBillOfQuantitiesItems().get(i);
+         if (!supplierIDsToTheirProductIDsAndTheirSpesification.containsKey(agreementDTO.getSupplierId())
+               || !supplierIDsToTheirProductIDsAndTheirSpesification.get(agreementDTO.getSupplierId())
+                     .containsKey(productId)) {
+            throw new IllegalArgumentException("Product ID " + productId + " is not valid for supplier ID "
+                  + agreementDTO.getSupplierId());
+         }
+         // update the item with the product name and ID
+         SupplierProduct product = supplierIDsToTheirProductIDsAndTheirSpesification
+               .get(agreementDTO.getSupplierId())
+               .get(productId);
+         if (product == null) {
+            throw new IllegalArgumentException("Product ID " + productId + " not found in supplier's product list");
+         }
+         item.setProductName(product.getName());
+         item.setProductId(product.getProductId());
+         item.setLineInBillID(i + 1); // Set the line in bill ID to the index + 1
+      }
+      AgreementDTO createdAgreement = agreementFacade.createAgreement(agreementDTO);
+      if (createdAgreement == null) {
+         throw new IllegalArgumentException("Failed to create agreement");
+      }
+      // Add the agreement to the supplier
+      suppliers.get(agreementDTO.getSupplierId())
+            .addAgreement(createdAgreement.getAgreementId());
+      return createdAgreement;
+   }
+
+   public boolean removeAgreement(int agreementID, int supplierID) {
+      if (!agreementFacade.removeAgreement(agreementID, supplierID)) {
+         throw new IllegalArgumentException("Failed to remove agreement");
+      }
+      Supplier supplier = suppliers.get(supplierID);
+      if (supplier == null) {
+         throw new IllegalArgumentException("Supplier not found");
+      }
+      supplier.removeAgreement(agreementID);
+      return true;
+   }
+
+   public List<AgreementDTO> getAgreementsBySupplierId(int supplierId) {
+      List<AgreementDTO> agreements = agreementFacade.getAgreementsBySupplierId(supplierId);
+      if (agreements == null || agreements.isEmpty()) {
+         throw new IllegalArgumentException("No agreements found for supplier ID: " + supplierId);
+      }
+      return agreements.stream()
+            .sorted(Comparator.comparing(AgreementDTO::getAgreementId))
+            .toList();
+   }
+
+   public AgreementDTO getAgreement(int agreementID) {
+      AgreementDTO agreement = agreementFacade.getAgreementById(agreementID);
+      if (agreement == null) {
+         throw new IllegalArgumentException("Agreement not found for ID: " + agreementID);
+      }
+      agreement.setAgreementId(agreementID);
+
+      return agreement;
+   }
+
+   public void updateAgreement(int agreementId, AgreementDTO updatedAgreement) {
+      if (updatedAgreement == null) {
+         throw new InvalidParameterException("UpdatedAgreement cannot be null");
+      }
+      Agreement actual = agreementFacade.getActualAgreement(agreementId);
+      // update the dto with the actual agreement data
+      updatedAgreement.setSupplierId(actual.getSupplierId());
+      updatedAgreement.setSupplierName(actual.getSupplierName());
+      updatedAgreement.setAgreementId(agreementId);
+      // we need to compare the actual agreement's bill of quantities items with the
+      // one in the updated
+      // agreement and update the product names and IDs and line IDs
+      List<BillofQuantitiesItemDTO> updatedItems = new ArrayList<>();
+      for (int i = 0; i < updatedAgreement.getBillOfQuantitiesItems().size(); i++) {
+         BillofQuantitiesItemDTO item = updatedAgreement.getBillOfQuantitiesItems().get(i);
+         int productId = item.getProductId();
+         if (!supplierIDsToTheirProductIDsAndTheirSpesification.containsKey(updatedAgreement.getSupplierId())
+               || !supplierIDsToTheirProductIDsAndTheirSpesification.get(updatedAgreement.getSupplierId())
+                     .containsKey(productId)) {
+            throw new IllegalArgumentException("Product ID " + productId + " is not valid for supplier ID "
+                  + updatedAgreement.getSupplierId());
+         }
+         SupplierProduct product = supplierIDsToTheirProductIDsAndTheirSpesification
+               .get(updatedAgreement.getSupplierId())
+               .get(productId);
+         if (product == null) {
+            throw new IllegalArgumentException("Product ID " + productId + " not found in supplier's product list");
+         }
+         item.setProductName(product.getName());
+         item.setLineInBillID(i + 1); // Set the line in bill ID to the index + 1
+         updatedItems.add(item);
+      }
+      updatedAgreement.setBillOfQuantitiesItems(updatedItems);
+      if (!agreementFacade.updateAgreement(updatedAgreement)) {
+         throw new IllegalArgumentException("Failed to update agreement");
+      }
    }
 
 }

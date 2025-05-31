@@ -5,21 +5,22 @@ import java.util.*;
 import DTOs.AgreementDTO;
 import DTOs.BillofQuantitiesItemDTO;
 import DomainLayer.Classes.Agreement;
+import DomainLayer.Classes.BillofQuantitiesItem;
 
 public class AgreementFacade extends BaseFacade {
-    private final Map<Integer, List<Agreement>> agreements = new HashMap<>();
+    private final Map<Integer, List<Agreement>> supplierIdToAgreements = new HashMap<>();
 
     public AgreementDTO createAgreement(AgreementDTO agreementDTO) {
         Agreement agreement = new Agreement(agreementDTO);
         agreementDTO.setAgreementId(agreement.getAgreementId());
-        agreements
+        supplierIdToAgreements
                 .computeIfAbsent(agreement.getSupplierId(), k -> new ArrayList<>());
-        agreements.get(agreement.getSupplierId()).add(agreement);
+        supplierIdToAgreements.get(agreement.getSupplierId()).add(agreement);
         return agreementDTO;
     }
 
     public boolean removeAgreement(int agreementID, int supplierID) {
-        List<Agreement> supplierAgreements = agreements.get(supplierID);
+        List<Agreement> supplierAgreements = supplierIdToAgreements.get(supplierID);
         if (supplierAgreements == null) {
             return false;
         }
@@ -35,23 +36,70 @@ public class AgreementFacade extends BaseFacade {
     }
 
     public boolean updateAgreement(AgreementDTO updated) {
-        return false; // TODO: Implement this method
+        int agreementID = updated.getAgreementId();
+        int supplierID = updated.getSupplierId();
+        List<Agreement> supplierAgreements = supplierIdToAgreements.get(supplierID);
+        if (supplierAgreements == null) {
+            return false;
+        }
+        Agreement existingAgreement = supplierIdToAgreements
+                .get(supplierID)
+                .stream()
+                .filter(a -> a.getAgreementId() == agreementID)
+                .findFirst()
+                .orElse(null);
+        if (existingAgreement == null) {
+            return false; // Agreement not found
+        }
+        // Update the existing agreement with the new details
+        List<BeanPatch<AgreementDTO, Agreement, ?>> rules = List.of(
+                BeanPatch.of(AgreementDTO::getAgreementStartDate, Agreement::getAgreementStartDate,
+                        Agreement::setAgreementStartDate),
+                BeanPatch.of(AgreementDTO::getAgreementEndDate, Agreement::getAgreementEndDate,
+                        Agreement::setAgreementEndDate),
+                BeanPatch.of(AgreementDTO::isHasFixedSupplyDays, Agreement::hasFixedSupplyDays,
+                        Agreement::setHasFixedSupplyDays));
+        rules.forEach(rule -> rule.apply(updated, existingAgreement));
+        // Update the bill of quantities items
+        // use the existing list of item ids to update the items in the agreement
+        List<BillofQuantitiesItemDTO> updatedItems = updated.getBillOfQuantitiesItems();
+        existingAgreement.setBillOfQuantitiesItemsUsingDTOs(updatedItems);
+        return true;
     }
 
-    public Agreement getAgreement(int agreementID) {
-        return null; // TODO: Implement this method
+    public AgreementDTO getAgreementById(int agreementID) {
+        for (List<Agreement> supplierAgreements : supplierIdToAgreements.values()) {
+            for (Agreement agreement : supplierAgreements) {
+                if (agreement.getAgreementId() == agreementID) {
+                    return new AgreementDTO(
+                            agreement.getSupplierId(),
+                            agreement.getSupplierName(),
+                            agreement.getAgreementStartDate(),
+                            agreement.getAgreementEndDate(),
+                            agreement.hasFixedSupplyDays(),
+                            agreement.getBillOfQuantitiesItems().stream()
+                                    .map(BillofQuantitiesItemDTO::new)
+                                    .toList() // Convert to List<BillofQuantitiesItemDTO>
+                    );
+                }
+            }
+        }
+        throw new IllegalArgumentException("Agreement with ID " + agreementID + " not found.");
     }
 
-    public List<AgreementDTO> getAgreementsWithFullDetail() {
-        return null; // TODO: Implement this method
-    }
-
-    public AgreementDTO getAgreementById(String lookupJson) {
-        return null; // TODO: Implement this method
+    public Agreement getActualAgreement(int agreementID) {
+        for (List<Agreement> supplierAgreements : supplierIdToAgreements.values()) {
+            for (Agreement agreement : supplierAgreements) {
+                if (agreement.getAgreementId() == agreementID) {
+                    return agreement; // Return the actual Agreement object
+                }
+            }
+        }
+        throw new IllegalArgumentException("Agreement with ID " + agreementID + " not found.");
     }
 
     public List<AgreementDTO> getAgreementsBySupplierId(int supplierId) {
-        List<Agreement> supplierAgreements = agreements.get(supplierId);
+        List<Agreement> supplierAgreements = supplierIdToAgreements.get(supplierId);
         if (supplierAgreements == null) {
             return Collections.emptyList();
         }
@@ -63,6 +111,7 @@ public class AgreementFacade extends BaseFacade {
                     agreement.getAgreementStartDate(),
                     agreement.getAgreementEndDate(),
                     agreement.hasFixedSupplyDays(),
+                    // make an array of BillofQuantitiesItemDTO from the agreement's items
                     agreement.getBillOfQuantitiesItems().stream()
                             .map(BillofQuantitiesItemDTO::new)
                             .toList() // Convert to List<BillofQuantitiesItemDTO>
