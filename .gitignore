@@ -1,0 +1,25 @@
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+*/.DS_Store
+**/.DS_Store
+
+# Build files
+bin/
+target/
+*.class
+dependency-reduced-pom.xml
+
+# Libraries
+lib/
+*.jar
+
+# Maven
+target/
+*.war
+*.ear
+*.zip
