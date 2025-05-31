@@ -1,16 +1,16 @@
-package PresentationLayer.CLIs.Controllers;
+package PresentationLayer.CLIs;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import PresentationLayer.CommandInterface;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
 
-public class SupplierController{
+public class SupplierCLI {
    private final View view;
    private final Map<String, CommandInterface> supplierCommands;
 
-   public SupplierController(View view, Map<String, CommandInterface> commands) {
+   public SupplierCLI(View view, Map<String, CommandInterface> commands) {
       this.view = view;
       this.supplierCommands = new HashMap<>();
       supplierCommands.put("1", commands.get("CreateSupplierCMD"));

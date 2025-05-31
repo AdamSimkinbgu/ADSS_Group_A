@@ -1,6 +1,4 @@
-package PresentationLayer.CLIs;
-
-import PresentationLayer.View;
+package PresentationLayer;
 
 public abstract class AbstractCommand implements CommandInterface {
 
@@ -13,8 +11,8 @@ public abstract class AbstractCommand implements CommandInterface {
     @Override
     public abstract void execute();
 
-   @Override
-   public int hashCode() {
-      return getClass().hashCode();
-   }
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

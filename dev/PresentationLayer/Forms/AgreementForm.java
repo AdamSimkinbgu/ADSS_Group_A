@@ -1,4 +1,4 @@
-package PresentationLayer.CLIs.Forms;
+package PresentationLayer.Forms;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,8 +7,8 @@ import java.util.List;
 
 import DTOs.AgreementDTO;
 import DTOs.BillofQuantitiesItemDTO;
+import PresentationLayer.InteractiveForm;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.InteractiveForm;
 
 public class AgreementForm extends InteractiveForm<AgreementDTO> {
 
@@ -124,6 +124,8 @@ public class AgreementForm extends InteractiveForm<AgreementDTO> {
          BigDecimal itemDiscount;
          try {
             itemDiscount = new BigDecimal(itemDiscountString);
+            BigDecimal hundred = new BigDecimal("100");
+            itemDiscount = hundred.subtract(itemDiscount).divide(hundred);
          } catch (NumberFormatException e) {
             view.showError("Item discount percentage must be a number");
             return null;
@@ -148,8 +150,47 @@ public class AgreementForm extends InteractiveForm<AgreementDTO> {
 
    @Override
    protected AgreementDTO update(AgreementDTO dto) throws Cancelled {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'update'");
+      view.showMessage("Updating Agreement... (enter 'cancel' to cancel)");
+      view.showMessage("Current details: " + dto);
+      String fieldToUpdate = askNonEmpty(
+            "What do you want to change? (startDate, endDate, billOfQuantitiesItems(enter 'boq' for this)):");
+      switch (fieldToUpdate.toLowerCase()) {
+         case "startdate" -> dto = new AgreementDTO(
+               dto.getAgreementId(),
+               dto.getSupplierName(),
+               askDate("New start date (DD-MM-YYYY):"),
+               dto.getAgreementEndDate(),
+               dto.isHasFixedSupplyDays(),
+               dto.getBillOfQuantitiesItems());
+         case "enddate" -> dto = new AgreementDTO(
+               dto.getAgreementId(),
+               dto.getSupplierName(),
+               dto.getAgreementStartDate(),
+               askDate("New end date (DD-MM-YYYY):"),
+               dto.isHasFixedSupplyDays(),
+               dto.getBillOfQuantitiesItems());
+         case "boq" -> {
+            String action = askNonEmpty("Do you want to add or remove an item? (add/remove):").toLowerCase();
+            switch (action) {
+               case "add" -> {
+                  BillofQuantitiesItemDTO newItem = new BillofQuantitiesItemDTO(
+                        -1, // lineInBillID will be set by the service
+                        "", // itemName will be set by the service
+                        askInt("Enter item ID:"),
+                        askInt("Enter item quantity:"),
+                        askBigDecimal("Enter item discount percentage:"));
+                  dto.getBillOfQuantitiesItems().add(newItem);
+               }
+               case "remove" -> {
+                  int itemIdToRemove = askInt("Enter the item ID to remove:");
+                  dto.getBillOfQuantitiesItems().removeIf(item -> item.getProductId() == itemIdToRemove);
+               }
+               default -> view.showError("Invalid action. Please enter 'add' or 'remove'.");
+            }
+         }
+         default -> view.showError("Invalid field. Please enter 'startDate', 'endDate', or 'billOfQuantitiesItems'.");
+      }
+      return dto;
    }
 
 }

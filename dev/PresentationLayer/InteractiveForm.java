@@ -1,5 +1,5 @@
 // cli/forms/InteractiveForm.java
-package PresentationLayer.CLIs;
+package PresentationLayer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 import DTOs.Enums.DayofWeek;
-import PresentationLayer.View;
 
 public abstract class InteractiveForm<T> {
 
@@ -69,6 +68,7 @@ public abstract class InteractiveForm<T> {
         }
         return Integer.parseInt(line);
     }
+
     protected BigDecimal askBigDecimal(String prompt) throws Cancelled {
         String line = ask(prompt);
         while (!line.matches("\\d+(\\.\\d+)?")) {
@@ -80,9 +80,9 @@ public abstract class InteractiveForm<T> {
 
     protected boolean askBoolean(String prompt) throws Cancelled {
         String line = ask(prompt);
-        while (!line.equalsIgnoreCase("yes") && !line.equalsIgnoreCase("no") || 
-                !line.equalsIgnoreCase("true") && !line.equalsIgnoreCase("false") || 
-                !line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("n") || 
+        while (!line.equalsIgnoreCase("yes") && !line.equalsIgnoreCase("no") ||
+                !line.equalsIgnoreCase("true") && !line.equalsIgnoreCase("false") ||
+                !line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("n") ||
                 !line.equalsIgnoreCase("t") && !line.equalsIgnoreCase("f")) {
             view.showError("Invalid input. Please enter 'yes' or 'no'.");
             line = ask(prompt);
@@ -117,5 +117,5 @@ public abstract class InteractiveForm<T> {
         }
         return days;
     }
-    
+
 }

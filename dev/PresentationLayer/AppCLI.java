@@ -6,34 +6,31 @@ import java.util.Scanner;
 
 import DomainLayer.*;
 import PresentationLayer.CLIs.*;
-import PresentationLayer.CLIs.Commands.AgreementCommands.*;
-import PresentationLayer.CLIs.Commands.ProductCommands.CreateProductCMD;
-import PresentationLayer.CLIs.Commands.ProductCommands.RemoveProductCMD;
-import PresentationLayer.CLIs.Commands.ProductCommands.UpdateProductCMD;
-import PresentationLayer.CLIs.Commands.ProductCommands.ViewAllProductsCMD;
-import PresentationLayer.CLIs.Commands.SupplierCommands.*;
-import PresentationLayer.CLIs.Controllers.*;
+import PresentationLayer.Commands.AgreementCommands.*;
+import PresentationLayer.Commands.ProductCommands.CreateProductCMD;
+import PresentationLayer.Commands.ProductCommands.RemoveProductCMD;
+import PresentationLayer.Commands.ProductCommands.UpdateProductCMD;
+import PresentationLayer.Commands.ProductCommands.ViewAllProductsCMD;
+import PresentationLayer.Commands.SupplierCommands.*;
 import ServiceLayer.*;
 
 public class AppCLI implements View {
-   private final SupplierController supplierController;
-   private final ProductController productController;
-   private final AgreementController agreementController;
+   private final SupplierCLI supplierCLI;
+   private final ProductCLI productCLI;
+   private final AgreementCLI agreementCLI;
 
    public static final Scanner scanner = new Scanner(System.in);
 
    public AppCLI(String configJson) {
 
       // Initialize the facades
-      SupplierFacade supplierFacade = new SupplierFacade(true, configJson);
       AgreementFacade agreementFacade = new AgreementFacade();
-      AgreementSupplierController agreementSupplierController = new AgreementSupplierController(agreementFacade,
-            supplierFacade);
+      SupplierController supplierFacade = new SupplierController(true, configJson, agreementFacade);
 
       // OrderFacade orderFacade = new OrderFacade(supplierFacade);
 
       // Initialize the services
-      AgreementService agreementService = new AgreementService(agreementFacade, agreementSupplierController);
+      AgreementService agreementService = new AgreementService(supplierFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
       // OrderService orderService = new OrderService(orderFacade);
       // SystemService systemService = new SystemService(supplierFacade, orderFacade,
@@ -42,15 +39,14 @@ public class AppCLI implements View {
       // Initialize the commands
       Map<String, CommandInterface> supplierCommands = initializeSupplierCommands(supplierService);
       Map<String, CommandInterface> productCommands = initializeProductCommands(supplierService);
-      // Map<String, CommandInterface> agreementCommands =
-      // initializeAgreementCommands(agreementService, supplierService);
+      Map<String, CommandInterface> agreementCommands = initializeAgreementCommands(agreementService, supplierService);
       // Map<String, CommandInterface> orderCommands =
       // initializeOrderCommands(orderFacade);
 
       // Initialize the controllers
-      this.supplierController = new SupplierController(this, supplierCommands);
-      this.productController = new ProductController(this, productCommands);
-      this.agreementController = new AgreementController(this, agreementService, supplierService);
+      this.supplierCLI = new SupplierCLI(this, supplierCommands);
+      this.productCLI = new ProductCLI(this, productCommands);
+      this.agreementCLI = new AgreementCLI(this, agreementCommands);
       start();
    }
 
@@ -76,8 +72,7 @@ public class AppCLI implements View {
          SupplierService supplierService) {
       Map<String, CommandInterface> commands = new HashMap<>();
       commands.put("CreateAgreementCMD", new CreateAgreementCMD(this, agreementService));
-      // commands.put("UpdateAgreementCMD", new UpdateAgreementCMD(this,
-      // agreementService));
+      commands.put("UpdateAgreementCMD", new UpdateAgreementCMD(this, agreementService));
       commands.put("RemoveAgreementCMD", new RemoveAgreementCMD(this, agreementService, supplierService));
       commands.put("ViewAllAgreementsCMD", new ViewAgreementsBySupplierIdCMD(this, agreementService));
       return commands;
@@ -107,13 +102,13 @@ public class AppCLI implements View {
          }
          switch (choice) {
             case "1":
-               supplierController.start();
+               supplierCLI.start();
                break;
             case "2":
-               productController.start();
+               productCLI.start();
                break;
             case "3":
-               agreementController.start();
+               agreementCLI.start();
                break;
             case "4":
                // orderController.start();

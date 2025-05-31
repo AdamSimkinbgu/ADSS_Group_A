@@ -1,11 +1,11 @@
-package PresentationLayer.CLIs.Commands.AgreementCommands;
+package PresentationLayer.Commands.AgreementCommands;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import PresentationLayer.CommandInterface;
 // import DTOs.SupplierDTO;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
-import PresentationLayer.CLIs.Forms.AgreementForm;
+import PresentationLayer.Forms.AgreementForm;
 import ServiceLayer.AgreementService;
 // import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;

@@ -1,11 +1,11 @@
-package PresentationLayer.CLIs.Commands.ProductCommands;
+package PresentationLayer.Commands.ProductCommands;
 
 import java.util.List;
 
 import DTOs.SupplierProductDTO;
+import PresentationLayer.CommandInterface;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
-import PresentationLayer.CLIs.Forms.ProductForm;
+import PresentationLayer.Forms.ProductForm;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 

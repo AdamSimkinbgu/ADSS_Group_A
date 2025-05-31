@@ -1,12 +1,12 @@
 // cli/forms/SupplierForm.java
-package PresentationLayer.CLIs.Forms;
+package PresentationLayer.Forms;
 
 import DTOs.*;
 import DTOs.Enums.PaymentMethod;
 import DTOs.Enums.PaymentTerm;
 import DTOs.Enums.DayofWeek;
+import PresentationLayer.InteractiveForm;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.InteractiveForm;
 
 import java.util.ArrayList;
 import java.util.EnumSet;

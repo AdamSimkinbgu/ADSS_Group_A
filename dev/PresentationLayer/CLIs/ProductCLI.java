@@ -1,16 +1,16 @@
-package PresentationLayer.CLIs.Controllers;
+package PresentationLayer.CLIs;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import PresentationLayer.CommandInterface;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
 
-public class ProductController {
+public class ProductCLI {
    private final View view;
    private final Map<String, CommandInterface> productCommands;
 
-   public ProductController(View view, Map<String, CommandInterface> commands) {
+   public ProductCLI(View view, Map<String, CommandInterface> commands) {
       this.view = view;
       this.productCommands = new HashMap<>();
       productCommands.put("1", commands.get("CreateProductCMD"));

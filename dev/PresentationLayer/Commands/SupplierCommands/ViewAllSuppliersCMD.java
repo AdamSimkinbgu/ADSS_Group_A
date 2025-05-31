@@ -1,11 +1,11 @@
-package PresentationLayer.CLIs.Commands.SupplierCommands;
+package PresentationLayer.Commands.SupplierCommands;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import DTOs.SupplierDTO;
+import PresentationLayer.CommandInterface;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 

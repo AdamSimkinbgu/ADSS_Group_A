@@ -1,7 +1,7 @@
-package PresentationLayer.CLIs.Commands.AgreementCommands;
+package PresentationLayer.Commands.AgreementCommands;
 
+import PresentationLayer.CommandInterface;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
 import ServiceLayer.AgreementService;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;

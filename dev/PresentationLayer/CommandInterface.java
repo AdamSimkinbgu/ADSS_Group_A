@@ -1,4 +1,4 @@
-package PresentationLayer.CLIs;
+package PresentationLayer;
 
 public interface CommandInterface {
    void execute();

@@ -1,10 +1,10 @@
-package PresentationLayer.CLIs.Forms;
+package PresentationLayer.Forms;
 
 import java.math.BigDecimal;
 
 import DTOs.SupplierProductDTO;
+import PresentationLayer.InteractiveForm;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.InteractiveForm;
 
 public class ProductForm extends InteractiveForm<SupplierProductDTO> {
       public ProductForm(View view) {

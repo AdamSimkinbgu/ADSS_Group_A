@@ -1,7 +1,7 @@
-package PresentationLayer.CLIs.Commands.ProductCommands;
+package PresentationLayer.Commands.ProductCommands;
 
+import PresentationLayer.CommandInterface;
 import PresentationLayer.View;
-import PresentationLayer.CLIs.CommandInterface;
 import ServiceLayer.SupplierService;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
