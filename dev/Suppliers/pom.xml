@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.ADSS_Group_A</groupId>
+    <artifactId>adss-parent</artifactId>
+    <version>2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>suppliers</artifactId>
+  <version>2.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <build>
+    <sourceDirectory>${project.basedir}/dev</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/dev/Tests</testSourceDirectory>
+    <directory>${project.basedir}/release</directory>
+
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.11.0</version>
+      <configuration>
+        <release>21</release>
+      </configuration>
+    </plugin>
+  </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+  </dependencies>
+</project>
