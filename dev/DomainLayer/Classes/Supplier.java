@@ -269,4 +269,10 @@ public class Supplier implements Serializable {
    public void setLeadSupplyDays(int leadSupplyDays) {
       this.leadSupplyDays = leadSupplyDays;
    }
+
+   public void removeAgreement(int agreementID) {
+      if (this.agreements != null) {
+         this.agreements.removeIf(a -> a == agreementID);
+      }
+   }
 }

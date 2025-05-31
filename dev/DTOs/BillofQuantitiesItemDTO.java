@@ -6,24 +6,24 @@ import DomainLayer.Classes.BillofQuantitiesItem;
 
 public class BillofQuantitiesItemDTO {
    private int lineInBillID;
-   private String itemName;
+   private String productName;
    private int quantity;
    private BigDecimal discountPercent;
-   private int itemId;
+   private int productId;
 
    public BillofQuantitiesItemDTO(int lineInBillId, String itemName, int itemId, int quantity,
          BigDecimal discountPercent) {
       this.lineInBillID = lineInBillId;
-      this.itemName = itemName;
-      this.itemId = itemId;
+      this.productName = itemName;
+      this.productId = itemId;
       this.quantity = quantity;
       this.discountPercent = discountPercent;
    }
 
    public BillofQuantitiesItemDTO(BillofQuantitiesItem item) {
       this.lineInBillID = item.getLineInBillID();
-      this.itemName = item.getDescription();
-      this.itemId = item.getProductID();
+      this.productName = item.getProductName();
+      this.productId = item.getProductID();
       this.quantity = item.getQuantity();
       this.discountPercent = item.getDiscountPercent();
    }
@@ -36,20 +36,20 @@ public class BillofQuantitiesItemDTO {
       this.lineInBillID = lineInBillID;
    }
 
-   public String getItemName() {
-      return itemName;
+   public String getProductName() {
+      return productName;
    }
 
-   public void setItemName(String itemName) {
-      this.itemName = itemName;
+   public void setProductName(String itemName) {
+      this.productName = itemName;
    }
 
-   public int getItemId() {
-      return itemId;
+   public int getProductId() {
+      return productId;
    }
 
-   public void setItemId(int itemId) {
-      this.itemId = itemId;
+   public void setProductId(int itemId) {
+      this.productId = itemId;
    }
 
    public int getQuantity() {
@@ -72,8 +72,8 @@ public class BillofQuantitiesItemDTO {
    public String toString() {
       return "{\n" +
             "   \"lineInBillID\": " + lineInBillID + ",\n" +
-            "   \"itemName\": \"" + itemName + "\",\n" +
-            "   \"itemId\": " + itemId + ",\n" +
+            "   \"itemName\": \"" + productName + "\",\n" +
+            "   \"itemId\": " + productId + ",\n" +
             "   \"quantity\": " + quantity + ",\n" +
             "   \"discountPercent\": " + discountPercent + "\n" +
             "}";
@@ -90,12 +90,21 @@ public class BillofQuantitiesItemDTO {
 
       if (lineInBillID != that.lineInBillID)
          return false;
-      if (itemId != that.itemId)
+      if (productId != that.productId)
          return false;
-      if (!itemName.equals(that.itemName))
+      if (!productName.equals(that.productName))
          return false;
       if (!(quantity == that.quantity))
          return false;
       return discountPercent.equals(that.discountPercent);
+   }
+
+   @Override
+   public int hashCode() {
+      int result = 0;
+      result = 31 * result + productId;
+      result = 31 * result + quantity;
+      result = 31 * result + discountPercent.hashCode();
+      return result;
    }
 }

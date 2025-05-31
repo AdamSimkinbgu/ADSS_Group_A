@@ -58,9 +58,9 @@ public class Agreement implements Serializable {
         this.billOfQuantitiesItems = new ArrayList<>();
         for (BillofQuantitiesItemDTO itemDTO : agreementDTO.getBillOfQuantitiesItems()) {
             BillofQuantitiesItem item = new BillofQuantitiesItem(
-                    -1, // Default value for line in bill ID
-                    itemDTO.getItemName(),
-                    itemDTO.getItemId(),
+                    itemDTO.getLineInBillID(), // Default value for line in bill ID
+                    itemDTO.getProductName(),
+                    itemDTO.getProductId(),
                     itemDTO.getQuantity(),
                     itemDTO.getDiscountPercent());
             addBillOfQuantitiesItem(item); // will set the line in bill ID correctly
@@ -97,6 +97,19 @@ public class Agreement implements Serializable {
 
     public List<BillofQuantitiesItem> getBillOfQuantitiesItems() {
         return billOfQuantitiesItems;
+    }
+
+    public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsAsDTOs() {
+        List<BillofQuantitiesItemDTO> dtos = new ArrayList<>();
+        for (BillofQuantitiesItem item : billOfQuantitiesItems) {
+            dtos.add(new BillofQuantitiesItemDTO(
+                    item.getLineInBillID(),
+                    item.getProductName(),
+                    item.getProductID(),
+                    item.getQuantity(),
+                    item.getDiscountPercent()));
+        }
+        return dtos;
     }
 
     public boolean hasFixedSupplyDays() {
@@ -205,5 +218,20 @@ public class Agreement implements Serializable {
         if (!agreementEndDate.equals(agreement.agreementEndDate))
             return false;
         return billOfQuantitiesItems.equals(agreement.billOfQuantitiesItems);
+    }
+
+    public void setBillOfQuantitiesItemsUsingDTOs(List<BillofQuantitiesItemDTO> billOfQuantitiesItems) {
+        // use hashcode to check for the boqdto and boq are equal and can take the same
+        // line in bill ID
+        this.billOfQuantitiesItems = new ArrayList<>();
+        for (BillofQuantitiesItemDTO itemDTO : billOfQuantitiesItems) {
+            BillofQuantitiesItem item = new BillofQuantitiesItem(
+                    itemDTO.getLineInBillID(), // Default value for line in bill ID
+                    itemDTO.getProductName(),
+                    itemDTO.getProductId(),
+                    itemDTO.getQuantity(),
+                    itemDTO.getDiscountPercent());
+            addBillOfQuantitiesItem(item); // will set the line in bill ID correctly
+        }
     }
 }

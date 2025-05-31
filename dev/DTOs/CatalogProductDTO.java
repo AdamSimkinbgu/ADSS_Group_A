@@ -19,4 +19,17 @@ public record CatalogProductDTO(
             supplierProductDTO.getName(),
             supplierProductDTO.getManufacturerName());
    }
+
+   @Override
+   public String toString() {
+      return String.format(
+            "{\n" +
+                  "  \"productId\": %d,\n" +
+                  "  \"name\": \"%s\",\n" +
+                  "  \"manufacturerName\": \"%s\"\n" +
+                  "}",
+            productId,
+            name,
+            manufacturerName);
+   }
 }

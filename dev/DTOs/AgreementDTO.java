@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class AgreementDTO {
-   private int agreementId;
    private int supplierId;
+   private int agreementId;
    private String supplierName;
    private boolean valid;
    private LocalDate agreementStartDate;

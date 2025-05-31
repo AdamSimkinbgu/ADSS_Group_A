@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 public class BillofQuantitiesItem implements Serializable {
    private int lineInBillID;
-   private String description;
+   private String productName;
    private int quantity;
    private BigDecimal discountPercent;
    private int productID;
@@ -17,7 +17,7 @@ public class BillofQuantitiesItem implements Serializable {
          int quantity,
          BigDecimal discountPrecent) {
       this.lineInBillID = lineInBillId;
-      this.description = productName;
+      this.productName = productName;
       this.productID = productID;
       this.quantity = quantity;
       this.discountPercent = discountPrecent;
@@ -32,12 +32,12 @@ public class BillofQuantitiesItem implements Serializable {
       this.lineInBillID = lineInBillID;
    }
 
-   public String getDescription() {
-      return description;
+   public String getProductName() {
+      return productName;
    }
 
-   public void setDescription(String description) {
-      this.description = description;
+   public void setProductName(String productName) {
+      this.productName = productName;
    }
 
    public int getProductID() {
@@ -68,7 +68,7 @@ public class BillofQuantitiesItem implements Serializable {
    public String toString() {
       return "{\n" +
             "   \"lineInBillID\": " + lineInBillID + ",\n" +
-            "   \"description\": \"" + description + "\",\n" +
+            "   \"description\": \"" + productName + "\",\n" +
             "   \"quantity\": " + quantity + ",\n" +
             "   \"discountPercent\": " + discountPercent + "\n" +
             "}";
@@ -83,12 +83,21 @@ public class BillofQuantitiesItem implements Serializable {
 
       BillofQuantitiesItem that = (BillofQuantitiesItem) o;
 
-      if (lineInBillID != that.lineInBillID)
-         return false;
+      // if (lineInBillID != that.lineInBillID)
+      // return false;
       if (quantity != that.quantity)
          return false;
       if (productID != that.productID)
          return false;
       return discountPercent.equals(that.discountPercent);
+   }
+
+   @Override
+   public int hashCode() {
+      int result = 0;
+      result = 31 * result + productID;
+      result = 31 * result + quantity;
+      result = 31 * result + discountPercent.hashCode();
+      return result;
    }
 }
