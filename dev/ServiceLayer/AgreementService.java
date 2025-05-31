@@ -4,18 +4,16 @@ import java.util.List;
 
 import DTOs.AgreementDTO;
 import DomainLayer.AgreementFacade;
-import DomainLayer.AgreementSupplierController;
+import DomainLayer.SupplierController;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import ServiceLayer.Interfaces_and_Abstracts.Validators.AgreementValidator;
 
 public class AgreementService extends BaseService {
-   private final AgreementFacade agreementFacade;
-   private final AgreementSupplierController agreementSupplierController;
+   private final SupplierController supplierController;
    private final AgreementValidator agreementValidator;
 
-   public AgreementService(AgreementFacade agreementFacade, AgreementSupplierController agreementSupplierController) {
-      this.agreementFacade = agreementFacade;
-      this.agreementSupplierController = agreementSupplierController;
+   public AgreementService(SupplierController supplierController) {
+      this.supplierController = supplierController;
       this.agreementValidator = new AgreementValidator();
    }
 
@@ -25,15 +23,24 @@ public class AgreementService extends BaseService {
          return ServiceResponse.fail(validationResponse.getErrors());
       }
       try {
-         AgreementDTO actualAgreementDTO = agreementSupplierController.createAgreement(agreementDTO);
+         AgreementDTO actualAgreementDTO = supplierController.createAgreement(agreementDTO);
          return ServiceResponse.ok(actualAgreementDTO);
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to create agreement: " + e.getMessage()));
       }
    }
 
-   public ServiceResponse<?> updateAgreement(String updateJson) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<?> updateAgreement(int agreementID, AgreementDTO updatedAgreement) {
+      ServiceResponse<?> validationResponse = agreementValidator.validateUpdateDTO(updatedAgreement);
+      if (!validationResponse.isSuccess()) {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+      try {
+         supplierController.updateAgreement(agreementID, updatedAgreement);
+         return ServiceResponse.ok("Agreement updated successfully");
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to update agreement: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<?> removeAgreement(int agreementID, int supplierID) {
@@ -44,7 +51,7 @@ public class AgreementService extends BaseService {
          return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
       }
       try {
-         boolean removed = agreementFacade.removeAgreement(agreementID, supplierID);
+         boolean removed = supplierController.removeAgreement(agreementID, supplierID);
          if (removed) {
             return ServiceResponse.ok("Agreement removed successfully");
          } else {
@@ -56,8 +63,20 @@ public class AgreementService extends BaseService {
       }
    }
 
-   public ServiceResponse<?> getAgreement(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<AgreementDTO> getAgreement(int agreementID) {
+      ServiceResponse<?> validationResponse = agreementValidator.validateGetDTO(agreementID);
+      if (!validationResponse.isSuccess()) {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+      try {
+         AgreementDTO agreement = supplierController.getAgreement(agreementID);
+         if (agreement == null) {
+            return ServiceResponse.fail(List.of("Agreement not found for ID: " + agreementID));
+         }
+         return ServiceResponse.ok(agreement);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve agreement: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<?> getAllAgreements(String json) {
@@ -73,7 +92,7 @@ public class AgreementService extends BaseService {
          return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
       }
       try {
-         List<AgreementDTO> agreements = agreementFacade.getAgreementsBySupplierId(supplierId);
+         List<AgreementDTO> agreements = supplierController.getAgreementsBySupplierId(supplierId);
          if (agreements.isEmpty()) {
             return ServiceResponse.fail(List.of("No agreements found for supplier ID: " + supplierId));
          }

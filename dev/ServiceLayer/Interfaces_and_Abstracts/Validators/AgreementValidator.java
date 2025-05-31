@@ -34,13 +34,16 @@ public class AgreementValidator implements IValidator<AgreementDTO> {
          errors.add("Bill of Quantities items cannot be null");
       } else if (!target.getBillOfQuantitiesItems().isEmpty()) {
          for (BillofQuantitiesItemDTO item : target.getBillOfQuantitiesItems()) {
-            if (item.getItemId() < 0) {
-               errors.add("Product ID must be a positive integer");
+            if (item == null) {
+               errors.add("Bill of Quantities item cannot be null");
+               continue; // Skip to the next item
+            }
+            if (item.getProductId() < 0) {
+               errors.add("Product ID in Bill of Quantities item must be a positive integer");
             }
             if (item.getQuantity() <= 0) {
                errors.add("Quantity in Bill of Quantities item must be greater than 0");
             }
-            // check if the percentage is valid for bigdecimal
             if (item.getDiscountPercent().compareTo(new BigDecimal(0)) == -1
                   || item.getDiscountPercent().compareTo(new BigDecimal("100")) == 1) {
                errors.add("Discount percentage must be between 0 and 100");

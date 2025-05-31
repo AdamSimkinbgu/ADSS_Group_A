@@ -6,7 +6,7 @@ import DTOs.CatalogProductDTO;
 import DTOs.SupplierDTO;
 import DTOs.SupplierProductDTO;
 import DomainLayer.Classes.Supplier;
-import DomainLayer.SupplierFacade;
+import DomainLayer.SupplierController;
 import ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import ServiceLayer.Interfaces_and_Abstracts.Validators.ProductValidator;
 import ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValidator;
@@ -16,11 +16,11 @@ import ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValidator;
  * ServiceResponse<T> envelope.
  */
 public class SupplierService extends BaseService {
-   private final SupplierFacade supplierFacade;
+   private final SupplierController supplierFacade;
    private final SupplierValidator supplierValidator = new SupplierValidator();
    private final ProductValidator productValidator = new ProductValidator();
 
-   public SupplierService(SupplierFacade facade) {
+   public SupplierService(SupplierController facade) {
       this.supplierFacade = facade;
 
    }
