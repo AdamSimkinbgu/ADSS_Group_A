@@ -49,8 +49,10 @@ public class MainService {
 
             //order the product
             HashMap<Integer,Integer> order = new HashMap<>();
-            order.put(p.getproductId(),2 * p.getminimalAmountStock())
+            order.put(p.getproductId(),2 * p.getminimalAmountStock());
             is.createRegularOrder(order);
+
+
 
             return "Product added successfully.";
         } catch (IllegalArgumentException e) {
@@ -62,7 +64,10 @@ public class MainService {
 
     public String MoveOrder() {
         try {
-            md.UpdateInventoryRestock();
+            List<Integer> ls = md.UpdateInventoryRestock();
+            for(Integer i : ls){
+                is.completeOrder(i);
+            }
             return "Orders Moved successfully.";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
@@ -209,10 +214,9 @@ public class MainService {
     }
 
     // Get called by Supplier Domain
-    public String DeliverOrder(OrderPackageDTO ls) {
-        // todo ?? build ls
+    public String DeliverOrder(OrderPackageDTO order) {
 
-        md.DeliverOrder(ls.getSupplies());
+        md.DeliverOrder(order);
 
         return "done";
     }

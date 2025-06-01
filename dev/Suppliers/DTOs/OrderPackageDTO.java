@@ -6,22 +6,22 @@ import java.util.List;
 import Inventory.DTO.SupplyDTO;
 
 public class OrderPackageDTO {
-   private String orderId;
+   private int orderId;
    private LocalDate deliveryDate;
    private List<SupplyDTO> supplies; // having of products with their quantities, productId and their experation
                                      // dates
 
-   public OrderPackageDTO(String orderId, LocalDate deliveryDate, List<SupplyDTO> supplies) {
+   public OrderPackageDTO(int orderId, LocalDate deliveryDate, List<SupplyDTO> supplies) {
       this.orderId = orderId;
       this.deliveryDate = deliveryDate;
       this.supplies = supplies;
    }
 
-   public String getOrderId() {
+   public int getOrderId() {
       return orderId;
    }
 
-   public void setOrderId(String orderId) {
+   public void setOrderId(int orderId) {
       this.orderId = orderId;
    }
 
@@ -68,14 +68,14 @@ public class OrderPackageDTO {
       if (!(o instanceof OrderPackageDTO))
          return false;
       OrderPackageDTO that = (OrderPackageDTO) o;
-      return orderId.equals(that.orderId) &&
+      return (orderId == orderId) &&
             deliveryDate.equals(that.deliveryDate) &&
             supplies.equals(that.supplies);
    }
 
    @Override
    public int hashCode() {
-      int result = orderId.hashCode();
+      int result = orderId;
       result = 31 * result + deliveryDate.hashCode();
       result = 31 * result + supplies.hashCode();
       return result;

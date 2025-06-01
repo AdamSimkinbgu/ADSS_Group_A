@@ -50,4 +50,8 @@ public class IntegrationService {
         return null;
     }
 
+    public ServiceResponse<?> completeOrder(int orderId){
+        return null;
+    }
+
 }

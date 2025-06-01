@@ -3,6 +3,7 @@ package Inventory.Domain;
 import Inventory.DAO.*;
 import Inventory.DTO.*;
 import Inventory.type.Position;
+import Suppliers.DTOs.OrderPackageDTO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class MainDomain {
     private List<DiscountDomain> disLst;
     private List<SaleDomain> saleLst;
     private List<CategoryDomain> categoryLst;
-    private List<OrderDeliverdDomian> orders;
+    private List<OrderPackageDTO> orders;
 
     // todo assign DAOs
     public MainDomain() {
@@ -97,18 +98,22 @@ public class MainDomain {
     }
 
     // todo check
-    public void UpdateInventoryRestock() {
+    public List<Integer> UpdateInventoryRestock() {
         SupplyDomain s;
-        for (OrderDeliverdDomian o : orders) {
-            s = new SupplyDomain(supplyCounter, o.getQuantity(), o.getExDate());
-
+        List<Integer> ret = new ArrayList<>();
+        for (OrderPackageDTO o : orders) {
+            for(SupplyDTO sdto: o.getSupplies()) {
+                sdto.setSId(supplyCounter);
+                s = new SupplyDomain(sdto);
+                SPdao.Add(new SupplyDTO(s, sdto.getProductID()));
+                prodMap.get(sdto.getProductID()).AddSupply(s);
+                supplyCounter++;
+            }
+            ret.add(o.getOrderId());
             // add to database
             ODdao.Remove(o);
-            SPdao.Add(new SupplyDTO(s, o.getpId()));
-
-            prodMap.get(o.getpId()).AddSupply(s);
-            supplyCounter++;
         }
+        return ret;
     }
 
     // todo change database
@@ -364,16 +369,11 @@ public class MainDomain {
     }
 
     // todo check
-    public void DeliverOrder(List<SupplyDTO> ls) {
-        OrderDeliverdDomian o;
-        for (SupplyDTO s : ls) {
-
-            o = new OrderDeliverdDomian(s);
-            // add to database
-            ODdao.Add(o);
+    public void DeliverOrder(OrderPackageDTO order) {
+        //add to database
+        ODdao.Add(order);
             // add to orders
-            orders.add(o);
-        }
+        orders.add(order);
     }
 
     // todo check
