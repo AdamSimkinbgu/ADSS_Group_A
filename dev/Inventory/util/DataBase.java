@@ -14,23 +14,89 @@ public class DataBase {
 
 
             try (Statement st = conn.createStatement()) {
-                st.executeUpdate("""
-                    CREATE TABLE IF NOT EXISTS users(
-                        id   INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT NOT NULL
-                    );
-                """);
-                st.executeUpdate("""
-                    CREATE TABLE IF NOT EXISTS purchases(
-                        id           INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id      INTEGER NOT NULL,
-                        symbol       TEXT NOT NULL,
-                        quantity     INTEGER NOT NULL,
-                        price        REAL    NOT NULL,
-                        purchased_at TEXT    NOT NULL,
-                        FOREIGN KEY(user_id) REFERENCES users(id)
-                    );
-                """);
+                        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS sale (
+                saleId INTEGER PRIMARY KEY,
+                date TEXT,
+                price REAL
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS product (
+                productId INTEGER PRIMARY KEY,
+                name TEXT,
+                manufacture TEXT,
+                sale_price REAL
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS saleProduct (
+                saleId INTEGER,
+                productId INTEGER,
+                quantity INTEGER,
+                PRIMARY KEY (saleId, productId),
+                FOREIGN KEY (saleId) REFERENCES sale(saleId),
+                FOREIGN KEY (productId) REFERENCES product(productId)
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS inventory (
+                productId INTEGER PRIMARY KEY,
+                quantityStore INTEGER,
+                quantityWarehouse INTEGER,
+                quantityBad INTEGER,
+                FOREIGN KEY (productId) REFERENCES product(productId)
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS discountproduct (
+                productId INTEGER,
+                startDate TEXT,
+                endDate TEXT,
+                percent REAL,
+                FOREIGN KEY (productId) REFERENCES product(productId)
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS category (
+                name TEXT PRIMARY KEY
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS discountSale (
+                saleName TEXT,
+                startDate TEXT,
+                endDate TEXT,
+                percent REAL,
+                FOREIGN KEY (saleName) REFERENCES category(name)
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS subCategory (
+                parentCategory TEXT,
+                subCategory TEXT,
+                PRIMARY KEY (parentCategory, subCategory),
+                FOREIGN KEY (parentCategory) REFERENCES category(name),
+                FOREIGN KEY (subCategory) REFERENCES category(name)
+            );
+        """);
+
+        st.executeUpdate("""
+            CREATE TABLE IF NOT EXISTS productCategory (
+                parentCategory TEXT,
+                productId INTEGER,
+                PRIMARY KEY (parentCategory, productId),
+                FOREIGN KEY (parentCategory) REFERENCES category(name),
+                FOREIGN KEY (productId) REFERENCES product(productId)
+            );
+        """);
 
             }
         } catch (Exception e) {
