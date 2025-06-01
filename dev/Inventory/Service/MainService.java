@@ -3,6 +3,7 @@ package Inventory.Service;
 import Inventory.DTO.*;
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.SaleDomain;
+import Suppliers.ServiceLayer.IntegrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -14,12 +15,26 @@ import java.util.List;
 public class MainService {
     private MainDomain md;
     private ObjectMapper om;
+    private IntegrationService is;
 
-    public MainService() {
+    private static MainService mainServiceInstance;
+
+    private MainService() {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
         // md.InventoryInitialization();
+    }
+
+    public static MainService GetInstance(){
+        if(mainServiceInstance == null)mainServiceInstance = new MainService();
+        return mainServiceInstance;
+    }
+
+    public boolean SetIntegrationService(){
+        if(is != null)return false;
+        is = IntegrationService.getIntegrationServiceInstance();
+        return true;
     }
 
     // ???

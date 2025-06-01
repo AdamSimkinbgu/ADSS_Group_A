@@ -10,14 +10,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="jar">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Domain/ProductDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ClassDiagramURL.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Inventory/docs/ClassDiagramURL.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/ids.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Inventory/docs/ids.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/instructions.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Inventory/docs/instructions.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/סופר-לי מודל מלאי-דרישות-שאלות .xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Inventory/docs/סופר-לי מודל מלאי-דרישות-שאלות .xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/adss_v0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/Inventory/release/adss_v0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/adss_v01.jar" beforeDir="false" afterPath="$PROJECT_DIR$/Inventory/release/adss_v01.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/AppCLI.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/AppCLI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/IntegrationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/IntegrationService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +83,7 @@
     "Repository.Attach.JavaDocs": "true",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "206641649__315057323",
+    "git-widget-placeholder": "moshe-fix",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A/release",
     "project.structure.last.edited": "Modules",
@@ -98,7 +101,7 @@
   <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="ADSS_Group_A" />
+      <module name="suppliers-inventory" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -409,5 +412,21 @@
     <MESSAGE value="test" />
     <MESSAGE value="jar" />
     <option name="LAST_COMMIT_MESSAGE" value="jar" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/Main.java</url>
+          <line>33</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/Main.java</url>
+          <line>6</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

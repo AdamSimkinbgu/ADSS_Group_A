@@ -6,6 +6,7 @@ public class Main {
       System.out.println("Welcome to the Supplier-Inventory Management System!");
       AppCLI appCLI = new AppCLI("data.json");
       PresentationMenu presentationMenu = new PresentationMenu();
+      integrateModules(presentationMenu,appCLI);
       while (true) {
          System.out.println("1. Supplier Management");
          System.out.println("2. Inventory Management");
@@ -26,5 +27,10 @@ public class Main {
                System.out.println("Invalid option, please try again.");
          }
       }
+   }
+
+   public static void integrateModules(PresentationMenu pm, AppCLI app){
+      app.integration();
+      pm.Integration();
    }
 }

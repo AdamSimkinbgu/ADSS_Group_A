@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import Inventory.Service.MainService;
 import Suppliers.DomainLayer.*;
 import Suppliers.PresentationLayer.CLIs.*;
 import Suppliers.PresentationLayer.Commands.AgreementCommands.*;
@@ -18,6 +19,7 @@ public class AppCLI implements View {
    private final SupplierCLI supplierCLI;
    private final ProductCLI productCLI;
    private final AgreementCLI agreementCLI;
+   private IntegrationService integrationService;
 
    public static final Scanner scanner = new Scanner(System.in);
 
@@ -32,6 +34,7 @@ public class AppCLI implements View {
       // Initialize the services
       AgreementService agreementService = new AgreementService(supplierFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
+      integrationService = IntegrationService.getIntegrationServiceInstance();
       // OrderService orderService = new OrderService(orderFacade);
       // SystemService systemService = new SystemService(supplierFacade, orderFacade,
       // agreementFacade);
@@ -134,4 +137,8 @@ public class AppCLI implements View {
       return scanner.nextLine();
    }
 
+
+   public boolean integration(){
+      return integrationService.setMainService();
+   }
 }

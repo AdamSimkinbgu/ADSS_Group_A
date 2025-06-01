@@ -18,9 +18,13 @@ public class PresentationMenu {
     private ObjectMapper om;
 
     public PresentationMenu() {
-        ms = new MainService();
+        ms = MainService.GetInstance();
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
+    }
+
+    public boolean Integration(){
+        return ms.SetIntegrationService();
     }
 
     public void Menu() {

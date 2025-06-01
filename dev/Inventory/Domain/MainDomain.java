@@ -136,7 +136,7 @@ public class MainDomain {
         return new SaleDTO(s);
     }
 
-    // VVVVVV
+    // todo change
     public String GetMissingReport() {
         StringBuilder ret = new StringBuilder("=====Missing Report=====\n");
         int missNum = 0;
