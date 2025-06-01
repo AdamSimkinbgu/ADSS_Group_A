@@ -10,7 +10,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import Inventory.type.Position;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainService {
     private MainDomain md;
@@ -176,6 +178,12 @@ public class MainService {
     public String AddMissingOrder() {
         List<SupplyDTO> Orders = md.AddMissingOrder();
 
+        HashMap<Integer,Integer> order = new HashMap<>();
+
+        for(SupplyDTO s:Orders){
+            order.put(s.getProductID(),s.getQuantityWH());
+        }
+        is.createShortageOrder(order);
         // todo call supply func with orders
 
         return "done?";

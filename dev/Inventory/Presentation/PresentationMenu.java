@@ -496,7 +496,7 @@ public class PresentationMenu {
         System.out.println("Enter quantity");
         int quantity = scanner.nextInt();
 
-        System.out.println("Enter a day of the week by number");
+        System.out.println("Enter a day of the week by number (1-7)");
         int day = scanner.nextInt();
 
         String msg = ms.AddRecurringOrder(pId, quantity, day);

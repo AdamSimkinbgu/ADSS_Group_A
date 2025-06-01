@@ -26,7 +26,7 @@ public class IntegrationService {
     }
 
 
-    public List<CatalogProductDTO> getCatalog(){
+    public ServiceResponse<?> getCatalog(){
         return null;
     }
 
