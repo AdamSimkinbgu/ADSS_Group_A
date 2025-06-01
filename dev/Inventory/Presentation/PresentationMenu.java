@@ -67,15 +67,12 @@ public class PresentationMenu {
                     InventoryReport();
                     break;
                 case 11:
-                    MissingReport();
-                    break;
-                case 12:
                     BadReport();
                     break;
-                case 13:
-                    OrderMissing();
+                case 12:
+                    MissingReport();
                     break;
-                case 14:
+                case 13:
                     AddRecurringOrder();
                     break;
 
@@ -99,10 +96,9 @@ public class PresentationMenu {
         System.out.println("8. Move Product");
         System.out.println("9. Search For Product");
         System.out.println("10. Get Current Inventory Report For Restock");
-        System.out.println("11. Get Missing Report For Restock");
-        System.out.println("12. Get Bad Product Report");
-        System.out.println("13. Order Missing Product");
-        System.out.println("14. Add A Recurring Order");
+        System.out.println("11. Get Bad Product Report");
+        System.out.println("12. Get Missing Report For Restock And Order Missing Product");
+        System.out.println("13. Add A Recurring Order");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
 
@@ -441,9 +437,23 @@ public class PresentationMenu {
         System.out.println(response);
     }
 
-    // VVVVVVVV
+    // todo check
     private void MissingReport() {
+        Scanner scanner = new Scanner(System.in);
+        int input;
         System.out.println(ms.MissingReport());
+
+        do {
+            System.out.println(("Do you want to order all the missing inventory (1 for yes,0 for no)"));
+
+            input = scanner.nextInt();
+            if (input == 1) {
+                OrderMissing();
+                break;
+            } else if (input != 0) {
+                System.out.println("Invalid input.");
+            }
+        }while (input != 0);
     }
 
     // VVVVVVVV
@@ -482,6 +492,8 @@ public class PresentationMenu {
         }
     }
 
+
+
     private void OrderMissing() {
         String msg = ms.AddMissingOrder();
         System.out.println(msg);
@@ -489,17 +501,32 @@ public class PresentationMenu {
 
     private void AddRecurringOrder() {
         Scanner scanner = new Scanner(System.in);
+        int pId = 0;
 
-        System.out.println("Enter product ID: ");
-        int pId = scanner.nextInt();
+        HashMap<Integer,Integer> order = new HashMap<>();
 
-        System.out.println("Enter quantity");
-        int quantity = scanner.nextInt();
+        //get the product list
+        while (pId != -1) {
+            System.out.println("Enter product ID (to end enter -1): ");
+            pId = scanner.nextInt();
 
+            if(pId< -1)System.out.println("Invalid product ID.");
+            else if (pId != -1) {
+                System.out.println("Enter quantity");
+                int quantity = scanner.nextInt();
+                order.put(pId,quantity);
+            }
+        }
         System.out.println("Enter a day of the week by number (1-7)");
         int day = scanner.nextInt();
 
-        String msg = ms.AddRecurringOrder(pId, quantity, day);
+        String msg = ms.AddRecurringOrder(order, day);
         System.out.println(msg);
     }
+
+    private void DeleteRecurringOrder(){
+
+    }
+
+
 }

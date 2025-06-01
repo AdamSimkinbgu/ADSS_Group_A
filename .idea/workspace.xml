@@ -10,17 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="jar">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/AppCLI.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/AppCLI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/IntegrationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/IntegrationService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +67,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.Main.executor": "Debug",
+    "Application.Main.executor": "Run",
     "Downloaded.Files.Path.Enabled": "true",
     "JUnit.InventoryTests.executor": "Run",
     "JUnit.InventoryTests.testUpdateInventoryRestockValidProduct.executor": "Run",
@@ -412,21 +404,5 @@
     <MESSAGE value="test" />
     <MESSAGE value="jar" />
     <option name="LAST_COMMIT_MESSAGE" value="jar" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Main.java</url>
-          <line>33</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Main.java</url>
-          <line>6</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

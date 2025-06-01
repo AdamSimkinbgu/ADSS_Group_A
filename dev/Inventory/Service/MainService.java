@@ -3,7 +3,9 @@ package Inventory.Service;
 import Inventory.DTO.*;
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.SaleDomain;
+import Suppliers.DTOs.OrderPackageDTO;
 import Suppliers.ServiceLayer.IntegrationService;
+import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -25,7 +27,7 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        // md.InventoryInitialization();
+        md.InventoryInitialization();
     }
 
     public static MainService GetInstance(){
@@ -44,6 +46,12 @@ public class MainService {
         try {
             ProductDTO p = om.readValue(message, ProductDTO.class);
             int pId = md.AddProduct(p);
+
+            //order the product
+            HashMap<Integer,Integer> order = new HashMap<>();
+            order.put(p.getproductId(),2 * p.getminimalAmountStock())
+            is.createRegularOrder(order);
+
             return "Product added successfully.";
         } catch (IllegalArgumentException e) {
             return e.getMessage();
@@ -168,13 +176,22 @@ public class MainService {
         }
     }
 
-    public String AddRecurringOrder(int pId, int quantity, int day) {
 
-        // todo call supply func
-        return "done?";
+    public String AddRecurringOrder(HashMap<Integer,Integer> order, int day) {
+
+        for(Integer pId:order.keySet()){
+            if(!md.DoesProdExist(pId)){
+                return "Product ID " + pId+ " dosent exist";
+            }
+        }
+
+        //call supply func
+        ServiceResponse<?> response = is.createPeriodicOrder(order,day);
+        if(response.isSuccess())return "Order successfuly build";
+        else return response.getErrors().getFirst();
     }
 
-    // todo
+    // todo check
     public String AddMissingOrder() {
         List<SupplyDTO> Orders = md.AddMissingOrder();
 
@@ -183,19 +200,22 @@ public class MainService {
         for(SupplyDTO s:Orders){
             order.put(s.getProductID(),s.getQuantityWH());
         }
-        is.createShortageOrder(order);
-        // todo call supply func with orders
 
-        return "done?";
+        //call supply func
+        ServiceResponse<?> response = is.createShortageOrder(order);
+        if(response.isSuccess())return "Order successfuly build";
+        else return response.getErrors().getFirst();
 
     }
 
     // Get called by Supplier Domain
-    public String DeliverOrder(List<SupplyDTO> ls) {
+    public String DeliverOrder(OrderPackageDTO ls) {
         // todo ?? build ls
 
-        md.DeliverOrder(ls);
+        md.DeliverOrder(ls.getSupplies());
 
         return "done";
     }
+
+
 }
