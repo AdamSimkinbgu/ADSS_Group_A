@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class BillofQuantitiesItem implements Serializable {
+   private int agreementId;
    private int lineInBillID;
    private String productName;
    private int quantity;
@@ -11,17 +12,30 @@ public class BillofQuantitiesItem implements Serializable {
    private int productID;
 
    public BillofQuantitiesItem(
+         int agreementId,
          int lineInBillId,
          String productName,
          int productID,
          int quantity,
          BigDecimal discountPrecent) {
+      this.agreementId = agreementId;
       this.lineInBillID = lineInBillId;
       this.productName = productName;
       this.productID = productID;
       this.quantity = quantity;
       this.discountPercent = discountPrecent;
 
+   }
+
+   public BillofQuantitiesItem() {
+   }
+
+   public int getAgreementId() {
+      return agreementId;
+   }
+
+   public void setAgreementId(int agreementId) {
+      this.agreementId = agreementId;
    }
 
    public int getLineInBillID() {
@@ -67,8 +81,10 @@ public class BillofQuantitiesItem implements Serializable {
    @Override
    public String toString() {
       return "{\n" +
+            "   \"agreementId\": " + agreementId + ",\n" +
             "   \"lineInBillID\": " + lineInBillID + ",\n" +
-            "   \"description\": \"" + productName + "\",\n" +
+            "   \"productName\": \"" + productName + "\",\n" +
+            "   \"productID\": " + productID + ",\n" +
             "   \"quantity\": " + quantity + ",\n" +
             "   \"discountPercent\": " + discountPercent + "\n" +
             "}";

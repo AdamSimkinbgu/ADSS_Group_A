@@ -2,6 +2,7 @@ package Suppliers.DomainLayer;
 
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
+import java.time.DayOfWeek;
 import java.util.*;
 
 import Suppliers.DomainLayer.Classes.Agreement;
@@ -14,7 +15,6 @@ import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.PaymentDetailsDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
-import Suppliers.DTOs.Enums.DayofWeek;
 import Suppliers.DTOs.Enums.PaymentMethod;
 import Suppliers.DTOs.Enums.PaymentTerm;
 
@@ -53,17 +53,17 @@ public class SupplierController {
       Supplier supplier1 = new Supplier(nextSupplierID++, "Supplier 1", "512345678",
             new AddressDTO("Street 1", "City 1", "Building 1"),
             new PaymentDetailsDTO("123456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30),
-            true, EnumSet.of(DayofWeek.MONDAY, DayofWeek.WEDNESDAY), 0, new ArrayList<>(),
+            true, EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY), 0, new ArrayList<>(),
             new ArrayList<>(), new ArrayList<>());
       Supplier supplier2 = new Supplier(nextSupplierID++, "Supplier 2", "587654321",
             new AddressDTO("Street 2", "City 2", "Building 2"),
             new PaymentDetailsDTO("654321", PaymentMethod.CASH, PaymentTerm.N60),
-            false, EnumSet.of(DayofWeek.TUESDAY, DayofWeek.THURSDAY), 1, new ArrayList<>(),
+            false, EnumSet.of(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY), 1, new ArrayList<>(),
             new ArrayList<>(), new ArrayList<>());
       Supplier supplier3 = new Supplier(nextSupplierID++, "Supplier 3", "518273645",
             new AddressDTO("Street 3", "City 3", "Building 3"),
             new PaymentDetailsDTO("162534", PaymentMethod.CASH_ON_DELIVERY, PaymentTerm.N60),
-            true, EnumSet.of(DayofWeek.FRIDAY), 1, new ArrayList<>(),
+            true, EnumSet.of(DayOfWeek.FRIDAY), 1, new ArrayList<>(),
             new ArrayList<>(), new ArrayList<>());
       suppliers.put(0, supplier1);
       suppliers.put(1, supplier2);

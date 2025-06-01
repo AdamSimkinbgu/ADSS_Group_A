@@ -76,6 +76,18 @@
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.13</version>   <!-- any 2.x works; keep api & impl same -->
+    </dependency>
+
+    <!-- 2️⃣  Simple console backend (runtime) -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.13</version>
+    </dependency>
   </dependencies>
 
   <!-- ── build configuration ─────────────────────────────── -->

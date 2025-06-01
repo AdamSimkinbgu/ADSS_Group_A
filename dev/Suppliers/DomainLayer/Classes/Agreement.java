@@ -25,14 +25,12 @@ public class Agreement implements Serializable {
     private LocalDate agreementStartDate;
     private LocalDate agreementEndDate;
     private List<BillofQuantitiesItem> billOfQuantitiesItems;
-    private boolean hasFixedSupplyDays;
 
     public Agreement(
             int supplierId,
             String supplierName,
             LocalDate agreementStartDate,
             LocalDate agreementEndDate,
-            boolean hasFixedSupplyDays,
             List<BillofQuantitiesItem> billOfQuantitiesItems) {
         if (agreementEndDate.isBefore(agreementStartDate)) {
             throw new IllegalArgumentException("End date before start date");
@@ -43,7 +41,6 @@ public class Agreement implements Serializable {
         this.valid = true;
         this.agreementStartDate = agreementStartDate;
         this.agreementEndDate = agreementEndDate;
-        this.hasFixedSupplyDays = hasFixedSupplyDays;
         this.billOfQuantitiesItems = billOfQuantitiesItems;
     }
 
@@ -54,10 +51,10 @@ public class Agreement implements Serializable {
         this.valid = true;
         this.agreementStartDate = agreementDTO.getAgreementStartDate();
         this.agreementEndDate = agreementDTO.getAgreementEndDate();
-        this.hasFixedSupplyDays = agreementDTO.isHasFixedSupplyDays();
         this.billOfQuantitiesItems = new ArrayList<>();
         for (BillofQuantitiesItemDTO itemDTO : agreementDTO.getBillOfQuantitiesItems()) {
             BillofQuantitiesItem item = new BillofQuantitiesItem(
+                    itemDTO.getAgreementId(),
                     itemDTO.getLineInBillID(), // Default value for line in bill ID
                     itemDTO.getProductName(),
                     itemDTO.getProductId(),
@@ -103,6 +100,7 @@ public class Agreement implements Serializable {
         List<BillofQuantitiesItemDTO> dtos = new ArrayList<>();
         for (BillofQuantitiesItem item : billOfQuantitiesItems) {
             dtos.add(new BillofQuantitiesItemDTO(
+                    this.agreementId,
                     item.getLineInBillID(),
                     item.getProductName(),
                     item.getProductID(),
@@ -110,10 +108,6 @@ public class Agreement implements Serializable {
                     item.getDiscountPercent()));
         }
         return dtos;
-    }
-
-    public boolean hasFixedSupplyDays() {
-        return hasFixedSupplyDays;
     }
 
     // ───────────────────────────────────────────────────────────────────────
@@ -142,10 +136,6 @@ public class Agreement implements Serializable {
 
     public void setAgreementEndDate(LocalDate agreementEndDate) {
         this.agreementEndDate = agreementEndDate;
-    }
-
-    public void setHasFixedSupplyDays(boolean hasFixedSupplyDays) {
-        this.hasFixedSupplyDays = hasFixedSupplyDays;
     }
 
     public void setBillOfQuantitiesItems(List<BillofQuantitiesItem> billOfQuantities) {
@@ -209,8 +199,6 @@ public class Agreement implements Serializable {
             return false;
         if (valid != agreement.valid)
             return false;
-        if (hasFixedSupplyDays != agreement.hasFixedSupplyDays)
-            return false;
         if (!supplierName.equals(agreement.supplierName))
             return false;
         if (!agreementStartDate.equals(agreement.agreementStartDate))
@@ -226,6 +214,7 @@ public class Agreement implements Serializable {
         this.billOfQuantitiesItems = new ArrayList<>();
         for (BillofQuantitiesItemDTO itemDTO : billOfQuantitiesItems) {
             BillofQuantitiesItem item = new BillofQuantitiesItem(
+                    itemDTO.getAgreementId(),
                     itemDTO.getLineInBillID(), // Default value for line in bill ID
                     itemDTO.getProductName(),
                     itemDTO.getProductId(),

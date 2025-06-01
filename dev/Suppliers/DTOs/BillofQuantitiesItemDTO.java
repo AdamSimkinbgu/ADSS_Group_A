@@ -5,13 +5,17 @@ import java.math.BigDecimal;
 import Suppliers.DomainLayer.Classes.BillofQuantitiesItem;
 
 public class BillofQuantitiesItemDTO {
+   private int agreementId;
    private int lineInBillID;
    private String productName;
    private int quantity;
    private BigDecimal discountPercent;
    private int productId;
 
-   public BillofQuantitiesItemDTO(int lineInBillId, String itemName, int itemId, int quantity,
+   public BillofQuantitiesItemDTO() {
+   }
+
+   public BillofQuantitiesItemDTO(int agreementId, int lineInBillId, String itemName, int itemId, int quantity,
          BigDecimal discountPercent) {
       this.lineInBillID = lineInBillId;
       this.productName = itemName;
@@ -21,11 +25,20 @@ public class BillofQuantitiesItemDTO {
    }
 
    public BillofQuantitiesItemDTO(BillofQuantitiesItem item) {
+      this.agreementId = item.getAgreementId();
       this.lineInBillID = item.getLineInBillID();
       this.productName = item.getProductName();
       this.productId = item.getProductID();
       this.quantity = item.getQuantity();
       this.discountPercent = item.getDiscountPercent();
+   }
+
+   public int getAgreementId() {
+      return agreementId;
+   }
+
+   public void setAgreementId(int agreementId) {
+      this.agreementId = agreementId;
    }
 
    public int getLineInBillID() {
@@ -71,9 +84,10 @@ public class BillofQuantitiesItemDTO {
    @Override
    public String toString() {
       return "{\n" +
+            "   \"agreementId\": " + agreementId + ",\n" +
             "   \"lineInBillID\": " + lineInBillID + ",\n" +
-            "   \"itemName\": \"" + productName + "\",\n" +
-            "   \"itemId\": " + productId + ",\n" +
+            "   \"productName\": \"" + productName + "\",\n" +
+            "   \"productId\": " + productId + ",\n" +
             "   \"quantity\": " + quantity + ",\n" +
             "   \"discountPercent\": " + discountPercent + "\n" +
             "}";

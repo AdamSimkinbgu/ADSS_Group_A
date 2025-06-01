@@ -56,9 +56,7 @@ public class AgreementFacade extends BaseFacade {
                 BeanPatch.of(AgreementDTO::getAgreementStartDate, Agreement::getAgreementStartDate,
                         Agreement::setAgreementStartDate),
                 BeanPatch.of(AgreementDTO::getAgreementEndDate, Agreement::getAgreementEndDate,
-                        Agreement::setAgreementEndDate),
-                BeanPatch.of(AgreementDTO::isHasFixedSupplyDays, Agreement::hasFixedSupplyDays,
-                        Agreement::setHasFixedSupplyDays));
+                        Agreement::setAgreementEndDate));
         rules.forEach(rule -> rule.apply(updated, existingAgreement));
         // Update the bill of quantities items
         // use the existing list of item ids to update the items in the agreement
@@ -76,7 +74,6 @@ public class AgreementFacade extends BaseFacade {
                             agreement.getSupplierName(),
                             agreement.getAgreementStartDate(),
                             agreement.getAgreementEndDate(),
-                            agreement.hasFixedSupplyDays(),
                             agreement.getBillOfQuantitiesItems().stream()
                                     .map(BillofQuantitiesItemDTO::new)
                                     .toList() // Convert to List<BillofQuantitiesItemDTO>
@@ -110,7 +107,6 @@ public class AgreementFacade extends BaseFacade {
                     agreement.getSupplierName(),
                     agreement.getAgreementStartDate(),
                     agreement.getAgreementEndDate(),
-                    agreement.hasFixedSupplyDays(),
                     // make an array of BillofQuantitiesItemDTO from the agreement's items
                     agreement.getBillOfQuantitiesItems().stream()
                             .map(BillofQuantitiesItemDTO::new)

@@ -131,19 +131,19 @@ public class AgreementForm extends InteractiveForm<AgreementDTO> {
             return null;
          }
          billOfQuantitiesItems.add(new BillofQuantitiesItemDTO(
-               -1, // lineInBillID will be set by the service
-               "", // itemName will be set by the service
+               -1, // agreementId will be set later
+               -1, // lineInBillID will be set later
+               "", // itemName will be set later
                itemIDInt,
                itemQuantity,
                itemDiscount));
       }
 
       AgreementDTO agreementDTO = new AgreementDTO(
-            -1, // supplierId will be set by the service
-            "",
+            -1, // supplierId will be set later
+            "", // supplierName will be set later
             startDate,
             endDate,
-            false,
             billOfQuantitiesItems);
       return agreementDTO;
    }
@@ -160,20 +160,19 @@ public class AgreementForm extends InteractiveForm<AgreementDTO> {
                dto.getSupplierName(),
                askDate("New start date (DD-MM-YYYY):"),
                dto.getAgreementEndDate(),
-               dto.isHasFixedSupplyDays(),
                dto.getBillOfQuantitiesItems());
          case "enddate" -> dto = new AgreementDTO(
                dto.getAgreementId(),
                dto.getSupplierName(),
                dto.getAgreementStartDate(),
                askDate("New end date (DD-MM-YYYY):"),
-               dto.isHasFixedSupplyDays(),
                dto.getBillOfQuantitiesItems());
          case "boq" -> {
             String action = askNonEmpty("Do you want to add or remove an item? (add/remove):").toLowerCase();
             switch (action) {
                case "add" -> {
                   BillofQuantitiesItemDTO newItem = new BillofQuantitiesItemDTO(
+                        dto.getAgreementId(), // agreementId will be set by the service
                         -1, // lineInBillID will be set by the service
                         "", // itemName will be set by the service
                         askInt("Enter item ID:"),

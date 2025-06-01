@@ -1,10 +1,12 @@
 package Suppliers.DTOs;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import Suppliers.DTOs.Enums.DayofWeek;
+import Suppliers.DTOs.Enums.PaymentMethod;
+import Suppliers.DTOs.Enums.PaymentTerm;
 import Suppliers.DomainLayer.Classes.Address;
 import Suppliers.DomainLayer.Classes.ContactInfo;
 import Suppliers.DomainLayer.Classes.PaymentDetails;
@@ -16,7 +18,7 @@ public class SupplierDTO {
       private String taxNumber;
       private AddressDTO address;
       private boolean selfSupply;
-      private EnumSet<DayofWeek> supplyDays;
+      private EnumSet<DayOfWeek> supplyDays;
       private int leadSupplyDays;
       private PaymentDetailsDTO paymentDetails;
       private List<ContactInfoDTO> contacts;
@@ -29,7 +31,7 @@ public class SupplierDTO {
                   String taxNumber,
                   AddressDTO address,
                   boolean selfSupply,
-                  EnumSet<DayofWeek> supplyDays,
+                  EnumSet<DayOfWeek> supplyDays,
                   int leadSupplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
@@ -53,7 +55,7 @@ public class SupplierDTO {
                   String taxNumber,
                   AddressDTO address,
                   boolean selfSupply,
-                  EnumSet<DayofWeek> supplyDays,
+                  EnumSet<DayOfWeek> supplyDays,
                   int leadSupplyDays,
                   PaymentDetailsDTO paymentDetails,
                   List<ContactInfoDTO> contacts,
@@ -85,6 +87,32 @@ public class SupplierDTO {
             // to add the products we need to add them after the creation of the supplier
             this.products = new ArrayList<>();
             this.agreements = supplier.getAgreements();
+      }
+
+      public SupplierDTO(int id, String name, String taxNumber,
+                  String street, String city, String buildingNumber,
+                  boolean selfSupply, String supplyDaysMask, int leadSupplyDays,
+                  String bankAccountNumber, String paymentMethod, String paymentTerm) {
+            this.id = id;
+            this.name = name;
+            this.taxNumber = taxNumber;
+            this.address = new AddressDTO(street, city, buildingNumber);
+            this.selfSupply = selfSupply;
+            this.supplyDays = EnumSet.noneOf(DayOfWeek.class);
+            if (supplyDaysMask != null && supplyDaysMask.length() == 7) {
+                  for (int i = 0; i < supplyDaysMask.length(); i++) {
+                        if (supplyDaysMask.charAt(i) == '1') {
+                              DayOfWeek day = DayOfWeek.of((i + 1) % 7 + 1); // shift to make Sunday the first day
+                              this.supplyDays.add(day);
+                        }
+                  }
+            }
+            this.leadSupplyDays = 0; // Default value, can be set later
+            this.paymentDetails = new PaymentDetailsDTO(bankAccountNumber, PaymentMethod.valueOf(paymentMethod),
+                        PaymentTerm.valueOf(paymentTerm));
+            this.contacts = new ArrayList<>();
+            this.products = new ArrayList<>();
+            this.agreements = new ArrayList<>();
       }
 
       public int getId() {
@@ -228,7 +256,7 @@ public class SupplierDTO {
             return selfSupply;
       }
 
-      public EnumSet<DayofWeek> getSupplyDays() {
+      public EnumSet<DayOfWeek> getSupplyDays() {
             return supplyDays;
       }
 
@@ -236,7 +264,7 @@ public class SupplierDTO {
             this.selfSupply = selfSupply;
       }
 
-      public void setSupplyDays(EnumSet<DayofWeek> supplyDays) {
+      public void setSupplyDays(EnumSet<DayOfWeek> supplyDays) {
             this.supplyDays = supplyDays;
       }
 
@@ -262,4 +290,16 @@ public class SupplierDTO {
       public void setLeadSupplyDays(int leadSupplyDays) {
             this.leadSupplyDays = leadSupplyDays;
       }
+
+      public String getSupplyDaysMask() {
+            // convert EnumSet<DayOfWeek> to a string mask
+            // 1 is monday but we need it to be sunday
+            StringBuilder mask = new StringBuilder("0000000");
+            for (DayOfWeek day : supplyDays) {
+                  int index = (day.ordinal() + 1) % 7; // shift to make Sunday the first day
+                  mask.setCharAt(index, '1');
+            }
+            return mask.toString();
+      }
+
 }

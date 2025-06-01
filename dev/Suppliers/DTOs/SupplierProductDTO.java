@@ -15,6 +15,9 @@ public class SupplierProductDTO {
       private int expiresInDays;
       private String manufacturerName;
 
+      public SupplierProductDTO() {
+      }
+
       public SupplierProductDTO(int supplierId, int productId, String supplierCatalogNumber, String name,
                   BigDecimal price,
                   BigDecimal weight, int expiresInDays, String manufacturerName) {

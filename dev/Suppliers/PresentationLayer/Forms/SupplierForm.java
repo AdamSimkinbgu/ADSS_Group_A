@@ -4,10 +4,10 @@ package Suppliers.PresentationLayer.Forms;
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.PaymentMethod;
 import Suppliers.DTOs.Enums.PaymentTerm;
-import Suppliers.DTOs.Enums.DayofWeek;
 import Suppliers.PresentationLayer.InteractiveForm;
 import Suppliers.PresentationLayer.View;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -34,10 +34,11 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
 
             /* self supply */
             boolean selfSupply = askBoolean("Self supply? (y/n): ");
-            EnumSet<DayofWeek> supplyDays = EnumSet.noneOf(DayofWeek.class);
+            EnumSet<DayOfWeek> supplyDays = EnumSet.noneOf(DayOfWeek.class);
             if (selfSupply) {
                   view.showMessage("Self supply selected.");
-                  supplyDays = askDaysOfWeek("Supply days (1 - Sunday, 2 - Monday, ...): ");
+                  supplyDays = askDaysOfWeek(
+                              "Supply days (By words, e.g. MONDAY, TUESDAY, ... or numbers, e.g. 1 - MONDAY, 2 - TUESDAY, ..., 7 - SUNDAY): ");
             } else {
                   view.showMessage("Self supply not selected.");
             }

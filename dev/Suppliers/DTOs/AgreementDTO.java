@@ -10,11 +10,13 @@ public class AgreementDTO {
    private boolean valid;
    private LocalDate agreementStartDate;
    private LocalDate agreementEndDate;
-   private boolean hasFixedSupplyDays;
    private List<BillofQuantitiesItemDTO> billOfQuantitiesItems;
 
+   public AgreementDTO() {
+   }
+
    public AgreementDTO(int supplierId, String supplierName,
-         LocalDate agreementStartDate, LocalDate agreementEndDate, boolean hasFixedSupplyDays,
+         LocalDate agreementStartDate, LocalDate agreementEndDate,
          List<BillofQuantitiesItemDTO> billOfQuantitiesItems) {
       this.agreementId = -1; // Default value, will be set later
       this.supplierId = supplierId;
@@ -22,7 +24,6 @@ public class AgreementDTO {
       this.valid = true;
       this.agreementStartDate = agreementStartDate;
       this.agreementEndDate = agreementEndDate;
-      this.hasFixedSupplyDays = hasFixedSupplyDays;
       this.billOfQuantitiesItems = billOfQuantitiesItems;
    }
 
@@ -75,14 +76,6 @@ public class AgreementDTO {
       this.agreementEndDate = agreementEndDate;
    }
 
-   public boolean isHasFixedSupplyDays() {
-      return hasFixedSupplyDays;
-   }
-
-   public void setHasFixedSupplyDays(boolean hasFixedSupplyDays) {
-      this.hasFixedSupplyDays = hasFixedSupplyDays;
-   }
-
    public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItems() {
       return billOfQuantitiesItems;
    }
@@ -100,7 +93,6 @@ public class AgreementDTO {
             "  \"valid\": " + valid + ",\n" +
             "  \"agreementStartDate\": \"" + agreementStartDate + "\",\n" +
             "  \"agreementEndDate\": \"" + agreementEndDate + "\",\n" +
-            "  \"hasFixedSupplyDays\": " + hasFixedSupplyDays + "\n" +
             "  \"billOfQuantitiesItems\": " + billOfQuantitiesItems + "\n" +
             "}";
    }
@@ -115,7 +107,6 @@ public class AgreementDTO {
       return agreementId == that.agreementId &&
             supplierId == that.supplierId &&
             valid == that.valid &&
-            hasFixedSupplyDays == that.hasFixedSupplyDays &&
             supplierName.equals(that.supplierName) &&
             agreementStartDate.equals(that.agreementStartDate) &&
             agreementEndDate.equals(that.agreementEndDate);
