@@ -24,3 +24,4 @@ target/
 *.war
 *.ear
 *.zip
+release/
