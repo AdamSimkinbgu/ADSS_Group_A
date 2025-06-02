@@ -1,18 +1,15 @@
-import java.sql.Connection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Scanner;
 
 import Inventory.Presentation.PresentationMenu;
-import Suppliers.DataLayer.util.Database;
+import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.PresentationLayer.AppCLI;
 
 public class Main {
-   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
    public static void main(String[] args) {
       System.out.println("Welcome to the Supplier-Inventory Management System!");
-      AppCLI appCLI = new AppCLI("data.json");
+      InitializeState startupState = requestStartupStateFromUser();
+      AppCLI appCLI = new AppCLI(startupState);
       PresentationMenu presentationMenu = new PresentationMenu();
       integrateModules(presentationMenu, appCLI);
       while (true) {
@@ -33,6 +30,39 @@ public class Main {
                return;
             default:
                System.out.println("Invalid option, please try again.");
+         }
+      }
+   }
+
+   public static InitializeState requestStartupStateFromUser() {
+      System.out.println("Please select the startup state:");
+      System.out.println("1. Current state - Load existing data from the database 'as is'.");
+      System.out.println("2. Default state - Clear the datebase and start with default data (as in the instructions).");
+      System.out.println(
+            "3. Empty state - Clear the database and start with an empty database. (Only empty tables, CURRENT DATA WILL BE LOST, SAVE COPY OF DB IF NEEDED!)");
+      System.out.println("4. Exit - Exit the application without starting.");
+      System.out.print("Enter your choice (1-4): ");
+      Scanner scanner = new Scanner(System.in);
+      String choice = scanner.nextLine().trim();
+      while (true) {
+         switch (choice) {
+            case "1":
+               scanner.close();
+               return InitializeState.CURRENT_STATE;
+            case "2":
+               scanner.close();
+               return InitializeState.DEFAULT_STATE;
+            case "3":
+               scanner.close();
+               return InitializeState.NO_DATA_STATE;
+            case "4":
+               System.out.println("Exiting the application.");
+               System.exit(0);
+               return null; // This line will never be reached, but is needed to satisfy the compiler.
+            default:
+               System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+               System.out.print("Enter your choice (1-4): ");
+               choice = scanner.nextLine().trim();
          }
       }
    }
