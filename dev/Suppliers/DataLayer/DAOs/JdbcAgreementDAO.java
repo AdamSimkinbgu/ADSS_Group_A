@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,8 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             + "agreement_end_date, valid) VALUES (?, ?, ?, ?)";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
          pstmt.setInt(1, agreement.getSupplierId());
-         pstmt.setDate(2, Date.valueOf(agreement.getAgreementStartDate()));
-         pstmt.setDate(3, Date.valueOf(agreement.getAgreementEndDate()));
+         pstmt.setString(2, Date.valueOf(agreement.getAgreementStartDate()).toString());
+         pstmt.setString(3, Date.valueOf(agreement.getAgreementEndDate()).toString());
          pstmt.setBoolean(4, agreement.isValid());
 
          int affectedRows = pstmt.executeUpdate();
@@ -58,6 +59,9 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             item.setAgreementId(agreement.getAgreementId());
             billofQuantitiesItemsDAO.createBillofQuantitiesItem(item);
          }
+         LOGGER.info("Inserted {} bill of quantities items for agreement ID: {}",
+               agreement.getBillOfQuantitiesItems().size(), agreement.getAgreementId());
+
       }
       return agreement;
    }
@@ -76,8 +80,8 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
                AgreementDTO agreement = new AgreementDTO();
                agreement.setAgreementId(rs.getInt("agreement_id"));
                agreement.setSupplierId(rs.getInt("supplier_id"));
-               agreement.setAgreementStartDate(rs.getDate("agreement_start_date").toLocalDate());
-               agreement.setAgreementEndDate(rs.getDate("agreement_end_date").toLocalDate());
+               agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
+               agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
 
                // Load bill of quantities items
@@ -141,9 +145,6 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
          } else {
             LOGGER.info("Deleted agreement with ID: {}", id);
          }
-
-         // Delete associated bill of quantities items
-         billofQuantitiesItemsDAO.deleteAllBillofQuantitiesItems(id);
       }
    }
 

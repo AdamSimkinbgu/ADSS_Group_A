@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.xml.crypto.Data;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +106,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
    }
 
    private void loadDefaultStateFromDatabase() {
+      Database.deleteAllData(); // clear the database first - TODO DELETE THIS FKING SHIT ASAP
       Supplier supplier1 = new Supplier(-1, "Supplier 1", "512345678",
             new AddressDTO("Street 1", "City 1", "Building 1"),
             new PaymentDetailsDTO("123456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30),
@@ -119,6 +122,27 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             new PaymentDetailsDTO("162534", PaymentMethod.CASH_ON_DELIVERY, PaymentTerm.N60),
             true, EnumSet.of(DayOfWeek.FRIDAY), 1, new ArrayList<>(),
             new ArrayList<>(), new ArrayList<>());
+
+      // build the suppliers so they have the products and agreements
+      // supplier1.setProducts(List.of(product1.getProductId(),
+      // product2.getProductId()));
+      // supplier1.setAgreements(List.of(agreement1.getAgreementId()));
+      // supplier2.setProducts(List.of(product3.getProductId(),
+      // product4.getProductId()));
+      // supplier2.setAgreements(List.of(agreement2.getAgreementId()));
+      // supplier3.setProducts(List.of(product5.getProductId(),
+      // product6.getProductId()));
+      // supplier3.setAgreements(new ArrayList<>()); // no agreements for supplier 3
+
+      for (Supplier supplier : List.of(supplier1, supplier2, supplier3)) {
+         try {
+            SupplierDTO newSupplier = saveSupplierInMemoryCache(new SupplierDTO(supplier));
+            supplier.setSupplierId(newSupplier.getId());
+         } catch (SQLException e) {
+            LOGGER.error("Failed to save supplier in memory cache: {}", e.getMessage());
+            throw new RuntimeException("Error while saving supplier in memory cache", e);
+         }
+      }
       SupplierProduct product1 = new SupplierProduct(supplier1.getSupplierId(), -1, "123456",
             "Milk 3%", new BigDecimal("10.00"), new BigDecimal("1.0"), 30, "Yotvata");
       SupplierProduct product2 = new SupplierProduct(supplier1.getSupplierId(), -1, "654321",
@@ -131,6 +155,25 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             "Milk 3%", new BigDecimal("30.00"), new BigDecimal("2.5"), 15, "Tnuva");
       SupplierProduct product6 = new SupplierProduct(supplier3.getSupplierId(), -1, "876543",
             "Bamba", new BigDecimal("40.00"), new BigDecimal("4.0"), 120, "Ossem");
+      for (SupplierProduct product : List.of(product1, product2, product3, product4, product5, product6)) {
+         try {
+            SupplierProductDTO newProduct = saveSupplierProductInMemoryCache(new SupplierProductDTO(product));
+            product.setProductId(newProduct.getProductId());
+         } catch (SQLException e) {
+            LOGGER.error("Failed to save supplier product in memory cache: {}", e.getMessage());
+            throw new RuntimeException("Error while saving supplier product in memory cache", e);
+         }
+      }
+
+      for (Supplier supplier : List.of(supplier1, supplier2, supplier3)) {
+         try {
+            saveSupplierInMemoryCache(new SupplierDTO(supplier));
+         } catch (SQLException e) {
+            LOGGER.error("Failed to save supplier in memory cache: {}", e.getMessage());
+            throw new RuntimeException("Error while saving supplier in memory cache", e);
+         }
+      }
+
       BillofQuantitiesItem item1 = new BillofQuantitiesItem(-1, -1, "Milk 3%", product1.getProductId(), 100,
             new BigDecimal("5"));
       BillofQuantitiesItem item2 = new BillofQuantitiesItem(-1, -1, "Cornflacks Cariot", product2.getProductId(), 50,
@@ -145,40 +188,15 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       Agreement agreement2 = new Agreement(-1, supplier2.getSupplierId(), supplier2.getName(),
             java.time.LocalDate.now().minusDays(5), java.time.LocalDate.now().plusDays(30),
             List.of(item3, item4));
-
-      // build the suppliers so they have the products and agreements
-      supplier1.setProducts(List.of(product1.getProductId(), product2.getProductId()));
-      supplier1.setAgreements(List.of(agreement1.getAgreementId()));
-      supplier2.setProducts(List.of(product3.getProductId(), product4.getProductId()));
-      supplier2.setAgreements(List.of(agreement2.getAgreementId()));
-      supplier3.setProducts(List.of(product5.getProductId(), product6.getProductId()));
-      supplier3.setAgreements(new ArrayList<>()); // no agreements for supplier 3
-
-      for (SupplierProduct product : List.of(product1, product2, product3, product4, product5, product6)) {
-         try {
-            saveSupplierProductInMemoryCache(new SupplierProductDTO(product));
-         } catch (SQLException e) {
-            LOGGER.error("Failed to save supplier product in memory cache: {}", e.getMessage());
-            throw new RuntimeException("Error while saving supplier product in memory cache", e);
-         }
-      }
       for (Agreement agreement : List.of(agreement1, agreement2)) {
          try {
             saveAgreementInMemoryCache(new AgreementDTO(agreement));
+
          } catch (SQLException e) {
             LOGGER.error("Failed to save agreement in memory cache: {}", e.getMessage());
             throw new RuntimeException("Error while saving agreement in memory cache", e);
          }
          // now load the info
-         LOGGER.info("Loading default state into memory cache");
-         for (Supplier supplier : List.of(supplier1, supplier2, supplier3)) {
-            try {
-               saveSupplierInMemoryCache(new SupplierDTO(supplier));
-            } catch (SQLException e) {
-               LOGGER.error("Failed to save supplier in memory cache: {}", e.getMessage());
-               throw new RuntimeException("Error while saving supplier in memory cache", e);
-            }
-         }
       }
       LOGGER.info("Default state loaded into memory cache");
    }
@@ -267,15 +285,12 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                }
             }
             if (supplierToSave.getAgreements() != null) {
-               for (Integer agreement : supplierToSave.getAgreements()) {
-                  AgreementDTO agreementDTO = agreementDAO.getAgreementById(agreement)
-                        .orElseThrow(() -> new SQLException("Agreement not found with ID: " + agreement));
-                  saveAgreementInMemoryCache(agreementDTO);
-               }
+               LOGGER.info("Supplier updated successfully: {}", supplierToSave);
+               return supplierToSave;
             }
-            LOGGER.info("Supplier updated successfully: {}", supplierToSave);
-            return supplierToSave;
          }
+         LOGGER.info("Supplier updated successfully: {}", supplierToSave);
+         return supplierToSave;
       } catch (SQLException e) {
          LOGGER.error("Failed to create or update supplier in the database: {}", e.getMessage());
          throw new SQLException("Error while creating or updating supplier in the database", e);
@@ -380,10 +395,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
       LOGGER.info("Adding agreement {} to supplier with ID {}", agreement, supplierId);
-      SupplierDTO supplier = supplierDAO.getSupplier(supplierId)
-            .orElseThrow(() -> new SQLException("Supplier not found with ID: " + supplierId));
-      AgreementDTO createdAgreementDTO = agreementDAO.createAgreement(agreement);
-      saveSupplierInMemoryCache(supplier.addAgreement(createdAgreementDTO.getAgreementId()));
+      AgreementDTO createdAgreementDTO = saveAgreementInMemoryCache(agreement);
       supplierIdToAgreements
             .computeIfAbsent(supplierId, k -> new java.util.ArrayList<>())
             .add(new Agreement(createdAgreementDTO));
@@ -399,6 +411,11 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             supplierIdToAgreements.put(supplierId, new java.util.ArrayList<>());
          }
          AgreementDTO savedAgreement = agreementDAO.createAgreement(agreementToSave);
+         // update the supplier to have the agreement ID
+         SupplierDTO supplier = supplierDAO.getSupplier(supplierId)
+               .orElseThrow(() -> new SQLException("Supplier not found with ID: " + supplierId));
+         supplier.getAgreements().add(savedAgreement.getAgreementId());
+         saveSupplierInMemoryCache(supplier);
          supplierIdToAgreements.get(supplierId).add(new Agreement(savedAgreement));
          LOGGER.info("Agreement saved successfully: {}", savedAgreement);
          return savedAgreement;
@@ -465,6 +482,11 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       supplier.getAgreements().removeIf(a -> a == agreementId); // first remove the agreement ID from the supplier's
                                                                 // list
       agreementDAO.deleteAgreement(agreementId); // then delete the agreement itself
+      supplierIdToAgreements
+            .computeIfPresent(supplierId, (k, v) -> {
+               v.removeIf(agreement -> agreement.getAgreementId() == agreementId);
+               return v.isEmpty() ? null : v; // remove the supplier from the map if no agreements left
+            });
       saveSupplierInMemoryCache(supplier); // update the supplier in the cache
       LOGGER.info("Agreement with ID {} removed successfully from supplier with ID {}", agreementId, supplierId);
    }
@@ -554,31 +576,32 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          throws SQLException {
       LOGGER.debug("Attempting to save the supplier product in memory and in cache: {}", supplierProductToSave);
       try {
-         int supplierId = supplierProductToSave.getSupplierId();
-         int productId = supplierProductToSave.getProductId();
-         if (!supplierIDsToTheirProductIDsAndTheirSpesification.containsKey(supplierId)) {
-            supplierIDsToTheirProductIDsAndTheirSpesification.put(supplierId, new HashMap<>());
+         if (supplierProductToSave.getProductId() < 0) {
+            LOGGER.info("Creating new supplier product.");
+            SupplierProductDTO newProduct = supplierProductDAO.createSupplierProduct(supplierProductToSave);
+            int supplierId = newProduct.getSupplierId();
+            int productId = newProduct.getProductId();
+            supplierIDsToTheirProductIDsAndTheirSpesification
+                  .computeIfAbsent(supplierId, k -> new HashMap<>())
+                  .put(productId, new SupplierProduct(newProduct));
+            productIDsToTheirSupplierIDs
+                  .computeIfAbsent(productId, k -> new ArrayList<>())
+                  .add(supplierId);
+            productCagalog.add(new CatalogProductDTO(newProduct));
+            LOGGER.info("Supplier product created successfully: {}", newProduct);
+            return newProduct;
+         } else {
+            LOGGER.info("Updating existing supplier product with IDs: {}, {}", supplierProductToSave.getSupplierId(),
+                  supplierProductToSave.getProductId());
+            supplierProductDAO.updateSupplierProduct(supplierProductToSave);
+            int supplierId = supplierProductToSave.getSupplierId();
+            int productId = supplierProductToSave.getProductId();
+            supplierIDsToTheirProductIDsAndTheirSpesification
+                  .get(supplierId)
+                  .put(productId, new SupplierProduct(supplierProductToSave));
+            LOGGER.info("Supplier product updated successfully: {}", supplierProductToSave);
+            return supplierProductToSave;
          }
-         // get the supplier and add the id to list he has
-         Supplier supplier = new Supplier(supplierDAO.getSupplier(supplierId)
-               .orElseThrow(() -> new SQLException("Supplier not found with ID: " + supplierId)));
-         if (!supplier.getProducts().contains(productId)) {
-            supplier.getProducts().add(productId);
-            supplierDAO.updateSupplier(new SupplierDTO(supplier));
-         }
-         if (!productIDsToTheirSupplierIDs.containsKey(productId)) {
-            productIDsToTheirSupplierIDs.put(productId, new ArrayList<>());
-         }
-         if (!productIDsToTheirSupplierIDs.get(productId).contains(supplierId)) {
-            productIDsToTheirSupplierIDs.get(productId).add(supplierId);
-         }
-         SupplierProductDTO savedProduct = supplierProductDAO.createSupplierProduct(supplierProductToSave);
-         SupplierProduct product = new SupplierProduct(savedProduct);
-         supplierIDsToTheirProductIDsAndTheirSpesification.get(supplierId)
-               .put(productId, product);
-         productCagalog.add(new CatalogProductDTO(savedProduct));
-         LOGGER.info("Supplier product saved successfully: {}", savedProduct);
-         return savedProduct;
       } catch (SQLException e) {
          LOGGER.error("Failed to create or update supplier product in the database: {}", e.getMessage());
          throw new SQLException("Error while creating or updating supplier product in the database", e);
