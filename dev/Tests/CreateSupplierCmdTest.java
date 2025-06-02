@@ -1,4 +1,4 @@
-package Tests.SupplierTests;
+package Tests;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
