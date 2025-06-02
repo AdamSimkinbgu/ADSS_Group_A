@@ -268,11 +268,11 @@ public class SupplierDTO {
             this.supplyDays = supplyDays;
       }
 
-      public SupplierDTO addAgreement(AgreementDTO agreementDTO) {
+      public SupplierDTO addAgreement(int agreementId) {
             if (this.agreements == null) {
                   this.agreements = new ArrayList<>();
             }
-            this.agreements.add(agreementDTO.getAgreementId());
+            this.agreements.add(agreementId);
             return this;
       }
 
