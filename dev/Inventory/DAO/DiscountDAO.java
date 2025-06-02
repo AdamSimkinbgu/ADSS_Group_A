@@ -10,4 +10,6 @@ public interface DiscountDAO {
     public List<DiscountDTO> getAll();
 
     public void delete(DiscountDTO d);
+
+    public void deleteAll();
 }

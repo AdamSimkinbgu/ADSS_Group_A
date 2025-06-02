@@ -103,4 +103,26 @@ public class OrderDeliverdDAO_SQL implements OrderDeliverdDAO {
             throw new RuntimeException("SQL Exception: " + e.getMessage());
         }
     }
+
+
+    @Override
+    public void DeleteAll() {
+        String deleteItemsSql = "DELETE FROM order_items";
+        String deleteOrdersSql = "DELETE FROM orders";
+
+        try (Connection conn = DataBase.getConnection()) {
+            // First delete all items
+            try (PreparedStatement ps = conn.prepareStatement(deleteItemsSql)) {
+                ps.executeUpdate();
+            }
+
+            // Then delete all orders
+            try (PreparedStatement ps = conn.prepareStatement(deleteOrdersSql)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
+
 }

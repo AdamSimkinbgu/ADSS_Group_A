@@ -12,4 +12,5 @@ public interface ProductDAO {
     public void Set(ProductDTO p);
 
     public void Delete(ProductDTO p);
-}
+
+    public void DeleteAll();}

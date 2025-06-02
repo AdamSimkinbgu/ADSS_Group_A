@@ -15,4 +15,7 @@ public interface SupplyDAO {
     public void Delete(int id);
 
     public void Set(SupplyDTO s);
+
+    public void DeleteAll();
+
 }

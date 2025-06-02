@@ -116,4 +116,24 @@ public class SaleDTO_SQL implements SaleDAO {
     }
 
 
+    @Override
+    public void DeleteAll() {
+        String deleteItemsSql = "DELETE FROM sale_items";
+        String deleteSalesSql = "DELETE FROM sales";
+
+        try (Connection conn = DataBase.getConnection()) {
+            // Delete all sale items first
+            try (PreparedStatement ps = conn.prepareStatement(deleteItemsSql)) {
+                ps.executeUpdate();
+            }
+
+            // Then delete all sales
+            try (PreparedStatement ps = conn.prepareStatement(deleteSalesSql)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
+
 }

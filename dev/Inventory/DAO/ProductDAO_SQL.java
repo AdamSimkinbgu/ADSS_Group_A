@@ -131,4 +131,18 @@ public class ProductDAO_SQL implements ProductDAO {
             throw new RuntimeException("SQL Exception: " + e.getMessage());
         }
     }
+
+
+    @Override
+    public void DeleteAll() {
+        String sql = "DELETE FROM products";
+
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
 }

@@ -166,7 +166,7 @@ public class ProductDomain {
 
         reStockStore();
         return ret;
-        // todo
+
     }
 
     public int GetBads() {

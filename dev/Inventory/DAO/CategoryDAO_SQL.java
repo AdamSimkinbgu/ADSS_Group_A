@@ -163,6 +163,32 @@ public class CategoryDAO_SQL implements CategoryDAO{
     }
 
     @Override
+    public void deleteAll() {
+        String deleteCategoriesSql = "DELETE FROM categories";
+        String deleteSubcategoriesSql = "DELETE FROM subcategories";
+        String deleteCategoryProductsSql = "DELETE FROM category_products";
+
+        try (Connection conn = DataBase.getConnection()) {
+            // Delete all subcategories first
+            try (PreparedStatement ps = conn.prepareStatement(deleteSubcategoriesSql)) {
+                ps.executeUpdate();
+            }
+
+            // Delete all products in categories
+            try (PreparedStatement ps = conn.prepareStatement(deleteCategoryProductsSql)) {
+                ps.executeUpdate();
+            }
+
+            // Finally, delete all categories
+            try (PreparedStatement ps = conn.prepareStatement(deleteCategoriesSql)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void delete(String name) {
         String deleteCategorySql = "DELETE FROM categories WHERE name = ?";
         String deleteSubcategoriesSql = "DELETE FROM subcategories WHERE parent_name = ?";

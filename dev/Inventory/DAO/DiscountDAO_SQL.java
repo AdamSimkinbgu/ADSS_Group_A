@@ -97,4 +97,15 @@ public class DiscountDAO_SQL implements DiscountDAO {
         }
     }
 
+
+    @Override
+    public void deleteAll() {
+        String sql = "DELETE FROM discounts";
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
 }

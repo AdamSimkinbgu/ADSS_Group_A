@@ -145,4 +145,17 @@ public class SupplyDTO_SQL implements SupplyDAO {
         }
     }
 
+
+    @Override
+    public void DeleteAll() {
+        String sql = "DELETE FROM supplies";
+
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
 }

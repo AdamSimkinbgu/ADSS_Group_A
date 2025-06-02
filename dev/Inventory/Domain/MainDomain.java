@@ -90,12 +90,16 @@ public class MainDomain {
 
             // todo check
         }
-        if(input == 1) {
-            // todo
-        }
-        if(input == 2) {
-            // todo
-            // load from file
+        else {
+            Sdao.DeleteAll();
+            Ddao.deleteAll();
+            Cdao.deleteAll();
+            ODdao.DeleteAll();
+            SPdao.DeleteAll();
+            Pdao.DeleteAll();
+            if (input == 1) {
+             //todo: lode default
+            }
         }
     }
 
@@ -394,7 +398,7 @@ public class MainDomain {
         for (ProductDomain p : prodMap.values()) {
             missingA = p.GetMissing();
             if (missingA > 0) {
-                ls.add(new SupplyDTO(p.getproductID(), missingA, LocalDate.now()));
+                ls.add(new SupplyDTO(p.getproductID(), 2*missingA, LocalDate.now()));
             }
         }
 
