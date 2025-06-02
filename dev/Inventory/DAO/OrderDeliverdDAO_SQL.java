@@ -24,30 +24,31 @@ public class OrderDeliverdDAO_SQL implements OrderDeliverdDAO {
         String itemsSql = "SELECT * FROM order_items WHERE order_id = ?";
         List<OrderPackageDTO> orders = new ArrayList<>();
 
-        try (Connection conn = DataBase.getConnection();
-             PreparedStatement orderPs = conn.prepareStatement(orderSql);
-             ResultSet orderRs = orderPs.executeQuery()) {
+        try (Connection conn = DataBase.getConnection()) {
+            try (PreparedStatement orderPs = conn.prepareStatement(orderSql);
+                 ResultSet orderRs = orderPs.executeQuery()) {
 
-            while (orderRs.next()) {
-                int orderId = orderRs.getInt("order_id");
-                LocalDate deliveryDate = LocalDate.parse(orderRs.getString("delivery_date"));
-                List<SupplyDTO> supplies = new ArrayList<>();
+                while (orderRs.next()) {
+                    int orderId = orderRs.getInt("order_id");
+                    LocalDate deliveryDate = LocalDate.parse(orderRs.getString("delivery_date"));
+                    List<SupplyDTO> supplies = new ArrayList<>();
 
-                // Get order items
-                try (PreparedStatement itemsPs = conn.prepareStatement(itemsSql)) {
-                    itemsPs.setInt(1, orderId);
-                    ResultSet itemsRs = itemsPs.executeQuery();
-
-                    while (itemsRs.next()) {
-                        SupplyDTO supply = new SupplyDTO();
-                        supply.setProductID(itemsRs.getInt("product_id"));
-                        supply.setQuantityWH(itemsRs.getInt("quantity"));
-                        supplies.add(supply);
+                    // Get order items using the same connection
+                    try (PreparedStatement itemsPs = conn.prepareStatement(itemsSql)) {
+                        itemsPs.setInt(1, orderId);
+                        try (ResultSet itemsRs = itemsPs.executeQuery()) {
+                            while (itemsRs.next()) {
+                                SupplyDTO supply = new SupplyDTO();
+                                supply.setProductID(itemsRs.getInt("product_id"));
+                                supply.setQuantityWH(itemsRs.getInt("quantity"));
+                                supplies.add(supply);
+                            }
+                        }
                     }
-                }
 
-                OrderPackageDTO order = new OrderPackageDTO(orderId, deliveryDate, supplies);
-                orders.add(order);
+                    OrderPackageDTO order = new OrderPackageDTO(orderId, deliveryDate, supplies);
+                    orders.add(order);
+                }
             }
             return orders;
         } catch (SQLException e) {

@@ -71,6 +71,7 @@ public class MainDomain {
                 if (d.getpId() != -1) {
                     prodMap.get(d.getpId()).AddDiscount(dis);
                 } else {
+                    //todo : fix this
                     for (CategoryDomain c : categoryLst) {
                         if (c.Isin(d.getCatName())) {
                             c.AddDiscount(dis, d.getCatName());

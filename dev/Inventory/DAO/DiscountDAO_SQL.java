@@ -55,10 +55,10 @@ public class DiscountDAO_SQL implements DiscountDAO {
     @Override
     public List<DiscountDTO> getAll() {
         String sql = """
-            SELECT id, 
+            SELECT discount_id, 
             product_id, 
-            discount_percentage, 
-            start_date, end_date, 
+            percent, 
+            discount_start, discount_end, 
             category_name 
             FROM discounts""";
 
@@ -71,11 +71,11 @@ public class DiscountDAO_SQL implements DiscountDAO {
             // Iterate through the ResultSet and populate the list
             while (rs.next()) {
                 DiscountDTO discount = new DiscountDTO();
-                discount.setId(rs.getInt("id"));
+                discount.setId(rs.getInt("discount_id"));
                 discount.setpId(rs.getInt("product_id"));
-                discount.setPercent(rs.getFloat("discount_percentage"));
-                discount.setDiscountStart(rs.getDate("start_date").toLocalDate());
-                discount.setDiscountEnd(rs.getDate("end_date").toLocalDate());
+                discount.setPercent(rs.getFloat("percent"));
+                discount.setDiscountStart(rs.getDate("discount_start").toLocalDate());
+                discount.setDiscountEnd(rs.getDate("discount_end").toLocalDate());
                 discount.setCatName(rs.getString("category_name"));
                 discounts.add(discount);
             }

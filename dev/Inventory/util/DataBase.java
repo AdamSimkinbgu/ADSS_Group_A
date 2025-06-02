@@ -130,6 +130,6 @@ public class DataBase {
     private DataBase() {}
 
     public static Connection getConnection() throws SQLException {
-        return conn;
+        return DriverManager.getConnection(DB_URL);
     }
 }

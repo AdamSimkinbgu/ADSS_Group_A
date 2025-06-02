@@ -11,17 +11,11 @@
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/CategoryDAO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/CategoryDAO_SQL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/DiscountDAO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/DiscountDAO_SQL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/OrderDeliverdDAO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/OrderDeliverdDAO_SQL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/ProductDAO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/ProductDAO_SQL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/SaleDTO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/SaleDTO_SQL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/SupplyDTO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/SupplyDTO_SQL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Inventory/util/DataBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/util/DataBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supply.db" beforeDir="false" afterPath="$PROJECT_DIR$/supply.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -419,14 +413,24 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Inventory/DAO/OrderDeliverdDAO_SQL.java</url>
-          <line>26</line>
-          <option name="timeStamp" value="3" />
+          <url>file://$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java</url>
+          <line>61</line>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/dev/Inventory/util/DataBase.java</url>
-          <line>12</line>
-          <option name="timeStamp" value="4" />
+          <url>file://$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java</url>
+          <line>58</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java</url>
+          <line>52</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java</url>
+          <line>67</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
