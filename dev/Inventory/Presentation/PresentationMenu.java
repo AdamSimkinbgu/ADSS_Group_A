@@ -2,6 +2,7 @@ package Inventory.Presentation;
 
 import Inventory.DTO.*;
 import Inventory.Service.*;
+import Suppliers.DTOs.Enums.InitializeState;
 import com.fasterxml.jackson.core.type.TypeReference;
 import Inventory.type.Position;
 
@@ -29,7 +30,7 @@ public class PresentationMenu {
         return ms.SetIntegrationService();
     }
 
-    public void Initialize(int input) {
+    public void Initialize(InitializeState input) {
         // Initialize the inventory with the given input
         ms.Initialize(input);
     }
