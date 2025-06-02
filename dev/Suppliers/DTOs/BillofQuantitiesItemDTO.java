@@ -15,6 +15,15 @@ public class BillofQuantitiesItemDTO {
    public BillofQuantitiesItemDTO() {
    }
 
+   public BillofQuantitiesItemDTO(BillofQuantitiesItem item, int agreementId) {
+      this.agreementId = agreementId;
+      this.lineInBillID = item.getLineInBillID();
+      this.productName = item.getProductName();
+      this.productId = item.getProductID();
+      this.quantity = item.getQuantity();
+      this.discountPercent = item.getDiscountPercent();
+   }
+
    public BillofQuantitiesItemDTO(int agreementId, int lineInBillId, String itemName, int itemId, int quantity,
          BigDecimal discountPercent) {
       this.lineInBillID = lineInBillId;

@@ -25,7 +25,7 @@ public class AgreementDTO {
       this.agreementStartDate = agreement.getAgreementStartDate();
       this.agreementEndDate = agreement.getAgreementEndDate();
       this.billOfQuantitiesItems = agreement.getBillOfQuantitiesItems().stream()
-            .map(BillofQuantitiesItemDTO::new)
+            .map(item -> new BillofQuantitiesItemDTO(item, this.agreementId))
             .toList();
    }
 
