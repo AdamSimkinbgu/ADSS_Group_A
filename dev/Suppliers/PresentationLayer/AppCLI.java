@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import Inventory.Service.MainService;
+import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DomainLayer.*;
 import Suppliers.PresentationLayer.CLIs.*;
 import Suppliers.PresentationLayer.Commands.AgreementCommands.*;
@@ -23,11 +24,10 @@ public class AppCLI implements View {
 
    public static final Scanner scanner = new Scanner(System.in);
 
-   public AppCLI(String configJson) {
+   public AppCLI(InitializeState initializeState) {
 
       // Initialize the facades
-      AgreementFacade agreementFacade = new AgreementFacade();
-      SupplierController supplierFacade = new SupplierController(true, configJson, agreementFacade);
+      SupplierController supplierFacade = new SupplierController(initializeState);
 
       // OrderFacade orderFacade = new OrderFacade(supplierFacade);
 
@@ -137,8 +137,7 @@ public class AppCLI implements View {
       return scanner.nextLine();
    }
 
-
-   public boolean integration(){
+   public boolean integration() {
       return integrationService.setMainService();
    }
 }

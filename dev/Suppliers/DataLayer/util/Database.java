@@ -149,6 +149,19 @@ public final class Database {
         }
     }
 
+    public static void deleteAllData() {
+        try (Statement st = conn.createStatement()) {
+            st.executeUpdate("DELETE FROM boq_items;");
+            st.executeUpdate("DELETE FROM agreements;");
+            st.executeUpdate("DELETE FROM supplier_products;");
+            st.executeUpdate("DELETE FROM contacts;");
+            st.executeUpdate("DELETE FROM suppliers;");
+            log.info("All data deleted from the database");
+        } catch (SQLException e) {
+            log.error("Failed to delete all data", e);
+        }
+    }
+
     private Database() {
     }
 

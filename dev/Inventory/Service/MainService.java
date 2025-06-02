@@ -38,13 +38,15 @@ public class MainService {
         md.InventoryInitialization(input);
     }
 
-    public static MainService GetInstance(){
-        if(mainServiceInstance == null)mainServiceInstance = new MainService();
+    public static MainService GetInstance() {
+        if (mainServiceInstance == null)
+            mainServiceInstance = new MainService();
         return mainServiceInstance;
     }
 
-    public boolean SetIntegrationService(){
-        if(is != null)return false;
+    public boolean SetIntegrationService() {
+        if (is != null)
+            return false;
         is = IntegrationService.getIntegrationServiceInstance();
         return true;
     }
@@ -55,12 +57,10 @@ public class MainService {
             ProductDTO p = om.readValue(message, ProductDTO.class);
             int pId = md.AddProduct(p);
 
-            //order the product
-            HashMap<Integer,Integer> order = new HashMap<>();
-            order.put(p.getproductId(),2 * p.getminimalAmountStock());
+            // order the product
+            HashMap<Integer, Integer> order = new HashMap<>();
+            order.put(p.getproductId(), 2 * p.getminimalAmountStock());
             is.createRegularOrder(order);
-
-
 
             return "Product added successfully.";
         } catch (IllegalArgumentException e) {
@@ -73,7 +73,7 @@ public class MainService {
     public String MoveOrder() {
         try {
             List<Integer> ls = md.UpdateInventoryRestock();
-            for(Integer i : ls){
+            for (Integer i : ls) {
                 is.completeOrder(i);
             }
             return "Orders Moved successfully.";
@@ -212,35 +212,38 @@ public class MainService {
         }
     }
 
+    public String AddRecurringOrder(HashMap<Integer, Integer> order, int day) {
 
-    public String AddRecurringOrder(HashMap<Integer,Integer> order, int day) {
-
-        for(Integer pId:order.keySet()){
-            if(!md.DoesProdExist(pId)){
-                return "Product ID " + pId+ " dosent exist";
+        for (Integer pId : order.keySet()) {
+            if (!md.DoesProdExist(pId)) {
+                return "Product ID " + pId + " dosent exist";
             }
         }
 
-        //call supply func
-        ServiceResponse<?> response = is.createPeriodicOrder(order,day);
-        if(response.isSuccess())return "Order successfuly build";
-        else return response.getErrors().toString();
+        // call supply func
+        ServiceResponse<?> response = is.createPeriodicOrder(order, day);
+        if (response.isSuccess())
+            return "Order successfuly build";
+        else
+            return response.getErrors().toString();
     }
 
     // todo check
     public String AddMissingOrder() {
         List<SupplyDTO> Orders = md.AddMissingOrder();
 
-        HashMap<Integer,Integer> order = new HashMap<>();
+        HashMap<Integer, Integer> order = new HashMap<>();
 
-        for(SupplyDTO s:Orders){
-            order.put(s.getProductID(),s.getQuantityWH());
+        for (SupplyDTO s : Orders) {
+            order.put(s.getProductID(), s.getQuantityWH());
         }
 
-        //call supply func
+        // call supply func
         ServiceResponse<?> response = is.createShortageOrder(order);
-        if(response.isSuccess())return "Order successfuly build";
-        else return response.getErrors().toString();
+        if (response.isSuccess())
+            return "Order successfuly build";
+        else
+            return response.getErrors().toString();
 
     }
 
@@ -255,7 +258,7 @@ public class MainService {
     public String DeleteRecurringOrder(int orderId) {
         ServiceResponse<?> response = is.requestDeletePeriodicOrder(orderId);
 
-        if(response.isSuccess()){
+        if (response.isSuccess()) {
             return "Order deleted successfully";
         } else {
             return response.getErrors().toString();
