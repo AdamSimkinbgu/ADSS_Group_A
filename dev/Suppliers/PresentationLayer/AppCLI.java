@@ -76,7 +76,7 @@ public class AppCLI implements View {
       commands.put("CreateAgreementCMD", new CreateAgreementCMD(this, agreementService));
       commands.put("UpdateAgreementCMD", new UpdateAgreementCMD(this, agreementService));
       commands.put("RemoveAgreementCMD", new RemoveAgreementCMD(this, agreementService, supplierService));
-      commands.put("ViewAllAgreementsCMD", new ViewAgreementsBySupplierIdCMD(this, agreementService));
+      commands.put("ViewAllAgreementsForSupplierCMD", new ViewAgreementsBySupplierIdCMD(this, agreementService));
       return commands;
    }
 
