@@ -1,3 +1,4 @@
+package Tests.InventoryTests;
 // package dev.Tests.InventoryTests;
 
 // package Tests;
