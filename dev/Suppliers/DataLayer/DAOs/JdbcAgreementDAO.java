@@ -221,4 +221,14 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
          }
       }
    }
+
+   @Override
+   public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException {
+      if (agreementId < 0) {
+         LOGGER.error("Invalid agreement ID: {}", agreementId);
+         throw new IllegalArgumentException("Invalid agreement ID");
+      }
+      // Fetch all bill of quantities items for the given agreement ID
+      return billofQuantitiesItemsDAO.getAllBillofQuantitiesItems(agreementId);
+   }
 }

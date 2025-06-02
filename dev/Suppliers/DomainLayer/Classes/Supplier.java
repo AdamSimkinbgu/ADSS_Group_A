@@ -13,7 +13,6 @@ import Suppliers.DTOs.*;
  * Supplier entity representing a vendor in the system.
  */
 public class Supplier implements Serializable {
-   private static int nextSupplierID = 1;
    private int supplierId;
    private String name;
    private String taxNumber;
@@ -26,8 +25,11 @@ public class Supplier implements Serializable {
    private List<Integer> products;
    private List<Integer> agreements;
 
+   public Supplier() {
+   }
+
    public Supplier(SupplierDTO supplierDTO) {
-      this.supplierId = nextSupplierID++;
+      this.supplierId = supplierDTO.getId(); // SQLite will auto-increment this
       this.name = supplierDTO.getName();
       this.taxNumber = supplierDTO.getTaxNumber();
       this.address = new Address(supplierDTO.getAddressDTO());
@@ -62,7 +64,7 @@ public class Supplier implements Serializable {
          List<ContactInfoDTO> contacts,
          List<SupplierProductDTO> products,
          List<Integer> agreements) {
-      this.supplierId = nextSupplierID++;
+      this.supplierId = -1; // SQLite will auto-increment this
       this.name = name;
       this.taxNumber = taxNumber;
       this.address = new Address(address);

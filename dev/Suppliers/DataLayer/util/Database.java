@@ -53,7 +53,7 @@ public final class Database {
                                 name        TEXT    NOT NULL,
                                 email       TEXT    NOT NULL,
                                 PRIMARY KEY (supplier_id, phone),
-                                UNIQUE (supplier_id, email),
+                                UNIQUE (supplier_id, phone),
                                 FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id)
                                     ON DELETE CASCADE
                             );
@@ -110,6 +110,35 @@ public final class Database {
                                     ON DELETE CASCADE,
                                 FOREIGN KEY(product_id)   REFERENCES supplier_products(product_id)
                             );
+                        """);
+                st.executeUpdate("""
+                            CREATE TRIGGER IF NOT EXISTS trg_boq_autoline
+                            AFTER INSERT ON boq_items
+                            FOR EACH ROW
+                            WHEN NEW.line_in_bill IS NULL
+                            BEGIN
+                                UPDATE boq_items
+                                SET    line_in_bill = (
+                                        COALESCE(
+                                            (SELECT MAX(line_in_bill) + 1
+                                                FROM boq_items
+                                                WHERE agreement_id = NEW.agreement_id),
+                                            1
+                                        )
+                                    )
+                                WHERE  rowid = NEW.rowid;   -- patch only the row we just inserted
+                            END;
+                        """);
+                st.executeUpdate("""
+                            CREATE TRIGGER IF NOT EXISTS trg_boq_reseq_after_delete
+                            AFTER DELETE ON boq_items
+                            FOR EACH ROW
+                            BEGIN
+                                UPDATE boq_items
+                                SET line_in_bill = line_in_bill - 1
+                                WHERE agreement_id = OLD.agreement_id
+                                AND line_in_bill  > OLD.line_in_bill;
+                            END;
                         """);
 
                 log.info("Ensured database schema exists");

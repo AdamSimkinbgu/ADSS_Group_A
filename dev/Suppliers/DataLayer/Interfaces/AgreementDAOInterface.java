@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import Suppliers.DTOs.AgreementDTO;
+import Suppliers.DTOs.BillofQuantitiesItemDTO;
 
 public interface AgreementDAOInterface {
    AgreementDTO createAgreement(AgreementDTO agreement) throws SQLException;
@@ -18,6 +19,8 @@ public interface AgreementDAOInterface {
    List<AgreementDTO> getAllAgreements() throws SQLException;
 
    List<AgreementDTO> getAllAgreementsForSupplier(int supplierId) throws SQLException;
+
+   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException;
 
    boolean agreementExists(int id) throws SQLException;
 }

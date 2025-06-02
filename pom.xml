@@ -81,13 +81,17 @@
       <artifactId>slf4j-api</artifactId>
       <version>2.0.13</version>   <!-- any 2.x works; keep api & impl same -->
     </dependency>
-
-    <!-- 2️⃣  Simple console backend (runtime) -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>2.0.13</version>
     </dependency>
+    <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <!-- pick the latest version that supports your platform -->
+        <version>3.46.0.0</version>
+    </dependency>    
   </dependencies>
 
   <!-- ── build configuration ─────────────────────────────── -->

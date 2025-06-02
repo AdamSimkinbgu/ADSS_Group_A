@@ -2,12 +2,17 @@ package Suppliers.DomainLayer;
 
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import Suppliers.DomainLayer.Classes.Agreement;
 import Suppliers.DomainLayer.Classes.Supplier;
 import Suppliers.DomainLayer.Classes.SupplierProduct;
+import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 import Suppliers.DTOs.AddressDTO;
 import Suppliers.DTOs.AgreementDTO;
 import Suppliers.DTOs.BillofQuantitiesItemDTO;
@@ -23,6 +28,9 @@ public class SupplierController {
    private static int nextSupplierID;
    private static int nextProductID;
    private AgreementFacade agreementFacade;
+   private final SuppliersAgreementsRepositoryImpl suppliersAgreementsRepo;
+   private static final Logger LOGGER = LoggerFactory.getLogger(SupplierController.class);
+   // private final SuppliersAgreementsRepositoryImpl agreementRepository;
    private final Map<Integer, Supplier> suppliers = new HashMap<>();
    // Map of supplier IDs to their products and prices
    private final Map<Integer, Map<Integer, SupplierProduct>> supplierIDsToTheirProductIDsAndTheirSpesification = new HashMap<>();
@@ -33,20 +41,77 @@ public class SupplierController {
                                                                           // the system
 
    public SupplierController(boolean initialize, String configJson, AgreementFacade agreementFacade) {
+      LOGGER.info("Initializing SupplierFacade with configJson: {}", configJson);
+      this.suppliersAgreementsRepo = SuppliersAgreementsRepositoryImpl.getInstance();
       this.agreementFacade = agreementFacade;
       if (configJson == null) {
          this.configPath = "config.json";
       } else {
          this.configPath = configJson;
       }
-      System.out.println("SupplierFacade initialized with config path: " + configPath); // debug print
-      if (initialize) {
-         initialize(); // will become "loadFromDB()" in the future
+      if (suppliersAgreementsRepo != null && initialize) {
+         try {
+            DBinitialize(); // will become "loadFromDB()" in the future
+         } catch (SQLException e) {
+            LOGGER.error("Error initializing database: {}", e.getMessage());
+            throw new RuntimeException("Failed to initialize database", e);
+         }
+         LOGGER.info("Database initialized successfully.");
+      } else if (initialize) {
+         initialize(); // will become "loadFake()" in the future
+         LOGGER.info("Database initialized with fake data.");
+      } else {
+         emptyDBinitialize();
+         LOGGER.info("Database initialized with empty data.");
       }
+   }
 
-      // Initialize the next IDs
-      nextSupplierID = suppliers.keySet().stream().max(Integer::compareTo).orElse(0) + 1;
-      nextProductID = productCagalog.stream().mapToInt(CatalogProductDTO::productId).max().orElse(0) + 1;
+   private void emptyDBinitialize() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'emptyDBinitialize'");
+   }
+
+   private void DBinitialize() throws SQLException {
+      // Load suppliers and agreements from the database
+      List<SupplierDTO> supplierDTOs = suppliersAgreementsRepo.getAllSuppliers();
+      if (supplierDTOs != null) {
+         // the agreements and products need to be fetched from the database for each
+         // supplier
+         for (SupplierDTO supplierDTO : supplierDTOs) {
+            Supplier supplier = new Supplier(supplierDTO);
+            suppliers.put(supplier.getSupplierId(), supplier);
+            // Load products for the supplier
+            List<SupplierProductDTO> products = suppliersAgreementsRepo
+                  .getAllSupplierProductsById(supplier.getSupplierId());
+            if (products != null) {
+               Map<Integer, SupplierProduct> productsMap = new HashMap<>();
+               for (SupplierProductDTO product : products) {
+                  SupplierProduct supplierProduct = new SupplierProduct(product);
+                  productsMap.put(supplierProduct.getProductId(), supplierProduct);
+                  // Add the product to the catalog
+                  productCagalog.add(new CatalogProductDTO(supplierProduct));
+                  // Add the product to the product IDs to their supplier IDs map
+                  productIDsToTheirSupplierIDs.computeIfAbsent(supplierProduct.getProductId(), k -> new ArrayList<>())
+                        .add(supplier.getSupplierId());
+               }
+               supplierIDsToTheirProductIDsAndTheirSpesification.put(supplier.getSupplierId(), productsMap);
+            }
+            // Load agreements for the supplier
+            List<AgreementDTO> agreements = suppliersAgreementsRepo
+                  .getAllAgreementsForSupplier(supplier.getSupplierId());
+            if (agreements != null) {
+               for (AgreementDTO agreement : agreements) {
+                  supplier.addAgreement(agreement.getAgreementId());
+                  List<BillofQuantitiesItemDTO> items = suppliersAgreementsRepo.getBillOfQuantitiesItemsForAgreement(
+                        agreement.getAgreementId());
+                  if (items != null) {
+                     agreement.setBillOfQuantitiesItems(items);
+                  }
+                  agreementFacade.createAgreement(agreement);
+               }
+            }
+         }
+      }
    }
 
    private void initialize() {
@@ -65,6 +130,14 @@ public class SupplierController {
             new PaymentDetailsDTO("162534", PaymentMethod.CASH_ON_DELIVERY, PaymentTerm.N60),
             true, EnumSet.of(DayOfWeek.FRIDAY), 1, new ArrayList<>(),
             new ArrayList<>(), new ArrayList<>());
+      try {
+         suppliersAgreementsRepo.createSupplier(new SupplierDTO(supplier1));
+         suppliersAgreementsRepo.createSupplier(new SupplierDTO(supplier2));
+         suppliersAgreementsRepo.createSupplier(new SupplierDTO(supplier3));
+      } catch (SQLException e) {
+         LOGGER.error("Error creating suppliers in the database: {}", e.getMessage());
+         throw new RuntimeException("Failed to create suppliers in the database", e);
+      }
       suppliers.put(0, supplier1);
       suppliers.put(1, supplier2);
       suppliers.put(2, supplier3);
@@ -81,9 +154,22 @@ public class SupplierController {
             "Product 5", new BigDecimal("30.00"), new BigDecimal("2.5"), 15, "Manufacturer 5");
       SupplierProduct product6 = new SupplierProduct(supplier3.getSupplierId(), nextProductID++, "876543",
             "Product 6", new BigDecimal("40.00"), new BigDecimal("4.0"), 120, "Manufacturer 6");
+
+      try {
+         suppliersAgreementsRepo.createSupplierProduct(new SupplierProductDTO(product1));
+         suppliersAgreementsRepo.createSupplierProduct(new SupplierProductDTO(product2));
+         suppliersAgreementsRepo.createSupplierProduct(new SupplierProductDTO(product3));
+         suppliersAgreementsRepo.createSupplierProduct(new SupplierProductDTO(product4));
+         suppliersAgreementsRepo.createSupplierProduct(new SupplierProductDTO(product5));
+         suppliersAgreementsRepo.createSupplierProduct(new SupplierProductDTO(product6));
+      } catch (SQLException e) {
+         LOGGER.error("Error creating products in the database: {}", e.getMessage());
+         throw new RuntimeException("Failed to create products in the database", e);
+      }
       // Add products to suppliers
       supplier1.addProduct(product1.getProductId());
       supplier1.addProduct(product2.getProductId());
+      supplier1.addProduct(product3.getProductId());
       supplier2.addProduct(product3.getProductId());
       supplier2.addProduct(product4.getProductId());
       supplier3.addProduct(product5.getProductId());
@@ -94,6 +180,8 @@ public class SupplierController {
             .put(product1.getProductId(), product1);
       supplierIDsToTheirProductIDsAndTheirSpesification.get(supplier1.getSupplierId())
             .put(product2.getProductId(), product2);
+      supplierIDsToTheirProductIDsAndTheirSpesification.get(supplier1.getSupplierId())
+            .put(product3.getProductId(), product3);
       supplierIDsToTheirProductIDsAndTheirSpesification.put(supplier2.getSupplierId(), new HashMap<>());
       supplierIDsToTheirProductIDsAndTheirSpesification.get(supplier2.getSupplierId())
             .put(product3.getProductId(), product3);
@@ -108,6 +196,9 @@ public class SupplierController {
       productIDsToTheirSupplierIDs.computeIfAbsent(product1.getProductId(), k -> new ArrayList<>())
             .add(supplier1.getSupplierId());
       productIDsToTheirSupplierIDs.computeIfAbsent(product2.getProductId(), k -> new ArrayList<>())
+            .add(supplier1.getSupplierId());
+
+      productIDsToTheirSupplierIDs.computeIfAbsent(product3.getProductId(), k -> new ArrayList<>())
             .add(supplier1.getSupplierId());
       productIDsToTheirSupplierIDs.computeIfAbsent(product3.getProductId(), k -> new ArrayList<>())
             .add(supplier2.getSupplierId());

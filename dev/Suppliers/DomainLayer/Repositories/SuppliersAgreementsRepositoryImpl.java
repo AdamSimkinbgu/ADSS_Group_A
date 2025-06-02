@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Suppliers.DTOs.AgreementDTO;
+import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
@@ -16,16 +17,16 @@ import Suppliers.DataLayer.DAOs.*;
 import Suppliers.DataLayer.Interfaces.*;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.SuppliersAgreementsRepositoryInterface;
 
-public class SupplierRepositoryImpl implements SuppliersAgreementsRepositoryInterface {
-   private static final Logger LOGGER = LoggerFactory.getLogger(SupplierRepositoryImpl.class);
+public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRepositoryInterface {
+   private static final Logger LOGGER = LoggerFactory.getLogger(SuppliersAgreementsRepositoryImpl.class);
    private final SupplierDAOInterface supplierDAO;
    private final AgreementDAOInterface agreementDAO;
    private final SupplierProductDAOInterface supplierProductDAO;
-   private static SupplierRepositoryImpl instance;
+   private static SuppliersAgreementsRepositoryImpl instance;
 
-   static SupplierRepositoryImpl getInstance() {
+   public static SuppliersAgreementsRepositoryImpl getInstance() {
       if (instance == null) {
-         instance = new SupplierRepositoryImpl();
+         instance = new SuppliersAgreementsRepositoryImpl();
          LOGGER.info("Created new instance of SupplierRepositoryImpl");
       } else {
          LOGGER.info("Using existing instance of SupplierRepositoryImpl");
@@ -33,7 +34,7 @@ public class SupplierRepositoryImpl implements SuppliersAgreementsRepositoryInte
       return instance;
    }
 
-   private SupplierRepositoryImpl() {
+   private SuppliersAgreementsRepositoryImpl() {
       this.supplierDAO = new JdbcSupplierDAO();
       this.agreementDAO = new JdbcAgreementDAO();
       this.supplierProductDAO = new JdbcSupplierProductDAO();
@@ -362,6 +363,22 @@ public class SupplierRepositoryImpl implements SuppliersAgreementsRepositoryInte
          LOGGER.info("Found {} catalog products", catalogProducts.size());
       }
       return catalogProducts;
+   }
+
+   @Override
+   public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException {
+      if (agreementId < 0) {
+         LOGGER.error("Attempted to get Bill of Quantities items for agreement with negative ID: {}", agreementId);
+         throw new IllegalArgumentException("Agreement ID cannot be negative");
+      }
+      LOGGER.info("Retrieving Bill of Quantities items for agreement with ID: {}", agreementId);
+      List<BillofQuantitiesItemDTO> boqItems = agreementDAO.getBillOfQuantitiesItemsForAgreement(agreementId);
+      if (boqItems.isEmpty()) {
+         LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreementId);
+      } else {
+         LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
+      }
+      return boqItems;
    }
 }
 

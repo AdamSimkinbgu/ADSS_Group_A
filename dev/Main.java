@@ -1,12 +1,20 @@
+import java.sql.Connection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import Inventory.Presentation.PresentationMenu;
+import Suppliers.DataLayer.util.Database;
 import Suppliers.PresentationLayer.AppCLI;
 
 public class Main {
+   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
    public static void main(String[] args) {
       System.out.println("Welcome to the Supplier-Inventory Management System!");
       AppCLI appCLI = new AppCLI("data.json");
       PresentationMenu presentationMenu = new PresentationMenu();
-      integrateModules(presentationMenu,appCLI);
+      integrateModules(presentationMenu, appCLI);
       while (true) {
          System.out.println("1. Supplier Management");
          System.out.println("2. Inventory Management");
@@ -29,7 +37,7 @@ public class Main {
       }
    }
 
-   public static void integrateModules(PresentationMenu pm, AppCLI app){
+   public static void integrateModules(PresentationMenu pm, AppCLI app) {
       app.integration();
       pm.Integration();
    }

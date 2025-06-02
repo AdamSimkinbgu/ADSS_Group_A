@@ -17,7 +17,6 @@ import Suppliers.DTOs.BillofQuantitiesItemDTO;
  */
 
 public class Agreement implements Serializable {
-    private static int nextAgreementID = 10;
     private int agreementId;
     private int supplierId;
     private String supplierName;
@@ -27,6 +26,7 @@ public class Agreement implements Serializable {
     private List<BillofQuantitiesItem> billOfQuantitiesItems;
 
     public Agreement(
+            int agreementId,
             int supplierId,
             String supplierName,
             LocalDate agreementStartDate,
@@ -35,7 +35,7 @@ public class Agreement implements Serializable {
         if (agreementEndDate.isBefore(agreementStartDate)) {
             throw new IllegalArgumentException("End date before start date");
         }
-        this.agreementId = nextAgreementID++;
+        this.agreementId = agreementId;
         this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.valid = true;
@@ -45,7 +45,7 @@ public class Agreement implements Serializable {
     }
 
     public Agreement(AgreementDTO agreementDTO) {
-        this.agreementId = nextAgreementID++;
+        this.agreementId = agreementDTO.getAgreementId();
         this.supplierId = agreementDTO.getSupplierId();
         this.supplierName = agreementDTO.getSupplierName();
         this.valid = true;

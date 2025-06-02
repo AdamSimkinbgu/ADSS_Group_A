@@ -5,14 +5,12 @@ import java.util.*;
 import Suppliers.DTOs.AgreementDTO;
 import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DomainLayer.Classes.Agreement;
-import Suppliers.DomainLayer.Classes.BillofQuantitiesItem;
 
 public class AgreementFacade extends BaseFacade {
     private final Map<Integer, List<Agreement>> supplierIdToAgreements = new HashMap<>();
 
     public AgreementDTO createAgreement(AgreementDTO agreementDTO) {
         Agreement agreement = new Agreement(agreementDTO);
-        agreementDTO.setAgreementId(agreement.getAgreementId());
         supplierIdToAgreements
                 .computeIfAbsent(agreement.getSupplierId(), k -> new ArrayList<>());
         supplierIdToAgreements.get(agreement.getSupplierId()).add(agreement);

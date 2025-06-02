@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import Suppliers.DTOs.AgreementDTO;
+import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
@@ -37,6 +38,8 @@ public interface SuppliersAgreementsRepositoryInterface {
    List<AgreementDTO> getAllAgreementsForSupplier(int supplierId) throws SQLException;
 
    List<AgreementDTO> getAllAgreements() throws SQLException;
+
+   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException;
 
    void createSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
 
