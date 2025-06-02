@@ -1,27 +1,29 @@
-<!--  pom.xml at the repository root  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <!-- ── coordinates ─────────────────────────────────────── -->
+  <!-- ── coordinates ──────────────────────────────────────────────── -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.adss</groupId>
   <artifactId>suppliers-inventory</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <!-- ── shared versions ─────────────────────────────────── -->
+  <!-- ── shared versions ──────────────────────────────────────────── -->
   <properties>
+    <!-- Java 17 -->
     <maven.compiler.release>17</maven.compiler.release>
+
+    <!-- Versions for Jackson, JUnit 5 & Mockito -->
     <jackson.version>2.15.2</jackson.version>
     <junit.version>5.10.0</junit.version>
     <mockito.version>5.5.0</mockito.version>
   </properties>
 
-  <!-- ── runtime deps (add more if you need) ─────────────── -->
+  <!-- ── runtime (and compile) dependencies ───────────────────────── -->
   <dependencies>
-    <!-- Jackson for JSON processing -->
+    <!-- Jackson for JSON processing (compile‐scope) -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
@@ -43,7 +45,27 @@
       <version>${jackson.version}</version>
     </dependency>
 
-    <!-- JUnit 5 for testing -->
+    <!-- SLF4J: logging (compile‐scope) -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.13</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.13</version>
+    </dependency>
+
+    <!-- SQLite JDBC driver (compile‐scope) -->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.46.0.0</version>
+    </dependency>
+
+    <!-- ── Test‐scope dependencies ────────────────────────────────── -->
+    <!-- JUnit 5 (API, Engine & Parameters) -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -63,7 +85,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Mockito for mocking in tests -->
+    <!-- Mockito (core + JUnit 5 integration) -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -76,35 +98,22 @@
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>2.0.13</version>   <!-- any 2.x works; keep api & impl same -->
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>2.0.13</version>
-    </dependency>
-    <dependency>
-        <groupId>org.xerial</groupId>
-        <artifactId>sqlite-jdbc</artifactId>
-        <!-- pick the latest version that supports your platform -->
-        <version>3.46.0.0</version>
-    </dependency>    
   </dependencies>
 
-  <!-- ── build configuration ─────────────────────────────── -->
+  <!-- ── build configuration ──────────────────────────────────────── -->
   <build>
-    <!-- 1️⃣  Source & test folders -->
+    <!-- ① Tell Maven where your main code lives: dev/ -->
     <sourceDirectory>${project.basedir}/dev</sourceDirectory>
-    <testSourceDirectory>${project.basedir}/dev/Tests</testSourceDirectory>
 
-    <!-- 2️⃣  Put compiled artefacts under release/ -->
+    <!-- ② Tell Maven where your test code lives: dev/Tests/ -->
+    <testSourceDirectory>${project.basedir}/dev</testSourceDirectory>
+
+
+    <!-- ③ Put all “build outputs” (compiled .class, shaded JAR, etc.) under release/ -->
     <directory>${project.basedir}/release</directory>
 
     <plugins>
-      <!-- Java compiler -->
+      <!-- ── (A) Java compiler plugin ────────────────────────────── -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -114,25 +123,22 @@
         </configuration>
       </plugin>
 
-      <!-- Test runner - runs tests before packaging -->
+      <!-- ── (B) Surefire: runs all tests under dev/Tests/ ────────── -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.1.2</version>
         <configuration>
-          <testSourceDirectory>${project.basedir}/dev/Tests</testSourceDirectory>
+          <!-- By default, Surefire scans ${testSourceDirectory} for *Test.java and *Tests.java.
+               You do not need to reference “dev/…” again here. -->
           <includes>
-            <include>**/dev/Suppliers/**/*Test.java</include>
-            <include>**/dev/Inventory/**/*Test.java</include>
-            <include>**/dev/Suppliers/**/*Tests.java</include>
-            <include>**/dev/Inventory/**/*Tests.java</include>
-            <include>**/dev/Tests/**/*Test.java</include>
-            <include>**/dev/Tests/**/*Tests.java</include>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
           </includes>
         </configuration>
       </plugin>
 
-      <!-- Skip creating the default JAR -->
+      <!-- ── (C) Skip the default “jar” (we’ll shade later) ───────── -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -142,7 +148,7 @@
         </configuration>
       </plugin>
 
-      <!-- Shade ⇒ single runnable JAR -->
+      <!-- ── (D) Shade plugin: build one “fat” runnable JAR in release/ ── -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -165,7 +171,7 @@
         </executions>
       </plugin>
 
-      <!-- Optional: `mvn exec:java -Dexec.args="config.json"` run shortcut -->
+      <!-- ── (E) Optional: exec‐maven‐plugin to run your “shaded” JAR via mvn exec:java ── -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
@@ -180,6 +186,10 @@
         </configuration>
       </plugin>
 
+      <!-- ── (F) If you have additional “test” sources in other folders, you can add them here.
+             In this example, everything under dev/Tests is already your test root, so we don’t need more. 
+             If you truly have tests elsewhere, you’d use build-helper to add them. ── -->
+      <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -193,14 +203,13 @@
             </goals>
             <configuration>
               <sources>
-                <source>${project.basedir}/dev/Tests</source>
-                <source>${project.basedir}/dev/Suppliers</source>
-                <source>${project.basedir}/dev/Inventory</source>
+                <source>${project.basedir}/some/other/testing/folder</source>
               </sources>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      -->
 
     </plugins>
   </build>
