@@ -5,7 +5,6 @@ import java.util.List;
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
-import Suppliers.DomainLayer.Classes.Supplier;
 import Suppliers.DomainLayer.SupplierController;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.ProductValidator;
@@ -29,8 +28,8 @@ public class SupplierService extends BaseService {
       ServiceResponse<List<String>> response = supplierValidator.validateCreateDTO(supplierDTO);
       if (response.isSuccess()) {
          try {
-            Supplier supplier = supplierFacade.createSupplier(supplierDTO);
-            return ServiceResponse.ok("Supplier created successfully with ID: " + supplier.getSupplierId());
+            SupplierDTO supplier = supplierFacade.createSupplier(supplierDTO);
+            return ServiceResponse.ok("Supplier created successfully with ID: " + supplier.getId());
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to create supplier: " + e.getMessage()));
          }
@@ -57,12 +56,8 @@ public class SupplierService extends BaseService {
       ServiceResponse<?> response = supplierValidator.validateRemoveDTO(id);
       if (response.isSuccess()) {
          try {
-            boolean removed = supplierFacade.removeSupplier(id);
-            if (removed) {
-               return ServiceResponse.ok("Supplier with ID " + id + " removed successfully");
-            } else {
-               return ServiceResponse.fail(List.of("Supplier not found"));
-            }
+            supplierFacade.removeSupplier(id);
+            return ServiceResponse.ok("Supplier with ID " + id + " removed successfully");
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to remove supplier: " + e.getMessage()));
          }

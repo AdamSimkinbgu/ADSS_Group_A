@@ -51,13 +51,8 @@ public class AgreementService extends BaseService {
          return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
       }
       try {
-         boolean removed = supplierController.removeAgreement(agreementID, supplierID);
-         if (removed) {
-            return ServiceResponse.ok("Agreement removed successfully");
-         } else {
-            return ServiceResponse
-                  .fail(List.of("Failed to remove agreement: Agreement not found or supplier mismatch"));
-         }
+         supplierController.removeAgreement(agreementID, supplierID);
+         return ServiceResponse.ok("Agreement removed successfully");
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to remove agreement: " + e.getMessage()));
       }
