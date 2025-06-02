@@ -84,6 +84,13 @@ public class ProductDTO {
     public ProductDTO() {
     }
 
+    public ProductDTO(int pId, String pName, String MfName) {
+        productId = pId;
+        productName = pName;
+        manufacturerName = MfName;
+
+    }
+
     public ProductDTO(int pId, String pName, String MfName, int minAStore, int minAStock, float PPrice, Position s,
             Position w) {
         productId = pId;

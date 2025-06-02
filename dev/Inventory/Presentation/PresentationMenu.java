@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class PresentationMenu {
+    private static Scanner scanner = new Scanner(System.in);
+
     private MainService ms;
     private ObjectMapper om;
 
@@ -25,6 +27,11 @@ public class PresentationMenu {
 
     public boolean Integration(){
         return ms.SetIntegrationService();
+    }
+
+    public void Initialize(int input) {
+        // Initialize the inventory with the given input
+        ms.Initialize(input);
     }
 
     public void Menu() {
@@ -75,6 +82,9 @@ public class PresentationMenu {
                 case 13:
                     AddRecurringOrder();
                     break;
+                case 14:
+                    DeleteRecurringOrder();
+                    break;
 
             }
         }
@@ -83,7 +93,7 @@ public class PresentationMenu {
     // VVVVVVVVV
     private int PMainMenu() {
         int choice;
-        Scanner scanner = new Scanner(System.in);
+
         // Print menu
         System.out.println("==== Main Menu ====");
         System.out.println("1. Add New Product");
@@ -94,11 +104,12 @@ public class PresentationMenu {
         System.out.println("6. Add To Category");
         System.out.println("7. Report Bad Product");
         System.out.println("8. Move Product");
-        System.out.println("9. Search For Product");
+        System.out.println("9. Search For Product Or Category");
         System.out.println("10. Get Current Inventory Report For Restock");
         System.out.println("11. Get Bad Product Report");
         System.out.println("12. Get Missing Report For Restock And Order Missing Product");
         System.out.println("13. Add A Recurring Order");
+        System.out.println("14. Delete Recurring Order");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
 
@@ -108,7 +119,6 @@ public class PresentationMenu {
 
     // todo check
     private void AddProduct() {
-        Scanner scanner = new Scanner(System.in);
         StringBuilder table = new StringBuilder();
         ArrayList<ProductDTO> ls;
         String name = "", manName = "";
@@ -228,7 +238,7 @@ public class PresentationMenu {
 
     // VVVVVVVVV
     private void AddNewCategory() {
-        Scanner scanner = new Scanner(System.in);
+
 
         // get name
         System.out.println("Enter category name: ");
@@ -239,7 +249,7 @@ public class PresentationMenu {
     }
 
     private void AddToCategory() {
-        Scanner scanner = new Scanner(System.in);
+
 
         System.out.println("Enter the name of the category: ");
         String catName = scanner.nextLine();
@@ -271,7 +281,7 @@ public class PresentationMenu {
 
     // VVVVVVVVV
     private void MoveProduct() {
-        Scanner scanner = new Scanner(System.in);
+
 
         // get id
         System.out.println("Enter product id: ");
@@ -315,7 +325,7 @@ public class PresentationMenu {
 
     // VVVVVVVV
     private void AddDiscount() {
-        Scanner scanner = new Scanner(System.in);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         System.out.println("Enter percent of discount:");
@@ -373,7 +383,7 @@ public class PresentationMenu {
 
     // VVVVVVVV
     private void AddSale() {
-        Scanner scanner = new Scanner(System.in);
+
         HashMap<Integer, Integer> product = new HashMap<>();
         int i = 1;
 
@@ -414,7 +424,7 @@ public class PresentationMenu {
 
     // VVVVVVVV
     private void AddBadProduct() {
-        Scanner scanner = new Scanner(System.in);
+
 
         // get id
         System.out.println("Enter product id: ");
@@ -439,7 +449,7 @@ public class PresentationMenu {
 
     // todo check
     private void MissingReport() {
-        Scanner scanner = new Scanner(System.in);
+
         int input;
         System.out.println(ms.MissingReport());
 
@@ -468,27 +478,59 @@ public class PresentationMenu {
 
     // VVVVVVVV
     private void Search() {
-        Scanner scanner = new Scanner(System.in);
-        // get id
-        System.out.println("Enter product id: ");
-        int pId = scanner.nextInt();
-        if (pId < 0) {
-            System.out.println("Invalid id ");
+
+        System.out.println("To search category by name press 1 and to search product by id press 2");
+        int choice = scanner.nextInt();
+        if( choice != 1 && choice != 2) {
+            System.out.println("Invalid choice");
             return;
         }
+        else if (choice == 1) {
 
-        String response = ms.Search(pId);
-        try {
-            ProductService p = om.readValue(response, ProductService.class);
-            System.out.println("=====Product Report=====");
-            System.out.println("Product name\t" + p.getproductName());
-            System.out.println("Product id\t" + p.getproductId());
-            System.out.println("Product price\t" + p.getproductPrice());
-            System.out.println("Product quantity\t" + p.getQuantity());
-            System.out.println("Product bad quantity\t" + p.getBadQuantity());
+            // get category name
+            System.out.println("Enter category name: ");
+            String catName = scanner.next();
+            String response = ms.Search(catName);
+            try {
+                ArrayList<ProductService> ls = om.readValue(response, new TypeReference<ArrayList<ProductService>>() {});
+                System.out.println("=====Category Report=====");
+                for (ProductService p : ls) {
+                    System.out.println("Product name\t" + p.getproductName());
+                    System.out.println("Product id\t" + p.getproductId());
+                    System.out.println("Product price\t" + p.getproductPrice());
+                    System.out.println("Product quantity\t" + p.getQuantity());
+                    System.out.println("Product bad quantity\t" + p.getBadQuantity());
+                    System.out.println("-------------------------");
+                }
+            } catch (Exception e) {
+                System.out.println(response + e.getMessage());
+            }
+            return;
 
-        } catch (Exception e) {
-            System.out.println(response + e.getMessage());
+        }
+        else {
+
+            // get id
+            System.out.println("Enter product id: ");
+            int pId = scanner.nextInt();
+            if (pId < 0) {
+                System.out.println("Invalid id ");
+                return;
+            }
+
+            String response = ms.Search(pId);
+            try {
+                ProductService p = om.readValue(response, ProductService.class);
+                System.out.println("=====Product Report=====");
+                System.out.println("Product name\t" + p.getproductName());
+                System.out.println("Product id\t" + p.getproductId());
+                System.out.println("Product price\t" + p.getproductPrice());
+                System.out.println("Product quantity\t" + p.getQuantity());
+                System.out.println("Product bad quantity\t" + p.getBadQuantity());
+
+            } catch (Exception e) {
+                System.out.println(response + e.getMessage());
+            }
         }
     }
 
@@ -500,7 +542,7 @@ public class PresentationMenu {
     }
 
     private void AddRecurringOrder() {
-        Scanner scanner = new Scanner(System.in);
+
         int pId = 0;
 
         HashMap<Integer,Integer> order = new HashMap<>();
@@ -525,7 +567,15 @@ public class PresentationMenu {
     }
 
     private void DeleteRecurringOrder(){
-        //String
+        System.out.println("Enter the order ID to delete: ");
+        int orderId = scanner.nextInt();
+        if (orderId < 0) {
+            System.out.println("Invalid order ID.");
+            return;
+        }
+
+        String response = ms.DeleteRecurringOrder(orderId);
+        System.out.println(response);
     }
 
 

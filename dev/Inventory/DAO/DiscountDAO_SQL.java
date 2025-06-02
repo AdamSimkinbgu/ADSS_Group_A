@@ -4,12 +4,13 @@ import Inventory.DTO.DiscountDTO;
 import Inventory.util.DataBase;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
 public class DiscountDAO_SQL implements DiscountDAO {
 
-    private Connection conn;
+
 
     public DiscountDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.
@@ -55,10 +56,11 @@ public class DiscountDAO_SQL implements DiscountDAO {
     @Override
     public List<DiscountDTO> getAll() {
         String sql = """
-            SELECT id, 
+            SELECT discount_id, 
             product_id, 
-            discount_percentage, 
-            start_date, end_date, 
+            percent, 
+            discount_start, 
+            discount_end, 
             category_name 
             FROM discounts""";
 
@@ -71,11 +73,12 @@ public class DiscountDAO_SQL implements DiscountDAO {
             // Iterate through the ResultSet and populate the list
             while (rs.next()) {
                 DiscountDTO discount = new DiscountDTO();
-                discount.setId(rs.getInt("id"));
+                discount.setId(rs.getInt("discount_id"));
                 discount.setpId(rs.getInt("product_id"));
-                discount.setPercent(rs.getFloat("discount_percentage"));
-                discount.setDiscountStart(rs.getDate("start_date").toLocalDate());
-                discount.setDiscountEnd(rs.getDate("end_date").toLocalDate());
+                discount.setPercent(rs.getFloat("percent"));
+                // Parse dates from string format
+                discount.setDiscountStart(LocalDate.parse(rs.getString("discount_start")));
+                discount.setDiscountEnd(LocalDate.parse(rs.getString("discount_end")));
                 discount.setCatName(rs.getString("category_name"));
                 discounts.add(discount);
             }
@@ -97,4 +100,15 @@ public class DiscountDAO_SQL implements DiscountDAO {
         }
     }
 
+
+    @Override
+    public void deleteAll() {
+        String sql = "DELETE FROM discounts";
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
 }

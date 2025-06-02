@@ -11,4 +11,6 @@ public interface SaleDAO {
 
     public void Delete(int id);
 
+    public void DeleteAll();
+
 }

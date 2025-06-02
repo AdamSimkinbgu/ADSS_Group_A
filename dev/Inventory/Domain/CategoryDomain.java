@@ -32,6 +32,10 @@ public class CategoryDomain {
     }
 
     public List<Integer> getProductLs() {
+        List<Integer> productLs = new ArrayList<>(this.productLs);
+        for (CategoryDomain c : subCategoryLs) {
+            productLs.addAll(c.getProductLs());
+        }
         return productLs;
     }
 
@@ -127,4 +131,21 @@ public class CategoryDomain {
         return;
 
     }
+
+    public CategoryDomain getSub(String subName) {
+        if( subName.equals(name)) {
+            return this;
+        }
+        for (CategoryDomain c : subCategoryLs) {
+            if(c.Isin(subName)) {
+                return c.getSub(subName);
+            }
+        }
+        throw new IllegalArgumentException("There is no category by that name");
+    }
+
+    public DiscountDomain getDisDom() {
+        return disDom;
+    }
+
 }

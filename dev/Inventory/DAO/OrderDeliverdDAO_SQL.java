@@ -12,7 +12,7 @@ import java.util.List;
 
 public class OrderDeliverdDAO_SQL implements OrderDeliverdDAO {
 
-    private Connection conn;
+
 
     public OrderDeliverdDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.
@@ -24,30 +24,31 @@ public class OrderDeliverdDAO_SQL implements OrderDeliverdDAO {
         String itemsSql = "SELECT * FROM order_items WHERE order_id = ?";
         List<OrderPackageDTO> orders = new ArrayList<>();
 
-        try (Connection conn = DataBase.getConnection();
-             PreparedStatement orderPs = conn.prepareStatement(orderSql);
-             ResultSet orderRs = orderPs.executeQuery()) {
+        try (Connection conn = DataBase.getConnection()) {
+            try (PreparedStatement orderPs = conn.prepareStatement(orderSql);
+                 ResultSet orderRs = orderPs.executeQuery()) {
 
-            while (orderRs.next()) {
-                int orderId = orderRs.getInt("order_id");
-                LocalDate deliveryDate = LocalDate.parse(orderRs.getString("delivery_date"));
-                List<SupplyDTO> supplies = new ArrayList<>();
+                while (orderRs.next()) {
+                    int orderId = orderRs.getInt("order_id");
+                    LocalDate deliveryDate = LocalDate.parse(orderRs.getString("delivery_date"));
+                    List<SupplyDTO> supplies = new ArrayList<>();
 
-                // Get order items
-                try (PreparedStatement itemsPs = conn.prepareStatement(itemsSql)) {
-                    itemsPs.setInt(1, orderId);
-                    ResultSet itemsRs = itemsPs.executeQuery();
-
-                    while (itemsRs.next()) {
-                        SupplyDTO supply = new SupplyDTO();
-                        supply.setProductID(itemsRs.getInt("product_id"));
-                        supply.setQuantityWH(itemsRs.getInt("quantity"));
-                        supplies.add(supply);
+                    // Get order items using the same connection
+                    try (PreparedStatement itemsPs = conn.prepareStatement(itemsSql)) {
+                        itemsPs.setInt(1, orderId);
+                        try (ResultSet itemsRs = itemsPs.executeQuery()) {
+                            while (itemsRs.next()) {
+                                SupplyDTO supply = new SupplyDTO();
+                                supply.setProductID(itemsRs.getInt("product_id"));
+                                supply.setQuantityWH(itemsRs.getInt("quantity"));
+                                supplies.add(supply);
+                            }
+                        }
                     }
-                }
 
-                OrderPackageDTO order = new OrderPackageDTO(orderId, deliveryDate, supplies);
-                orders.add(order);
+                    OrderPackageDTO order = new OrderPackageDTO(orderId, deliveryDate, supplies);
+                    orders.add(order);
+                }
             }
             return orders;
         } catch (SQLException e) {
@@ -103,4 +104,26 @@ public class OrderDeliverdDAO_SQL implements OrderDeliverdDAO {
             throw new RuntimeException("SQL Exception: " + e.getMessage());
         }
     }
+
+
+    @Override
+    public void DeleteAll() {
+        String deleteItemsSql = "DELETE FROM order_items";
+        String deleteOrdersSql = "DELETE FROM orders";
+
+        try (Connection conn = DataBase.getConnection()) {
+            // First delete all items
+            try (PreparedStatement ps = conn.prepareStatement(deleteItemsSql)) {
+                ps.executeUpdate();
+            }
+
+            // Then delete all orders
+            try (PreparedStatement ps = conn.prepareStatement(deleteOrdersSql)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
+
 }

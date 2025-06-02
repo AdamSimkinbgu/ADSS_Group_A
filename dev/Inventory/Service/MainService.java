@@ -9,6 +9,8 @@ import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import Suppliers.DTOs.CatalogProductDTO;
+
 import Inventory.type.Position;
 
 import java.util.ArrayList;
@@ -27,7 +29,13 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        md.InventoryInitialization();
+        //md.InventoryInitialization(0);
+    }
+
+
+    public  void Initialize(int input) {
+        //todo
+        md.InventoryInitialization(input);
     }
 
     public static MainService GetInstance() {
@@ -153,6 +161,18 @@ public class MainService {
         return md.GetBadReport();
     }
 
+    public String Search(String name) {
+        try {
+            ArrayList<ProductService> ls = new ArrayList<>();
+            md.Search(name);
+            return om.writeValueAsString(ls);
+        } catch (IllegalArgumentException e) {
+            return "Search failed: " + e.getMessage();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
     public String Search(int pId) {
         try {
             ProductService p = new ProductService(md.Search(pId));
@@ -171,6 +191,18 @@ public class MainService {
     public String GetProductLst() {
         ArrayList<ProductDTO> ls = new ArrayList<>();
         // todo call the get Catalog func
+        ServiceResponse<?> response = is.getCatalog();
+        if(!response.isSuccess()){
+            return response.getErrors().toString();
+        }
+        List<CatalogProductDTO> catalog = (List<CatalogProductDTO>) response.getValue();
+
+        // convert CatalogProductDTO to ProductDTO
+        for(CatalogProductDTO cp : catalog){
+            ProductDTO p = new ProductDTO(cp.productId(), cp.name(), cp.manufacturerName());
+            ls.add(p);
+        }
+
 
         ls = md.cleanCatalog(ls);
 
@@ -189,12 +221,19 @@ public class MainService {
             }
         }
 
+<<<<<<< HEAD
         // call supply func
         ServiceResponse<?> response = is.createPeriodicOrder(order, day);
         if (response.isSuccess())
             return "Order successfuly build";
         else
             return response.getErrors().toString();
+=======
+        //call supply func
+        ServiceResponse<?> response = is.createPeriodicOrder(order,day);
+        if(response.isSuccess())return "Order successfuly build";
+        else return response.getErrors().toString();
+>>>>>>> moshe-fix
     }
 
     // todo check
@@ -209,10 +248,15 @@ public class MainService {
 
         // call supply func
         ServiceResponse<?> response = is.createShortageOrder(order);
+<<<<<<< HEAD
         if (response.isSuccess())
             return "Order successfuly build";
         else
             return response.getErrors().toString();
+=======
+        if(response.isSuccess())return "Order successfuly build";
+        else return response.getErrors().toString();
+>>>>>>> moshe-fix
 
     }
 
@@ -224,4 +268,16 @@ public class MainService {
         return "done";
     }
 
+<<<<<<< HEAD
+=======
+    public String DeleteRecurringOrder(int orderId) {
+        ServiceResponse<?> response = is.requestDeletePeriodicOrder(orderId);
+
+        if(response.isSuccess()){
+            return "Order deleted successfully";
+        } else {
+            return response.getErrors().toString();
+        }
+    }
+>>>>>>> moshe-fix
 }

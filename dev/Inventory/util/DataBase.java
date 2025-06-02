@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class DataBase {
 
-    private static final String DB_URL = "jdbc:sqlite:stocks.db";
+    private static final String DB_URL = "jdbc:sqlite:inventory.db";
     private static Connection conn;
 
     static {
@@ -130,6 +130,6 @@ public class DataBase {
     private DataBase() {}
 
     public static Connection getConnection() throws SQLException {
-        return conn;
+        return DriverManager.getConnection(DB_URL);
     }
 }

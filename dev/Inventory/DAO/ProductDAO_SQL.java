@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ProductDAO_SQL implements ProductDAO {
 
-    private Connection conn;
+
 
     public ProductDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.
@@ -126,6 +126,20 @@ public class ProductDAO_SQL implements ProductDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, product.getproductId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void DeleteAll() {
+        String sql = "DELETE FROM products";
+
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("SQL Exception: " + e.getMessage());

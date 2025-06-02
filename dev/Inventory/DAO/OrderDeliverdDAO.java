@@ -12,4 +12,5 @@ public interface OrderDeliverdDAO {
 
     public void Remove(OrderPackageDTO o);
 
+    public void DeleteAll();
 }
