@@ -3,6 +3,8 @@ package Suppliers.DTOs;
 import java.time.LocalDate;
 import java.util.List;
 
+import Suppliers.DomainLayer.Classes.Agreement;
+
 public class AgreementDTO {
    private int supplierId;
    private int agreementId;
@@ -13,6 +15,18 @@ public class AgreementDTO {
    private List<BillofQuantitiesItemDTO> billOfQuantitiesItems;
 
    public AgreementDTO() {
+   }
+
+   public AgreementDTO(Agreement agreement) {
+      this.agreementId = agreement.getAgreementId();
+      this.supplierId = agreement.getSupplierId();
+      this.supplierName = agreement.getSupplierName();
+      this.valid = agreement.isValid();
+      this.agreementStartDate = agreement.getAgreementStartDate();
+      this.agreementEndDate = agreement.getAgreementEndDate();
+      this.billOfQuantitiesItems = agreement.getBillOfQuantitiesItems().stream()
+            .map(BillofQuantitiesItemDTO::new)
+            .toList();
    }
 
    public AgreementDTO(int supplierId, String supplierName,

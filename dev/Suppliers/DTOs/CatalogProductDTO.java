@@ -13,11 +13,21 @@ public record CatalogProductDTO(
                         supplierProduct.getManufacturerName());
       }
 
+      public CatalogProductDTO(SupplierProductDTO supplierProductDTO) {
+            this(supplierProductDTO.getProductId(),
+                        supplierProductDTO.getName(),
+                        supplierProductDTO.getManufacturerName());
+      }
+
       public CatalogProductDTO getCatalogProductDTO(SupplierProductDTO supplierProductDTO) {
             return new CatalogProductDTO(
                         supplierProductDTO.getProductId(),
                         supplierProductDTO.getName(),
                         supplierProductDTO.getManufacturerName());
+      }
+
+      public int getProductId() {
+            return productId;
       }
 
       @Override
