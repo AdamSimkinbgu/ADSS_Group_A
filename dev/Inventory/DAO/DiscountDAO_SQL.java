@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class DiscountDAO_SQL implements DiscountDAO {
 
-    private Connection conn;
+
 
     public DiscountDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.

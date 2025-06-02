@@ -2,6 +2,7 @@ package Inventory.Domain;
 
 import Inventory.DAO.*;
 import Inventory.DTO.*;
+import Inventory.Service.ProductService;
 import Inventory.type.Position;
 import Suppliers.DTOs.OrderPackageDTO;
 
@@ -44,48 +45,58 @@ public class MainDomain {
     }
 
     // todo check
-    public void InventoryInitialization() {
+    public void InventoryInitialization(int input) {
 
-        // uplode product
-        List<ProductDTO> pls = Pdao.GetAll();
-        for (ProductDTO p : pls) {
-            prodMap.put(p.getproductId(), new ProductDomain(p));
-        }
+        if(input == 0) {
 
-        // uplode orders
-        orders = ODdao.GetAll();
+            // uplode product
+            List<ProductDTO> pls = Pdao.GetAll();
+            for (ProductDTO p : pls) {
+                prodMap.put(p.getproductId(), new ProductDomain(p));
+            }
 
-        // uplode category
-        List<CategoryDTO> cls = Cdao.getAll();
-        for (CategoryDTO c : cls) {
-            categoryLst.add(new CategoryDomain(c));
-        }
+            // uplode orders
+            orders = ODdao.GetAll();
 
-        // uplode discount
-        List<DiscountDTO> dls = Ddao.getAll();
-        for (DiscountDTO d : dls) {
-            DiscountDomain dis = new DiscountDomain(d);
-            if (d.getpId() != -1) {
-                prodMap.get(d.getpId()).AddDiscount(dis);
-            } else {
-                for (CategoryDomain c : categoryLst) {
-                    if (c.Isin(d.getCatName())) {
-                        c.AddDiscount(dis, d.getCatName());
-                        break;
+            // uplode category
+            List<CategoryDTO> cls = Cdao.getAll();
+            for (CategoryDTO c : cls) {
+                categoryLst.add(new CategoryDomain(c));
+            }
+
+            // uplode discount
+            List<DiscountDTO> dls = Ddao.getAll();
+            for (DiscountDTO d : dls) {
+                DiscountDomain dis = new DiscountDomain(d);
+                if (d.getpId() != -1) {
+                    prodMap.get(d.getpId()).AddDiscount(dis);
+                } else {
+                    for (CategoryDomain c : categoryLst) {
+                        if (c.Isin(d.getCatName())) {
+                            c.AddDiscount(dis, d.getCatName());
+                            break;
+                        }
                     }
                 }
+                disLst.add(dis);
             }
-            disLst.add(dis);
+
+            // uplode sales
+            List<SaleDTO> sls = Sdao.GetAll();
+            for (SaleDTO s : sls) {
+                saleLst.add(new SaleDomain(s));
+
+            }
+
+            // todo check
         }
-
-        // uplode sales
-        List<SaleDTO> sls = Sdao.GetAll();
-        for (SaleDTO s : sls) {
-            saleLst.add(new SaleDomain(s));
-
+        if(input == 1) {
+            // todo
         }
-
-        // todo check
+        if(input == 2) {
+            // todo
+            // load from file
+        }
     }
 
     // todo
@@ -218,10 +229,10 @@ public class MainDomain {
      * Move Product to a new shelf
      *
      * @param pId the product id number
-     * 
+     *
      * @param SOrW set to true if you want to change self in the store and false for
      * change in the warehouse
-     * 
+     *
      * @param newP the new shelf
      */
     public void MoveProduct(int pId, boolean SOrW, Position newP) {
@@ -250,6 +261,23 @@ public class MainDomain {
 
         return prodMap.get(pId);
         // todo
+    }
+
+    public List<ProductService> Search(String name) {
+        List<ProductService> ret = new ArrayList<>();
+        CategoryDomain cat = null;
+        for(CategoryDomain c: categoryLst){
+            if(c.Isin(name)){
+                cat = c.getSub(name);
+                break;
+            }
+        }
+
+
+        for (int pId : cat.getProductLs()) {
+            ret.add(new ProductService(prodMap.get(pId)));
+        }
+        return ret;
     }
 
     // todo check
@@ -398,4 +426,5 @@ public class MainDomain {
     public boolean DoesProdExist(int pid) {
         return prodMap.containsKey(pid);
     }
+
 }

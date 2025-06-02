@@ -10,7 +10,6 @@ import java.util.List;
 
 public class SupplyDTO_SQL implements SupplyDAO {
 
-    private Connection conn;
 
     public SupplyDTO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.

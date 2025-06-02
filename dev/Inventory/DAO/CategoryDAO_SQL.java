@@ -12,8 +12,6 @@ import Inventory.util.*;
 public class CategoryDAO_SQL implements CategoryDAO{
 
 
-    private Connection conn;
-
     public CategoryDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.
     }

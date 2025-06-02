@@ -12,7 +12,7 @@ import java.util.List;
 
 public class OrderDeliverdDAO_SQL implements OrderDeliverdDAO {
 
-    private Connection conn;
+
 
     public OrderDeliverdDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.

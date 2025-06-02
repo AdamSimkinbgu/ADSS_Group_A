@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class SaleDTO_SQL implements SaleDAO {
 
-    private Connection conn;
+
 
     public SaleDTO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.

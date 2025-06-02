@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ProductDAO_SQL implements ProductDAO {
 
-    private Connection conn;
+
 
     public ProductDAO_SQL() {
         // Initialize the connection if needed, or leave it to be managed by the methods.
