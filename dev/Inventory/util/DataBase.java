@@ -14,6 +14,7 @@ public class DataBase {
 
 
             try (Statement st = conn.createStatement()) {
+
                 // Create tables if they do not exist
                 // Products table
                 st.executeUpdate("""                 
@@ -117,6 +118,7 @@ public class DataBase {
                         FOREIGN KEY (order_id) REFERENCES orders(order_id),
                         FOREIGN KEY (product_id) REFERENCES products(product_id)
                 );""");
+
 
             }
         } catch (Exception e) {
