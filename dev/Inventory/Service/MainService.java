@@ -3,6 +3,7 @@ package Inventory.Service;
 import Inventory.DTO.*;
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.SaleDomain;
+import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DTOs.OrderPackageDTO;
 import Suppliers.ServiceLayer.IntegrationService;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -33,7 +34,7 @@ public class MainService {
     }
 
 
-    public  void Initialize(int input) {
+    public  void Initialize(InitializeState input) {
         //todo
         md.InventoryInitialization(input);
     }
@@ -220,12 +221,21 @@ public class MainService {
             }
         }
 
+<<<<<<< HEAD
         // call supply func
         ServiceResponse<?> response = is.createPeriodicOrder(order, day);
         if (response.isSuccess())
             return "Order successfuly build";
         else
             return response.getErrors().toString();
+=======
+
+        //call supply func
+        ServiceResponse<?> response = is.createPeriodicOrder(order,day);
+        if(response.isSuccess())return "Order successfuly build";
+        else return response.getErrors().toString();
+
+>>>>>>> 49c80a7 (init fix)
     }
 
     // todo check
@@ -240,10 +250,17 @@ public class MainService {
 
         // call supply func
         ServiceResponse<?> response = is.createShortageOrder(order);
+<<<<<<< HEAD
         if (response.isSuccess())
             return "Order successfuly build";
         else
             return response.getErrors().toString();
+=======
+
+        if(response.isSuccess())return "Order successfuly build";
+        else return response.getErrors().toString();
+
+>>>>>>> 49c80a7 (init fix)
 
     }
 
@@ -255,6 +272,10 @@ public class MainService {
         return "done";
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 49c80a7 (init fix)
     public String DeleteRecurringOrder(int orderId) {
         ServiceResponse<?> response = is.requestDeletePeriodicOrder(orderId);
 

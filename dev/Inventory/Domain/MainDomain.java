@@ -4,6 +4,7 @@ import Inventory.DAO.*;
 import Inventory.DTO.*;
 import Inventory.Service.ProductService;
 import Inventory.type.Position;
+import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DTOs.OrderPackageDTO;
 
 import java.time.LocalDate;
@@ -45,9 +46,9 @@ public class MainDomain {
     }
 
     // todo check
-    public void InventoryInitialization(int input) {
+    public void InventoryInitialization(InitializeState input) {
 
-        if(input == 0) {
+        if(input == InitializeState.CURRENT_STATE) {
 
             // uplode product
             List<ProductDTO> pls = Pdao.GetAll();
@@ -89,7 +90,7 @@ public class MainDomain {
 
             }
 
-            // todo check
+
         }
         else {
             Sdao.DeleteAll();
@@ -98,7 +99,7 @@ public class MainDomain {
             ODdao.DeleteAll();
             SPdao.DeleteAll();
             Pdao.DeleteAll();
-            if (input == 1) {
+            if (input == InitializeState.DEFAULT_STATE) {
                 ProductDTO pdto = new ProductDTO( 1,"Milk", "Dairy", 25,75, (float)4.6, new Position(1, 1), new Position(2, 1));
                 AddProduct(pdto);
                 pdto = new ProductDTO( 2,"Bread", "Bakery", 10,50, (float)1.5, new Position(1, 2), new Position(2, 2));
