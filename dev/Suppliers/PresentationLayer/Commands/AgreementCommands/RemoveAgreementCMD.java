@@ -47,12 +47,6 @@ public class RemoveAgreementCMD implements CommandInterface {
       ServiceResponse<?> removeRes = agreementService.removeAgreement(agreementID, supplierID);
       if (removeRes.isSuccess()) {
          view.showMessage("-- Agreement removed successfully --");
-         try {
-            supplierService.getSupplierByID(supplierID).getValue().removeAgreement(agreementID);
-         } catch (Exception e) {
-            view.showError("Error updating supplier's agreements: " + e.getMessage());
-            view.showError("-- Agreement removed, but failed to update supplier's agreements --");
-         }
       } else {
          view.showError("-- Failed to remove agreement --");
          removeRes.getErrors().forEach(view::showError);

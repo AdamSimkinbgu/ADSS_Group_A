@@ -79,11 +79,8 @@ public abstract class InteractiveForm<T> {
 
     protected boolean askBoolean(String prompt) throws Cancelled {
         String line = ask(prompt);
-        while (!line.equalsIgnoreCase("yes") && !line.equalsIgnoreCase("no") ||
-                !line.equalsIgnoreCase("true") && !line.equalsIgnoreCase("false") ||
-                !line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("n") ||
-                !line.equalsIgnoreCase("t") && !line.equalsIgnoreCase("f")) {
-            view.showError("Invalid input. Please enter 'yes' or 'no'.");
+        while (!line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("n")) {
+            view.showError("Invalid input. Please enter 'y' for yes or 'n' for no.");
             line = ask(prompt);
         }
         return line.equalsIgnoreCase("yes");

@@ -1,6 +1,7 @@
 package Suppliers.DataLayer.DAOs;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +19,17 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
 
     @Override
     public SupplierDTO createSupplier(SupplierDTO supplier) throws SQLException {
-        if (supplier == null || supplier.getId() < 0) {
+        if (supplier == null) {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
         }
         LOGGER.info("Creating supplier: {}", supplier);
-        String sql = "INSERT INTO suppliers (name, tax_number, street, city, building_number, self_supply, supply_days_mask, lead_supply_days, bank_account_number, payment_method, payment_term) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO suppliers (name, tax_number, self_supply, supply_days_mask, lead_supply_days, street, city, building_number,  bank_account_number, payment_method, payment_term) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, supplier.getName());
             preparedStatement.setString(2, supplier.getTaxNumber());
-            preparedStatement.setString(3, supplier.getSelfSupply() ? "1" : "0");
+            preparedStatement.setInt(3, supplier.getSelfSupply() ? 1 : 0);
             preparedStatement.setString(4, supplier.getSupplyDaysMask());
             preparedStatement.setInt(5, supplier.getLeadSupplyDays());
             preparedStatement.setString(6, supplier.getAddress().getStreet());
@@ -42,7 +43,7 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
                 LOGGER.error("Creating supplier failed, no rows affected.");
                 throw new SQLException("Creating supplier failed, no rows affected.");
             }
-            try (var generatedKeys = preparedStatement.getGeneratedKeys()) {
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
                     supplier.setId(id);
@@ -108,7 +109,7 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             preparedStatement.setInt(1, supplier.getId());
             preparedStatement.setString(2, supplier.getName());
             preparedStatement.setString(3, supplier.getTaxNumber());
-            preparedStatement.setBoolean(4, supplier.getSelfSupply());
+            preparedStatement.setInt(4, supplier.getSelfSupply() ? 1 : 0);
             preparedStatement.setString(5, supplier.getSupplyDaysMask());
             preparedStatement.setInt(6, supplier.getLeadSupplyDays());
             preparedStatement.setString(7, supplier.getAddress().getStreet());
@@ -117,6 +118,7 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             preparedStatement.setString(10, supplier.getPaymentDetails().getBankAccountNumber());
             preparedStatement.setString(11, supplier.getPaymentDetails().getPaymentMethod().name());
             preparedStatement.setString(12, supplier.getPaymentDetails().getPaymentTerm().name());
+            preparedStatement.setInt(13, supplier.getId());
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 LOGGER.info("Supplier updated successfully: {}", supplier);

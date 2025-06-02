@@ -20,15 +20,14 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
          LOGGER.error("Invalid Bill of Quantities Item data: {}", item);
          throw new IllegalArgumentException("Invalid Bill of Quantities Item data");
       }
-      String sql = "INSERT INTO boq_items (agreement_id, line_in_bill, product_id, quantity, discount_percent) "
-            + "VALUES (?, ?, ?, ?, ?)";
+      String sql = "INSERT INTO boq_items (agreement_id, product_id, quantity, discount_percent) "
+            + "VALUES (?, ?, ?, ?)";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, item.getAgreementId());
-         preparedStatement.setInt(2, item.getLineInBillID());
-         preparedStatement.setInt(3, item.getProductId());
-         preparedStatement.setInt(4, item.getQuantity());
-         preparedStatement.setBigDecimal(5, item.getDiscountPercent());
+         preparedStatement.setInt(2, item.getProductId());
+         preparedStatement.setInt(3, item.getQuantity());
+         preparedStatement.setBigDecimal(4, item.getDiscountPercent());
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.error("Creating Bill of Quantities Item failed, no rows affected.");
