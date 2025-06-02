@@ -137,22 +137,16 @@ public class SupplierProductDTO {
 
       @Override
       public String toString() {
-            return String.format(
-                        "{\n" +
-                                    "  \"productId\": %d,\n" +
-                                    "  \"supplierCatalogNumber\": \"%s\",\n" +
-                                    "  \"name\": \"%s\",\n" +
-                                    "  \"buying price\": %.2f,\n" +
-                                    "  \"weight\": %.2f,\n" +
-                                    "  \"expiresInDays\": %d,\n" +
-                                    "  \"manufacturerName\": \"%s\"\n" +
-                                    "}",
-                        productId,
-                        supplierCatalogNumber,
-                        name,
-                        price,
-                        weight,
-                        expiresInDays,
-                        manufacturerName);
+            // pretty json format
+            return "{\n" +
+                        "  \"supplierId\": " + supplierId + ",\n" +
+                        "  \"productId\": " + productId + ",\n" +
+                        "  \"supplierCatalogNumber\": \"" + supplierCatalogNumber + "\",\n" +
+                        "  \"name\": \"" + name + "\",\n" +
+                        "  \"price\": " + price + ",\n" +
+                        "  \"weight\": " + weight + ",\n" +
+                        "  \"expiresInDays\": " + expiresInDays + ",\n" +
+                        "  \"manufacturerName\": \"" + manufacturerName + "\"\n" +
+                        "}";
       }
 }
