@@ -11,7 +11,7 @@ import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
 
 public interface SuppliersAgreementsRepositoryInterface {
-   void createSupplier(SupplierDTO supplier) throws SQLException;
+   SupplierDTO createSupplier(SupplierDTO supplier) throws SQLException;
 
    Optional<SupplierDTO> getSupplierById(int id) throws SQLException;
 
@@ -23,15 +23,13 @@ public interface SuppliersAgreementsRepositoryInterface {
 
    List<SupplierDTO> getAllSuppliers() throws SQLException;
 
-   void addAgreementToSupplier(AgreementDTO agreement, int supplierId) throws SQLException;
-
-   void removeAgreementFromSupplier(int agreementId, int supplierId) throws SQLException;
+   AgreementDTO addAgreementToSupplier(AgreementDTO agreement, int supplierId) throws SQLException;
 
    Optional<AgreementDTO> getAgreementById(int agreementId) throws SQLException;
 
    void updateAgreement(AgreementDTO agreement) throws SQLException;
 
-   void deleteAgreement(int agreementId) throws SQLException;
+   void removeAgreementFromSupplier(int agreementId, int supplierId) throws SQLException;
 
    boolean agreementExists(int agreementId) throws SQLException;
 
@@ -41,7 +39,7 @@ public interface SuppliersAgreementsRepositoryInterface {
 
    List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException;
 
-   void createSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
+   SupplierProductDTO createSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
 
    Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId) throws SQLException;
 
