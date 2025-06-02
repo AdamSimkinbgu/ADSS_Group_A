@@ -102,115 +102,85 @@
 
   <!-- ── build configuration ──────────────────────────────────────── -->
   <build>
-    <!-- ① Tell Maven where your main code lives: dev/ -->
-    <sourceDirectory>${project.basedir}/dev</sourceDirectory>
+  <!-- ① Main source folder is dev/, but we will exclude dev/Tests/** from that compile -->
+  <sourceDirectory>${project.basedir}/dev</sourceDirectory>
 
-    <!-- ② Tell Maven where your test code lives: dev/Tests/ -->
-    <testSourceDirectory>${project.basedir}/dev</testSourceDirectory>
+  <!-- ② Test source folder is dev/Tests/ -->
+  <testSourceDirectory>${project.basedir}/dev</testSourceDirectory>
 
+  <plugins>
+    <!-- (A) Compiler: exclude dev/Tests/** from main compile -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.11.0</version>
+      <configuration>
+        <release>${maven.compiler.release}</release>
+        <excludes>
+          <!-- Tell Maven: “When compiling main sources, ignore anything under dev/Tests.” -->
+          <exclude>**/Tests/**/*.java</exclude>
+        </excludes>
+      </configuration>
+    </plugin>
 
-    <!-- ③ Put all “build outputs” (compiled .class, shaded JAR, etc.) under release/ -->
-    <directory>${project.basedir}/release</directory>
+    <!-- (B) Surefire: run tests from dev/Tests/ during test phase -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <version>3.1.2</version>
+      <configuration>
+        <includes>
+          <include>**/*Test.java</include>
+          <include>**/*Tests.java</include>
+        </includes>
+        <argLine>-Dnet.bytebuddy.experimental=true</argLine>
 
-    <plugins>
-      <!-- ── (A) Java compiler plugin ────────────────────────────── -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
-        <configuration>
-          <release>${maven.compiler.release}</release>
-        </configuration>
-      </plugin>
+      </configuration>
+    </plugin>
 
-      <!-- ── (B) Surefire: runs all tests under dev/Tests/ ────────── -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.1.2</version>
-        <configuration>
-          <!-- By default, Surefire scans ${testSourceDirectory} for *Test.java and *Tests.java.
-               You do not need to reference “dev/…” again here. -->
-          <includes>
-            <include>**/*Test.java</include>
-            <include>**/*Tests.java</include>
-          </includes>
-        </configuration>
-      </plugin>
-
-      <!-- ── (C) Skip the default “jar” (we’ll shade later) ───────── -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-
-      <!-- ── (D) Shade plugin: build one “fat” runnable JAR in release/ ── -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.4.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <finalName>ADSS2025_V02_dev</finalName>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>Main</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- ── (E) Optional: exec‐maven‐plugin to run your “shaded” JAR via mvn exec:java ── -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <executable>java</executable>
-          <arguments>
-            <argument>-jar</argument>
-            <argument>${project.basedir}/release/ADSS2025_V02_dev.jar</argument>
-            <argument>${exec.args}</argument>
-          </arguments>
-        </configuration>
-      </plugin>
-
-      <!-- ── (F) If you have additional “test” sources in other folders, you can add them here.
-             In this example, everything under dev/Tests is already your test root, so we don’t need more. 
-             If you truly have tests elsewhere, you’d use build-helper to add them. ── -->
-      <!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.4.0</version>
-        <executions>
-          <execution>
-            <id>add-test-source</id>
-            <phase>generate-test-sources</phase>
-            <goals>
-              <goal>add-test-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>${project.basedir}/some/other/testing/folder</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-
-    </plugins>
-  </build>
+    <!-- (C) Any other plugins (shade, jar-skip, etc.)… -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-jar-plugin</artifactId>
+      <version>3.3.0</version>
+      <configuration>
+        <skip>true</skip>
+      </configuration>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-shade-plugin</artifactId>
+      <version>3.4.1</version>
+      <executions>
+        <execution>
+          <phase>package</phase>
+          <goals>
+            <goal>shade</goal>
+          </goals>
+          <configuration>
+            <finalName>ADSS2025_V02_dev</finalName>
+            <transformers>
+              <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <mainClass>Main</mainClass>
+              </transformer>
+            </transformers>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>exec-maven-plugin</artifactId>
+      <version>3.1.0</version>
+      <configuration>
+        <executable>java</executable>
+        <arguments>
+          <argument>-jar</argument>
+          <argument>${project.basedir}/release/ADSS2025_V02_dev.jar</argument>
+          <argument>${exec.args}</argument>
+        </arguments>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 </project>
