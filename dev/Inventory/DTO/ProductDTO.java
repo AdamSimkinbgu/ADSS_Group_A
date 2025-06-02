@@ -1,6 +1,6 @@
 package Inventory.DTO;
 
-import Inventory.Domain.DiscountDomain;
+
 import Inventory.Domain.ProductDomain;
 import Inventory.type.Position;
 

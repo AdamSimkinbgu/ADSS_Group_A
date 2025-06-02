@@ -72,6 +72,7 @@ public class SupplyDTO {
         quantityWH = quantity;
         expireDate = ex;
         quantityS = 0;
+        sId = -1;
         quantityB = 0;
     }
 

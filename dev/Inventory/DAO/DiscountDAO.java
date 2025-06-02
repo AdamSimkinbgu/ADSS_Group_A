@@ -5,7 +5,9 @@ import Inventory.DTO.DiscountDTO;
 import java.util.List;
 
 public interface DiscountDAO {
-    public void add(DiscountDTO d);
+    public DiscountDTO add(DiscountDTO d);
 
     public List<DiscountDTO> getAll();
+
+    public void delete(DiscountDTO d);
 }

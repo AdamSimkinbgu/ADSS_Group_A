@@ -26,7 +26,7 @@ public class IntegrationService {
     }
 
 
-    public List<CatalogProductDTO> getCatalog(){
+    public ServiceResponse<?> getCatalog(){
         return null;
     }
 
@@ -47,6 +47,10 @@ public class IntegrationService {
     }
 
     public ServiceResponse<?> requestDeletePeriodicOrder(int poId){
+        return null;
+    }
+
+    public ServiceResponse<?> completeOrder(int orderId){
         return null;
     }
 

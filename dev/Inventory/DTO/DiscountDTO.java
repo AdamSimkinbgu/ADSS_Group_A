@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 public class DiscountDTO {
 
+    private int id;
     private float percent;
     private LocalDate discountEnd;
     private LocalDate discountStart;
@@ -13,6 +14,10 @@ public class DiscountDTO {
     private String catName;
 
     // Getters
+    public int getId() {
+        return id;
+    }
+
     public float getPercent() {
         return percent;
     }
@@ -36,6 +41,10 @@ public class DiscountDTO {
     // Setters
     public void setCatName(String catName) {
         this.catName = catName;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setDiscountEnd(LocalDate discountEnd) {
@@ -74,6 +83,7 @@ public class DiscountDTO {
     }
 
     public DiscountDTO(DiscountDomain d, int pId) {
+        this.id = d.getId();
         this.pId = pId;
         this.catName = "";
         this.discountStart = d.getdiscountStart();
@@ -82,6 +92,7 @@ public class DiscountDTO {
     }
 
     public DiscountDTO(DiscountDomain d, String cat) {
+        this.id = d.getId();
         this.pId = -1;
         this.catName = cat;
         this.discountStart = d.getdiscountStart();
