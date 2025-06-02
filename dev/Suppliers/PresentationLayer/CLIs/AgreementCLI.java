@@ -18,7 +18,7 @@ public class AgreementCLI {
       agreementCommands.put("3", commands.get("RemoveAgreementCMD"));
       // commands.put("4", commands.get("GetAgreementCMD"));
       // commands.put("5", commands.get("GetAllAgreementsCMD"));
-      agreementCommands.put("6", commands.get("ViewAgreementsBySupplierIdCMD"));
+      agreementCommands.put("6", commands.get("ViewAllAgreementsForSupplierCMD"));
    }
 
    public void start() {

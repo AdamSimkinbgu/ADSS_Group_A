@@ -5,12 +5,14 @@ import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.PresentationLayer.AppCLI;
 
 public class Main {
+   private static Scanner scanner = new Scanner(System.in);
 
    public static void main(String[] args) {
       System.out.println("Welcome to the Supplier-Inventory Management System!");
-      InitializeState startupState = requestStartupStateFromUser();
+      InitializeState startupState = InitializeState.DEFAULT_STATE;
       AppCLI appCLI = new AppCLI(startupState);
       PresentationMenu presentationMenu = new PresentationMenu();
+      presentationMenu.Initialize(startupState);
       integrateModules(presentationMenu, appCLI);
       while (true) {
          System.out.println("1. Supplier Management");
@@ -42,18 +44,14 @@ public class Main {
             "3. Empty state - Clear the database and start with an empty database. (Only empty tables, CURRENT DATA WILL BE LOST, SAVE COPY OF DB IF NEEDED!)");
       System.out.println("4. Exit - Exit the application without starting.");
       System.out.print("Enter your choice (1-4): ");
-      Scanner scanner = new Scanner(System.in);
       String choice = scanner.nextLine().trim();
       while (true) {
          switch (choice) {
             case "1":
-               scanner.close();
                return InitializeState.CURRENT_STATE;
             case "2":
-               scanner.close();
                return InitializeState.DEFAULT_STATE;
             case "3":
-               scanner.close();
                return InitializeState.NO_DATA_STATE;
             case "4":
                System.out.println("Exiting the application.");
