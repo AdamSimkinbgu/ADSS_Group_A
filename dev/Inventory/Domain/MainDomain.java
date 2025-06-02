@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainDomain {
-    private int supplyCounter;
-    private int saleCounter;
 
     // Data Acsis Object
     private ProductDAO Pdao;
@@ -30,13 +28,19 @@ public class MainDomain {
 
     // todo assign DAOs
     public MainDomain() {
-        supplyCounter = 0;
-        saleCounter = 0;
+
         prodMap = new HashMap<>();
         disLst = new ArrayList<>();
         saleLst = new ArrayList<>();
         categoryLst = new ArrayList<>();
         orders = new ArrayList<>();
+
+        Pdao = new ProductDAO_SQL();
+        ODdao = new OrderDeliverdDAO_SQL();
+        Ddao = new DiscountDAO_SQL();
+        Cdao = new CategoryDAO_SQL();
+        Sdao = new SaleDTO_SQL();
+        SPdao = new SupplyDTO_SQL();
     }
 
     // todo check
@@ -103,11 +107,9 @@ public class MainDomain {
         List<Integer> ret = new ArrayList<>();
         for (OrderPackageDTO o : orders) {
             for(SupplyDTO sdto: o.getSupplies()) {
-                sdto.setSId(supplyCounter);
+                sdto = SPdao.Add(sdto);
                 s = new SupplyDomain(sdto);
-                SPdao.Add(new SupplyDTO(s, sdto.getProductID()));
                 prodMap.get(sdto.getProductID()).AddSupply(s);
-                supplyCounter++;
             }
             ret.add(o.getOrderId());
             // add to database
@@ -118,27 +120,31 @@ public class MainDomain {
 
     // todo change database
     public SaleDTO UpdateInventorySale(SaleDTO sdto) {
-        SaleDomain s = new SaleDomain(sdto);
-        for (Integer pIg : s.getItemLs().keySet()) {
+        // check if all products are in stock
+        for (Integer pIg : sdto.getProducts().keySet()) {
             if (!prodMap.containsKey(pIg))
                 throw new IllegalArgumentException("invalid product id");
         }
 
+        // calculate sale price
         float discount;
         float price = 0;
-        for (Integer pIg : s.getItemLs().keySet()) {
+        for (Integer pIg : sdto.getProducts().keySet()) {
             discount = 0;
             for (CategoryDomain c : categoryLst)
                 discount += c.getDiscount(pIg);
             // price += product price after discount * number of sed product
-            price += prodMap.get(pIg).getproductPrice1unit(discount) * s.getItemLs().get(pIg);
-            prodMap.get(pIg).Buy(s.getItemLs().get(pIg));
+            price += prodMap.get(pIg).getproductPrice1unit(discount) * sdto.getProducts().get(pIg);
+            prodMap.get(pIg).Buy(sdto.getProducts().get(pIg));
         }
+        sdto.setsalePrice(price);
 
-        s.setSalePrice(price);
-        s.setSaleID(saleCounter++);
-        saleLst.add(s);
-        return new SaleDTO(s);
+        // add to database
+        sdto = Sdao.Add(sdto);
+
+        // add to sales
+        saleLst.add(new SaleDomain(sdto));
+        return sdto;
     }
 
     // todo change

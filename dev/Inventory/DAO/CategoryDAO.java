@@ -11,7 +11,7 @@ public interface CategoryDAO {
 
     public void delete(String name);
 
-    public void addCategory(String name);
+    public CategoryDTO addCategory(String name);
 
     public void addToCategory(String cat, int pid);
 

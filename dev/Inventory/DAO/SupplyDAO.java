@@ -10,7 +10,7 @@ public interface SupplyDAO {
 
     public List<SupplyDTO> GetAll();
 
-    public void Add(SupplyDTO s);
+    public SupplyDTO Add(SupplyDTO s);
 
     public void Delete(int id);
 

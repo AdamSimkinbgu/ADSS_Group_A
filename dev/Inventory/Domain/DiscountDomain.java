@@ -7,10 +7,16 @@ import java.time.chrono.ChronoLocalDate;
 import java.util.Date;
 
 public class DiscountDomain {
+
+    private int id;
     private float percent;
     private LocalDate discountEnd;
     private LocalDate discountStart;
 
+    // Getters
+    public int getId() {
+        return id;
+    }
     public float getpercent() {
         return percent;
     }

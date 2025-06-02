@@ -53,4 +53,8 @@ public class CategoryDTO {
             this.subs.add(new CategoryDTO(c));
         }
     }
+
+    public void AddSubcategory(CategoryDTO sub) {
+        this.subs.add(sub);
+    }
 }

@@ -7,6 +7,8 @@ import java.util.List;
 public interface SaleDAO {
     public List<SaleDTO> GetAll();
 
-    public void Add(SaleDTO s);
+    public SaleDTO Add(SaleDTO s);
+
+    public void Delete(int id);
 
 }
