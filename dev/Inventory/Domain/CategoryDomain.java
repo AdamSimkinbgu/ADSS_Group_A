@@ -144,4 +144,8 @@ public class CategoryDomain {
         throw new IllegalArgumentException("There is no category by that name");
     }
 
+    public DiscountDomain getDisDom() {
+        return disDom;
+    }
+
 }

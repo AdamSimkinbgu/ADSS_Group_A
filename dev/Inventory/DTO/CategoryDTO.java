@@ -57,4 +57,8 @@ public class CategoryDTO {
     public void AddSubcategory(CategoryDTO sub) {
         this.subs.add(sub);
     }
+
+    public void AddProduct(int productId) {
+        this.product.add(productId);
+    }
 }

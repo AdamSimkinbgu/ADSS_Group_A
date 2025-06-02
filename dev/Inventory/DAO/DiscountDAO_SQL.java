@@ -4,6 +4,7 @@ import Inventory.DTO.DiscountDTO;
 import Inventory.util.DataBase;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -58,7 +59,8 @@ public class DiscountDAO_SQL implements DiscountDAO {
             SELECT discount_id, 
             product_id, 
             percent, 
-            discount_start, discount_end, 
+            discount_start, 
+            discount_end, 
             category_name 
             FROM discounts""";
 
@@ -74,8 +76,9 @@ public class DiscountDAO_SQL implements DiscountDAO {
                 discount.setId(rs.getInt("discount_id"));
                 discount.setpId(rs.getInt("product_id"));
                 discount.setPercent(rs.getFloat("percent"));
-                discount.setDiscountStart(rs.getDate("discount_start").toLocalDate());
-                discount.setDiscountEnd(rs.getDate("discount_end").toLocalDate());
+                // Parse dates from string format
+                discount.setDiscountStart(LocalDate.parse(rs.getString("discount_start")));
+                discount.setDiscountEnd(LocalDate.parse(rs.getString("discount_end")));
                 discount.setCatName(rs.getString("category_name"));
                 discounts.add(discount);
             }

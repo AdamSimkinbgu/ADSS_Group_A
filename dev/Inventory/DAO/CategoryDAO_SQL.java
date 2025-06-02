@@ -32,6 +32,7 @@ public class CategoryDAO_SQL implements CategoryDAO{
     @Override
     public List<CategoryDTO> getAll() {
         String categorySql = "SELECT name FROM categories";
+        String categoryProductsSql = "SELECT category_name, product_id FROM category_products";
         String subcategorySql = "SELECT parent_name, child_name FROM subcategories";
 
         Map<String, CategoryDTO> nameToCategory = new HashMap<>();
@@ -48,23 +49,45 @@ public class CategoryDAO_SQL implements CategoryDAO{
             }catch (Exception e){
                 throw new RuntimeException("SQL Exception: " + e.getMessage());
             }
-            // Step 2: Load subcategory relationships (name-based)
+
+            // Step 2: Load category products
+            try (PreparedStatement ps = conn.prepareStatement(categoryProductsSql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String categoryName = rs.getString("category_name");
+                    int productId = rs.getInt("product_id");
+
+                    CategoryDTO category = nameToCategory.get(categoryName);
+                    if (category != null) {
+                        category.AddProduct(productId);
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("SQL Exception: " + e.getMessage());
+
+            }
+
+
+            // Step 3: Load subcategory relationships (name-based)
             try (PreparedStatement ps = conn.prepareStatement(subcategorySql);
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    String parent = rs.getString("parent_id");
-                    String child = rs.getString("child_id");
+                    String parent = rs.getString("parent_name");
+                    String child = rs.getString("child_name");
 
-                    parentToChildren
-                            .computeIfAbsent(parent, k -> new ArrayList<>())
-                            .add(child);
+                    if(parentToChildren.keySet().contains(parent)){
+                        parentToChildren.get(parent).add(child);
+                    }else{
+                        parentToChildren.put(parent, new ArrayList<>());
+                        parentToChildren.get(parent).add(child);
+                    }
                 }
             }
             catch (Exception e){
                 throw new RuntimeException("SQL Exception: " + e.getMessage());
             }
 
-            // Step 3: Link subcategories
+            // Step 4: Link subcategories
             for (var entry : parentToChildren.entrySet()) {
                 String parentName = entry.getKey();
                 CategoryDTO parent = nameToCategory.get(parentName);
@@ -78,7 +101,7 @@ public class CategoryDAO_SQL implements CategoryDAO{
                 }
             }
 
-            // Step 4: Return only top-level categories
+            // Step 5: Return only top-level categories
             Set<String> allChildren = parentToChildren.values()
                     .stream()
                     .flatMap(List::stream)

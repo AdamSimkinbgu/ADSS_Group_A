@@ -29,7 +29,7 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        md.InventoryInitialization(0);
+        //md.InventoryInitialization(0);
     }
 
 

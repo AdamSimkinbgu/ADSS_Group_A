@@ -1,6 +1,7 @@
 package Inventory.Domain;
 
 import Inventory.DAO.SupplyDAO;
+import Inventory.DAO.SupplyDTO_SQL;
 import Inventory.DTO.ProductDTO;
 import Inventory.DTO.SupplyDTO;
 import Inventory.type.Position;
@@ -84,15 +85,17 @@ public class ProductDomain {
         storeShelf = other.getstoreShelf();
         wareHouseShelf = other.getwareHouseShelf();
         supplyList = new ArrayList<>();
+        SPdao = new SupplyDTO_SQL();
+
 
         // up lode from database
-        List<SupplyDTO> ls = SPdao.GetAll();
+        List<SupplyDTO> ls = SPdao.GetAll(this.productID);
         for (SupplyDTO s : ls) {
             supplyList.add(new SupplyDomain(s));
         }
 
         for (SupplyDomain supply : supplyList) {
-            if (!supply.IsEx()) {
+            if (supply.IsEx()) {
                 SPdao.Set(new SupplyDTO(supply, productID));
                 supplyList.remove(supply);
             }
@@ -120,12 +123,13 @@ public class ProductDomain {
     //////////////////////////////////////////////////////////////////////////////////
 
     // todo check
-    public void AddSupply(SupplyDomain supply) {
+    public void AddSupply(SupplyDTO s) {
         // add to database
-        SPdao.Add(new SupplyDTO(supply, productID));
+        s = SPdao.Add(s);
 
-        supplyList.add(supply);
+        supplyList.add(new SupplyDomain(s));
         supplyList.sort(Comparator.comparing(SupplyDomain::getExpierDate));
+        reStockStore();
     }
 
     // todo check

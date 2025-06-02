@@ -42,13 +42,19 @@ public class SupplyDTO_SQL implements SupplyDAO {
     }
 
     @Override
-    public List<SupplyDTO> GetAll() {
-        String sql = "SELECT * FROM supplies";
+    public List<SupplyDTO> GetAll(int pId) {
+        String sql = "SELECT * FROM supplies WHERE product_id = ?";
+        if (pId == 0) {
+            sql = "SELECT * FROM supplies"; // If pId is 0, get all supplies
+        }
+
         List<SupplyDTO> supplies = new ArrayList<>();
 
         try (Connection conn = DataBase.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql);) {
+
+            ps.setInt(1, pId);
+            ResultSet rs = ps.executeQuery();
 
             // Iterate through the result set and populate the list of SupplyDTO
             while (rs.next()) {
