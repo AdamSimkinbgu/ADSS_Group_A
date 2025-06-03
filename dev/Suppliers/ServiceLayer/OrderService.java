@@ -45,4 +45,16 @@ public class OrderService extends BaseService {
 
    public ServiceResponse<?> createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
    }
+
+   public ServiceResponse<PeriodicOrderDTO> getPeriodicOrderById(int periodicOrderId) {
+   }
+
+   public ServiceResponse<?> updatePeriodicOrder(PeriodicOrderDTO updatedDto) {
+   }
+
+   public ServiceResponse<?> removePeriodicOrder(int periodicOrderId) {
+   }
+
+   public ServiceResponse<List<PeriodicOrderDTO>> getAllPeriodicOrders() {
+   }
 }
