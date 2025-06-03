@@ -6,14 +6,30 @@ import Suppliers.DomainLayer.Classes.ContactInfo;
 
 public class ContactInfoDTO {
 
+      private int supplierId;
       private String name;
       private String email;
       private String phone;
 
-      public ContactInfoDTO(String name, String email, String phone) {
+      public ContactInfoDTO() {
+      }
+
+      public ContactInfoDTO(int supplierId, String name, String email, String phone) {
+            this.supplierId = supplierId;
             this.name = name;
             this.email = email;
             this.phone = phone;
+      }
+
+      public ContactInfoDTO(String name, String email, String phone) {
+            this.supplierId = -1; // Default value, can be set later if needed
+            this.name = name;
+            this.email = email;
+            this.phone = phone;
+      }
+
+      public int getSupplierId() {
+            return supplierId;
       }
 
       public String getName() {
@@ -26,6 +42,10 @@ public class ContactInfoDTO {
 
       public String getPhone() {
             return phone;
+      }
+
+      public void setSupplierId(int supplierId) {
+            this.supplierId = supplierId;
       }
 
       public void setName(String name) {

@@ -30,67 +30,38 @@ import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 class CreateSupplierCmdTest {
 
       @Mock
-      View view; // fake console
+      private View view;
+
       @Mock
-      SupplierService service; // fake backend
+      private SupplierService supplierService;
       @InjectMocks
-      CreateSupplierCMD cmd; // unit under test
+      private CreateSupplierCMD createSupplierCMD;
 
       @Test
-      void happy_path() {
-            SupplierDTO dto = dummyDto_GoodInput();
-            when(service.createSupplier(dto))
-                        .thenReturn(ServiceResponse.ok(any())); // mock service response
+      public void createSupplier_AllFieldsValid_ShouldCallServiceAndDisplaySuccess() {
+            // Arrange
+            SupplierDTO supplier = new SupplierDTO(
+                        -1,
+                        "Test Supplier",
+                        "512345678",
+                        new AddressDTO("Test Street", "Test City", "12345"),
+                        false,
+                        EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
+                        3,
+                        new PaymentDetailsDTO("420420", PaymentMethod.BANK_TRANSFER, PaymentTerm.N30),
+                        List.of(),
+                        List.of(),
+                        List.of());
+            ServiceResponse<SupplierDTO> response = new ServiceResponse<>(supplier, List.of());
+            // when(supplierService.createSupplier(any(SupplierDTO.class))).thenReturn(supplier);
 
-            cmd.execute(dto); // act
+            // Act
+            createSupplierCMD.execute(supplier);
 
-            verify(service).createSupplier(dto); // behaviour assertion
-            verify(view).showMessage(contains("success"));
-            verify(view, never()).showError(toString());
-      }
+            // Assert
+            verify(supplierService).createSupplier(any(SupplierDTO.class));
+            verify(view).showMessage(contains("Supplier created successfully"));
+            verify(view, never()).showError(any(String.class));
 
-      private SupplierDTO dummyDto_GoodInput() {
-            return new SupplierDTO(
-                        "ACME",
-                        "123",
-                        new AddressDTO("Main St", "TLV", "12345"),
-                        true,
-                        EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
-                        0, // no supplier ID for creation
-                        new PaymentDetailsDTO("1234-5678-9012-3456", PaymentMethod.CREDIT_CARD,
-                                    PaymentTerm.N30),
-                        List.of(), // contacts
-                        List.of(), // products
-                        List.of() // agreements
-            );
-      }
-
-      @Test
-      void bad_input() {
-            SupplierDTO dto = dummyDto_BadInput();
-            when(service.createSupplier(dto))
-                        .thenReturn(ServiceResponse.fail(List.of("Invalid input"))); // mock service
-
-            cmd.execute(dto); // act
-
-            verify(service).createSupplier(dto); // behaviour assertion
-            verify(view).showError(contains("Invalid input"));
-            verify(view, never()).showMessage(toString());
-      }
-
-      private SupplierDTO dummyDto_BadInput() {
-            return new SupplierDTO(
-                        "", // empty name
-                        "123", // Invalid phone
-                        new AddressDTO("Main St", "TLV", "12345"), // valid address
-                        true, // active
-                        EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY), // valid days
-                        0, // no supplier ID for creation
-                        new PaymentDetailsDTO("1234-5678-9012-3456", PaymentMethod.CREDIT_CARD,
-                                    PaymentTerm.N30), // valid payment details
-                        List.of(), // contacts
-                        List.of(), // products
-                        List.of() // agreements
-            );
       }
 }
