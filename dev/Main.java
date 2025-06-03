@@ -9,7 +9,7 @@ public class Main {
 
    public static void main(String[] args) {
       System.out.println("Welcome to the Supplier-Inventory Management System!");
-      InitializeState startupState = InitializeState.DEFAULT_STATE;
+      InitializeState startupState = requestStartupStateFromUser();
       AppCLI appCLI = new AppCLI(startupState);
       PresentationMenu presentationMenu = new PresentationMenu();
       presentationMenu.Initialize(startupState);
