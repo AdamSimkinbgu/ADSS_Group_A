@@ -1,43 +1,43 @@
 package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DomainLayer.Classes.Order;
+import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class OrderFacade extends BaseFacade {
 
-    private final Map<Integer, Order> orders;
-    private final SupplierController supplierFacade;
-    private static int nextOrderID = 1;
+    // private final SupplierController supplierFacade;
+
     private PeriodicOrderController periodicOrderController;
     private OrderController orderController;
+    private SuppliersAgreementsRepositoryImpl suppliersAgreementsRepository;
 
-
-    public OrderFacade() {
-        orders = new HashMap<>();
-        this.supplierFacade = new SupplierController();
-
-    }
-
-    public OrderFacade(SupplierController supplierFacade) {
-        this.orders = new HashMap<>();
-        this.supplierFacade = supplierFacade;
-        this.periodicOrderController = new PeriodicOrderController();
+    public OrderFacade(InitializeState initializeState) {
         this.orderController = new OrderController();
+        this.suppliersAgreementsRepository = SuppliersAgreementsRepositoryImpl.getInstance();
+        this.periodicOrderController = new PeriodicOrderController();
 
     }
 
-    //##################################################################################################################
-    //                                        Periodic Order
-    //##################################################################################################################
-    public periodiceOrderDTO createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) {
+    // ##################################################################################################################
+    // Periodic Order
+    // ##################################################################################################################
+    public PeriodicOrderDTO createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay,
+            HashMap<Integer, Integer> productsAndAmount) {
+        // return periodicOrderController.createPeriodicOrder(supplierID, branchID,
+        // fixedDay, productsAndAmount);
+        return null;
+    }
 
-
-    //##################################################################################################################
-    //                                        Order
-    //##################################################################################################################
+    // ##################################################################################################################
+    // Order
+    // ##################################################################################################################
     public Order addOrder(String json) {
         return null; // TODO: Implement this method
     }
@@ -61,6 +61,6 @@ public class OrderFacade extends BaseFacade {
 
     public OrderDTO createOrderByShortage(int branchId, HashMap<Integer, Integer> shortage) {
 
-        return 0 ;
+        return null; // TODO: Implement this method
     }
-
+}
