@@ -229,6 +229,153 @@ public final class Database {
                                 AND line_in_bill  > OLD.line_in_bill;
                             END;
                         """);
+                // ───────────────────────── orders ─────────────────────────
+                st.executeUpdate("""
+                            CREATE TABLE IF NOT EXISTS orders(
+                               order_id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                               supplier_id          INTEGER NOT NULL,
+                               order_date           TEXT    NOT NULL,    -- "YYYY-MM-DD"
+                               expected_date        TEXT    NOT NULL,    -- "YYYY-MM-DD"
+                               delivery_date        TEXT    NULL,        -- becomes non-null when delivered
+                               status               TEXT    NOT NULL
+                                                     CHECK(status IN
+                                                        ('PENDING','SENT','DELIVERED','COMPLETED','CANCELLED')),
+                               total_amount         REAL    NULL
+                                                     CHECK(total_amount >= 0),
+                               periodic_order_id    INTEGER NULL,
+                               FOREIGN KEY(supplier_id)
+                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE,
+                               FOREIGN KEY(periodic_order_id)
+                                   REFERENCES periodic_orders(periodic_order_id) ON DELETE SET NULL
+                            );
+                        """);
+
+                // ─────────────────────── order_item_lines ───────────────────────
+                st.executeUpdate("""
+                            CREATE TABLE IF NOT EXISTS order_item_lines(
+                               order_id            INTEGER NOT NULL,
+                               line_number         INTEGER NOT NULL CHECK(line_number > 0),
+                               product_id          INTEGER NOT NULL,
+                               quantity            INTEGER NOT NULL CHECK(quantity > 0),
+                               unit_price          REAL    NOT NULL CHECK(unit_price >= 0),
+                               discount_pct        REAL    NOT NULL
+                                                     CHECK(discount_pct BETWEEN 0 AND 100),
+                               PRIMARY KEY (order_id, line_number),
+                               FOREIGN KEY(order_id)
+                                   REFERENCES orders(order_id) ON DELETE CASCADE,
+                               FOREIGN KEY(product_id)
+                                   REFERENCES supplier_products(product_id) ON DELETE RESTRICT
+                            );
+                        """);
+                st.executeUpdate("""
+                            CREATE INDEX IF NOT EXISTS idx_order_lines_order
+                              ON order_item_lines(order_id);
+                        """);
+
+                st.executeUpdate("""
+                            CREATE TRIGGER IF NOT EXISTS trg_order_lines_autonum
+                            BEFORE INSERT ON order_item_lines
+                            FOR EACH ROW
+                            WHEN NEW.line_number IS NULL
+                            BEGIN
+                                SELECT
+                                    NEW.line_number = COALESCE(
+                                        (
+                                          SELECT MAX(line_number) + 1
+                                            FROM order_item_lines
+                                           WHERE order_id = NEW.order_id
+                                        ),
+                                        1
+                                    );
+                            END;
+                        """);
+                st.executeUpdate("""
+                            CREATE TRIGGER IF NOT EXISTS trg_order_lines_reseq_after_delete
+                            AFTER DELETE ON order_item_lines
+                            FOR EACH ROW
+                            BEGIN
+                                UPDATE order_item_lines
+                                   SET line_number = line_number - 1
+                                 WHERE order_id = OLD.order_id
+                                   AND line_number > OLD.line_number;
+                            END;
+                        """);
+
+                // ───────────────────── periodic_orders ─────────────────────
+                st.executeUpdate("""
+                            CREATE TABLE IF NOT EXISTS periodic_orders(
+                               periodic_order_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+                               -- start_date          TEXT    NOT NULL,  -- "YYYY-MM-DD" these lines are commented out
+                               -- end_date            TEXT    NOT NULL,  -- "YYYY-MM-DD" because we cant make it in time
+
+                               requested_day_mask  TEXT    NOT NULL
+                                                    CHECK(length(requested_day_mask)=7
+                                                          AND requested_day_mask GLOB '[01]*'),
+                               is_active           INTEGER NOT NULL DEFAULT 1
+                                                    CHECK(is_active IN (0,1)),
+                               FOREIGN KEY(supplier_id)
+                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE,
+                               CHECK(end_date >= start_date)
+                            );
+                        """);
+                st.executeUpdate("""
+                            CREATE INDEX IF NOT EXISTS idx_periodic_supplier
+                              ON periodic_orders(supplier_id);
+                        """);
+
+                // ───────────────── periodic_order_item_lines ─────────────────
+                st.executeUpdate("""
+                            CREATE TABLE IF NOT EXISTS periodic_order_item_lines(
+                               periodic_order_id   INTEGER NOT NULL,
+                               line_number         INTEGER NOT NULL CHECK(line_number > 0),
+                               product_id          INTEGER NOT NULL,
+                               quantity            INTEGER NOT NULL CHECK(quantity > 0),
+                               unit_price          REAL    NOT NULL CHECK(unit_price >= 0),
+                               discount_pct        REAL    NOT NULL
+                                                     CHECK(discount_pct BETWEEN 0 AND 100),
+                               PRIMARY KEY (periodic_order_id, line_number),
+                               FOREIGN KEY(periodic_order_id)
+                                   REFERENCES periodic_orders(periodic_order_id) ON DELETE CASCADE,
+                               FOREIGN KEY(product_id)
+                                   REFERENCES supplier_products(product_id) ON DELETE RESTRICT
+                            );
+                        """);
+                st.executeUpdate("""
+                            CREATE INDEX IF NOT EXISTS idx_periodic_lines_product
+                              ON periodic_order_item_lines(product_id);
+                        """);
+
+                st.executeUpdate("""
+                            CREATE TRIGGER IF NOT EXISTS trg_periodic_lines_autonum
+                            BEFORE INSERT ON periodic_order_item_lines
+                            FOR EACH ROW
+                            WHEN NEW.line_number IS NULL
+                            BEGIN
+                                SELECT
+                                    NEW.line_number = COALESCE(
+                                        (
+                                          SELECT MAX(line_number) + 1
+                                            FROM periodic_order_item_lines
+                                           WHERE periodic_order_id = NEW.periodic_order_id
+                                        ),
+                                        1
+                                    );
+                            END;
+                        """);
+
+                st.executeUpdate("""
+                            CREATE TRIGGER IF NOT EXISTS trg_periodic_lines_reseq_after_delete
+                            AFTER DELETE ON periodic_order_item_lines
+                            FOR EACH ROW
+                            BEGIN
+                                UPDATE periodic_order_item_lines
+                                   SET line_number = line_number - 1
+                                 WHERE periodic_order_id = OLD.periodic_order_id
+                                   AND line_number > OLD.line_number;
+                            END;
+                        """);
+
+                // ───────────────── inventory_notifications (optional) ─────────────────
 
                 log.info("Ensured database schema exists");
             }
