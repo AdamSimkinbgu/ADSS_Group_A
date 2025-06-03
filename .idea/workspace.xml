@@ -10,16 +10,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DTOs/periodiceOrderDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/PeriodicOrderController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Commands/OrderCommands/CreateOrderCMD.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Forms/OrderForm.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/CategoryDAO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/CategoryDAO_SQL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/DiscountDAO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/DiscountDAO_SQL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/SupplyDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/SupplyDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DAO/SupplyDTO_SQL.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DAO/SupplyDTO_SQL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/DTO/CategoryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/DTO/CategoryDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/Domain/CategoryDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Domain/CategoryDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Domain/MainDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Inventory/Domain/ProductDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Domain/ProductDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inventory.db" beforeDir="false" afterPath="$PROJECT_DIR$/inventory.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ADSS_Group_A.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ADSS_Group_A.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,9 +81,10 @@
     "Repository.Attach.JavaDocs": "true",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "moshe-fix",
+    "git-widget-placeholder": "orederSystem",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/moshe/OneDrive/Desktop/לימודים גבוהים/סימסטר ו/ניתוצ/project/ADSS_Group_A/release",
+    "node.js.selected.package.tslint": "(autodetect)",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.14045936",
     "project.structure.side.proportion": "0.19431715",
@@ -128,6 +128,14 @@
         <item itemvalue="JUnit.InventoryTests.testUpdateInventoryRestockValidProduct" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17011.79" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17011.79" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -364,6 +372,9 @@
     </task>
     <option name="localTasksCounter" value="29" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
