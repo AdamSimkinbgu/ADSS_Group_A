@@ -10,15 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DTOs/periodiceOrderDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/PeriodicOrderController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Commands/OrderCommands/CreateOrderCMD.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Forms/OrderForm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/CLIs/OrderCLI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Commands/OrderCommands/UpdateOrderCMD.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Forms/PeriodicOrderForm.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ADSS_Group_A.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ADSS_Group_A.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DTOs/periodiceOrderDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Commands/OrderCommands/CreateOrderCMD.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/Commands/OrderCommands/CreateOrderCMD.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
