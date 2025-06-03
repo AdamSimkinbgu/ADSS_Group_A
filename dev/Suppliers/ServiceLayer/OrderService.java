@@ -20,19 +20,22 @@ public class OrderService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<Order> updateOrder(String json) {
+   public ServiceResponse<Order> updateOrder(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<Boolean> removeOrder(String json) {
+   public ServiceResponse<Boolean> removeOrder(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<Order> getOrder(String json) {
+   public ServiceResponse<Order> getOrder(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   private ServiceResponse<List<Order>> viewAllOrders(String ignored) {
+   public ServiceResponse<List<Order>> viewAllOrders(String ignored) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
+
+    public ServiceResponse<OrderDTO> getOrderById(int orderId) {
+    }
 }
