@@ -4,6 +4,7 @@ package Suppliers.ServiceLayer;
 import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.PeriodicOrderDTO;
 import Suppliers.DomainLayer.OrderFacade;
 
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -38,4 +39,10 @@ public class OrderService extends BaseService {
 
     public ServiceResponse<OrderDTO> getOrderById(int orderId) {
     }
+
+   public ServiceResponse<List<OrderDTO>> getAllOrders() {
+   }
+
+   public ServiceResponse<?> createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
+   }
 }
