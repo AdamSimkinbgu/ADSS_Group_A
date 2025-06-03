@@ -62,4 +62,16 @@ public class PeriodicOrderDTO {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    public String getDeliveryDayMask() {
+        // this is a 7 character string representing the days of the week with '1' for
+        // active days and '0' for inactive days
+        StringBuilder mask = new StringBuilder("0000000");
+        if (deliveryDay != null) {
+            // we want sunday to be the first character, so we need to adjust the index
+            int dayIndex = (deliveryDay.getValue() % 7); // DayOfWeek.SUNDAY is 7, we want it to be 0
+            mask.setCharAt(dayIndex, '1');
+        }
+        return mask.toString();
+    }
 }
