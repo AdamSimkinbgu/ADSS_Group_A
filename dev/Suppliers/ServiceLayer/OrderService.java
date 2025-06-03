@@ -3,6 +3,7 @@ package Suppliers.ServiceLayer;
 
 import java.util.List;
 
+import Suppliers.DTOs.OrderDTO;
 import Suppliers.DomainLayer.OrderFacade;
 
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -15,7 +16,7 @@ public class OrderService extends BaseService {
       this.orderFacade = orderFacade;
    }
 
-   private ServiceResponse<Order> createOrder(String json) {
+   public ServiceResponse<Order> createOrder(OrderDTO json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
