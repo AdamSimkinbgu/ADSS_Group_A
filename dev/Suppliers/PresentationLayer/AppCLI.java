@@ -21,13 +21,13 @@ public class AppCLI implements View {
    private final ProductCLI productCLI;
    private final AgreementCLI agreementCLI;
    private IntegrationService integrationService;
-
    public static final Scanner scanner = new Scanner(System.in);
 
    public AppCLI(InitializeState initializeState) {
 
       // Initialize the facades
       SupplierController supplierFacade = new SupplierController(initializeState);
+      OrderFacade orderFacade = new OrderFacade(initializeState);
 
       // OrderFacade orderFacade = new OrderFacade(supplierFacade);
 
