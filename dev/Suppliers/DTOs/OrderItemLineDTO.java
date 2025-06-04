@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class OrderItemLineDTO {
     private int orderID;
     private int productId;
-    private int supplierProductCatalogNumber;
+    private String supplierProductCatalogNumber;
     private int quantity;
     private BigDecimal unitPrice;
     private String productName;
@@ -17,7 +17,18 @@ public class OrderItemLineDTO {
     public OrderItemLineDTO() {
     }
 
-    public OrderItemLineDTO(int orderID, int supplierProductCatalogNumber, int quantity, BigDecimal unitPrice,
+    public OrderItemLineDTO(int productId, int quantity) {
+        this.orderID = -1;
+        this.productId = productId;
+        this.supplierProductCatalogNumber = "";
+        this.quantity = quantity;
+        this.unitPrice = BigDecimal.ZERO;
+        this.productName = "";
+        this.orderItemLineID = -1;
+        this.discount = BigDecimal.ZERO;
+    }
+
+    public OrderItemLineDTO(int orderID, String supplierProductCatalogNumber, int quantity, BigDecimal unitPrice,
             String productName) {
         this.orderID = orderID;
         this.supplierProductCatalogNumber = supplierProductCatalogNumber;
@@ -33,6 +44,17 @@ public class OrderItemLineDTO {
         this.unitPrice = orderItemLine.getUnitPrice();
         this.productName = orderItemLine.getProductName();
 
+    }
+
+    public OrderItemLineDTO(OrderItemLineDTO item) {
+        this.orderID = item.getOrderID();
+        this.productId = item.getProductId();
+        this.supplierProductCatalogNumber = item.getSupplierProductCatalogNumber();
+        this.quantity = item.getQuantity();
+        this.unitPrice = item.getUnitPrice();
+        this.productName = item.getProductName();
+        this.orderItemLineID = item.getOrderItemLineID();
+        this.discount = item.getDiscount();
     }
 
     public int getOrderID() {
@@ -51,11 +73,11 @@ public class OrderItemLineDTO {
         this.productId = productId;
     }
 
-    public int getSupplierProductCatalogNumber() {
+    public String getSupplierProductCatalogNumber() {
         return supplierProductCatalogNumber;
     }
 
-    public void setSupplierProductCatalogNumber(int supplierProductCatalogNumber) {
+    public void setSupplierProductCatalogNumber(String supplierProductCatalogNumber) {
         this.supplierProductCatalogNumber = supplierProductCatalogNumber;
     }
 

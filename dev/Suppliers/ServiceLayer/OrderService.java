@@ -8,7 +8,6 @@ import Suppliers.DTOs.PeriodicOrderDTO;
 import Suppliers.DomainLayer.OrderFacade;
 
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
-import Suppliers.DomainLayer.Classes.Order;
 
 public class OrderService extends BaseService {
    private final OrderFacade orderFacade;
@@ -18,13 +17,18 @@ public class OrderService extends BaseService {
    }
 
    public ServiceResponse<?> createOrder(OrderDTO dto) {
-      // ServiceResponse <List <String>> response =
-      // orderFacade.validateCreateDTO(dto);
-
-      return ServiceResponse.fail(List.of("Not implemented"));
+      if (dto == null) {
+         return ServiceResponse.fail(List.of("OrderDTO cannot be null"));
+      }
+      try {
+         OrderDTO order = orderFacade.addOrder(dto);
+         return ServiceResponse.ok(order);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
+      }
    }
 
-   public ServiceResponse<Order> updateOrder(String json) {
+   public ServiceResponse<OrderDTO> updateOrder(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
@@ -32,11 +36,11 @@ public class OrderService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   public ServiceResponse<Order> getOrder(String json) {
+   public ServiceResponse<OrderDTO> getOrder(String json) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-   public ServiceResponse<List<Order>> viewAllOrders(String ignored) {
+   public ServiceResponse<List<OrderDTO>> viewAllOrders(String ignored) {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
