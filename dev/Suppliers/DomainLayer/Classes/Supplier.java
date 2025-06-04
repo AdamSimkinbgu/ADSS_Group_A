@@ -22,8 +22,6 @@ public class Supplier implements Serializable {
    private int leadSupplyDays;
    private PaymentDetails paymentDetails;
    private List<ContactInfo> contacts;
-   private List<Integer> products;
-   private List<Integer> agreements;
 
    public Supplier() {
    }
@@ -45,12 +43,6 @@ public class Supplier implements Serializable {
             this.contacts.add(new ContactInfo(contact));
          }
       }
-      this.products = supplierDTO.getProducts() != null
-            ? new ArrayList<>(supplierDTO.getProducts().stream()
-                  .map(SupplierProductDTO::getProductId)
-                  .toList())
-            : new ArrayList<>();
-      this.agreements = supplierDTO.getAgreements();
    }
 
    public Supplier(
@@ -61,9 +53,7 @@ public class Supplier implements Serializable {
          boolean selfSupply,
          EnumSet<DayOfWeek> supplyDays,
          int leadSupplyDays,
-         List<ContactInfoDTO> contacts,
-         List<SupplierProductDTO> products,
-         List<Integer> agreements) {
+         List<ContactInfoDTO> contacts) {
       this.supplierId = -1; // SQLite will auto-increment this
       this.name = name;
       this.taxNumber = taxNumber;
@@ -80,13 +70,6 @@ public class Supplier implements Serializable {
             this.contacts.add(new ContactInfo(contact));
          }
       }
-      this.products = new ArrayList<>();
-      if (products != null) {
-         for (SupplierProductDTO product : products) {
-            this.products.add(product.getProductId());
-         }
-      }
-      this.agreements = agreements;
    }
 
    public Supplier(
@@ -98,9 +81,7 @@ public class Supplier implements Serializable {
          boolean selfSupply,
          EnumSet<DayOfWeek> supplyDays,
          int leadSupplyDays,
-         List<ContactInfoDTO> contacts,
-         List<SupplierProductDTO> products,
-         List<Integer> agreements) {
+         List<ContactInfoDTO> contacts) {
       this.supplierId = supplierId;
       this.name = name;
       this.taxNumber = taxNumber;
@@ -117,13 +98,6 @@ public class Supplier implements Serializable {
             this.contacts.add(new ContactInfo(contact));
          }
       }
-      this.products = new ArrayList<>();
-      if (products != null) {
-         for (SupplierProductDTO product : products) {
-            this.products.add(product.getProductId());
-         }
-      }
-      this.agreements = agreements;
    }
 
    // ───────────────────────────────────────────────────────────────────────
@@ -183,29 +157,6 @@ public class Supplier implements Serializable {
       this.contacts.addAll(newOnes);
    }
 
-   public List<Integer> getProducts() {
-      return products;
-   }
-
-   public void setProducts(List<Integer> products) {
-      this.products = products;
-   }
-
-   public List<Integer> getAgreements() {
-      return agreements;
-   }
-
-   public void setAgreements(List<Integer> agreements) {
-      this.agreements = agreements;
-   }
-
-   public void addAgreement(int agreement) {
-      if (this.agreements == null) {
-         this.agreements = new ArrayList<>();
-      }
-      this.agreements.add(agreement);
-   }
-
    @Override
    public String toString() {
       // pretty json format
@@ -216,8 +167,6 @@ public class Supplier implements Serializable {
             "   \"address\": " + address.toString() + ",\n" +
             "   \"paymentDetails\": " + paymentDetails.toString() + ",\n" +
             "   \"contacts\": " + contacts.toString() + ",\n" +
-            "   \"products\": " + products.toString() + ",\n" +
-            "   \"agreements\": " + agreements.toString() + "\n" +
             "}";
    }
 
@@ -227,10 +176,16 @@ public class Supplier implements Serializable {
          return true;
       if (!(o instanceof Supplier))
          return false;
-      Supplier supplier = (Supplier) o;
-      return supplierId == supplier.supplierId &&
-            name.equals(supplier.name) &&
-            taxNumber.equals(supplier.taxNumber);
+      Supplier that = (Supplier) o;
+      return supplierId == that.supplierId &&
+            selfSupply == that.selfSupply &&
+            leadSupplyDays == that.leadSupplyDays &&
+            name.equals(that.name) &&
+            taxNumber.equals(that.taxNumber) &&
+            address.equals(that.address) &&
+            paymentDetails.equals(that.paymentDetails) &&
+            contacts.equals(that.contacts) &&
+            supplyDays.equals(that.supplyDays);
    }
 
    public boolean getSelfSupply() {
@@ -249,21 +204,6 @@ public class Supplier implements Serializable {
       this.supplyDays = supplyDays;
    }
 
-   public void addProduct(int supplierProduct) {
-      if (this.products == null) {
-         this.products = new ArrayList<>();
-      }
-      this.products.add(supplierProduct);
-   }
-
-   public boolean removeProduct(int productId) {
-      if (this.products != null) {
-         this.products.removeIf(p -> p == productId);
-         return true;
-      }
-      return false;
-   }
-
    public int getLeadSupplyDays() {
       return leadSupplyDays;
    }
@@ -272,9 +212,4 @@ public class Supplier implements Serializable {
       this.leadSupplyDays = leadSupplyDays;
    }
 
-   public void removeAgreement(int agreementID) {
-      if (this.agreements != null) {
-         this.agreements.removeIf(a -> a == agreementID);
-      }
-   }
 }
