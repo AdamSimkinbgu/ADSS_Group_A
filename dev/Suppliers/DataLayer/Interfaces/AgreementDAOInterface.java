@@ -1,6 +1,5 @@
 package Suppliers.DataLayer.Interfaces;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,19 +7,19 @@ import Suppliers.DTOs.AgreementDTO;
 import Suppliers.DTOs.BillofQuantitiesItemDTO;
 
 public interface AgreementDAOInterface {
-   AgreementDTO createAgreement(AgreementDTO agreement) throws SQLException;
+   AgreementDTO createAgreement(AgreementDTO agreement);
 
-   Optional<AgreementDTO> getAgreementById(int id) throws SQLException;
+   Optional<AgreementDTO> getAgreementById(int id);
 
-   void updateAgreement(AgreementDTO agreement) throws SQLException;
+   boolean updateAgreement(AgreementDTO agreement);
 
-   void deleteAgreement(int id) throws SQLException;
+   boolean deleteAgreement(int id);
 
-   List<AgreementDTO> getAllAgreements() throws SQLException;
+   List<AgreementDTO> getAllAgreements();
 
-   List<AgreementDTO> getAllAgreementsForSupplier(int supplierId) throws SQLException;
+   List<AgreementDTO> getAllAgreementsForSupplier(int supplierId);
 
-   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException;
+   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId);
 
-   boolean agreementExists(int id) throws SQLException;
+   boolean agreementExists(int id);
 }

@@ -1,6 +1,5 @@
 package Suppliers.DataLayer.Interfaces;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import Suppliers.DTOs.ContactInfoDTO;
@@ -12,7 +11,7 @@ public interface ContactInfoDAOInterface {
     * @param contactInfo The contact information to be created.
     * @return The ID of the newly created contact information.
     */
-   ContactInfoDTO createContactInfo(ContactInfoDTO contactInfo) throws SQLException;
+   ContactInfoDTO createContactInfo(ContactInfoDTO contactInfo);
 
    /**
     * Updates an existing contact information entry in the database.
@@ -20,7 +19,7 @@ public interface ContactInfoDAOInterface {
     * @param contactInfo The contact information to be updated.
     * @return True if the update was successful, false otherwise.
     */
-   boolean updateContactInfo(ContactInfoDTO contactInfo) throws SQLException;
+   boolean updateContactInfo(ContactInfoDTO contactInfo);
 
    /**
     * Deletes a contact information entry from the database.
@@ -28,7 +27,7 @@ public interface ContactInfoDAOInterface {
     * @param id The ID of the contact information to be deleted.
     * @return True if the deletion was successful, false otherwise.
     */
-   boolean deleteContactInfo(int supplierId, String phone) throws SQLException;
+   boolean deleteContactInfo(int supplierId, String name);
 
    /**
     * Retrieves a list of all contact information entries for a specific supplier.
@@ -38,5 +37,5 @@ public interface ContactInfoDAOInterface {
     * @return A list of ContactInfoDTO objects representing the contact information
     *         for the supplier.
     */
-   List<ContactInfoDTO> getContactInfosBySupplierId(int supplierId) throws SQLException;
+   List<ContactInfoDTO> getContactInfosBySupplierId(int supplierId);
 }
