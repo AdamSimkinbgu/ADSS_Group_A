@@ -1,5 +1,6 @@
 package Suppliers.DataLayer.DAOs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,10 +11,11 @@ import Suppliers.DataLayer.Interfaces.PeriodicOrderDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.sql.PreparedStatement;
 
-public class JdbcPeriodicOrderDAO implements PeriodicOrderDAOInterface {
+public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInterface {
    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcPeriodicOrderDAO.class);
 
    @Override
@@ -47,10 +49,14 @@ public class JdbcPeriodicOrderDAO implements PeriodicOrderDAOInterface {
                throw new RuntimeException("Creating periodic order failed, no ID obtained.");
             }
          }
-      } catch (Exception e) {
-         LOGGER.error("Error creating periodic order: {}", e.getMessage(), e);
-         throw new RuntimeException("Error creating periodic order", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return null;
    }
 
    @Override
@@ -76,10 +82,14 @@ public class JdbcPeriodicOrderDAO implements PeriodicOrderDAOInterface {
             LOGGER.warn("No periodic order found with ID: {}", periodicOrder.getPeriodicOrderID());
             return false;
          }
-      } catch (Exception e) {
-         LOGGER.error("Error updating periodic order: {}", e.getMessage(), e);
-         throw new RuntimeException("Error updating periodic order", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
@@ -103,10 +113,14 @@ public class JdbcPeriodicOrderDAO implements PeriodicOrderDAOInterface {
             LOGGER.warn("No periodic order found with ID: {}", id);
             return false;
          }
-      } catch (Exception e) {
-         LOGGER.error("Error deleting periodic order with ID {}: {}", id, e.getMessage(), e);
-         throw new RuntimeException("Error deleting periodic order", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
@@ -134,10 +148,14 @@ public class JdbcPeriodicOrderDAO implements PeriodicOrderDAOInterface {
             LOGGER.warn("No periodic order found with ID: {}", id);
             return null;
          }
-      } catch (Exception e) {
-         LOGGER.error("Error retrieving periodic order with ID {}: {}", id, e.getMessage(), e);
-         throw new RuntimeException("Error retrieving periodic order", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return null;
    }
 
    @Override
@@ -155,10 +173,14 @@ public class JdbcPeriodicOrderDAO implements PeriodicOrderDAOInterface {
          }
          LOGGER.info("Listed {} periodic orders", periodicOrders.size());
          return periodicOrders;
-      } catch (Exception e) {
-         LOGGER.error("Error listing periodic orders: {}", e.getMessage(), e);
-         throw new RuntimeException("Error listing periodic orders", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
 }

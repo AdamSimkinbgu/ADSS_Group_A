@@ -2,7 +2,9 @@ package Suppliers.DataLayer.DAOs;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +16,7 @@ import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DataLayer.Interfaces.OrderDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
-public class JdbcOrderDAO implements OrderDAOInterface {
+public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcOrderDAO.class);
 
    @Override
@@ -24,9 +26,10 @@ public class JdbcOrderDAO implements OrderDAOInterface {
          throw new IllegalArgumentException("Order cannot be null");
       }
       String sql = "INSERT INTO orders (supplier_id, order_date, status) VALUES (?, ?, ?)";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
+            PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, orderDTO.getSupplierId());
-         preparedStatement.setString(2, LocalDate.now().toString()); // Assuming order_date is of type DATE
+         preparedStatement.setString(2, LocalDate.now().toString());
          preparedStatement.setString(3, orderDTO.getStatus().name());
 
          int affectedRows = preparedStatement.executeUpdate();
@@ -45,11 +48,14 @@ public class JdbcOrderDAO implements OrderDAOInterface {
                throw new RuntimeException("Creating order failed, no ID obtained.");
             }
          }
-      } catch (Exception e) {
-         LOGGER.error("Error adding order: {}", e.getMessage(), e);
-         throw new RuntimeException("Error adding order", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
-
+      return null;
    }
 
    @Override
@@ -74,17 +80,21 @@ public class JdbcOrderDAO implements OrderDAOInterface {
             LOGGER.warn("No order found with ID: {}", orderID);
             return Optional.empty();
          }
-      } catch (Exception e) {
-         LOGGER.error("Error retrieving order with ID {}: {}", orderID, e.getMessage(), e);
-         throw new RuntimeException("Error retrieving order", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return Optional.empty();
    }
 
    @Override
    public List<OrderDTO> listOrders() {
       String sql = "SELECT * FROM orders";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql);
-           ResultSet resultSet = preparedStatement.executeQuery()) {
+            ResultSet resultSet = preparedStatement.executeQuery()) {
          List<OrderDTO> orders = new java.util.ArrayList<>();
          while (resultSet.next()) {
             OrderDTO orderDTO = new OrderDTO();
@@ -96,14 +106,18 @@ public class JdbcOrderDAO implements OrderDAOInterface {
          }
          LOGGER.info("Retrieved {} orders", orders.size());
          return orders;
-      } catch (Exception e) {
-         LOGGER.error("Error listing orders: {}", e.getMessage(), e);
-         throw new RuntimeException("Error listing orders", e);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public void deleteOrder(int orderID) {
+   public boolean deleteOrder(int orderID) {
       if (orderID <= 0) {
          LOGGER.error("Invalid order ID: {}", orderID);
          throw new IllegalArgumentException("Order ID must be greater than 0");
@@ -114,17 +128,22 @@ public class JdbcOrderDAO implements OrderDAOInterface {
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No order found with ID: {}", orderID);
-            throw new RuntimeException("No order found with ID: " + orderID);
+            return false;
          }
          LOGGER.info("Order with ID {} deleted successfully", orderID);
-      } catch (Exception e) {
-         LOGGER.error("Error deleting order with ID {}: {}", orderID, e.getMessage(), e);
-         throw new RuntimeException("Error deleting order", e);
+         return true;
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public void updateOrder(OrderDTO updatedOrderDTO) {
+   public boolean updateOrder(OrderDTO updatedOrderDTO) {
       if (updatedOrderDTO == null || updatedOrderDTO.getOrderId() <= 0) {
          LOGGER.error("Invalid order data for update: {}", updatedOrderDTO);
          throw new IllegalArgumentException("Order cannot be null and must have a valid ID");
@@ -139,13 +158,17 @@ public class JdbcOrderDAO implements OrderDAOInterface {
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No order found with ID: {}", updatedOrderDTO.getOrderId());
-            throw new RuntimeException("No order found with ID: " + updatedOrderDTO.getOrderId());
+            return false;
          }
          LOGGER.info("Order with ID {} updated successfully", updatedOrderDTO.getOrderId());
-      } catch (Exception e) {
-         LOGGER.error("Error updating order with ID {}: {}", updatedOrderDTO.getOrderId(), e.getMessage(), e);
-         throw new RuntimeException("Error updating order", e);
+         return true;
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
-
 }

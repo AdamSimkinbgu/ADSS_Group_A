@@ -82,8 +82,8 @@ public final class Database {
                                 phone       TEXT    NOT NULL,
                                 name        TEXT    NOT NULL,
                                 email       TEXT    NOT NULL,
-                                PRIMARY KEY (supplier_id, phone),
-                                UNIQUE (supplier_id, phone),
+                                PRIMARY KEY (supplier_id, name),
+                                UNIQUE (supplier_id, name),
                                 FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id)
                                     ON DELETE CASCADE
                                     ON UPDATE CASCADE
