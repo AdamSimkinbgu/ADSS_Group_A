@@ -20,20 +20,27 @@ public interface OrderItemLineDAOInterface {
     * @return An OrderItemLineDTO object representing the order item line, or null
     *         if not found.
     */
-   OrderItemLineDTO getOrderItemLine(int id);
+   OrderItemLineDTO getOrderItemLine(int orderId, int lineId);
 
    /**
     * Lists all order item lines in the database.
     *
     * @return A list of OrderItemLineDTO objects representing all order item lines.
     */
-   List<OrderItemLineDTO> listOrderItemLines();
+   List<OrderItemLineDTO> listOrderItemLines(int orderId);
 
    /**
     * Deletes an order item line by its ID.
     *
     * @param id The ID of the order item line to delete.
     */
-   void deleteOrderItemLine(int id);
+   boolean deleteOrderItemLine(int id);
+
+   /**
+    * Updates an existing order item line in the database.
+    *
+    * @param orderItemLine The order item line to be updated.
+    */
+   boolean updateOrderItemLine(OrderItemLineDTO orderItemLine);
 
 }
