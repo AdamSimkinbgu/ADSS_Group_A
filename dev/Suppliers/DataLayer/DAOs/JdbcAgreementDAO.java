@@ -90,8 +90,38 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                agreement.setValid(rs.getBoolean("valid"));
 
                List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO.getAllBillofQuantitiesItems(id);
+               for (BillofQuantitiesItemDTO item : items) {
+                  item.setAgreementId(id);
+                  String productCatalogSql = "SELECT name FROM supplier_products WHERE product_id = ?";
+                  try (PreparedStatement productPstmt = Database.getConnection().prepareStatement(productCatalogSql)) {
+                     productPstmt.setInt(1, item.getProductId());
+                     try (ResultSet productRs = productPstmt.executeQuery()) {
+                        if (productRs.next()) {
+                           item.setProductName(productRs.getString("name"));
+                        } else {
+                           LOGGER.warn("No product found for item with ID: {}", item.getProductId());
+                        }
+                     }
+                  } catch (SQLException e) {
+                     LOGGER.error("Error retrieving product details for item ID: {} - {}", item.getProductId(),
+                           e.getMessage());
+                  }
+               }
                agreement.setBillOfQuantitiesItems(items);
-
+               String supplierSql = "SELECT name FROM suppliers WHERE supplier_id = ?";
+               try (PreparedStatement supplierPstmt = Database.getConnection().prepareStatement(supplierSql)) {
+                  supplierPstmt.setInt(1, agreement.getSupplierId());
+                  try (ResultSet supplierRs = supplierPstmt.executeQuery()) {
+                     if (supplierRs.next()) {
+                        agreement.setSupplierName(supplierRs.getString("name"));
+                     } else {
+                        LOGGER.warn("No supplier found with ID: {}", agreement.getSupplierId());
+                     }
+                  }
+               } catch (SQLException e) {
+                  LOGGER.error("Error retrieving supplier details for ID: {} - {}", agreement.getSupplierId(),
+                        e.getMessage());
+               }
                LOGGER.info("Retrieved agreement with ID: {}", id);
                return Optional.of(agreement);
             } else {
@@ -176,23 +206,14 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
 
    @Override
    public List<AgreementDTO> getAllAgreements() {
-      String sql = "SELECT * FROM agreements";
+      String sql = "SELECT agreement_id FROM agreements";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery()) {
          List<AgreementDTO> agreements = new ArrayList<>();
          while (rs.next()) {
-            AgreementDTO agreement = new AgreementDTO();
-            agreement.setAgreementId(rs.getInt("agreement_id"));
-            agreement.setSupplierId(rs.getInt("supplier_id"));
-            agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
-            agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
-            agreement.setValid(rs.getBoolean("valid"));
-
-            List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
-                  .getAllBillofQuantitiesItems(agreement.getAgreementId());
-            agreement.setBillOfQuantitiesItems(items);
-
-            agreements.add(agreement);
+            int agreementId = rs.getInt("agreement_id");
+            Optional<AgreementDTO> agreementOpt = getAgreementById(agreementId);
+            agreementOpt.ifPresent(agreements::add);
          }
          LOGGER.info("Retrieved {} agreements", agreements.size());
          return agreements;
@@ -212,24 +233,15 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          LOGGER.error("Invalid supplier ID: {}", supplierId);
          throw new IllegalArgumentException("Invalid supplier ID");
       }
-      String sql = "SELECT * FROM agreements WHERE supplier_id = ?";
+      String sql = "SELECT agreement_id FROM agreements WHERE supplier_id = ?";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql)) {
          pstmt.setInt(1, supplierId);
          try (ResultSet rs = pstmt.executeQuery()) {
             List<AgreementDTO> agreements = new ArrayList<>();
             while (rs.next()) {
-               AgreementDTO agreement = new AgreementDTO();
-               agreement.setAgreementId(rs.getInt("agreement_id"));
-               agreement.setSupplierId(rs.getInt("supplier_id"));
-               agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
-               agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
-               agreement.setValid(rs.getBoolean("valid"));
-
-               List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
-                     .getAllBillofQuantitiesItems(agreement.getAgreementId());
-               agreement.setBillOfQuantitiesItems(items);
-
-               agreements.add(agreement);
+               int agreementId = rs.getInt("agreement_id");
+               Optional<AgreementDTO> agreementOpt = getAgreementById(agreementId);
+               agreementOpt.ifPresent(agreements::add);
             }
             LOGGER.info("Retrieved {} agreements for supplier ID: {}", agreements.size(), supplierId);
             return agreements;
@@ -245,17 +257,17 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
    }
 
    @Override
-   public boolean agreementExists(int id) {
-      if (id < 0) {
-         LOGGER.error("Invalid agreement ID: {}", id);
+   public boolean agreementExists(int agreementId) {
+      if (agreementId < 0) {
+         LOGGER.error("Invalid agreement ID: {}", agreementId);
          throw new IllegalArgumentException("Invalid agreement ID");
       }
       String sql = "SELECT 1 FROM agreements WHERE agreement_id = ?";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql)) {
-         pstmt.setInt(1, id);
+         pstmt.setInt(1, agreementId);
          try (ResultSet rs = pstmt.executeQuery()) {
             boolean exists = rs.next();
-            LOGGER.info("Agreement with ID: {} exists: {}", id, exists);
+            LOGGER.info("Agreement with ID: {} exists: {}", agreementId, exists);
             return exists;
          }
       } catch (SQLException e) {

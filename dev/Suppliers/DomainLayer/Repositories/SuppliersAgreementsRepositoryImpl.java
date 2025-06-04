@@ -403,29 +403,6 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       LOGGER.info("Retrieving all agreements for supplier with ID: {}", supplierId);
       List<AgreementDTO> agreements = agreementDAO.getAllAgreementsForSupplier(supplierId);
-      List<CatalogProductDTO> products = supplierProductDAO.getCatalogProducts();
-      agreements.forEach(agreement -> {
-         List<BillofQuantitiesItemDTO> items = agreement.getBillOfQuantitiesItems();
-         items.forEach(item -> {
-            Optional<CatalogProductDTO> product = products.stream()
-                  .filter(p -> p.getProductId() == item.getProductId()).findFirst();
-            if (product.isPresent()) {
-               item.setProductName(product.get().getProductName());
-            } else {
-               LOGGER.warn("Product with ID {} not found for agreement ID {}", item.getProductId(),
-                     agreement.getAgreementId(), " skipping to the next item");
-            }
-         });
-         // the the supplier name from the supplierDTO
-         Optional<SupplierDTO> supplier = supplierDAO.getSupplier(supplierId);
-         if (supplier.isPresent()) {
-            agreement.setSupplierName(supplier.get().getName());
-         } else {
-            LOGGER.warn("Supplier with ID {} not found for agreement ID {}", supplierId, agreement.getAgreementId(),
-                  " skipping to the next agreement");
-         }
-      });
-
       LOGGER.info("Found {} agreements for supplier with ID: {}", agreements.size(), supplierId);
       return agreements;
    }

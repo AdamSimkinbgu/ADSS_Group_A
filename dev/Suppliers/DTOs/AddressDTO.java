@@ -1,7 +1,5 @@
 package Suppliers.DTOs;
 
-import Suppliers.DomainLayer.Classes.Address;
-
 public class AddressDTO {
    private String buildingNumber;
    private String street;
@@ -11,6 +9,12 @@ public class AddressDTO {
       this.street = street;
       this.city = city;
       this.buildingNumber = buildingNumber;
+   }
+
+   public AddressDTO(AddressDTO address) {
+      this.street = address.getStreet();
+      this.city = address.getCity();
+      this.buildingNumber = address.getBuildingNumber();
    }
 
    public String getBuildingNumber() {
@@ -48,14 +52,14 @@ public class AddressDTO {
             street, city, buildingNumber);
    }
 
-   public static Address toAddress(AddressDTO addressDTO) {
-      return new Address(
+   public static AddressDTO toAddress(AddressDTO addressDTO) {
+      return new AddressDTO(
             addressDTO.getStreet(),
             addressDTO.getCity(),
             addressDTO.getBuildingNumber());
    }
 
-   public static AddressDTO fromAddress(Address address) {
+   public static AddressDTO fromAddress(AddressDTO address) {
       return new AddressDTO(
             address.getStreet(),
             address.getCity(),

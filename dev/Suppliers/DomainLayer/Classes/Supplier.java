@@ -16,7 +16,7 @@ public class Supplier implements Serializable {
    private int supplierId;
    private String name;
    private String taxNumber;
-   private Address address;
+   private AddressDTO address;
    private boolean selfSupply;
    private EnumSet<DayOfWeek> supplyDays;
    private int leadSupplyDays;
@@ -30,7 +30,7 @@ public class Supplier implements Serializable {
       this.supplierId = supplierDTO.getId(); // SQLite will auto-increment this
       this.name = supplierDTO.getName();
       this.taxNumber = supplierDTO.getTaxNumber();
-      this.address = new Address(supplierDTO.getAddressDTO());
+      this.address = new AddressDTO(supplierDTO.getAddressDTO());
       this.selfSupply = supplierDTO.getSelfSupply();
       this.supplyDays = (supplierDTO.getSupplyDays() != null && !supplierDTO.getSupplyDays().isEmpty())
             ? EnumSet.copyOf(supplierDTO.getSupplyDays())
@@ -57,7 +57,7 @@ public class Supplier implements Serializable {
       this.supplierId = -1; // SQLite will auto-increment this
       this.name = name;
       this.taxNumber = taxNumber;
-      this.address = new Address(address);
+      this.address = new AddressDTO(address);
       this.paymentDetails = new PaymentDetails(paymentDetails);
       this.selfSupply = selfSupply;
       this.supplyDays = (supplyDays != null && !supplyDays.isEmpty())
@@ -85,7 +85,7 @@ public class Supplier implements Serializable {
       this.supplierId = supplierId;
       this.name = name;
       this.taxNumber = taxNumber;
-      this.address = new Address(address);
+      this.address = new AddressDTO(address);
       this.paymentDetails = new PaymentDetails(paymentDetails);
       this.selfSupply = selfSupply;
       this.supplyDays = (supplyDays != null && !supplyDays.isEmpty())
@@ -128,11 +128,11 @@ public class Supplier implements Serializable {
       this.taxNumber = taxNumber;
    }
 
-   public Address getAddress() {
+   public AddressDTO getAddress() {
       return address;
    }
 
-   public void setAddress(Address address) {
+   public void setAddress(AddressDTO address) {
       this.address = address;
    }
 

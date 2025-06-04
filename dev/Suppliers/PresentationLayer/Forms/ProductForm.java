@@ -35,21 +35,12 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
       protected SupplierProductDTO update(SupplierProductDTO dto) throws Cancelled {
             view.showMessage("Updating product... (enter 'cancel' to cancel)");
             switch (askNonEmpty(
-                        "What do you want to change? (supplierCatalogNumber, name, price, weight, expiresInDays, manufacturerName)")) {
+                        "What do you want to change? (supplierCatalogNumber, price, weight, expiresInDays)")) {
                   case "supplierCatalogNumber" -> dto = new SupplierProductDTO(
                               dto.getSupplierId(),
                               dto.getProductId(),
                               askNonEmpty("New Supplier Catalog Number: "),
                               dto.getName(),
-                              dto.getPrice(),
-                              dto.getWeight(),
-                              dto.getExpiresInDays(),
-                              dto.getManufacturerName());
-                  case "name" -> dto = new SupplierProductDTO(
-                              dto.getSupplierId(),
-                              dto.getProductId(),
-                              dto.getSupplierCatalogNumber(),
-                              askNonEmpty("New Product Name: "),
                               dto.getPrice(),
                               dto.getWeight(),
                               dto.getExpiresInDays(),
@@ -81,15 +72,6 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               dto.getWeight(),
                               askInt("New Expires in (days): "),
                               dto.getManufacturerName());
-                  case "manufacturerName" -> dto = new SupplierProductDTO(
-                              dto.getSupplierId(),
-                              dto.getProductId(),
-                              dto.getSupplierCatalogNumber(),
-                              dto.getName(),
-                              dto.getPrice(),
-                              dto.getWeight(),
-                              dto.getExpiresInDays(),
-                              askNonEmpty("New Manufacturer Name: "));
             }
             return dto;
       }
