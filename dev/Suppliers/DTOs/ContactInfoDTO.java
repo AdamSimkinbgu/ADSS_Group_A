@@ -90,4 +90,17 @@ public class ContactInfoDTO {
                                     contact.getPhone()))
                         .toList();
       }
+
+      @Override
+      public boolean equals(Object o) {
+            if (this == o)
+                  return true;
+            if (!(o instanceof ContactInfoDTO))
+                  return false;
+            ContactInfoDTO that = (ContactInfoDTO) o;
+            return supplierId == that.supplierId &&
+                        name.equals(that.name) &&
+                        email.equals(that.email) &&
+                        phone.equals(that.phone);
+      }
 }

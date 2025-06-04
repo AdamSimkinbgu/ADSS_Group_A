@@ -30,6 +30,14 @@ public record CatalogProductDTO(
             return productId;
       }
 
+      public String getProductName() {
+            return name;
+      }
+
+      public String getManufacturerName() {
+            return manufacturerName;
+      }
+
       @Override
       public String toString() {
             return String.format(

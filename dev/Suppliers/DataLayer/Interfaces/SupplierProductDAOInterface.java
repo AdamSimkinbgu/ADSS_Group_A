@@ -1,6 +1,5 @@
 package Suppliers.DataLayer.Interfaces;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,24 +7,24 @@ import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.SupplierProductDTO;
 
 public interface SupplierProductDAOInterface {
-   SupplierProductDTO createSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
+   SupplierProductDTO createSupplierProduct(SupplierProductDTO supplierProduct);
 
-   Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId) throws SQLException;
+   Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId);
 
-   void updateSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
+   boolean updateSupplierProduct(SupplierProductDTO supplierProduct);
 
-   void deleteSupplierProduct(int supplierId, int productId) throws SQLException;
+   boolean deleteSupplierProduct(int supplierId, int productId);
 
-   List<SupplierProductDTO> getAllSupplierProducts() throws SQLException;
+   List<SupplierProductDTO> getAllSupplierProducts();
 
-   List<SupplierProductDTO> getAllSupplierProductsForSupplier(int supplierId) throws SQLException;
+   List<SupplierProductDTO> getAllSupplierProductsForSupplier(int supplierId);
 
    // only unique product ids, their name and their manufacturer name
-   List<CatalogProductDTO> getCatalogProducts() throws SQLException;
+   List<CatalogProductDTO> getCatalogProducts();
 
-   boolean supplierProductExists(int supplierId, int productId) throws SQLException;
+   boolean supplierProductExists(int supplierId, int productId);
 
-   List<Integer> getAllSupplierIdsForProductId(int productId) throws SQLException;
+   List<Integer> getAllSupplierIdsForProductId(int productId);
 
-   List<Integer> getAllProductIdsForSupplierId(int supplierId) throws SQLException;
+   List<Integer> getAllProductIdsForSupplierId(int supplierId);
 }

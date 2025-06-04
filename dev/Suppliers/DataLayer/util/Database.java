@@ -82,8 +82,8 @@ public final class Database {
                                 phone       TEXT    NOT NULL,
                                 name        TEXT    NOT NULL,
                                 email       TEXT    NOT NULL,
-                                PRIMARY KEY (supplier_id, phone),
-                                UNIQUE (supplier_id, phone),
+                                PRIMARY KEY (supplier_id, name),
+                                UNIQUE (supplier_id, name),
                                 FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id)
                                     ON DELETE CASCADE
                                     ON UPDATE CASCADE
@@ -302,26 +302,20 @@ public final class Database {
                         """);
 
                 // ───────────────────── periodic_orders ─────────────────────
-                st.executeUpdate("""
-                            CREATE TABLE IF NOT EXISTS periodic_orders(
-                               periodic_order_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-                               -- start_date          TEXT    NOT NULL,  -- "YYYY-MM-DD" these lines are commented out
-                               -- end_date            TEXT    NOT NULL,  -- "YYYY-MM-DD" because we cant make it in time
+                st.executeUpdate(
+                        """
+                                    CREATE TABLE IF NOT EXISTS periodic_orders(
+                                        periodic_order_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        -- start_date          TEXT    NOT NULL,  -- "YYYY-MM-DD" these lines are commented out
+                                        -- end_date            TEXT    NOT NULL,  -- "YYYY-MM-DD" because we cant make it in time
 
-                               requested_day_mask  TEXT    NOT NULL
-                                                    CHECK(length(requested_day_mask)=7
-                                                          AND requested_day_mask GLOB '[01]*'),
-                               is_active           INTEGER NOT NULL DEFAULT 1
-                                                    CHECK(is_active IN (0,1)),
-                               FOREIGN KEY(supplier_id)
-                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE,
-                               CHECK(end_date >= start_date)
-                            );
-                        """);
-                st.executeUpdate("""
-                            CREATE INDEX IF NOT EXISTS idx_periodic_supplier
-                              ON periodic_orders(supplier_id);
-                        """);
+                                        requested_day_mask  TEXT    NOT NULL,
+
+                                        is_active           INTEGER NOT NULL DEFAULT 1
+                                                            CHECK(is_active IN (0,1))
+                                        -- CHECK(end_date >= start_date), -- we dont need this, because we dont have start and end dates
+                                    );
+                                """);
 
                 // ───────────────── periodic_order_item_lines ─────────────────
                 st.executeUpdate("""
@@ -330,9 +324,6 @@ public final class Database {
                                line_number         INTEGER NOT NULL CHECK(line_number > 0),
                                product_id          INTEGER NOT NULL,
                                quantity            INTEGER NOT NULL CHECK(quantity > 0),
-                               unit_price          REAL    NOT NULL CHECK(unit_price >= 0),
-                               discount_pct        REAL    NOT NULL
-                                                     CHECK(discount_pct BETWEEN 0 AND 100),
                                PRIMARY KEY (periodic_order_id, line_number),
                                FOREIGN KEY(periodic_order_id)
                                    REFERENCES periodic_orders(periodic_order_id) ON DELETE CASCADE,

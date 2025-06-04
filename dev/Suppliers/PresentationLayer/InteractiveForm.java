@@ -5,7 +5,14 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
+
+import Suppliers.DTOs.AddressDTO;
+import Suppliers.DTOs.ContactInfoDTO;
+import Suppliers.DTOs.PaymentDetailsDTO;
+import Suppliers.DTOs.Enums.PaymentMethod;
+import Suppliers.DTOs.Enums.PaymentTerm;
 
 public abstract class InteractiveForm<T> {
 
@@ -79,20 +86,33 @@ public abstract class InteractiveForm<T> {
 
     protected boolean askBoolean(String prompt) throws Cancelled {
         String line = ask(prompt);
-        while (!line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("n")) {
-            view.showError("Invalid input. Please enter 'y' for yes or 'n' for no.");
+        // allow "y", "yes", "n", "no" (case insensitive)
+        while (!line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("yes")
+                && !line.equalsIgnoreCase("n") && !line.equalsIgnoreCase("no")) {
+            view.showError("Invalid input. Please enter 'y'/'yes' or 'n'/'no'.");
             line = ask(prompt);
         }
-        return line.equalsIgnoreCase("yes");
+        return line.equalsIgnoreCase("y") || line.equalsIgnoreCase("yes");
     }
 
     protected LocalDate askDate(String prompt) throws Cancelled {
         String line = ask(prompt);
-        while (!line.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        // DD-MM-YYYY format
+        while (!line.matches("\\d{1,2}-\\d{1,2}-\\d{4}")) {
             view.showError("Invalid input. Please enter a valid date in YYYY-MM-DD format.");
             line = ask(prompt);
         }
-        return LocalDate.parse(line);
+        String[] parts = line.split("-");
+        int day = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        int year = Integer.parseInt(parts[2]);
+        // check if the date is valid
+        try {
+            return LocalDate.of(year, month, day);
+        } catch (Exception e) {
+            view.showError("Invalid date. Please enter a valid date in YYYY-MM-DD format.");
+            return askDate(prompt); // retry
+        }
     }
 
     protected EnumSet<DayOfWeek> askDaysOfWeek(String prompt) throws Cancelled {
@@ -101,8 +121,7 @@ public abstract class InteractiveForm<T> {
         // is 7
         // the user enters a day and we check if it's valid
         while (true) {
-            String line = ask(
-                    "Supply days (By words, e.g. MONDAY, TUESDAY, ... or numbers, e.g. 1 - MONDAY, 2 - TUESDAY, ..., 7 - SUNDAY): ");
+            String line = ask(prompt);
             if (line.isEmpty()) {
                 view.showError("Input cannot be empty. Please try again.");
                 continue;
@@ -116,7 +135,7 @@ public abstract class InteractiveForm<T> {
                         view.showError("Invalid day number: " + dayNumber + ". Please enter a number between 1 and 7.");
                         continue;
                     }
-                    days.add(DayOfWeek.of((dayNumber % 7) + 1)); // shift to make Sunday the first day
+                    days.add(DayOfWeek.of((dayNumber % 7) + 6)); // shift to make Sunday the first day
                 } catch (NumberFormatException e) {
                     try {
                         days.add(DayOfWeek.valueOf(part));
@@ -126,10 +145,143 @@ public abstract class InteractiveForm<T> {
                 }
             }
             if (!days.isEmpty()) {
+                view.showMessage("Selected supply days: " + days);
                 return days;
             } else {
                 view.showError("No valid days entered. Please try again.");
             }
         }
     }
+
+    protected String askEmail(String prompt) throws Cancelled {
+        String email = ask(prompt);
+        while (!email.matches("^[\\w-\\.]+@[\\w-]+\\.[a-zA-Z]{2,}$")) {
+            view.showError("Invalid email format. Please try again.");
+            email = ask(prompt);
+        }
+        return email;
+    }
+
+    protected String askPhone(String prompt) throws Cancelled {
+        String phone = ask(prompt);
+        while (!phone.matches("^\\+?[0-9\\-\\s]+$")) {
+            view.showError("Invalid phone number format. Please try again.");
+            phone = ask(prompt);
+        }
+        return phone;
+    }
+
+    protected PaymentDetailsDTO askPaymentDetails(String prompt) throws Cancelled {
+        String bankAccount = askNonEmpty(" Bank account (6 digits): ");
+        while (!bankAccount.matches("^\\d{6}$")) {
+            view.showError("Invalid bank account number. Please enter exactly 6 digits.");
+            bankAccount = askNonEmpty(" Bank account (6 digits): ");
+        }
+
+        String method = askNonEmpty(" Payment method (CASH, CREDIT_CARD, BANK_TRANSFER, CASH_ON_DELIVERY): ");
+        while (!method.matches("CASH|CREDIT_CARD|BANK_TRANSFER|CASH_ON_DELIVERY")) {
+            view.showError(
+                    "Invalid payment method. Please enter one of: CASH, CREDIT_CARD, BANK_TRANSFER, CASH_ON_DELIVERY.");
+            method = askNonEmpty(" Payment method (CASH, CREDIT_CARD, BANK_TRANSFER, CASH_ON_DELIVERY): ");
+        }
+
+        String term = askNonEmpty(" Payment term (N30, N60, N90, PREPAID, POSTPAID): ");
+        while (!term.matches("N30|N60|N90|PREPAID|POSTPAID")) {
+            view.showError("Invalid payment term. Please enter one of: N30, N60, N90, PREPAID, POSTPAID.");
+            term = askNonEmpty(" Payment term (N30, N60, N90, PREPAID, POSTPAID): ");
+        }
+
+        return new PaymentDetailsDTO(bankAccount.trim(), PaymentMethod.valueOf(method.trim()),
+                PaymentTerm.valueOf(term.trim()));
+    }
+
+    protected List<ContactInfoDTO> updateContacts(List<ContactInfoDTO> existingContacts) throws Cancelled {
+        while (true) {
+            String action = "";
+            while (!action.equals("done")) {
+                action = askNonEmpty(
+                        "What do you want to do with contacts? (add/remove/update/done/list/cancel): ").trim()
+                        .toLowerCase();
+                switch (action) {
+                    case "add":
+                        ContactInfoDTO newContact = new ContactInfoDTO(
+                                -1,
+                                askNonEmpty("Enter contact name: "),
+                                askEmail("Enter contact email: "),
+                                askPhone("Enter contact phone: "));
+                        existingContacts.add(newContact);
+                        view.showMessage("Contact added: " + newContact);
+                        break;
+                    case "remove":
+                        String nameToRemove = askNonEmpty("Enter the name of the contact to remove: ");
+                        // add another one with the id 0 for removal because no supplier id is set to 0
+                        // in the system
+                        // -1 is used for new contacts and 0 will now be used for removal
+                        ContactInfoDTO removeContact = new ContactInfoDTO(
+                                0, nameToRemove, "removal@gmail.com", "0543211234");
+                        existingContacts.add(removeContact);
+                        break;
+                    case "update":
+                        String nameToUpdate = askNonEmpty("Enter the name of the contact to update: ");
+                        Optional<ContactInfoDTO> contactToUpdate = existingContacts.stream()
+                                .filter(contact -> contact.getName().equalsIgnoreCase(nameToUpdate)).findFirst();
+                        if (contactToUpdate.isPresent()) {
+                            while (true) {
+                                String fieldToUpdate = askNonEmpty(
+                                        "What do you want to update? (name/email/phone/back to return): ").trim()
+                                        .toLowerCase();
+                                switch (fieldToUpdate) {
+                                    case "name":
+                                        view.showMessage(
+                                                "Please remove the contact and add a new one with the updated name.");
+                                        break;
+                                    case "email":
+                                        String newEmail = askEmail("Enter new email: ");
+                                        contactToUpdate.get().setEmail(newEmail);
+                                        view.showMessage("Contact email updated to: " + newEmail);
+                                        break;
+                                    case "phone":
+                                        String newPhone = askPhone("Enter new phone: ");
+                                        contactToUpdate.get().setPhone(newPhone);
+                                        view.showMessage("Contact phone updated to: " + newPhone);
+                                        break;
+                                    case "back":
+                                    default:
+                                        view.showError("Invalid input. Please try again.");
+                                        continue;
+                                }
+                                break;
+                            }
+                        } else {
+                            view.showError("Contact with name " + nameToUpdate + " not found.");
+                        }
+                        break;
+                    case "done":
+                        return existingContacts;
+                    case "list":
+                        if (existingContacts.isEmpty()) {
+                            view.showMessage("No contacts available.");
+                        } else {
+                            view.showMessage("Current contacts:");
+                            for (ContactInfoDTO contact : existingContacts) {
+                                view.showMessage(contact.toString());
+                            }
+                        }
+                        break;
+                    default:
+                        view.showError("Invalid action. Please enter add, remove, update, or cancel.");
+                        break;
+                }
+            }
+        }
+    }
+
+    protected AddressDTO askAddress(String prompt) throws Cancelled {
+        view.showMessage(prompt);
+        String street = askNonEmpty(" Street: ");
+        String city = askNonEmpty(" City: ");
+        String buildingNumber = askNonEmpty(" Building number: ");
+        return new AddressDTO(street, city, buildingNumber);
+    }
+
 }
