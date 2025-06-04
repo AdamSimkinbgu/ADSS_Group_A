@@ -4,19 +4,19 @@ import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
-import Suppliers.DomainLayer.Classes.Order;
+import Suppliers.DomainLayer.Classes.OrderDTO;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.OrdersRepositoryInterface;
 
 public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
 
    @Override
-   public OrderDTO createRegularOrder(Order order) {
+   public OrderDTO createRegularOrder(OrderDTO order) {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'createRegularOrder'");
    }
 
    @Override
-   public void updateRegularOrder(Order order) {
+   public void updateRegularOrder(OrderDTO order) {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'updateRegularOrder'");
    }
@@ -28,13 +28,13 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
    }
 
    @Override
-   public Order getRegularOrderById(int orderId) {
+   public OrderDTO getRegularOrderById(int orderId) {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'getRegularOrderById'");
    }
 
    @Override
-   public List<Order> getAllRegularOrders() {
+   public List<OrderDTO> getAllRegularOrders() {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'getAllRegularOrders'");
    }

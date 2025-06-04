@@ -85,8 +85,8 @@ public class OrderValidator implements IValidator<OrderDTO> {
                     errors.add("Each order item must have a positive productId");
                 }
                 // b) supplierProductCatalogNumber > 0
-                if (line.getSupplierProductCatalogNumber() <= 0) {
-                    errors.add("Each order item must have a positive supplierProductCatalogNumber");
+                if (line.getSupplierProductCatalogNumber().isEmpty()) {
+                    errors.add("Each order item must have a non-empty supplierProductCatalogNumber");
                 }
                 // c) quantity > 0
                 if (line.getQuantity() <= 0) {

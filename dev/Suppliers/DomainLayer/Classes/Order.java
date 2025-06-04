@@ -1,8 +1,8 @@
 package Suppliers.DomainLayer.Classes;
 
 import Suppliers.DTOs.Enums.OrderStatus;
+import Suppliers.DTOs.AddressDTO;
 import Suppliers.DTOs.OrderDTO;
-import Suppliers.DTOs.OrderItemLineDTO;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -21,7 +21,7 @@ public class Order implements Serializable {
     private String supplierName;
     private LocalDate orderDate;
     private LocalDate creationDate;
-    private Address address;
+    private AddressDTO address;
     private String contactPhoneNumber;
     private List<OrderItemLine> items;
     private OrderStatus status;
@@ -51,20 +51,11 @@ public class Order implements Serializable {
         this.address = dto.getAddress();
         this.contactPhoneNumber = dto.getContactPhoneNumber();
         this.status = dto.getStatus();
-        this.items = new ArrayList<>();
-        if (dto.getItems() != null) {
-            for (OrderItemLineDTO itemDto : dto.getItems()) {
-                this.items.add(new OrderItemLine(
-                        id,
-                        itemDto.getOrderItemLineID(),
-                        itemDto.getProductId(),
-                        itemDto.getQuantity(),
-                        itemDto.getUnitPrice(),
-                        itemDto.getSupplierProductCatalogNumber(),
-                        itemDto.getProductName(),
-                        itemDto.getDiscount()));
-            }
-        }
+        this.items = dto.getItems() != null
+                ? new ArrayList<>()
+                : dto.getItems().stream()
+                        .map(item -> new OrderItemLine(item))
+                        .toList();
     }
 
     /**
@@ -85,7 +76,7 @@ public class Order implements Serializable {
             String supplierName,
             LocalDate orderDate,
             LocalDate creationDate,
-            Address address,
+            AddressDTO address,
             String contactPhoneNumber,
             List<OrderItemLine> items,
             OrderStatus status) {
@@ -181,7 +172,7 @@ public class Order implements Serializable {
     /**
      * @return the delivery address for the order
      */
-    public Address getAddress() {
+    public AddressDTO getAddress() {
         return address;
     }
 
@@ -190,7 +181,7 @@ public class Order implements Serializable {
      *
      * @param address the address to set
      */
-    public void setAddress(Address address) {
+    public void setAddress(AddressDTO address) {
         this.address = address;
     }
 
@@ -258,14 +249,14 @@ public class Order implements Serializable {
             BigDecimal unitPrice,
             int supplierProductCatalogNumber,
             String productName) {
-        items.add(new OrderItemLine(
-                this.getOrderId(),
-                (items.size() + 1),
-                productId,
-                quantity,
-                unitPrice,
-                supplierProductCatalogNumber,
-                productName));
+        // items.add(new OrderItemLine(
+        // this.getOrderId(),
+        // (items.size() + 1),
+        // productId,
+        // quantity,
+        // unitPrice,
+        // supplierProductCatalogNumber,
+        // productName));
     }
 
     /**

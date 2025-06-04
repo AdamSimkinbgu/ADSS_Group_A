@@ -7,17 +7,16 @@ import Suppliers.PresentationLayer.Forms.OrderForm;
 import Suppliers.PresentationLayer.View;
 import Suppliers.ServiceLayer.OrderService;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
-import Suppliers.DTOs.OrderDTO;
 
 public class CreateOrderCMD implements CommandInterface {
     private final View view;
     private final OrderService orderService;
     private final OrderForm form;
 
-    public CreateOrderCMD(View view, OrderService orderService, OrderForm form) {
+    public CreateOrderCMD(View view, OrderService orderService) {
         this.view = view;
         this.orderService = orderService;
-        this.form = form;
+        this.form = new OrderForm(view);
     }
 
     @Override
@@ -30,9 +29,7 @@ public class CreateOrderCMD implements CommandInterface {
                 } else {
                     view.showError("-- Failed to create order --");
                     AtomicInteger counter = new AtomicInteger(1);
-                    res.getErrors().forEach(error ->
-                            view.showError(counter.getAndIncrement() + ". " + error)
-                    );
+                    res.getErrors().forEach(error -> view.showError(counter.getAndIncrement() + ". " + error));
                 }
             } catch (Exception e) {
                 view.showError("Error creating order: " + e.getMessage());
