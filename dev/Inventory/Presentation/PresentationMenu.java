@@ -242,6 +242,7 @@ public class PresentationMenu {
 
         // get name
         System.out.println("Enter category name: ");
+        scanner.nextLine(); // clear the input buffer
         String name = scanner.nextLine();
 
         String response = ms.AddNewCategory(name);
@@ -252,6 +253,7 @@ public class PresentationMenu {
 
 
         System.out.println("Enter the name of the category: ");
+        scanner.nextLine(); // clear the input buffer
         String catName = scanner.nextLine();
 
         System.out.println("To add product press 1 and to sub-category press 2");
@@ -271,6 +273,7 @@ public class PresentationMenu {
             System.out.println(response);
         } else if (pOrc == 2) {
             System.out.println("Enter the name of the category: ");
+            //scanner.nextLine(); // clear the input buffer
             String subCatName = scanner.nextLine();
 
             String response = ms.AddToCategory(catName, subCatName);
@@ -415,6 +418,10 @@ public class PresentationMenu {
             s = om.readValue(response, SaleDTO.class);
             System.out.println("=====Sale Report=====");
             System.out.println("Sale id: " + s.getId());
+            for(Integer key : s.getProducts().keySet()) {
+                System.out.println("Product id: " + key + ", Quantity: " + s.getProducts().get(key));
+            }
+
             System.out.println("Sale price: " + s.getSalePrice());
         } catch (Exception e) {
             System.out.println("Error converting product to JSON: " + e.getMessage());
@@ -494,14 +501,19 @@ public class PresentationMenu {
             try {
                 ArrayList<ProductService> ls = om.readValue(response, new TypeReference<ArrayList<ProductService>>() {});
                 System.out.println("=====Category Report=====");
+                System.out.println("------------------------------------------------");
+                System.out.printf("| %-15s | %-8s | %-7s | %-8s | %-8s |%n",
+                        "Product Name", "ID", "Price", "Quantity", "Bad Qty");
+                System.out.println("------------------------------------------------");
                 for (ProductService p : ls) {
-                    System.out.println("Product name\t" + p.getproductName());
-                    System.out.println("Product id\t" + p.getproductId());
-                    System.out.println("Product price\t" + p.getproductPrice());
-                    System.out.println("Product quantity\t" + p.getQuantity());
-                    System.out.println("Product bad quantity\t" + p.getBadQuantity());
-                    System.out.println("-------------------------");
+                    System.out.printf("| %-15s | %-8d | %7.2f | %8d | %8d |%n",
+                            p.getproductName(),
+                            p.getproductId(),
+                            p.getproductPrice(),
+                            p.getQuantity(),
+                            p.getBadQuantity());
                 }
+                System.out.println("------------------------------------------------");
             } catch (Exception e) {
                 System.out.println(response + e.getMessage());
             }

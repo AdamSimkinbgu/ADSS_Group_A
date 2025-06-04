@@ -225,19 +225,24 @@ public class MainDomain {
 
     // VVVVVV
     public String GetBadReport() {
-        StringBuilder ret = new StringBuilder("=====Bad Report=====\n");
-        int badNum ;
+        int badNum;
+        StringBuilder ret = new StringBuilder();
+        ret.append("=====Bad Report=====\n");
+        ret.append("------------------------------------------\n");
+        ret.append(String.format("| %-15s | %-15s | %-6s |%n",
+                "Product Name", "Manufacturer", "Bad Qty"));
+        ret.append("------------------------------------------\n");
+
         for (ProductDomain p : prodMap.values()) {
             badNum = p.GetBads();
             if (badNum > 0) {
-                ret.append(p.getproductName())
-                        .append(", ")
-                        .append(p.getmanufactuerName())
-                        .append(": ")
-                        .append(badNum)
-                        .append(" \n");
+                ret.append(String.format("| %-15s | %-15s | %6d |%n",
+                        p.getproductName(),
+                        p.getmanufactuerName(),
+                        badNum));
             }
         }
+        ret.append("------------------------------------------\n");
         return ret.toString();
 
     }

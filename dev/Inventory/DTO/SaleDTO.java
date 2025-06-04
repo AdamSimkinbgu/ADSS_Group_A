@@ -53,6 +53,7 @@ public class SaleDTO {
     public SaleDTO(HashMap<Integer, Integer> prod) {
         id = -1;
         salePrice = 0;
+        date = LocalDate.now();
         products = new HashMap<>(prod);
     }
 

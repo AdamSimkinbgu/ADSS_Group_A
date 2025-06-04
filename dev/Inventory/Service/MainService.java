@@ -29,7 +29,7 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        //md.InventoryInitialization(0);
+        md.InventoryInitialization(0);
     }
 
 
@@ -163,8 +163,7 @@ public class MainService {
 
     public String Search(String name) {
         try {
-            ArrayList<ProductService> ls = new ArrayList<>();
-            md.Search(name);
+            List<ProductService> ls = md.Search(name);
             return om.writeValueAsString(ls);
         } catch (IllegalArgumentException e) {
             return "Search failed: " + e.getMessage();
