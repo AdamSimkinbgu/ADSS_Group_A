@@ -26,7 +26,7 @@ public class AppCLI implements View {
    public AppCLI(InitializeState initializeState) {
 
       // Initialize the facades
-      SupplierController supplierFacade = new SupplierController(initializeState);
+      SupplierFacade supplierFacade = new SupplierFacade(initializeState);
       OrderFacade orderFacade = new OrderFacade(initializeState);
 
       // OrderFacade orderFacade = new OrderFacade(supplierFacade);
@@ -133,6 +133,7 @@ public class AppCLI implements View {
 
    @Override
    public String readLine(String prompt) {
+      showMessage("--------------------------------------------------------------");
       showMessage(prompt);
       return scanner.nextLine();
    }

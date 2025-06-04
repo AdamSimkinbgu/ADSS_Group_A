@@ -24,14 +24,6 @@ public class CreateProductCMD implements CommandInterface {
       int supplierID;
       try {
          supplierID = Integer.parseInt(view.readLine("Enter supplier ID: "));
-         // this is to make sure that the user doesnt enter product details before
-         // checking if the supplier exists
-         // making the product creation and details filling useless
-         // ServiceResponse<?> checkResponse = service.checkSupplierExists(supplierID);
-         // if (!checkResponse.isSuccess()) {
-         // view.showError("Supplier with ID " + supplierID + " does not exist.");
-         // return;
-         // }
       } catch (NumberFormatException e) {
          view.showError("Invalid supplier ID format. Please enter a valid integer.");
          return;
