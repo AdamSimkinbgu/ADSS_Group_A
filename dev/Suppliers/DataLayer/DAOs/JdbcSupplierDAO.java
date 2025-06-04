@@ -23,7 +23,7 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
         }
-        LOGGER.info("Creating supplier: {}", supplier);
+        LOGGER.info("Creating supplier: {}", supplier.getName());
         String sql = "INSERT INTO suppliers (name, tax_number, self_supply, supply_days_mask, lead_supply_days, street, city, building_number,  bank_account_number, payment_method, payment_term) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {

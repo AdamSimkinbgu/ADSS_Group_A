@@ -21,15 +21,9 @@ public class OrderService extends BaseService {
       this.orderFacade = orderFacade;
    }
 
-   public ServiceResponse<?> createOrder(OrderDTO orderDTO) {
-      ServiceResponse <List <String>> response = orderValidator.validateCreateDTO(orderDTO);
-      if (response.isSuccess()) {
-         try {
-            OrderDTO order = orderFacade.createOrder(orderDTO);
-
-         }
-      }
-
+   public ServiceResponse<?> createOrder(OrderDTO dto) {
+      // ServiceResponse <List <String>> response =
+      // orderFacade.validateCreateDTO(dto);
 
       return ServiceResponse.fail(List.of("Not implemented"));
    }
@@ -50,24 +44,31 @@ public class OrderService extends BaseService {
       return ServiceResponse.fail(List.of("Not implemented"));
    }
 
-    public ServiceResponse<OrderDTO> getOrderById(int orderId) {
-    }
+   public ServiceResponse<OrderDTO> getOrderById(int orderId) {
+      return ServiceResponse.fail(List.of("Not implemented"));
+   }
 
    public ServiceResponse<List<OrderDTO>> getAllOrders() {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<PeriodicOrderDTO> getPeriodicOrderById(int periodicOrderId) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> updatePeriodicOrder(PeriodicOrderDTO updatedDto) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<?> removePeriodicOrder(int periodicOrderId) {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 
    public ServiceResponse<List<PeriodicOrderDTO>> getAllPeriodicOrders() {
+      return ServiceResponse.fail(List.of("Not implemented"));
    }
 }

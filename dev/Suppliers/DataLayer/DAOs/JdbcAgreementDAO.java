@@ -158,8 +158,8 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             AgreementDTO agreement = new AgreementDTO();
             agreement.setAgreementId(rs.getInt("agreement_id"));
             agreement.setSupplierId(rs.getInt("supplier_id"));
-            agreement.setAgreementStartDate(rs.getDate("agreement_start_date").toLocalDate());
-            agreement.setAgreementEndDate(rs.getDate("agreement_end_date").toLocalDate());
+            agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
+            agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
             agreement.setValid(rs.getBoolean("valid"));
 
             // Load bill of quantities items
@@ -189,8 +189,8 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
                AgreementDTO agreement = new AgreementDTO();
                agreement.setAgreementId(rs.getInt("agreement_id"));
                agreement.setSupplierId(rs.getInt("supplier_id"));
-               agreement.setAgreementStartDate(rs.getDate("agreement_start_date").toLocalDate());
-               agreement.setAgreementEndDate(rs.getDate("agreement_end_date").toLocalDate());
+               agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
+               agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
 
                // Load bill of quantities items

@@ -84,8 +84,12 @@ public class SupplierValidator implements IValidator<SupplierDTO> {
                } else if (contact.getPhone().isEmpty()) {
                   errors.add("Supplier contact person phone number cannot be empty");
                } else if (!contact.getPhone().matches("^05\\d-\\d{3}-\\d{4}$")) {
-                  errors.add(
-                        "Supplier contact person phone number must start with 05 and be in the format 05X-XXX-XXXX");
+                  if (contact.getPhone().matches("^05\\d{8}$"))
+                     contact.setPhone(contact.getPhone().substring(0, 3) + "-" + contact.getPhone().substring(3, 7)
+                           + "-" + contact.getPhone().substring(7));
+                  else
+                     errors.add(
+                           "Supplier contact person phone number must start with 05 and be in the format 05X-XXX-XXXX");
                }
                if (contact.getEmail() == null) {
                   errors.add("Supplier contact person email cannot be null");
