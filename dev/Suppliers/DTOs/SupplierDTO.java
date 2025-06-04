@@ -7,7 +7,6 @@ import java.util.List;
 
 import Suppliers.DTOs.Enums.PaymentMethod;
 import Suppliers.DTOs.Enums.PaymentTerm;
-import Suppliers.DomainLayer.Classes.Address;
 import Suppliers.DomainLayer.Classes.ContactInfo;
 import Suppliers.DomainLayer.Classes.PaymentDetails;
 import Suppliers.DomainLayer.Classes.Supplier;
@@ -131,8 +130,8 @@ public class SupplierDTO {
             return address;
       }
 
-      public Address getAddress() {
-            return new Address(address);
+      public AddressDTO getAddress() {
+            return new AddressDTO(address);
       }
 
       public void setAddress(AddressDTO address) {

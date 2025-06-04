@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
+import Suppliers.DTOs.AddressDTO;
 import Suppliers.DTOs.ContactInfoDTO;
 import Suppliers.DTOs.PaymentDetailsDTO;
 import Suppliers.DTOs.Enums.PaymentMethod;
@@ -88,7 +89,7 @@ public abstract class InteractiveForm<T> {
         // allow "y", "yes", "n", "no" (case insensitive)
         while (!line.equalsIgnoreCase("y") && !line.equalsIgnoreCase("yes")
                 && !line.equalsIgnoreCase("n") && !line.equalsIgnoreCase("no")) {
-            view.showError("Invalid input. Please enter 'y' or 'n'.");
+            view.showError("Invalid input. Please enter 'y'/'yes' or 'n'/'no'.");
             line = ask(prompt);
         }
         return line.equalsIgnoreCase("y") || line.equalsIgnoreCase("yes");
@@ -96,11 +97,22 @@ public abstract class InteractiveForm<T> {
 
     protected LocalDate askDate(String prompt) throws Cancelled {
         String line = ask(prompt);
-        while (!line.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        // DD-MM-YYYY format
+        while (!line.matches("\\d{1,2}-\\d{1,2}-\\d{4}")) {
             view.showError("Invalid input. Please enter a valid date in YYYY-MM-DD format.");
             line = ask(prompt);
         }
-        return LocalDate.parse(line);
+        String[] parts = line.split("-");
+        int day = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        int year = Integer.parseInt(parts[2]);
+        // check if the date is valid
+        try {
+            return LocalDate.of(year, month, day);
+        } catch (Exception e) {
+            view.showError("Invalid date. Please enter a valid date in YYYY-MM-DD format.");
+            return askDate(prompt); // retry
+        }
     }
 
     protected EnumSet<DayOfWeek> askDaysOfWeek(String prompt) throws Cancelled {
@@ -262,6 +274,14 @@ public abstract class InteractiveForm<T> {
                 }
             }
         }
+    }
+
+    protected AddressDTO askAddress(String prompt) throws Cancelled {
+        view.showMessage(prompt);
+        String street = askNonEmpty(" Street: ");
+        String city = askNonEmpty(" City: ");
+        String buildingNumber = askNonEmpty(" Building number: ");
+        return new AddressDTO(street, city, buildingNumber);
     }
 
 }
