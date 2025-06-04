@@ -1,6 +1,8 @@
 package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.OrderItemLineDTO;
+import Suppliers.DTOs.PeriodicOrderDTO;
 import Suppliers.DomainLayer.Classes.Order;
 
 import java.time.DayOfWeek;
@@ -29,38 +31,43 @@ public class OrderFacade extends BaseFacade {
 
     }
 
-    //##################################################################################################################
-    //                                        Periodic Order
-    //##################################################################################################################
-    public periodiceOrderDTO createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) {
-
-
-    //##################################################################################################################
-    //                                        Order
-    //##################################################################################################################
-    public Order addOrder(String json) {
-        return null; // TODO: Implement this method
+//##################################################################################################################
+//                                        Periodic Order
+//##################################################################################################################
+    public PeriodicOrderDTO createPeriodicOrder(int supplierID, int branchID, DayOfWeek fixedDay, HashMap<Integer, Integer> productsAndAmount) {
+        return null;
     }
 
-    public Order getOrder(int orderID) {
-        return null; // TODO: Implement this method
+//##################################################################################################################
+//                                        Order
+//##################################################################################################################
+
+        public OrderDTO createOrder(OrderDTO orderDTO) {
+
+            return null;
+
+        }
+        public Order getOrder ( int orderID){
+            return null; // TODO: Implement this method
+
+        }
+
+        public List<Order> listOrders () {
+            return null; // TODO: Implement this method
+        }
+
+        public void deleteOrder ( int orderID){
+            // TODO: Implement this method
+        }
+
+        public Order updateOrder (Order updatedOrder){
+            return null; // TODO: Implement this method
+        }
+
+        public OrderDTO createOrderByShortage ( int branchId, HashMap<Integer, Integer > shortage){
+
+            return null;
+        }
+
 
     }
-
-    public List<Order> listOrders() {
-        return null; // TODO: Implement this method
-    }
-
-    public void deleteOrder(int orderID) {
-        // TODO: Implement this method
-    }
-
-    public Order updateOrder(Order updatedOrder) {
-        return null; // TODO: Implement this method
-    }
-
-    public OrderDTO createOrderByShortage(int branchId, HashMap<Integer, Integer> shortage) {
-
-        return 0 ;
-    }
-

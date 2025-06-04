@@ -10,7 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/CLIs/OrderCLI.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/PresentationLayer/CLIs/OrderCLI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -424,6 +424,11 @@
           <url>file://$PROJECT_DIR$/dev/Inventory/Service/MainService.java</url>
           <line>89</line>
           <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/Suppliers/ServiceLayer/SupplierService.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="22" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

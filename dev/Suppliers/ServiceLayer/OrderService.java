@@ -9,16 +9,26 @@ import Suppliers.DomainLayer.OrderFacade;
 
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.DomainLayer.Classes.Order;
+import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.OrderValidator;
+import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.PeriodicOrderValidator;
 
 public class OrderService extends BaseService {
    private final OrderFacade orderFacade;
+   OrderValidator orderValidator = new OrderValidator();
+   PeriodicOrderValidator periodicOrderValidator = new PeriodicOrderValidator();
 
    public OrderService(OrderFacade orderFacade) {
       this.orderFacade = orderFacade;
    }
 
-   public ServiceResponse<?> createOrder(OrderDTO dto) {
-      ServiceResponse <List <String>> response =
+   public ServiceResponse<?> createOrder(OrderDTO orderDTO) {
+      ServiceResponse <List <String>> response = orderValidator.validateCreateDTO(orderDTO);
+      if (response.isSuccess()) {
+         try {
+            OrderDTO order = orderFacade.createOrder(orderDTO);
+
+         }
+      }
 
 
       return ServiceResponse.fail(List.of("Not implemented"));
