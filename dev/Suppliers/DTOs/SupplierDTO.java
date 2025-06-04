@@ -22,8 +22,6 @@ public class SupplierDTO {
       private int leadSupplyDays;
       private PaymentDetailsDTO paymentDetails;
       private List<ContactInfoDTO> contacts;
-      private List<SupplierProductDTO> products;
-      private List<Integer> agreements;
 
       public SupplierDTO(
                   int id,
@@ -34,9 +32,7 @@ public class SupplierDTO {
                   EnumSet<DayOfWeek> supplyDays,
                   int leadSupplyDays,
                   PaymentDetailsDTO paymentDetails,
-                  List<ContactInfoDTO> contacts,
-                  List<SupplierProductDTO> products,
-                  List<Integer> agreements) {
+                  List<ContactInfoDTO> contacts) {
             this.id = id;
             this.name = name;
             this.taxNumber = taxNumber;
@@ -46,8 +42,7 @@ public class SupplierDTO {
             this.leadSupplyDays = leadSupplyDays;
             this.paymentDetails = paymentDetails;
             this.contacts = contacts;
-            this.products = products;
-            this.agreements = agreements;
+
       }
 
       public SupplierDTO(
@@ -58,9 +53,7 @@ public class SupplierDTO {
                   EnumSet<DayOfWeek> supplyDays,
                   int leadSupplyDays,
                   PaymentDetailsDTO paymentDetails,
-                  List<ContactInfoDTO> contacts,
-                  List<SupplierProductDTO> products,
-                  List<Integer> agreements) {
+                  List<ContactInfoDTO> contacts) {
             this.id = -1; // Default value for new suppliers
             this.name = name;
             this.taxNumber = taxNumber;
@@ -70,8 +63,7 @@ public class SupplierDTO {
             this.leadSupplyDays = leadSupplyDays;
             this.paymentDetails = paymentDetails;
             this.contacts = contacts;
-            this.products = products;
-            this.agreements = agreements;
+
       }
 
       public SupplierDTO(Supplier supplier) {
@@ -85,8 +77,6 @@ public class SupplierDTO {
             this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
             this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
             // to add the products we need to add them after the creation of the supplier
-            this.products = new ArrayList<>();
-            this.agreements = supplier.getAgreements();
       }
 
       public SupplierDTO(int id, String name, String taxNumber,
@@ -111,8 +101,6 @@ public class SupplierDTO {
             this.paymentDetails = new PaymentDetailsDTO(bankAccountNumber, PaymentMethod.valueOf(paymentMethod),
                         PaymentTerm.valueOf(paymentTerm));
             this.contacts = new ArrayList<>();
-            this.products = new ArrayList<>();
-            this.agreements = new ArrayList<>();
       }
 
       public int getId() {
@@ -175,30 +163,6 @@ public class SupplierDTO {
             this.contacts = contacts;
       }
 
-      public List<SupplierProductDTO> getProducts() {
-            return products;
-      }
-
-      public List<Integer> getProductIDs() {
-            List<Integer> productIds = new ArrayList<>();
-            for (SupplierProductDTO product : products) {
-                  productIds.add(product.getProductId());
-            }
-            return productIds;
-      }
-
-      public void setProducts(List<SupplierProductDTO> products) {
-            this.products = products;
-      }
-
-      public List<Integer> getAgreements() {
-            return agreements;
-      }
-
-      public void setAgreements(List<Integer> agreements) {
-            this.agreements = agreements;
-      }
-
       @Override
       public String toString() {
             // pretty json format
@@ -209,10 +173,12 @@ public class SupplierDTO {
                         "  \"address\": " + address.toString() + ",\n" +
                         "  \"selfSupply\": " + selfSupply + ",\n" +
                         "  \"supplyDays\": " + supplyDays.toString() + ",\n" +
+                        "  \"leadSupplyDays\": " + leadSupplyDays + ",\n" +
                         "  \"paymentDetails\": " + paymentDetails.toString() + ",\n" +
-                        "  \"contacts\": " + contacts.toString() + ",\n" +
-                        "  \"products\": " + products.toString() + ",\n" +
-                        "  \"agreements\": " + agreements.toString() + "\n" +
+                        "  \"contacts\": " + contacts.stream()
+                                    .map(ContactInfoDTO::toString)
+                                    .toList()
+                        + ",\n" +
                         '}';
       }
 
@@ -225,6 +191,10 @@ public class SupplierDTO {
 
             SupplierDTO that = (SupplierDTO) o;
 
+            if (selfSupply != that.selfSupply)
+                  return false;
+            if (leadSupplyDays != that.leadSupplyDays)
+                  return false;
             if (!name.equals(that.name))
                   return false;
             if (!taxNumber.equals(that.taxNumber))
@@ -235,9 +205,9 @@ public class SupplierDTO {
                   return false;
             if (!contacts.equals(that.contacts))
                   return false;
-            if (!products.equals(that.products))
+            if (!supplyDays.equals(that.supplyDays))
                   return false;
-            return agreements.equals(that.agreements);
+            return true;
       }
 
       @Override
@@ -247,8 +217,10 @@ public class SupplierDTO {
             result = 31 * result + address.hashCode();
             result = 31 * result + paymentDetails.hashCode();
             result = 31 * result + contacts.hashCode();
-            result = 31 * result + products.hashCode();
-            result = 31 * result + agreements.hashCode();
+            result = 31 * result + (selfSupply ? 1 : 0);
+            result = 31 * result + supplyDays.hashCode();
+            result = 31 * result + leadSupplyDays;
+            result = 31 * result + id;
             return result;
       }
 
@@ -266,21 +238,6 @@ public class SupplierDTO {
 
       public void setSupplyDays(EnumSet<DayOfWeek> supplyDays) {
             this.supplyDays = supplyDays;
-      }
-
-      public SupplierDTO addAgreement(int agreementId) {
-            if (this.agreements == null) {
-                  this.agreements = new ArrayList<>();
-            }
-            this.agreements.add(agreementId);
-            return this;
-      }
-
-      public SupplierDTO removeAgreement(int agreementId) {
-            if (this.agreements != null) {
-                  this.agreements.removeIf(agreement -> agreement == agreementId);
-            }
-            return this;
       }
 
       public int getLeadSupplyDays() {
