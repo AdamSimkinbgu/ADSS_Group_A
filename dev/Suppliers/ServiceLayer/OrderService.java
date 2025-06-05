@@ -53,7 +53,17 @@ public class OrderService extends BaseService {
    }
 
    public ServiceResponse<?> createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      if (periodicOrderDTO == null || periodicOrderDTO.getProductsInOrder() == null
+            || periodicOrderDTO.getProductsInOrder().isEmpty()) {
+         return ServiceResponse.fail(List.of("PeriodicOrderDTO and its products cannot be null or empty"));
+      }
+      try {
+         PeriodicOrderDTO createdPeriodicOrder = orderFacade.createPeriodicOrder(
+               periodicOrderDTO.getDeliveryDay(), periodicOrderDTO.getProductsInOrder());
+         return ServiceResponse.ok(createdPeriodicOrder);
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to create periodic order: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<PeriodicOrderDTO> getPeriodicOrderById(int periodicOrderId) {

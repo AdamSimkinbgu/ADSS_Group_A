@@ -32,7 +32,7 @@ public class AgreementValidator extends BaseValidator implements IValidator<Agre
             for (BillofQuantitiesItemDTO item : target.getBillOfQuantitiesItems()) {
                if (!isBillofQuantitiesItemValid(item)) {
                   errors.add("Item " + item.getProductName() + ": " + item.getProductId()
-                        + " is not valid. It must contain a valid product ID, quantity, and discount percentage.");
+                        + " is not valid. It must contain a valid product ID, quantity, and discount percentage (0-1)");
                }
             }
          }
