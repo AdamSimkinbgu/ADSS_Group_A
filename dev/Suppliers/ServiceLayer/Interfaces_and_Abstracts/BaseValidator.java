@@ -259,7 +259,7 @@ public abstract class BaseValidator {
          return false; // Quantity must be greater than 0
       }
       if (item.getDiscountPercent().compareTo(BigDecimal.ZERO) < 0
-            || item.getDiscountPercent().compareTo(new BigDecimal("100")) > 0) {
+            || item.getDiscountPercent().compareTo(new BigDecimal("1")) > 0) {
          return false; // Discount percentage must be between 0 and 100
       }
       return true;
