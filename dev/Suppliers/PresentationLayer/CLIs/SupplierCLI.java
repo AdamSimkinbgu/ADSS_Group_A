@@ -26,10 +26,11 @@ public class SupplierCLI {
          view.showMessage("2. Update Supplier");
          view.showMessage("3. Remove Supplier");
          view.showMessage("4. List Suppliers");
-         view.showMessage("Type 'return' to go back.");
+         view.showMessage("Type 'back' or '0' to go back.");
 
          String choice = view.readLine("Choose an option: ").toLowerCase();
-         if (choice.equals("return")) {
+         if (choice.equals("return") || choice.equals("0")) {
+            view.showMessage(" === Returning to the Suppliers main menu ===");
             break;
          }
          CommandInterface command = supplierCommands.getOrDefault(choice, null);

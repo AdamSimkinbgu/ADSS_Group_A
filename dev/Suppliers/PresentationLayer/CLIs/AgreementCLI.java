@@ -30,10 +30,11 @@ public class AgreementCLI {
          // view.showMessage("4. Get Agreement");
          // view.showMessage("5. Get All Agreements");
          view.showMessage("6. Get Agreements By Supplier");
-         view.showMessage("Type 'return' to go back.");
+         view.showMessage("Type 'back' or '0' to go back.");
 
          String choice = view.readLine("Choose an option: ").toLowerCase();
-         if (choice.equals("return")) {
+         if (choice.equals("back") || choice.equals("0")) {
+            view.showMessage(" === Returning to the Suppliers main menu ===");
             break;
          }
          CommandInterface command = agreementCommands.getOrDefault(choice, null);
