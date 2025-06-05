@@ -42,13 +42,21 @@ public class PaymentDetailsDTO {
 
    @Override
    public String toString() {
+      String acct = (bankAccountNumber != null)
+            ? bankAccountNumber
+            : "[no acct]";
+      String pm = (paymentMethod != null)
+            ? paymentMethod.name()
+            : "[no pmethod]";
+      String pt = (paymentTerm != null)
+            ? paymentTerm.name()
+            : "[no pterm]";
+
       return String.format(
-            "{\n" +
-                  "  \"bankAccountNumber\": \"%s\",\n" +
-                  "  \"paymentMethod\": \"%s\",\n" +
-                  "  \"paymentTerm\": \"%s\"\n" +
-                  "}",
-            bankAccountNumber, paymentMethod, paymentTerm);
+            "PaymentDetails  Account: %-20s  Method: %-12s  Term: %-4s",
+            acct,
+            pm,
+            pt);
    }
 
    public static PaymentDetailsDTO fromPaymentDetails(PaymentDetails paymentDetails) {

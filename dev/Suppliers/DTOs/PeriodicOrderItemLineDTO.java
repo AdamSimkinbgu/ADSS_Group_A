@@ -16,8 +16,8 @@ public class PeriodicOrderItemLineDTO {
       this.quantity = periodicOrderItemLine.getQuantity();
    }
 
-   public PeriodicOrderItemLineDTO(int id, int periodicOrderId, int productId, int quantity) {
-      this.periodicOrderItemLineId = id;
+   public PeriodicOrderItemLineDTO(int lineId, int periodicOrderId, int productId, int quantity) {
+      this.periodicOrderItemLineId = lineId;
       this.periodicOrderId = periodicOrderId;
       this.productId = productId;
       this.quantity = quantity;
@@ -58,12 +58,10 @@ public class PeriodicOrderItemLineDTO {
    @Override
    public String toString() {
       return String.format(
-            "{\n" +
-                  "  \"periodicOrderItemLineId\": %d,\n" +
-                  "  \"periodicOrderId\": %d,\n" +
-                  "  \"productId\": %d,\n" +
-                  "  \"quantity\": %d\n" +
-                  "}",
-            periodicOrderItemLineId, periodicOrderId, productId, quantity);
+            "PeriodicItemLine [%4d]  OrderID: %4d  ProdID: %4d  Qty: %3d",
+            periodicOrderItemLineId,
+            periodicOrderId,
+            productId,
+            quantity);
    }
 }

@@ -137,16 +137,39 @@ public class SupplierProductDTO {
 
       @Override
       public String toString() {
-            // pretty json format
-            return "{\n" +
-                        "  \"supplierId\": " + supplierId + ",\n" +
-                        "  \"productId\": " + productId + ",\n" +
-                        "  \"supplierCatalogNumber\": \"" + supplierCatalogNumber + "\",\n" +
-                        "  \"name\": \"" + name + "\",\n" +
-                        "  \"price\": " + price + ",\n" +
-                        "  \"weight\": " + weight + ",\n" +
-                        "  \"expiresInDays\": " + expiresInDays + ",\n" +
-                        "  \"manufacturerName\": \"" + manufacturerName + "\"\n" +
-                        "}";
+            final int MAX_NAME = 12;
+            final int MAX_MF = 12;
+
+            String nm = (name != null && name.length() > MAX_NAME)
+                        ? name.substring(0, MAX_NAME - 3) + "..."
+                        : (name != null ? name : "[no name]");
+
+            String mf = (manufacturerName != null && manufacturerName.length() > MAX_MF)
+                        ? manufacturerName.substring(0, MAX_MF - 3) + "..."
+                        : (manufacturerName != null ? manufacturerName : "[no mf]");
+
+            String scn = (supplierCatalogNumber != null)
+                        ? supplierCatalogNumber
+                        : "[no cat#]";
+
+            String pr = (price != null)
+                        ? price.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
+                        : "0.00";
+
+            String wt = (weight != null)
+                        ? weight.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
+                        : "0.00";
+
+            return String.format(
+                        "SupplierProd [%4d]  ProdID: %4d  Cat#: %-8s  Name: %-12s%n" +
+                                    "                MF: %-12s  Price: %8s  Wt: %6s  ExpiresIn: %3ddays",
+                        supplierId,
+                        productId,
+                        scn,
+                        nm,
+                        mf,
+                        pr,
+                        wt,
+                        expiresInDays);
       }
 }

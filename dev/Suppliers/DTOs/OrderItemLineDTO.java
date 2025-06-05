@@ -1,7 +1,5 @@
 package Suppliers.DTOs;
 
-import Suppliers.DomainLayer.Classes.OrderItemLine;
-
 import java.math.BigDecimal;
 
 public class OrderItemLineDTO {
@@ -26,24 +24,6 @@ public class OrderItemLineDTO {
         this.productName = "";
         this.orderItemLineID = -1;
         this.discount = BigDecimal.ZERO;
-    }
-
-    public OrderItemLineDTO(int orderID, String supplierProductCatalogNumber, int quantity, BigDecimal unitPrice,
-            String productName) {
-        this.orderID = orderID;
-        this.supplierProductCatalogNumber = supplierProductCatalogNumber;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.productName = productName;
-    }
-
-    public OrderItemLineDTO(OrderItemLine orderItemLine) {
-        this.orderID = orderItemLine.getOrderId();
-        this.supplierProductCatalogNumber = orderItemLine.getSupplierProductCatalogNumber();
-        this.quantity = orderItemLine.getQuantity();
-        this.unitPrice = orderItemLine.getUnitPrice();
-        this.productName = orderItemLine.getProductName();
-
     }
 
     public OrderItemLineDTO(OrderItemLineDTO item) {
@@ -120,4 +100,43 @@ public class OrderItemLineDTO {
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
     }
+
+    public BigDecimal getFinalPrice() {
+        return unitPrice != null && discount != null
+                ? unitPrice.multiply(BigDecimal.valueOf(quantity)).multiply(BigDecimal.ONE.subtract(discount))
+                : BigDecimal.valueOf(Double.NaN);
+    }
+
+    private String truncate(String s, int maxLen) {
+        if (s == null)
+            return "";
+        if (s.length() <= maxLen)
+            return s;
+        return s.substring(0, maxLen - 3) + "...";
+    }
+
+    @Override
+    public String toString() {
+
+        String shortName = truncate(productName, 15);
+        String shortCat = truncate(supplierProductCatalogNumber, 15);
+
+        String discStr = (discount == null || discount.compareTo(BigDecimal.ZERO) == 0)
+                ? "0%"
+                : discount.stripTrailingZeros().scale() <= 0
+                        ? discount.intValue() + "%"
+                        : discount.stripTrailingZeros().toPlainString() + "%";
+
+        return String.format(
+                "[Line %d] %-15s | Cat# %-15s | qty: %3d | price: %8.2f | disc: %4s" +
+                        " | final: %8.2f",
+                orderItemLineID,
+                shortName,
+                shortCat,
+                quantity,
+                unitPrice != null ? unitPrice.doubleValue() : 0.0,
+                discStr,
+                getFinalPrice() != null ? getFinalPrice().doubleValue() : 0.0);
+    }
+
 }

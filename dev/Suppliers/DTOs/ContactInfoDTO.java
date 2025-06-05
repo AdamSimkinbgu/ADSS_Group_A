@@ -62,15 +62,11 @@ public class ContactInfoDTO {
 
       @Override
       public String toString() {
-            return String.format(
-                        "{\n" +
-                                    "  \"name\": \"%s\",\n" +
-                                    "  \"email\": \"%s\",\n" +
-                                    "  \"phone\": \"%s\"\n" +
-                                    "}",
-                        name,
-                        email,
-                        phone);
+            String nm = (name != null ? name : "[no name]");
+            String ph = (phone != null ? phone : "[no phone]");
+            String em = (email != null ? email : "[no email]");
+
+            return String.format("Contact [%s]  Phone: %-12s  Email: %s", nm, ph, em);
       }
 
       public static List<ContactInfoDTO> fromContactInfoList(List<ContactInfo> contacts) {

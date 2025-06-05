@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import Suppliers.DTOs.Enums.PaymentMethod;
 import Suppliers.DTOs.Enums.PaymentTerm;
@@ -96,7 +97,7 @@ public class SupplierDTO {
                         }
                   }
             }
-            this.leadSupplyDays = 0; // Default value, can be set later
+            this.leadSupplyDays = leadSupplyDays;
             this.paymentDetails = new PaymentDetailsDTO(bankAccountNumber, PaymentMethod.valueOf(paymentMethod),
                         PaymentTerm.valueOf(paymentTerm));
             this.contacts = new ArrayList<>();
@@ -164,21 +165,48 @@ public class SupplierDTO {
 
       @Override
       public String toString() {
-            // pretty json format
-            return "{\n" +
-                        "  \"id\": " + id + ",\n" +
-                        "  \"name\": \"" + name + "\",\n" +
-                        "  \"taxNumber\": \"" + taxNumber + "\",\n" +
-                        "  \"address\": " + address.toString() + ",\n" +
-                        "  \"selfSupply\": " + selfSupply + ",\n" +
-                        "  \"supplyDays\": " + supplyDays.toString() + ",\n" +
-                        "  \"leadSupplyDays\": " + leadSupplyDays + ",\n" +
-                        "  \"paymentDetails\": " + paymentDetails.toString() + ",\n" +
-                        "  \"contacts\": " + contacts.stream()
-                                    .map(ContactInfoDTO::toString)
-                                    .toList()
-                        + ",\n" +
-                        '}';
+            String nm = (name != null) ? name : "[no name]";
+            String tax = (taxNumber != null) ? taxNumber : "[no tax#]";
+            String addr = (address != null) ? address.toString() : "[no address]";
+            String ps = selfSupply ? "Yes" : "No";
+
+            // Convert supplyDays enum set to comma‐separated string
+            String days = (supplyDays == null || supplyDays.isEmpty())
+                        ? "[none]"
+                        : supplyDays.stream()
+                                    .map(Enum::name)
+                                    .collect(Collectors.joining(","));
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format(
+                        "Supplier [%4d]  Name: %-15s  Tax#: %-12s%n",
+                        id, nm, tax));
+            sb.append(String.format(
+                        "  Address:       %s%n", addr));
+            sb.append(String.format(
+                        "  SelfSupply: %s   SupplyDays: %s   LeadDays: %d%n",
+                        ps, days, leadSupplyDays));
+            sb.append(String.format(
+                        "  %s%n",
+                        paymentDetails != null
+                                    ? paymentDetails.toString()
+                                    : "[no payment details]"));
+            sb.append("  ───────────────────────────────────────────\n");
+
+            if (contacts == null || contacts.isEmpty()) {
+                  sb.append("  [No contacts for this supplier]\n");
+            } else {
+                  sb.append("  Contacts:\n");
+                  for (ContactInfoDTO c : contacts) {
+                        sb.append("    ").append(c.toString()).append("\n");
+                  }
+                  sb.append(String.format(
+                              "  (%d contact%s total)%n",
+                              contacts.size(),
+                              contacts.size() == 1 ? "" : "s"));
+            }
+            sb.append("===================================================\n");
+            return sb.toString();
       }
 
       @Override
