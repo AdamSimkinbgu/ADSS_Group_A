@@ -25,8 +25,7 @@ public class AppCLI implements View {
 
       // Initialize the facades
       SupplierFacade supplierFacade = new SupplierFacade(initializeState);
-      OrderFacade orderFacade = new OrderFacade(initializeState);
-      ;
+      OrderFacade orderFacade = new OrderFacade(initializeState, supplierFacade);
 
       // Initialize the services
       AgreementService agreementService = new AgreementService(supplierFacade);
@@ -80,6 +79,7 @@ public class AppCLI implements View {
    private Map<String, CommandInterface> initializeOrderCommands(OrderService orderService) {
       Map<String, CommandInterface> commands = new HashMap<>();
       commands.put("CreateOrderCMD", new CreateOrderCMD(this, orderService));
+      commands.put("CreatePeriodicOrderCMD", new CreatePeriodicOrderCMD(this, orderService));
       // commands.put("UpdateOrderCMD", new UpdateOrderCMD(this, orderFacade));
       // commands.put("RemoveOrderCMD", new RemoveOrderCMD(this, orderFacade));
       // commands.put("ViewAllOrdersCMD", new ViewAllOrdersCMD(this, orderFacade));
@@ -93,10 +93,11 @@ public class AppCLI implements View {
          showMessage("2. Product Management");
          showMessage("3. Agreement Management");
          showMessage("4. Order Management");
-         showMessage("Type 'exit' to quit.");
+         showMessage("Type 'back' or '0' to quit.");
 
          String choice = readLine("Choose an option: ").toLowerCase();
-         if (choice.equals("exit")) {
+         if (choice.equals("back") || choice.equals("0")) {
+            showMessage(" === Exiting the Supplier Management System. Goodbye! ===");
             break;
          }
          switch (choice) {
