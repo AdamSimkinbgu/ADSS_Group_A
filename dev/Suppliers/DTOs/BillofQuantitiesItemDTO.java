@@ -92,14 +92,25 @@ public class BillofQuantitiesItemDTO {
 
    @Override
    public String toString() {
-      return "{\n" +
-            "   \"agreementId\": " + agreementId + ",\n" +
-            "   \"lineInBillID\": " + lineInBillID + ",\n" +
-            "   \"productName\": \"" + productName + "\",\n" +
-            "   \"productId\": " + productId + ",\n" +
-            "   \"quantity\": " + quantity + ",\n" +
-            "   \"discountPercent\": " + discountPercent + "\n" +
-            "}";
+      // Truncate productName if it’s very long
+      final int MAX_PRODNAME = 18;
+      String pn = (productName != null)
+            ? (productName.length() <= MAX_PRODNAME
+                  ? productName
+                  : productName.substring(0, MAX_PRODNAME - 3) + "...")
+            : "[no product]";
+
+      String disc = (discountPercent != null)
+            ? discountPercent.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + "%"
+            : "0%";
+
+      return String.format(
+            "[Line %2d] %-18s | ProdID: %4d | Qty: %3d | Disc: %5s",
+            lineInBillID,
+            pn,
+            productId,
+            quantity,
+            disc);
    }
 
    @Override

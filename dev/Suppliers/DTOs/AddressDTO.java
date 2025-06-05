@@ -43,13 +43,11 @@ public class AddressDTO {
 
    @Override
    public String toString() {
-      return String.format(
-            "{\n" +
-                  "  \"street\": \"%s\",\n" +
-                  "  \"city\": \"%s\",\n" +
-                  "  \"buildingNumber\": \"%s\"\n" +
-                  "}",
-            street, city, buildingNumber);
+      // Example: “#1234, Elm Street, Springfield”
+      String bldg = (buildingNumber != null) ? buildingNumber : "";
+      String str = (street != null) ? street : "";
+      String cty = (city != null) ? city : "";
+      return String.format("%s %s, %s", bldg, str, cty).trim();
    }
 
    public static AddressDTO toAddress(AddressDTO addressDTO) {

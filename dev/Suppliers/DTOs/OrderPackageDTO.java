@@ -1,6 +1,7 @@
 package Suppliers.DTOs;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import Inventory.DTO.SupplyDTO;
@@ -43,21 +44,34 @@ public class OrderPackageDTO {
 
    @Override
    public String toString() {
+      DateTimeFormatter df = DateTimeFormatter.ISO_LOCAL_DATE;
+      String deliv = (deliveryDate != null)
+            ? deliveryDate.format(df)
+            : "N/A";
+
       StringBuilder sb = new StringBuilder();
-      sb.append("{\n");
-      sb.append("   \"orderId\": \"").append(orderId).append("\",\n");
-      sb.append("   \"deliveryDate\": \"").append(deliveryDate).append("\",\n");
-      sb.append("   \"supplies\": [\n");
-      for (int i = 0; i < supplies.size(); i++) {
-         sb.append("      ").append(supplies.get(i).toString());
-         if (i < supplies.size() - 1) {
-            sb.append(",\n");
-         } else {
-            sb.append("\n");
+      sb.append(String.format(
+            "OrderPackage [ID=%4d]  Delivery: %s%n",
+            orderId, deliv));
+      sb.append("  ───────────────────────────────────────\n");
+
+      if (supplies == null || supplies.isEmpty()) {
+         sb.append("  [No supplies in this package]\n");
+      } else {
+         sb.append("  Supplies:\n");
+         for (SupplyDTO s : supplies) {
+            String[] lines = s.toString().split("\\r?\\n");
+            for (String line : lines) {
+               sb.append("    ").append(line).append("\n");
+            }
          }
+         sb.append(String.format(
+               "  (%d supply record%s)%n",
+               supplies.size(),
+               supplies.size() == 1 ? "" : "s"));
       }
-      sb.append("   ]\n");
-      sb.append("}");
+
+      sb.append("================================================\n");
       return sb.toString();
    }
 
