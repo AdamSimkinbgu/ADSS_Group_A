@@ -66,7 +66,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          }
          case DEFAULT_STATE -> {
             LOGGER.info("Loading default state from database");
-            loadDefaultStateFromDatabase();
+            Database.seedDefaultData();
          }
          case NO_DATA_STATE -> {
             LOGGER.info("Loading empty state");
@@ -77,79 +77,6 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             throw new IllegalArgumentException("Unknown initialization state: " + state);
          }
       }
-   }
-
-   private void loadEmptyState() {
-      LOGGER.info("Clearing data base for empty state...");
-      Database.deleteAllData();
-      LOGGER.info("Empty state loaded into DB");
-   }
-
-   private void loadDefaultStateFromDatabase() {
-      Database.deleteAllData(); // clear the database first
-      Supplier supplier1 = new Supplier("Supplier 1", "512345678",
-            new AddressDTO("Street 1", "City 1", "Building 1"),
-            new PaymentDetailsDTO("123456", PaymentMethod.CREDIT_CARD, PaymentTerm.N30),
-            true, EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY), 0, new ArrayList<>());
-
-      List<ContactInfoDTO> supplier2Contacts = new ArrayList<>();
-      supplier2Contacts.add(new ContactInfoDTO("Danny", "danny@gmail.com", "054-235-7894"));
-      Supplier supplier2 = new Supplier("Supplier 2", "587654321", new AddressDTO("Street 2", "City 2", "Building 22"),
-            new PaymentDetailsDTO("412353", PaymentMethod.CASH, PaymentTerm.COD), false,
-            EnumSet.noneOf(DayOfWeek.class), 2, supplier2Contacts);
-      Supplier supplier3 = new Supplier("Supplier 3", "518273645",
-            new AddressDTO("Street 3", "City 3", "Building 3"),
-            new PaymentDetailsDTO("162534", PaymentMethod.CASH_ON_DELIVERY, PaymentTerm.N60),
-            true, EnumSet.of(DayOfWeek.FRIDAY), 1, new ArrayList<>());
-
-      for (Supplier supplier : List.of(supplier1, supplier2, supplier3)) {
-         SupplierDTO newSupplier = createSupplier(new SupplierDTO(supplier));
-         supplier.setSupplierId(newSupplier.getId());
-      }
-      SupplierProduct product1 = new SupplierProduct(supplier1.getSupplierId(), -1, "123456",
-            "Milk 3%", new BigDecimal("10.00"), new BigDecimal("1.0"), 30, "Yotvata");
-      SupplierProduct product2 = new SupplierProduct(supplier1.getSupplierId(), -1, "654321",
-            "Cornflacks Cariot", new BigDecimal("20.00"), new BigDecimal("2.0"), 60, "Telma");
-      SupplierProduct product3 = new SupplierProduct(supplier2.getSupplierId(), -1, "789012",
-            "Cottage Cheese", new BigDecimal("15.00"), new BigDecimal("1.5"), 45, "Tnuva");
-      SupplierProduct product4 = new SupplierProduct(supplier2.getSupplierId(), -1, "210987",
-            "Pastrami Sandwich", new BigDecimal("25.00"), new BigDecimal("3.0"), 90, "DeliMeat");
-      SupplierProduct product5 = new SupplierProduct(supplier3.getSupplierId(), -1, "345678",
-            "Milk 3%", new BigDecimal("30.00"), new BigDecimal("2.5"), 15, "Tnuva");
-      SupplierProduct product6 = new SupplierProduct(supplier3.getSupplierId(), -1, "876543",
-            "Bamba", new BigDecimal("40.00"), new BigDecimal("4.0"), 120, "Ossem");
-
-      for (SupplierProduct product : List.of(product1, product2, product3, product4, product5, product6)) {
-         SupplierProductDTO newProduct = saveSupplierProductInMemoryDB(new SupplierProductDTO(product));
-         product.setProductId(newProduct.getProductId());
-      }
-
-      BillofQuantitiesItem item1 = new BillofQuantitiesItem(-1, -1, "Milk 3%", product1.getProductId(), 100,
-            new BigDecimal("5"));
-      BillofQuantitiesItem item2 = new BillofQuantitiesItem(-1, -1, "Cornflacks Cariot", product2.getProductId(), 50,
-            new BigDecimal("10"));
-      BillofQuantitiesItem item3 = new BillofQuantitiesItem(-1, -1, "Cottage Cheese", product3.getProductId(), 75,
-            new BigDecimal("7.5"));
-      BillofQuantitiesItem item4 = new BillofQuantitiesItem(-1, -1, "Pastrami Sandwich", product4.getProductId(), 30,
-            new BigDecimal("12.5"));
-      Agreement agreement1 = new Agreement(-1, supplier1.getSupplierId(), supplier1.getName(),
-            java.time.LocalDate.now().plusDays(10), java.time.LocalDate.now().plusDays(20),
-            List.of(item1, item2, item3));
-      Agreement agreement2 = new Agreement(-1, supplier2.getSupplierId(), supplier2.getName(),
-            java.time.LocalDate.now().plusDays(5), java.time.LocalDate.now().plusDays(30),
-            List.of(item3, item4));
-      for (Agreement agreement : List.of(agreement1, agreement2)) {
-         saveAgreementInMemoryDB(new AgreementDTO(agreement));
-      }
-      LOGGER.info("Default state loaded into DB");
-   }
-
-   private void loadCurrentStateFromDatabase() {
-
-      LOGGER.info("Loading current suppliers from database");
-      List<SupplierDTO> supplierDTOs = supplierDAO.getAllSuppliers();
-      LOGGER.info("Loaded {} suppliers from database", supplierDTOs.size());
-
    }
 
    @Override
@@ -212,12 +139,12 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       int contactsChanged = 0;
       for (ContactInfoDTO contact : supplierDTOcontacts) {
          if (contact.getSupplierId() < 0) {
-            LOGGER.info("Creating new contact: {}", contact);
+            LOGGER.info("Creating new contact: {}", contact.getName());
             contact.setSupplierId(supplier.getId());
             contactInfoDAO.createContactInfo(contact);
             contactsChanged++;
          } else if (contact.getSupplierId() == 0) {
-            LOGGER.info("Removing contact: {}", contact);
+            LOGGER.info("Removing contact: {}", contact.getName());
             contactInfoDAO.deleteContactInfo(supplier.getId(), contact.getName());
             contactsChanged++;
          } else {
@@ -225,14 +152,14 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                   .filter(c -> c.getName() == contact.getName()).findFirst();
             if (existingContact.isPresent()) {
                if (!existingContact.get().equals(contact)) {
-                  LOGGER.info("Updating existing contact: {}", contact);
+                  LOGGER.info("Updating existing contact: {}", contact.getName());
                   contactInfoDAO.updateContactInfo(contact);
                   contactsChanged++;
                } else {
-                  LOGGER.info("No changes detected in contact: {}", contact);
+                  LOGGER.info("No changes detected in contact: {}", contact.getName());
                }
             } else {
-               LOGGER.info("Creating new contact: {}", contact);
+               LOGGER.info("Creating new contact: {}", contact.getName());
                contact.setSupplierId(supplier.getId());
                contactInfoDAO.createContactInfo(contact);
                contactsChanged++;
@@ -295,7 +222,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to add agreement to supplier with negative ID: {}", supplierId);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Adding agreement {} to supplier with ID {}", agreement, supplierId);
+      LOGGER.info("Adding agreement for supplier with ID: {}", supplierId);
       AgreementDTO createdAgreementDTO = saveAgreementInMemoryDB(agreement);
       return createdAgreementDTO;
    }
@@ -332,7 +259,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             agreementToSave.setBillOfQuantitiesItems(billOfQuantitiesItems);
          }
          AgreementDTO savedAgreement = agreementDAO.createAgreement(agreementToSave);
-         LOGGER.info("Agreement saved successfully: {}", savedAgreement);
+         LOGGER.info("Agreement saved successfully: {}", savedAgreement.getAgreementId());
          return savedAgreement;
       } else {
          LOGGER.error("Supplier with ID {} not found for agreement: {}", agreementToSave.getSupplierId(),
@@ -365,12 +292,12 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to update a null agreement");
          throw new IllegalArgumentException("Agreement cannot be null");
       }
-      LOGGER.info("Updating agreement: {}", agreement);
+      LOGGER.info("Updating agreement: {}", agreement.getAgreementId());
       if (agreementDAO.updateAgreement(agreement)) {
-         LOGGER.info("Agreement updated successfully: {}", agreement);
+         LOGGER.info("Agreement updated successfully: {}", agreement.getAgreementId());
          return true;
       } else {
-         LOGGER.error("Failed to update agreement: {}", agreement);
+         LOGGER.error("Failed to update agreement: {}", agreement.getAgreementId());
          return false;
       }
    }
@@ -435,11 +362,12 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
    }
 
    public SupplierProductDTO saveSupplierProductInMemoryDB(SupplierProductDTO supplierProductToSave) {
-      LOGGER.debug("Attempting to save the supplier product in memory and in DB: {}", supplierProductToSave);
+      LOGGER.debug("Attempting to save the supplier product in memory and in DB: {}", supplierProductToSave.getName() +
+            " with supplierId: " + supplierProductToSave.getSupplierId());
       if (supplierProductToSave.getProductId() < 0) {
          LOGGER.info("Creating new supplier product.");
          SupplierProductDTO newProduct = supplierProductDAO.createSupplierProduct(supplierProductToSave);
-         LOGGER.info("Supplier product created successfully: {}", newProduct);
+         LOGGER.info("Supplier product created successfully: {}", newProduct.getProductId());
          return newProduct;
       } else {
          LOGGER.info("Updating existing supplier product with IDs: {}, {}", supplierProductToSave.getSupplierId(),
@@ -483,10 +411,10 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       SupplierProductDTO updatedProduct = saveSupplierProductInMemoryDB(supplierProduct);
       if (updatedProduct != null) {
-         LOGGER.info("Supplier product updated successfully: {}", updatedProduct);
+         LOGGER.info("Supplier product updated successfully: {}", updatedProduct.getProductId());
          return true;
       } else {
-         LOGGER.error("Failed to update supplier product: {}", supplierProduct);
+         LOGGER.error("Failed to update supplier product: {}", supplierProduct.getProductId());
          return false;
       }
    }
@@ -640,5 +568,32 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       boolean exists = agreementDAO.agreementExists(agreementId);
       LOGGER.info("Agreement with ID {} exists: {}", agreementId, exists);
       return exists;
+   }
+
+   public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsByProductId(int productId) {
+      if (productId < 0) {
+         LOGGER.error("Attempted to get Bill of Quantities items for product with negative ID: {}", productId);
+         throw new IllegalArgumentException("Product ID cannot be negative");
+      }
+      LOGGER.info("Retrieving Bill of Quantities items for product with ID: {}", productId);
+      List<BillofQuantitiesItemDTO> boqItems = agreementDAO.getBillOfQuantitiesItemsByProductId(productId);
+      if (boqItems.isEmpty()) {
+         LOGGER.warn("No Bill of Quantities items found for product with ID: {}", productId);
+      } else {
+         LOGGER.info("Found {} Bill of Quantities items for product with ID: {}", boqItems.size(), productId);
+      }
+      return boqItems;
+   }
+
+   private void loadCurrentStateFromDatabase() {
+      LOGGER.info("Loading current suppliers from database");
+      // actually doing nothing here, just logging for the effect :)
+      LOGGER.info("Loaded suppliers data from DB!");
+   }
+
+   private void loadEmptyState() {
+      LOGGER.info("Clearing data base for empty state...");
+      Database.deleteAllData();
+      LOGGER.info("Empty state loaded into DB!");
    }
 }

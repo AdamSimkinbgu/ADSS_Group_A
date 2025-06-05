@@ -1,5 +1,7 @@
 package Suppliers.DomainLayer;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.InvalidParameterException;
 import java.sql.SQLException;
 import java.util.*;
@@ -9,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 import Suppliers.DTOs.AgreementDTO;
+import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DTOs.CatalogProductDTO;
+import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
 import Suppliers.DTOs.Enums.InitializeState;
@@ -228,4 +232,143 @@ public class SupplierFacade {
 
    }
 
+   public List<OrderItemLineDTO> setProductNameAndCategoryForOrderItems(List<OrderItemLineDTO> productsToProcess,
+         int supplierId) {
+      if (productsToProcess == null || productsToProcess.isEmpty()) {
+         LOGGER.warn("No products found for supplier ID: {}", supplierId);
+         return Collections.emptyList();
+      }
+      List<SupplierProductDTO> supplierProducts = suppliersAgreementsRepo.getAllSupplierProductsById(supplierId);
+      if (supplierProducts == null || supplierProducts.isEmpty()) {
+         LOGGER.warn("No products found for supplier ID: {}", supplierId);
+         return Collections.emptyList();
+      }
+      for (OrderItemLineDTO item : productsToProcess) {
+         for (SupplierProductDTO product : supplierProducts) {
+            if (item.getProductId() == product.getProductId()) {
+               item.setSupplierProductCatalogNumber(product.getSupplierCatalogNumber());
+               item.setProductName(product.getName());
+               break; // Found the matching product, no need to continue inner loop
+            }
+         }
+         if (item.getProductName() == null) {
+            LOGGER.warn("Product name not found for product ID: {}", item.getProductId());
+            item.setProductName("Unknown Product");
+         }
+         if (item.getSupplierProductCatalogNumber() == null) {
+            LOGGER.warn("Supplier catalog number not found for product ID: {}", item.getProductId());
+            item.setSupplierProductCatalogNumber("Unknown Category");
+         }
+      }
+      return productsToProcess;
+
+   }
+
+   public List<OrderItemLineDTO> setSupplierPricesAndDiscountsByBestPrice(
+         List<OrderItemLineDTO> items, int supplierId) {
+      if (items == null || items.isEmpty()) {
+         throw new IllegalArgumentException("Items cannot be null or empty");
+      }
+      List<SupplierProductDTO> supplierProducts = suppliersAgreementsRepo.getAllSupplierProductsById(supplierId);
+      if (supplierProducts == null || supplierProducts.isEmpty()) {
+         LOGGER.error("No products found for supplier ID: {}", supplierId);
+         throw new IllegalArgumentException("No products found for supplier ID: " + supplierId);
+      }
+
+      List<OrderItemLineDTO> updatedItems = new ArrayList<>();
+      for (OrderItemLineDTO item : items) {
+         if (item.getProductId() <= 0) {
+            LOGGER.warn("Invalid product ID {} in order item, skipping", item.getProductId());
+            continue; // Skip invalid product IDs
+         }
+         SupplierProductDTO supplierProduct = supplierProducts.stream()
+               .filter(product -> product.getProductId() == item.getProductId())
+               .findFirst()
+               .orElse(null);
+         if (supplierProduct == null) {
+            LOGGER.warn("No supplier product found for product ID: {} in supplier ID: {}", item.getProductId(),
+                  supplierId);
+            continue; // Skip items with no matching supplier product
+         }
+         OrderItemLineDTO copyToWorkOn = new OrderItemLineDTO(item);
+         BigDecimal bestPriceAccumulate = BigDecimal.ZERO;
+         BigDecimal priceBeforeDiscount = supplierProduct.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+         // set the initial price
+         List<AgreementDTO> agreements = suppliersAgreementsRepo
+               .getAllAgreementsForSupplier(supplierId);
+         if (agreements == null || agreements.isEmpty()) {
+            LOGGER.info("No agreements found for supplier ID: {} - using default price and no discount",
+                  supplierId);
+            item.setUnitPrice(supplierProduct.getPrice());
+            item.setDiscount(BigDecimal.ZERO);
+            updatedItems.add(item);
+         }
+         boolean done = false;
+         while (copyToWorkOn.getQuantity() > 0) {
+            if (done) {
+               bestPriceAccumulate = bestPriceAccumulate.add(
+                     supplierProduct.getPrice().multiply(BigDecimal.valueOf(copyToWorkOn.getQuantity())));
+               LOGGER.info("No way to improve price for product ID: {}, adding remaining quantity at default price",
+                     item.getProductId());
+            }
+            int currentBestQuantity = 0;
+            BigDecimal currentBestPrice = BigDecimal.valueOf(Double.MAX_VALUE);
+            // search each agreement boq lines for possible prices and discounts
+            for (AgreementDTO agreement : agreements) {
+               List<BillofQuantitiesItemDTO> billOfQuantitiesItems = suppliersAgreementsRepo
+                     .getBillOfQuantitiesItemsForAgreement(agreement.getAgreementId());
+               if (billOfQuantitiesItems == null || billOfQuantitiesItems.isEmpty()) {
+                  LOGGER.warn("No Bill of Quantities items found for agreement ID: {}", agreement.getAgreementId());
+                  continue; // Skip this agreement if no items found
+               }
+               for (BillofQuantitiesItemDTO itemInBOQ : billOfQuantitiesItems) {
+                  // we continue only if the product ID matches and the quantity is less than or
+                  // equal to the
+                  // quantity we have to work on - whats left to process
+                  if (itemInBOQ.getProductId() == item.getProductId()
+                        && itemInBOQ.getQuantity() <= copyToWorkOn.getQuantity()) {
+                     // only if the possible price is less than the current best price
+                     if (supplierProduct.getPrice().doubleValue() * itemInBOQ.getQuantity()
+                           * itemInBOQ.getDiscountPercent().doubleValue() < currentBestPrice.doubleValue()) {
+                        // set the best values for the current item found so far
+                        currentBestPrice = BigDecimal.valueOf(supplierProduct.getPrice().doubleValue()
+                              * itemInBOQ.getQuantity() * itemInBOQ.getDiscountPercent().doubleValue());
+                        currentBestQuantity = itemInBOQ.getQuantity();
+                     }
+                  }
+               }
+            }
+            // if we havent found any better price, we break the loop
+            if (currentBestPrice.doubleValue() == Double.MAX_VALUE && copyToWorkOn.getQuantity() > 0) {
+               // we add the remaining quantity at the default price
+               LOGGER.info("No better price found for product ID: {}, using default price", item.getProductId());
+               currentBestPrice = supplierProduct.getPrice().multiply(BigDecimal.valueOf(copyToWorkOn.getQuantity()));
+               copyToWorkOn.setQuantity(0);
+               done = true;
+            } else {
+               // we set the best price and discount for the current item
+               copyToWorkOn.setQuantity(copyToWorkOn.getQuantity() - currentBestQuantity);
+            }
+            bestPriceAccumulate = bestPriceAccumulate.add(currentBestPrice);
+         }
+         if (bestPriceAccumulate.compareTo(priceBeforeDiscount) < 0) {
+            BigDecimal ratio = bestPriceAccumulate
+                  .divide(priceBeforeDiscount, 4, RoundingMode.HALF_UP);
+
+            // discount = 1 – ratio
+            item.setDiscount(BigDecimal.ONE.subtract(ratio));
+         } else {
+            item.setDiscount(BigDecimal.ZERO);
+         }
+         item.setUnitPrice(supplierProduct.getPrice());
+         updatedItems.add(item);
+      }
+      if (updatedItems.isEmpty()) {
+         LOGGER.warn("No valid items found after setting prices and discounts for supplier ID: {}", supplierId);
+      } else {
+         LOGGER.info("Successfully set prices and discounts for {} items for supplier ID: {}", updatedItems.size(),
+               supplierId);
+      }
+      return updatedItems;
+   }
 }
