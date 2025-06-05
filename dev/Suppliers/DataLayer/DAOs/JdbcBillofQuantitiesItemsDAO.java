@@ -147,7 +147,7 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
    }
 
    @Override
-   public List<BillofQuantitiesItemDTO> getAllBillofQuantitiesItems(int agreementId) {
+   public List<BillofQuantitiesItemDTO> getAllBillofQantitiesItemsForAgreementId(int agreementId) {
       if (agreementId < 0) {
          LOGGER.error("Invalid Agreement ID: {}", agreementId);
          throw new IllegalArgumentException("Invalid Agreement ID");

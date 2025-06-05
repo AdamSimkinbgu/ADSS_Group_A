@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DataLayer.Interfaces.OrderDAOInterface;
+import Suppliers.DataLayer.Interfaces.OrderItemLineDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
 public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
@@ -25,20 +27,20 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.error("Attempted to add a null order.");
          throw new IllegalArgumentException("Order cannot be null");
       }
-      String sql = "INSERT INTO orders (supplier_id, order_date, status) VALUES (?, ?, ?)";
+      String sql = "INSERT INTO orders (supplier_id, order_date, creation_date, status) VALUES (?, ?, ?, ?)";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, orderDTO.getSupplierId());
-         preparedStatement.setString(2, LocalDate.now().toString());
-         preparedStatement.setString(3, orderDTO.getStatus().name());
+         preparedStatement.setString(2, orderDTO.getOrderDate().toString());
+         preparedStatement.setString(3, LocalDate.now().toString());
+         preparedStatement.setString(4, orderDTO.getStatus().name());
 
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.error("Creating order failed, no rows affected.");
             throw new RuntimeException("Creating order failed, no rows affected.");
          }
-
-         try (var generatedKeys = preparedStatement.getGeneratedKeys()) {
+         try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                orderDTO.setOrderId(generatedKeys.getInt(1));
                LOGGER.info("Order created with ID: {}", orderDTO.getOrderId());
@@ -74,6 +76,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             orderDTO.setSupplierId(resultSet.getInt("supplier_id"));
             orderDTO.setOrderDate(resultSet.getDate("order_date").toLocalDate());
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
+            orderDTO.setSupplierName(getSupplierName(orderDTO.getSupplierId()));
             LOGGER.info("Order retrieved: {}", orderDTO);
             return Optional.of(orderDTO);
          } else {
@@ -171,4 +174,26 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
       }
       return false;
    }
+
+   private String getSupplierName(int supplierId) {
+      String sql = "SELECT name FROM suppliers WHERE supplier_id = ?";
+      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+         preparedStatement.setInt(1, supplierId);
+         ResultSet resultSet = preparedStatement.executeQuery();
+         if (resultSet.next()) {
+            return resultSet.getString("name");
+         } else {
+            LOGGER.warn("No supplier found with ID: {}", supplierId);
+            return null;
+         }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
+      }
+      return null;
+   }
+
 }

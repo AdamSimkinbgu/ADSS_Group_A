@@ -1,5 +1,6 @@
 package Suppliers.DataLayer.DAOs;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DataLayer.Interfaces.OrderItemLineDAOInterface;
 import Suppliers.DataLayer.util.Database;
@@ -22,15 +24,22 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          LOGGER.error("Attempted to add a null order item line.");
          throw new IllegalArgumentException("Order item line cannot be null");
       }
+      int productId = orderItemLine.getProductId();
+      if (productId <= 0) {
+         LOGGER.error("Invalid product ID: {}", productId);
+         throw new IllegalArgumentException("Product ID must be greater than 0");
+      }
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
-            "INSERT INTO order_item_lines (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)",
+            "INSERT INTO order_item_lines (order_id, product_id, quantity, unit_price, discount_pct) VALUES (?, ?, ?, ?, ?)",
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, orderItemLine.getOrderID());
          preparedStatement.setInt(2, orderItemLine.getProductId());
          preparedStatement.setInt(3, orderItemLine.getQuantity());
          preparedStatement.setBigDecimal(4, orderItemLine.getUnitPrice());
+         preparedStatement.setBigDecimal(5,
+               orderItemLine.getDiscount() != null ? orderItemLine.getDiscount() : BigDecimal.ZERO);
+
          LOGGER.info("Adding order item line: {}", orderItemLine);
-         LOGGER.debug("PreparedStatement: {}", preparedStatement);
          int rowsEffected = preparedStatement.executeUpdate();
          if (rowsEffected == 0) {
             LOGGER.error("Creating order item line failed, no rows affected.");
@@ -74,6 +83,9 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
                orderItemLine.setProductId(resultSet.getInt("product_id"));
                orderItemLine.setQuantity(resultSet.getInt("quantity"));
                orderItemLine.setUnitPrice(resultSet.getBigDecimal("price"));
+               orderItemLine.setDiscount(resultSet.getBigDecimal("discount_pct"));
+               orderItemLine.setSupplierProductCatalogNumber(resultSet.getString("supplier_product_catalog_number"));
+               orderItemLine.setProductName(resultSet.getString("product_name"));
                LOGGER.info("Retrieved order item line: {}", orderItemLine);
                return orderItemLine;
             } else {

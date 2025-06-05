@@ -22,7 +22,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          LOGGER.error("Attempted to add a null periodic order item line.");
          throw new IllegalArgumentException("Periodic order item line cannot be null");
       }
-      String sql = "INSERT INTO periodic_order_item_lines (periodic_order_id, product_id, quantity) VALUES (?, ?, ?) ON CONFLICT (periodic_order_id, product_id) DO UPDATE SET quantity = EXCLUDED.quantity, unit_price = EXCLUDED.unit_price RETURNING periodic_order_item_line_id";
+      String sql = "INSERT INTO periodic_order_item_lines (periodic_order_id, product_id, quantity) VALUES (?, ?, ?)";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, periodicOrderItemLine.getPeriodicOrderId());

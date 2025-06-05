@@ -89,7 +89,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
 
-               List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO.getAllBillofQuantitiesItems(id);
+               List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
+                     .getAllBillofQantitiesItemsForAgreementId(id);
                for (BillofQuantitiesItemDTO item : items) {
                   item.setAgreementId(id);
                   String productCatalogSql = "SELECT name FROM supplier_products WHERE product_id = ?";
@@ -286,6 +287,39 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          LOGGER.error("Invalid agreement ID: {}", agreementId);
          throw new IllegalArgumentException("Invalid agreement ID");
       }
-      return billofQuantitiesItemsDAO.getAllBillofQuantitiesItems(agreementId);
+      return billofQuantitiesItemsDAO.getAllBillofQantitiesItemsForAgreementId(agreementId);
+   }
+
+   @Override
+   public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsByProductId(int productId) {
+      if (productId < 0) {
+         LOGGER.error("Invalid product ID: {}", productId);
+         throw new IllegalArgumentException("Invalid product ID");
+      }
+      String sql = "SELECT * FROM bill_of_quantities_items WHERE product_id = ?";
+      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql)) {
+         pstmt.setInt(1, productId);
+         try (ResultSet rs = pstmt.executeQuery()) {
+            List<BillofQuantitiesItemDTO> items = new ArrayList<>();
+            while (rs.next()) {
+               BillofQuantitiesItemDTO item = new BillofQuantitiesItemDTO();
+               item.setProductId(rs.getInt("product_id"));
+               item.setLineInBillID(rs.getInt("line_in_bill"));
+               item.setAgreementId(rs.getInt("agreement_id"));
+               item.setProductId(rs.getInt("product_id"));
+               item.setQuantity(rs.getInt("quantity"));
+               items.add(item);
+            }
+            LOGGER.info("Retrieved {} bill of quantities items for product ID: {}", items.size(), productId);
+            return items;
+         }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
+      }
+      return new ArrayList<>();
    }
 }

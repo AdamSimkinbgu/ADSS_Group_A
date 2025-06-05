@@ -105,7 +105,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                         resultSet.getString("bank_account_number"),
                         resultSet.getString("payment_method"),
                         resultSet.getString("payment_term"));
-                LOGGER.info("Supplier retrieved successfully: {}", supplier);
+                LOGGER.info("Supplier retrieved successfully: {}", supplier.getId());
                 return Optional.of(supplier);
             } else {
                 LOGGER.warn("No supplier found with ID: {}", id);
@@ -128,7 +128,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
         }
-        LOGGER.info("Updating supplier: {}", supplier);
+        LOGGER.info("Updating supplier: {}", supplier.getId());
         String sql = "UPDATE suppliers SET supplier_id = ?, name = ?, tax_number = ?, self_supply = ?, supply_days_mask = ?, lead_supply_days = ?, street = ?, city = ?, building_number = ?, bank_account_number = ?, payment_method = ?, payment_term = ? WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, supplier.getId());
@@ -151,10 +151,10 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                         contact.setSupplierId(supplier.getId());
                     }
                 }
-                LOGGER.info("Supplier updated successfully: {}", supplier);
+                LOGGER.info("Supplier updated successfully: {}", supplier.getId());
                 return true;
             } else {
-                LOGGER.warn("No rows affected when updating supplier: {}", supplier);
+                LOGGER.warn("No rows affected when updating supplier: {}", supplier.getId());
             }
         } catch (SQLException e) {
             LOGGER.error("Error updating supplier: {}", supplier, e);
