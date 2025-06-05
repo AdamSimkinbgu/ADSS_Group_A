@@ -22,4 +22,6 @@ public interface AgreementDAOInterface {
    List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId);
 
    boolean agreementExists(int id);
+
+   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsByProductId(int productId);
 }

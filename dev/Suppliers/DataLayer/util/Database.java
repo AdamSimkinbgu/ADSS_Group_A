@@ -3,18 +3,34 @@ package Suppliers.DataLayer.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.sql.*;
 
 public final class Database {
-    private static final Logger log = LoggerFactory.getLogger(Database.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Database.class);
     private static final String DB_URL = "jdbc:sqlite:supply.db";
     private static Connection conn;
 
     static {
+
         try {
+            File dbFile = new File("supply.db");
+            System.out.println("---------- SQLITE FILE INFO (before connection) ----------");
+            System.out.println("abs path: " + dbFile.getAbsolutePath());
+            System.out.println("exists?   " + dbFile.exists());
+            System.out.println("canRead?  " + dbFile.canRead());
+            System.out.println("canWrite? " + dbFile.canWrite());
+            System.out.println("--------------------------------------");
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(DB_URL);
-            log.info("Connected to SQLite at {}", DB_URL);
+            LOGGER.info("Connected to SQLite at {}", DB_URL);
+            System.out.println("---------- SQLITE FILE INFO (after connection) ----------");
+            dbFile = new File("supply.db");
+            System.out.println("abs path: " + dbFile.getAbsolutePath());
+            System.out.println("exists?   " + dbFile.exists());
+            System.out.println("canRead?  " + dbFile.canRead());
+            System.out.println("canWrite? " + dbFile.canWrite());
+            System.out.println("--------------------------------------");
 
             try (Statement st = conn.createStatement()) {
                 // enforce FK rules in SQLite
@@ -152,35 +168,6 @@ public final class Database {
                                     ON UPDATE CASCADE
                             );
                         """);
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_agreement_autoincrement
-                // AFTER INSERT ON agreements
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE agreements
-                // SET agreement_id = (
-                // COALESCE(
-                // (SELECT MAX(agreement_id) + 1 FROM agreements),
-                // 1
-                // )
-                // )
-                // WHERE rowid = NEW.rowid; -- patch only the row we just inserted
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_agreement_reseq_after_delete
-                // AFTER DELETE ON agreements
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE agreements
-                // SET agreement_id = agreement_id - 1
-                // WHERE agreement_id > OLD.agreement_id;
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE INDEX IF NOT EXISTS idx_agreements_supplier
-                // ON agreements(supplier_id);
-                // """);
 
                 /* ───────────────────────── boq_items ───────────────────────── */
                 st.executeUpdate("""
@@ -234,14 +221,12 @@ public final class Database {
                             CREATE TABLE IF NOT EXISTS orders(
                                order_id             INTEGER PRIMARY KEY AUTOINCREMENT,
                                supplier_id          INTEGER NOT NULL,
-                               order_date           TEXT    NOT NULL,    -- "YYYY-MM-DD"
-                               expected_date        TEXT    NOT NULL,    -- "YYYY-MM-DD"
-                               delivery_date        TEXT    NULL,        -- becomes non-null when delivered
+                               order_date           TEXT    NOT NULL,
+                               creation_date        TEXT    NOT NULL,
+                               delivery_date        TEXT    NULL,
                                status               TEXT    NOT NULL
                                                      CHECK(status IN
                                                         ('PENDING','SENT','DELIVERED','COMPLETED','CANCELLED')),
-                               total_amount         REAL    NULL
-                                                     CHECK(total_amount >= 0),
                                periodic_order_id    INTEGER NULL,
                                FOREIGN KEY(supplier_id)
                                    REFERENCES suppliers(supplier_id) ON DELETE CASCADE,
@@ -254,12 +239,12 @@ public final class Database {
                 st.executeUpdate("""
                             CREATE TABLE IF NOT EXISTS order_item_lines(
                                order_id            INTEGER NOT NULL,
-                               line_number         INTEGER NOT NULL CHECK(line_number > 0),
+                               line_number         INTEGER,
                                product_id          INTEGER NOT NULL,
                                quantity            INTEGER NOT NULL CHECK(quantity > 0),
                                unit_price          REAL    NOT NULL CHECK(unit_price >= 0),
                                discount_pct        REAL    NOT NULL
-                                                     CHECK(discount_pct BETWEEN 0 AND 100),
+                                                     CHECK(discount_pct BETWEEN 0 AND 1),
                                PRIMARY KEY (order_id, line_number),
                                FOREIGN KEY(order_id)
                                    REFERENCES orders(order_id) ON DELETE CASCADE,
@@ -273,31 +258,32 @@ public final class Database {
                         """);
 
                 st.executeUpdate("""
-                            CREATE TRIGGER IF NOT EXISTS trg_order_lines_autonum
-                            BEFORE INSERT ON order_item_lines
+                            CREATE TRIGGER IF NOT EXISTS trg_orderitem_autoline
+                            AFTER INSERT ON order_item_lines
                             FOR EACH ROW
                             WHEN NEW.line_number IS NULL
                             BEGIN
-                                SELECT
-                                    NEW.line_number = COALESCE(
-                                        (
-                                          SELECT MAX(line_number) + 1
-                                            FROM order_item_lines
-                                           WHERE order_id = NEW.order_id
-                                        ),
-                                        1
-                                    );
+                            UPDATE order_item_lines
+                                SET line_number = (
+                                COALESCE(
+                                    (SELECT MAX(line_number) + 1
+                                    FROM order_item_lines
+                                    WHERE order_id = NEW.order_id),
+                                    1
+                                )
+                                )
+                            WHERE rowid = NEW.rowid;  -- only patch the row we just inserted
                             END;
                         """);
                 st.executeUpdate("""
-                            CREATE TRIGGER IF NOT EXISTS trg_order_lines_reseq_after_delete
+                            CREATE TRIGGER IF NOT EXISTS trg_orderitem_reseq_after_delete
                             AFTER DELETE ON order_item_lines
                             FOR EACH ROW
                             BEGIN
-                                UPDATE order_item_lines
-                                   SET line_number = line_number - 1
-                                 WHERE order_id = OLD.order_id
-                                   AND line_number > OLD.line_number;
+                            UPDATE order_item_lines
+                                SET line_number = line_number - 1
+                                WHERE order_id = OLD.order_id
+                                AND line_number > OLD.line_number;
                             END;
                         """);
 
@@ -306,10 +292,7 @@ public final class Database {
                         """
                                     CREATE TABLE IF NOT EXISTS periodic_orders(
                                         periodic_order_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-                                        -- start_date          TEXT    NOT NULL,  -- "YYYY-MM-DD" these lines are commented out
-                                        -- end_date            TEXT    NOT NULL,  -- "YYYY-MM-DD" because we cant make it in time
-
-                                        requested_day_mask  TEXT    NOT NULL,
+                                        delivery_day           TEXT    NOT NULL,
 
                                         is_active           INTEGER NOT NULL DEFAULT 1
                                                             CHECK(is_active IN (0,1))
@@ -321,7 +304,7 @@ public final class Database {
                 st.executeUpdate("""
                             CREATE TABLE IF NOT EXISTS periodic_order_item_lines(
                                periodic_order_id   INTEGER NOT NULL,
-                               line_number         INTEGER NOT NULL CHECK(line_number > 0),
+                               line_number         INTEGER,
                                product_id          INTEGER NOT NULL,
                                quantity            INTEGER NOT NULL CHECK(quantity > 0),
                                PRIMARY KEY (periodic_order_id, line_number),
@@ -338,19 +321,21 @@ public final class Database {
 
                 st.executeUpdate("""
                             CREATE TRIGGER IF NOT EXISTS trg_periodic_lines_autonum
-                            BEFORE INSERT ON periodic_order_item_lines
+                            AFTER INSERT ON periodic_order_item_lines
                             FOR EACH ROW
                             WHEN NEW.line_number IS NULL
                             BEGIN
-                                SELECT
-                                    NEW.line_number = COALESCE(
+                                UPDATE periodic_order_item_lines
+                                SET line_number =
+                                    COALESCE(
                                         (
-                                          SELECT MAX(line_number) + 1
+                                        SELECT MAX(line_number) + 1
                                             FROM periodic_order_item_lines
-                                           WHERE periodic_order_id = NEW.periodic_order_id
+                                            WHERE periodic_order_id = NEW.periodic_order_id
                                         ),
                                         1
-                                    );
+                                    )
+                                WHERE rowid = NEW.rowid;
                             END;
                         """);
 
@@ -368,26 +353,30 @@ public final class Database {
 
                 // ───────────────── inventory_notifications (optional) ─────────────────
 
-                log.info("Ensured database schema exists");
+                LOGGER.info("Ensured database schema exists");
             }
         } catch (Exception e) {
-            log.error("Database initialization failed", e);
+            LOGGER.error("Database initialization failed", e);
             throw new ExceptionInInitializerError(e);
         }
     }
 
     public static void deleteAllData() {
         try (Statement st = conn.createStatement()) {
+            st.executeUpdate("DELETE FROM periodic_order_item_lines;");
             st.executeUpdate("DELETE FROM boq_items;");
+            st.executeUpdate("DELETE FROM order_item_lines;");
             st.executeUpdate("DELETE FROM agreements;");
+            st.executeUpdate("DELETE FROM orders;");
+            st.executeUpdate("DELETE FROM periodic_orders;");
             st.executeUpdate("DELETE FROM supplier_products;");
             st.executeUpdate("DELETE FROM contact_info;");
             st.executeUpdate("DELETE FROM suppliers;");
             st.executeUpdate("DELETE FROM sqlite_sequence;"); // reset autoincrement
             // counters
-            log.info("All data deleted from the database");
+            LOGGER.info("All data deleted from the database");
         } catch (SQLException e) {
-            log.error("Failed to delete all data", e);
+            LOGGER.error("Failed to delete all data", e);
         }
     }
 
@@ -396,5 +385,342 @@ public final class Database {
 
     public static Connection getConnection() throws SQLException {
         return conn;
+    }
+
+    /**
+     * Populates “suppliers”, “contacts”, “supplier_products”, “agreements” and
+     * “boq_items”
+     * with default rows—using INSERT OR IGNORE so that if you restart the app
+     * multiple times,
+     * you won’t duplicate existing seed data.
+     */
+    public static void seedDefaultData() {
+        deleteAllData();
+        try (Statement st = conn.createStatement()) {
+            // ────────────── 1. PRAGMA ──────────────
+            st.executeUpdate("PRAGMA foreign_keys = ON;");
+
+            // ────────────── 2. suppliers ──────────────
+            st.executeUpdate(
+                    """
+                                INSERT OR IGNORE INTO suppliers(
+                                    name, tax_number, self_supply, supply_days_mask, lead_supply_days,
+                                    street, city, building_number, bank_account_number, payment_method, payment_term
+                                ) VALUES
+                                    ('Supplier 1','512345678',    1,'1010100',0,'Street 1','City 1','1','123456','CREDIT_CARD','N30'),
+                                    ('Supplier 2','587654321',    0,'0000000',2,'Street 2','City 2','22','412353','CASH','COD'),
+                                    ('Supplier 3','518273645',    1,'0000010',1,'Street 3','City 3','3','162534','CASH_ON_DELIVERY','N60'),
+                                    ('Supplier 4','123987654',    0,'1110000',3,'Oak Street','Haifa','47','987654','BANK_TRANSFER','N90'),
+                                    ('Supplier 5','999888777',    1,'0000011',0,'Pine Avenue','Beer-Sheva','12','555666','CASH_ON_DELIVERY','COD')
+                                ;
+                            """);
+            LOGGER.info("Inserted default suppliers");
+            // ────────────── 3. contacts ──────────────
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO contact_info(
+                            supplier_id, phone, name, email
+                        ) VALUES
+                            (1,'054-000-0001','Danny','danny@example.com'),
+                            (4,'055-000-0004','Alice Green','alice.green@example.com'),
+                            (5,'055-000-0005','Bob Silver','bob.silver@example.com'),
+                            (5,'055-000-0006','Carol Gold','carol.gold@example.com')
+                        ;
+                    """);
+            LOGGER.info("Inserted default contacts");
+            // ────────────── 4. supplier_products ──────────────
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO supplier_products(
+                            supplier_id, supplier_catalog_number, manufacturer_name, name, price, weight, days_to_expiry
+                        ) VALUES
+                            (1,'123456','Yotvata',     'Milk 3%',           10.00, 1.0, 30),
+                            (1,'654321','Telma',       'Cornflacks Cariot',  20.00, 2.0, 60),
+                            (2,'789012','Tnuva',       'Cottage Cheese',     15.00, 1.5, 45),
+                            (2,'210987','DeliMeat',    'Pastrami Sandwich',  25.00, 3.0, 90),
+                            (3,'345678','Tnuva',       'Milk 3%',            30.00, 2.5, 15),
+                            (3,'876543','Ossem',       'Bamba',              40.00, 4.0, 120),
+                            (4,'444111','Galil',       'Olive Oil 1L',       25.00, 1.2, 180),
+                            (4,'444112','Galil',       'Zaatar Mix 200g',   12.50,  0.3,  90),
+                            (4,'444113','Galil',       'Pita Bread Pack (5)', 5.00,  0.5,   2),
+                            (5,'555111','Neve',        'Fresh Milk 2L',       15.00,  2.0,   7),
+                            (5,'555112','Neve',        'Labneh 250g',         8.00,  0.4,  14)
+                        ;
+                    """);
+            LOGGER.info("Inserted default supplier products");
+            // ────────────── 5. agreements ──────────────
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO agreements(
+                            supplier_id, agreement_start_date, agreement_end_date, valid
+                        ) VALUES
+                            (1,'2025-06-01','2025-06-20',1),
+                            (2,'2025-06-01','2025-07-05',1),
+                            (3,'2025-07-01','2025-07-31',1),
+                            (4,'2025-08-01','2025-12-31',1),
+                            (5,'2025-06-15','2025-09-15',1),
+                            (1,'2025-06-01','2025-12-31',1),
+                            (2,'2025-06-01','2025-12-31',1),
+                            (3,'2025-07-01','2025-12-31',1),
+                            (4,'2025-08-01','2025-12-31',1),
+                            (5,'2025-06-15','2025-12-31',1)
+                        ;
+                    """);
+            LOGGER.info("Inserted default agreements");
+            // ────────────── 6. boq_items ──────────────
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO boq_items(
+                            agreement_id, line_in_bill, product_id, quantity, discount_percent
+                        ) VALUES
+                            (1,1,1,100,0.95),  -- “Milk 3%” from supplier 1
+                            (1,2,2,50,0.9),  -- “Cornflacks Cariot” from supplier 1
+                            (1,3,3,75,0.925),   -- “Cottage Cheese” from supplier 1
+                            (2,1,3,75,0.925),   -- “Cottage Cheese” from supplier 2
+                            (2,2,4,30,0.875),  -- “Pastrami Sandwich” from supplier 2
+                            (3,1,5,   200,   0.9),  -- “Cottage Cheese” from supplier 2
+                            (3,2,6,   120,    0.95),  -- “Pastrami Sandwich” from supplier 2
+                            (3,3,1,    80,    0.78),  -- “Milk 3%” (product_id = 1, from supplier 1)
+                            (4,1,7,   150,   0.8),  -- “Olive Oil 1L” (product_id = 7)
+                            (4,2,8,   300,    0.6),  -- “Zaatar Mix 200g” (product_id = 8)
+                            (4,3,9,   500,    0.5),   -- “Pita Bread Pack (5)” (product_id = 9)
+                            (5,1,10,   250,    0.7),  -- “Fresh Milk 2L” (product_id = 10)
+                            (5,2,11,   180,    0.75)   -- “Labneh 250g” (product_id = 11)
+                        ;
+                    """);
+            LOGGER.info("Inserted default BOQ items");
+            LOGGER.warn("Orders and periodic orders are not seeded by default");
+        } catch (SQLException e) {
+            LOGGER.error("Failed to seed default data", e);
+        }
+    }
+
+    public static void provideStatisticsAboutTheCurrentStateOfTheWholeDatabase() {
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
+            System.out.println("Current database tables:");
+            while (rs.next()) {
+                System.out.println("- " + rs.getString("name"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve database statistics", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM suppliers;");
+            if (rs.next()) {
+                System.out.println("Total suppliers: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve supplier count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM supplier_products;");
+            if (rs.next()) {
+                System.out.println("Total supplier products: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve supplier product count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM agreements;");
+            if (rs.next()) {
+                System.out.println("Total agreements: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve agreement count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM boq_items;");
+            if (rs.next()) {
+                System.out.println("Total BOQ items: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve BOQ item count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM orders;");
+            if (rs.next()) {
+                System.out.println("Total orders: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve order count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM periodic_orders;");
+            if (rs.next()) {
+                System.out.println("Total periodic orders: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve periodic order count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM contact_info;");
+            if (rs.next()) {
+                System.out.println("Total contacts: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve contact count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM order_item_lines;");
+            if (rs.next()) {
+                System.out.println("Total order item lines: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve order item line count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM periodic_order_item_lines;");
+            if (rs.next()) {
+                System.out.println("Total periodic order item lines: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve periodic order item line count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM sqlite_sequence;");
+            if (rs.next()) {
+                System.out.println("Total autoincrement sequences: " + rs.getInt("total"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve autoincrement sequence count", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT name, sql FROM sqlite_master WHERE type='table';");
+            System.out.println("Table definitions:");
+            while (rs.next()) {
+                System.out.println(rs.getString("name") + ": " + rs.getString("sql"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve table definitions", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM suppliers LIMIT 5;");
+            System.out.println("Sample suppliers data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("supplier_id") + ": " + rs.getString("name"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample suppliers data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM supplier_products LIMIT 5;");
+            System.out.println("Sample supplier products data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("product_id") + ": " + rs.getString("name"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample supplier products data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM agreements LIMIT 5;");
+            System.out.println("Sample agreements data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("agreement_id") + ": " + rs.getString("agreement_start_date"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample agreements data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM boq_items LIMIT 5;");
+            System.out.println("Sample BOQ items data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("agreement_id") + ": " + rs.getInt("line_in_bill"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample BOQ items data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM orders LIMIT 5;");
+            System.out.println("Sample orders data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("order_id") + ": " + rs.getString("order_date"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample orders data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM periodic_orders LIMIT 5;");
+            System.out.println("Sample periodic orders data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("periodic_order_id") + ": " + rs.getString("requested_day_mask"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample periodic orders data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM contact_info LIMIT 5;");
+            System.out.println("Sample contacts data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("supplier_id") + ": " + rs.getString("name"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample contacts data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM order_item_lines LIMIT 5;");
+            System.out.println("Sample order item lines data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("order_id") + ": " + rs.getInt("line_number"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample order item lines data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM periodic_order_item_lines LIMIT 5;");
+            System.out.println("Sample periodic order item lines data:");
+            while (rs.next()) {
+                System.out.println(rs.getInt("periodic_order_id") + ": " + rs.getInt("line_number"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample periodic order item lines data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM sqlite_sequence LIMIT 5;");
+            System.out.println("Sample autoincrement sequences data:");
+            while (rs.next()) {
+                System.out.println(rs.getString("name") + ": " + rs.getInt("seq"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve sample autoincrement sequences data", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT name, sql FROM sqlite_master WHERE type='trigger';");
+            System.out.println("Triggers in the database:");
+            while (rs.next()) {
+                System.out.println(rs.getString("name") + ": " + rs.getString("sql"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve triggers", e);
+        }
+        try (Statement st = conn.createStatement()) {
+            ResultSet rs = st.executeQuery("SELECT * FROM sqlite_master WHERE type='view';");
+            System.out.println("Views in the database:");
+            while (rs.next()) {
+                System.out.println(rs.getString("name") + ": " + rs.getString("sql"));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            LOGGER.error("Failed to retrieve views", e);
+        }
     }
 }

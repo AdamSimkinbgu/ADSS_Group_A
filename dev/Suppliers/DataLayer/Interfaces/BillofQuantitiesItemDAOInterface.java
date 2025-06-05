@@ -16,6 +16,6 @@ public interface BillofQuantitiesItemDAOInterface {
 
    boolean deleteAllBillofQuantitiesItems(int id);
 
-   List<BillofQuantitiesItemDTO> getAllBillofQuantitiesItems(int agreementId);
+   List<BillofQuantitiesItemDTO> getAllBillofQantitiesItemsForAgreementId(int agreementId);
 
 }

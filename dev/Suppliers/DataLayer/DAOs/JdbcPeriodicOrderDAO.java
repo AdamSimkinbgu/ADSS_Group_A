@@ -24,15 +24,11 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          LOGGER.error("Attempted to create a null periodic order.");
          throw new IllegalArgumentException("Periodic order cannot be null");
       }
-      String sql = "INSERT INTO periodic_orders (periodic_order_id, delivery_day, is_active) VALUES (?, ?, ?)";
+      String sql = "INSERT INTO periodic_orders (delivery_day, is_active) VALUES (?, ?)";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
-         preparedStatement.setInt(1, periodicOrder.getPeriodicOrderID());
-         preparedStatement.setString(2, periodicOrder.getDeliveryDay().name());
-         preparedStatement.setInt(3, periodicOrder.isActive() ? 1 : 0);
-
-         LOGGER.info("Creating periodic order: {}", periodicOrder);
-         LOGGER.debug("PreparedStatement: {}", preparedStatement);
+         preparedStatement.setString(1, periodicOrder.getDeliveryDay().name());
+         preparedStatement.setInt(2, periodicOrder.isActive() ? 1 : 0);
 
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected == 0) {
