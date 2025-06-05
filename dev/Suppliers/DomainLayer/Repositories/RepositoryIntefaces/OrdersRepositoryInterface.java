@@ -4,7 +4,6 @@ import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
-import Suppliers.DomainLayer.Classes.OrderDTO;
 
 public interface OrdersRepositoryInterface {
    /**
