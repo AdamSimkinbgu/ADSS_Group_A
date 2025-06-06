@@ -30,7 +30,7 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        md.InventoryInitialization(0);
+        //md.InventoryInitialization(0);
     }
 
 
@@ -221,27 +221,12 @@ public class MainService {
             }
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        // call supply func
-        ServiceResponse<?> response = is.createPeriodicOrder(order, day);
-        if (response.isSuccess())
-            return "Order successfuly build";
-        else
-            return response.getErrors().toString();
-=======
-=======
->>>>>>> sup-inv-merge
 
         //call supply func
         ServiceResponse<?> response = is.createPeriodicOrder(order,day);
         if(response.isSuccess())return "Order successfuly build";
         else return response.getErrors().toString();
 
-<<<<<<< HEAD
->>>>>>> 49c80a7 (init fix)
-=======
->>>>>>> sup-inv-merge
     }
 
     // todo check
@@ -256,23 +241,11 @@ public class MainService {
 
         // call supply func
         ServiceResponse<?> response = is.createShortageOrder(order);
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         if (response.isSuccess())
             return "Order successfuly build";
         else
             return response.getErrors().toString();
-=======
-=======
->>>>>>> sup-inv-merge
-
-        if(response.isSuccess())return "Order successfuly build";
-        else return response.getErrors().toString();
-
-<<<<<<< HEAD
->>>>>>> 49c80a7 (init fix)
-=======
->>>>>>> sup-inv-merge
 
     }
 
@@ -284,14 +257,7 @@ public class MainService {
         return "done";
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> 49c80a7 (init fix)
-=======
-
->>>>>>> sup-inv-merge
     public String DeleteRecurringOrder(int orderId) {
         ServiceResponse<?> response = is.requestDeletePeriodicOrder(orderId);
 
