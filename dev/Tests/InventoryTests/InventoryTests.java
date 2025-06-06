@@ -1,4 +1,5 @@
-package Inventory.Tests;
+package Tests.InventoryTests;
+// package dev.Tests.InventoryTests;
 
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.ProductDomain;
