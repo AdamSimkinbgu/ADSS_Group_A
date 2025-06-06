@@ -18,13 +18,12 @@ import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DataLayer.Interfaces.AgreementDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
-public class JdbcAgreementDAO implements AgreementDAOInterface {
+public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
    private final Logger LOGGER = LoggerFactory.getLogger(JdbcAgreementDAO.class);
    private final static JdbcBillofQuantitiesItemsDAO billofQuantitiesItemsDAO = new JdbcBillofQuantitiesItemsDAO();
 
    @Override
-   public AgreementDTO createAgreement(AgreementDTO agreement) throws SQLException {
-      // we need to also insert the bill of quantities items
+   public AgreementDTO createAgreement(AgreementDTO agreement) {
       if (agreement == null || agreement.getSupplierId() < 0) {
          LOGGER.error("Invalid agreement data: {}", agreement);
          throw new IllegalArgumentException("Invalid agreement data");
@@ -54,7 +53,6 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             }
          }
 
-         // Insert bill of quantities items
          for (BillofQuantitiesItemDTO item : agreement.getBillOfQuantitiesItems()) {
             item.setAgreementId(agreement.getAgreementId());
             billofQuantitiesItemsDAO.createBillofQuantitiesItem(item);
@@ -62,12 +60,19 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
          LOGGER.info("Inserted {} bill of quantities items for agreement ID: {}",
                agreement.getBillOfQuantitiesItems().size(), agreement.getAgreementId());
 
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+
       return agreement;
    }
 
    @Override
-   public Optional<AgreementDTO> getAgreementById(int id) throws SQLException {
+   public Optional<AgreementDTO> getAgreementById(int id) {
       if (id < 0) {
          LOGGER.error("Invalid agreement ID: {}", id);
          throw new IllegalArgumentException("Invalid agreement ID");
@@ -84,7 +89,6 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
                agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
 
-               // Load bill of quantities items
                List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO.getAllBillofQuantitiesItems(id);
                agreement.setBillOfQuantitiesItems(items);
 
@@ -95,11 +99,18 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
                return Optional.empty();
             }
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return Optional.empty();
    }
 
    @Override
-   public void updateAgreement(AgreementDTO agreement) throws SQLException {
+   public boolean updateAgreement(AgreementDTO agreement) {
       if (agreement == null || agreement.getAgreementId() < 0) {
          LOGGER.error("Invalid agreement data: {}", agreement);
          throw new IllegalArgumentException("Invalid agreement data");
@@ -116,21 +127,28 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
          int affectedRows = pstmt.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No agreement found with ID: {}", agreement.getAgreementId());
-            throw new SQLException("No agreement found with ID: " + agreement.getAgreementId());
+            return false;
          } else {
             LOGGER.info("Updated agreement with ID: {}", agreement.getAgreementId());
+            for (BillofQuantitiesItemDTO item : agreement.getBillOfQuantitiesItems()) {
+               item.setAgreementId(agreement.getAgreementId());
+               billofQuantitiesItemsDAO.updateBillofQuantitiesItem(item);
+            }
+            return true;
          }
 
-         // Update bill of quantities items
-         for (BillofQuantitiesItemDTO item : agreement.getBillOfQuantitiesItems()) {
-            item.setAgreementId(agreement.getAgreementId());
-            billofQuantitiesItemsDAO.updateBillofQuantitiesItem(item);
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
          }
       }
+      return false;
    }
 
    @Override
-   public void deleteAgreement(int id) throws SQLException {
+   public boolean deleteAgreement(int id) {
       if (id < 0) {
          LOGGER.error("Invalid agreement ID: {}", id);
          throw new IllegalArgumentException("Invalid agreement ID");
@@ -141,15 +159,23 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
          int affectedRows = pstmt.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No agreement found with ID: {}", id);
-            throw new SQLException("No agreement found with ID: " + id);
+            return false;
          } else {
             LOGGER.info("Deleted agreement with ID: {}", id);
+            return true;
+         }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
          }
       }
+      return false;
    }
 
    @Override
-   public List<AgreementDTO> getAllAgreements() throws SQLException {
+   public List<AgreementDTO> getAllAgreements() {
       String sql = "SELECT * FROM agreements";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery()) {
@@ -162,7 +188,6 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
             agreement.setValid(rs.getBoolean("valid"));
 
-            // Load bill of quantities items
             List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
                   .getAllBillofQuantitiesItems(agreement.getAgreementId());
             agreement.setBillOfQuantitiesItems(items);
@@ -171,11 +196,18 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
          }
          LOGGER.info("Retrieved {} agreements", agreements.size());
          return agreements;
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public List<AgreementDTO> getAllAgreementsForSupplier(int supplierId) throws SQLException {
+   public List<AgreementDTO> getAllAgreementsForSupplier(int supplierId) {
       if (supplierId < 0) {
          LOGGER.error("Invalid supplier ID: {}", supplierId);
          throw new IllegalArgumentException("Invalid supplier ID");
@@ -193,7 +225,6 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
                agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
 
-               // Load bill of quantities items
                List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
                      .getAllBillofQuantitiesItems(agreement.getAgreementId());
                agreement.setBillOfQuantitiesItems(items);
@@ -203,11 +234,18 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             LOGGER.info("Retrieved {} agreements for supplier ID: {}", agreements.size(), supplierId);
             return agreements;
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public boolean agreementExists(int id) throws SQLException {
+   public boolean agreementExists(int id) {
       if (id < 0) {
          LOGGER.error("Invalid agreement ID: {}", id);
          throw new IllegalArgumentException("Invalid agreement ID");
@@ -220,16 +258,22 @@ public class JdbcAgreementDAO implements AgreementDAOInterface {
             LOGGER.info("Agreement with ID: {} exists: {}", id, exists);
             return exists;
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException {
+   public List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) {
       if (agreementId < 0) {
          LOGGER.error("Invalid agreement ID: {}", agreementId);
          throw new IllegalArgumentException("Invalid agreement ID");
       }
-      // Fetch all bill of quantities items for the given agreement ID
       return billofQuantitiesItemsDAO.getAllBillofQuantitiesItems(agreementId);
    }
 }
