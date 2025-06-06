@@ -3,7 +3,6 @@ package Inventory.Service;
 import Inventory.DTO.*;
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.SaleDomain;
-import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DTOs.OrderPackageDTO;
 import Suppliers.ServiceLayer.IntegrationService;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -30,13 +29,12 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        //md.InventoryInitialization(0);
+        // md.InventoryInitialization(0);
     }
 
-
-    public  void Initialize(InitializeState input) {
-        //todo
-        md.InventoryInitialization(input);
+    public void Initialize(int input) {
+        // todo
+        // md.InventoryInitialization(input);
     }
 
     public static MainService GetInstance() {
@@ -192,17 +190,16 @@ public class MainService {
         ArrayList<ProductDTO> ls = new ArrayList<>();
         // todo call the get Catalog func
         ServiceResponse<?> response = is.getCatalog();
-        if(!response.isSuccess()){
+        if (!response.isSuccess()) {
             return response.getErrors().toString();
         }
         List<CatalogProductDTO> catalog = (List<CatalogProductDTO>) response.getValue();
 
         // convert CatalogProductDTO to ProductDTO
-        for(CatalogProductDTO cp : catalog){
+        for (CatalogProductDTO cp : catalog) {
             ProductDTO p = new ProductDTO(cp.productId(), cp.name(), cp.manufacturerName());
             ls.add(p);
         }
-
 
         ls = md.cleanCatalog(ls);
 
@@ -221,12 +218,12 @@ public class MainService {
             }
         }
 
-
-        //call supply func
-        ServiceResponse<?> response = is.createPeriodicOrder(order,day);
-        if(response.isSuccess())return "Order successfuly build";
-        else return response.getErrors().toString();
-
+        // call supply func
+        ServiceResponse<?> response = is.createPeriodicOrder(order, day);
+        if (response.isSuccess())
+            return "Order successfuly build";
+        else
+            return response.getErrors().toString();
     }
 
     // todo check
@@ -241,7 +238,6 @@ public class MainService {
 
         // call supply func
         ServiceResponse<?> response = is.createShortageOrder(order);
-
         if (response.isSuccess())
             return "Order successfuly build";
         else
@@ -256,7 +252,6 @@ public class MainService {
 
         return "done";
     }
-
 
     public String DeleteRecurringOrder(int orderId) {
         ServiceResponse<?> response = is.requestDeletePeriodicOrder(orderId);

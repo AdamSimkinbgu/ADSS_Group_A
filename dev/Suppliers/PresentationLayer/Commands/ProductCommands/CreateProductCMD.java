@@ -30,6 +30,7 @@ public class CreateProductCMD implements CommandInterface {
       }
       form.fillBuild().ifPresent(dto -> {
          // ask for supplier id and check if it exists
+         dto.setSupplierId(supplierID);
          ServiceResponse<?> res = service.addProductToSupplier(dto, supplierID);
          if (res.isSuccess()) {
             view.showMessage("-- Product created successfully --\n" + dto);
