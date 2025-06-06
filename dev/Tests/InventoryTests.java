@@ -1,6 +1,10 @@
+<<<<<<< HEAD:dev/Tests/InventoryTests/InventoryTests.java
 package Tests.InventoryTests;
 // package dev.Tests.InventoryTests;
 
+=======
+package Tests;
+>>>>>>> 979d267 (fixed the tests):dev/Tests/InventoryTests.java
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.ProductDomain;
 import Inventory.DTO.*;
