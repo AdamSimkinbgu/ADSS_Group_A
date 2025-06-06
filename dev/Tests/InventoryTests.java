@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< HEAD:dev/Tests/InventoryTests/InventoryTests.java
 package Tests.InventoryTests;
 // package dev.Tests.InventoryTests;
@@ -14,6 +15,8 @@ import Suppliers.DTOs.Enums.InitializeState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 =======
+=======
+>>>>>>> sup-inv-merge
 // package Tests;
 // import Inventory.Domain.MainDomain;
 // import Inventory.Domain.ProductDomain;
@@ -22,7 +25,10 @@ import org.junit.jupiter.api.Test;
 // import Suppliers.DTOs.Enums.InitializeState;
 // import org.junit.jupiter.api.BeforeEach;
 // import org.junit.jupiter.api.Test;
+<<<<<<< HEAD
 >>>>>>> 1ed430f (Removed in-memory database implementation in favor of JDBC implementation, added ContactInfo DAO)
+=======
+>>>>>>> sup-inv-merge
 
 // import java.time.LocalDate;
 // import java.util.*;
