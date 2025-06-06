@@ -25,3 +25,8 @@ target/
 *.ear
 *.zip
 release/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
