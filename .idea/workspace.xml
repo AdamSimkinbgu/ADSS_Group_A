@@ -10,15 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/dev/Suppliers/DTOs/OrderInfoDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DTOs/PeriodicOrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DTOs/PeriodicOrderDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DataLayer/DAOs/JdbcOrderDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DataLayer/DAOs/JdbcOrderDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DataLayer/Interfaces/OrderDAOInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DataLayer/Interfaces/OrderDAOInterface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/SupplierFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/SupplierFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DataLayer/DAOs/JdbcAgreementDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DataLayer/DAOs/JdbcAgreementDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/Repositories/SuppliersAgreementsRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/Repositories/SuppliersAgreementsRepositoryImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +146,7 @@
       <option name="presentableId" value="Default" />
       <updated>1742720480414</updated>
       <workItem from="1749193842918" duration="77000" />
-      <workItem from="1749193935263" duration="23329000" />
+      <workItem from="1749193935263" duration="26569000" />
     </task>
     <task id="LOCAL-00001" summary="start the skeliton">
       <option name="closed" value="true" />

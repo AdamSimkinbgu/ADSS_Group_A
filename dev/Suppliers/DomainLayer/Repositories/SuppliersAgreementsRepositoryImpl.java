@@ -585,6 +585,9 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       return boqItems;
    }
 
+
+
+
    private void loadCurrentStateFromDatabase() {
       LOGGER.info("Loading current suppliers from database");
       // actually doing nothing here, just logging for the effect :)

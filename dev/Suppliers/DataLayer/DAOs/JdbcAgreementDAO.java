@@ -70,12 +70,81 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
 
       return agreement;
    }
+//
+//   @Override
+//   public Optional<AgreementDTO> getAgreementById(int id) {
+//      if (id < 0) {
+//         LOGGER.error("Invalid agreement ID: {}", id);
+//         throw new IllegalArgumentException("Invalid agreement ID");
+//      }
+//      String sql = "SELECT * FROM agreements WHERE agreement_id = ?";
+//      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql)) {
+//         pstmt.setInt(1, id);
+//         try (ResultSet rs = pstmt.executeQuery()) {
+//            if (rs.next()) {
+//               AgreementDTO agreement = new AgreementDTO();
+//               agreement.setAgreementId(rs.getInt("agreement_id"));
+//               agreement.setSupplierId(rs.getInt("supplier_id"));
+//               agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
+//               agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
+//               agreement.setValid(rs.getBoolean("valid"));
+//
+//               List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
+//                     .getAllBillofQantitiesItemsForAgreementId(id);
+//               for (BillofQuantitiesItemDTO item : items) {
+//                  item.setAgreementId(id);
+//                  String productCatalogSql = "SELECT name FROM supplier_products WHERE product_id = ?";
+//                  try (PreparedStatement productPstmt = Database.getConnection().prepareStatement(productCatalogSql)) {
+//                     productPstmt.setInt(1, item.getProductId());
+//                     try (ResultSet productRs = productPstmt.executeQuery()) {
+//                        if (productRs.next()) {
+//                           item.setProductName(productRs.getString("name"));
+//                        } else {
+//                           LOGGER.warn("No product found for item with ID: {}", item.getProductId());
+//                        }
+//                     }
+//                  } catch (SQLException e) {
+//                     LOGGER.error("Error retrieving product details for item ID: {} - {}", item.getProductId(),
+//                           e.getMessage());
+//                  }
+//               }
+//               agreement.setBillOfQuantitiesItems(items);
+//               String supplierSql = "SELECT name FROM suppliers WHERE supplier_id = ?";
+//               try (PreparedStatement supplierPstmt = Database.getConnection().prepareStatement(supplierSql)) {
+//                  supplierPstmt.setInt(1, agreement.getSupplierId());
+//                  try (ResultSet supplierRs = supplierPstmt.executeQuery()) {
+//                     if (supplierRs.next()) {
+//                        agreement.setSupplierName(supplierRs.getString("name"));
+//                     } else {
+//                        LOGGER.warn("No supplier found with ID: {}", agreement.getSupplierId());
+//                     }
+//                  }
+//               } catch (SQLException e) {
+//                  LOGGER.error("Error retrieving supplier details for ID: {} - {}", agreement.getSupplierId(),
+//                        e.getMessage());
+//               }
+//               LOGGER.info("Retrieved agreement with ID: {}", id);
+//               return Optional.of(agreement);
+//            } else {
+//               LOGGER.warn("No agreement found with ID: {}", id);
+//               return Optional.empty();
+//            }
+//         }
+//      } catch (SQLException e) {
+//         try {
+//            handleSQLException(e);
+//         } catch (Exception ex) {
+//            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+//         }
+//      }
+//      return Optional.empty();
+//   }
 
    @Override
    public Optional<AgreementDTO> getAgreementById(int id) {
       if (id < 0) {
-         LOGGER.error("Invalid agreement ID: {}", id);
-         throw new IllegalArgumentException("Invalid agreement ID");
+         LOGGER.error("Invalid agreement data: {}", id);
+         throw new IllegalArgumentException("Invalid agreement data");
       }
       String sql = "SELECT * FROM agreements WHERE agreement_id = ?";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql)) {
@@ -88,46 +157,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                agreement.setAgreementStartDate(LocalDate.parse(rs.getString("agreement_start_date")));
                agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
-
-               List<BillofQuantitiesItemDTO> items = billofQuantitiesItemsDAO
-                     .getAllBillofQantitiesItemsForAgreementId(id);
-               for (BillofQuantitiesItemDTO item : items) {
-                  item.setAgreementId(id);
-                  String productCatalogSql = "SELECT name FROM supplier_products WHERE product_id = ?";
-                  try (PreparedStatement productPstmt = Database.getConnection().prepareStatement(productCatalogSql)) {
-                     productPstmt.setInt(1, item.getProductId());
-                     try (ResultSet productRs = productPstmt.executeQuery()) {
-                        if (productRs.next()) {
-                           item.setProductName(productRs.getString("name"));
-                        } else {
-                           LOGGER.warn("No product found for item with ID: {}", item.getProductId());
-                        }
-                     }
-                  } catch (SQLException e) {
-                     LOGGER.error("Error retrieving product details for item ID: {} - {}", item.getProductId(),
-                           e.getMessage());
-                  }
-               }
-               agreement.setBillOfQuantitiesItems(items);
-               String supplierSql = "SELECT name FROM suppliers WHERE supplier_id = ?";
-               try (PreparedStatement supplierPstmt = Database.getConnection().prepareStatement(supplierSql)) {
-                  supplierPstmt.setInt(1, agreement.getSupplierId());
-                  try (ResultSet supplierRs = supplierPstmt.executeQuery()) {
-                     if (supplierRs.next()) {
-                        agreement.setSupplierName(supplierRs.getString("name"));
-                     } else {
-                        LOGGER.warn("No supplier found with ID: {}", agreement.getSupplierId());
-                     }
-                  }
-               } catch (SQLException e) {
-                  LOGGER.error("Error retrieving supplier details for ID: {} - {}", agreement.getSupplierId(),
-                        e.getMessage());
-               }
-               LOGGER.info("Retrieved agreement with ID: {}", id);
                return Optional.of(agreement);
-            } else {
-               LOGGER.warn("No agreement found with ID: {}", id);
-               return Optional.empty();
             }
          }
       } catch (SQLException e) {
@@ -136,6 +166,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          } catch (Exception ex) {
             LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
          }
+
       }
       return Optional.empty();
    }
