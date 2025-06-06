@@ -26,6 +26,7 @@ public class BillofQuantitiesItemDTO {
 
    public BillofQuantitiesItemDTO(int agreementId, int lineInBillId, String itemName, int itemId, int quantity,
          BigDecimal discountPercent) {
+      this.agreementId = agreementId;
       this.lineInBillID = lineInBillId;
       this.productName = itemName;
       this.productId = itemId;
