@@ -46,11 +46,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -79,11 +76,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -110,11 +104,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -145,11 +136,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             return null;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -170,11 +158,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          LOGGER.info("Listed {} periodic orders", periodicOrders.size());
          return periodicOrders;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }

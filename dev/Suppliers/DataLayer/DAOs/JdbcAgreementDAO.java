@@ -61,13 +61,9 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                agreement.getBillOfQuantitiesItems().size(), agreement.getAgreementId());
 
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
-
       return agreement;
    }
 
@@ -131,11 +127,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return Optional.empty();
    }
@@ -150,8 +143,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             + "agreement_end_date = ?, valid = ? WHERE agreement_id = ?";
       try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql)) {
          pstmt.setInt(1, agreement.getSupplierId());
-         pstmt.setDate(2, Date.valueOf(agreement.getAgreementStartDate()));
-         pstmt.setDate(3, Date.valueOf(agreement.getAgreementEndDate()));
+         pstmt.setString(2, Date.valueOf(agreement.getAgreementStartDate()).toString());
+         pstmt.setString(3, Date.valueOf(agreement.getAgreementEndDate()).toString());
          pstmt.setBoolean(4, agreement.isValid());
          pstmt.setInt(5, agreement.getAgreementId());
 
@@ -169,11 +162,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          }
 
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -219,11 +209,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          LOGGER.info("Retrieved {} agreements", agreements.size());
          return agreements;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -248,11 +235,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             return agreements;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -272,11 +256,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             return exists;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -314,11 +295,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             return items;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }

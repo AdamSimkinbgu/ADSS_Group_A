@@ -47,11 +47,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -78,11 +75,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
             return null;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -108,11 +102,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          }
          return itemLines;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -135,11 +126,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
             return true;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -167,11 +155,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }

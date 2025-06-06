@@ -70,12 +70,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Error creating supplier: {}", supplier);
-            try {
-                handleSQLException(e);
-            } catch (Exception ex) {
-                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-            }
+            LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+            handleSQLException(e);
         }
         return supplier;
     }
@@ -112,12 +108,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            LOGGER.error("Error retrieving supplier with ID: {}", id, e);
-            try {
-                handleSQLException(e);
-            } catch (Exception ex) {
-                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-            }
+            LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+            handleSQLException(e);
         }
         return Optional.empty();
     }
@@ -157,12 +149,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 LOGGER.warn("No rows affected when updating supplier: {}", supplier.getId());
             }
         } catch (SQLException e) {
-            LOGGER.error("Error updating supplier: {}", supplier, e);
-            try {
-                handleSQLException(e);
-            } catch (Exception ex) {
-                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-            }
+            LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+            handleSQLException(e);
         }
         return false;
     }
@@ -185,12 +173,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 LOGGER.warn("No supplier found with ID: {}", id);
             }
         } catch (SQLException e) {
-            LOGGER.error("Error deleting supplier with ID: {}", id, e);
-            try {
-                handleSQLException(e);
-            } catch (Exception ex) {
-                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-            }
+            LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+            handleSQLException(e);
         }
         return false;
     }
@@ -241,12 +225,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             }
             LOGGER.info("Retrieved {} suppliers", suppliers.size());
         } catch (SQLException e) {
-            LOGGER.error("Error retrieving all suppliers", e);
-            try {
-                handleSQLException(e);
-            } catch (Exception ex) {
-                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-            }
+            LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+            handleSQLException(e);
         }
 
         return suppliers;
@@ -272,12 +252,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 return false;
             }
         } catch (SQLException e) {
-            LOGGER.error("Error checking if supplier exists with ID: {}", id, e);
-            try {
-                handleSQLException(e);
-            } catch (Exception ex) {
-                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-            }
+            LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+            handleSQLException(e);
         }
         return false;
     }

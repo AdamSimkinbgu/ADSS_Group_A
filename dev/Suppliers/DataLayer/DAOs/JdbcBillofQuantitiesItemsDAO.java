@@ -44,11 +44,8 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return item;
    }
@@ -74,11 +71,8 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
          LOGGER.info("Updated Bill of Quantities Item with ID: {}", item.getLineInBillID());
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -102,11 +96,8 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
          LOGGER.info("Deleted Bill of Quantities Item with ID: {}", lineId);
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -137,11 +128,8 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -170,11 +158,8 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
             return items;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -196,11 +181,8 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
             return true;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }

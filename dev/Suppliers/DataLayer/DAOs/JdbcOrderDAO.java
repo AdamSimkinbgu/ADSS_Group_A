@@ -51,11 +51,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -84,11 +81,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             return Optional.empty();
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return Optional.empty();
    }
@@ -110,11 +104,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.info("Retrieved {} orders", orders.size());
          return orders;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -136,11 +127,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.info("Order with ID {} deleted successfully", orderID);
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -166,11 +154,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.info("Order with ID {} updated successfully", updatedOrderDTO.getOrderId());
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -187,11 +172,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             return null;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }

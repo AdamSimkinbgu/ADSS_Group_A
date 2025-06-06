@@ -42,11 +42,8 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             throw new SQLException("Failed to create contact info, no rows affected");
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -78,11 +75,8 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -108,11 +102,8 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -140,11 +131,8 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          LOGGER.info("Retrieved {} contact info entries for supplier ID: {}", contactInfos.size(), supplierId);
          return contactInfos;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       LOGGER.warn("No contact info found for supplier ID: {}", supplierId);
       return new ArrayList<>();
