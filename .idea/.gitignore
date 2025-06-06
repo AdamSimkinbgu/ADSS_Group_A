@@ -1,0 +1,36 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+.idea/
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# IDE files
+.idea/
+..idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+*/.DS_Store
+**/.DS_Store
+
+# Build files
+bin/
+target/
+*.class
+dependency-reduced-pom.xml
+
+# Libraries
+lib/
+*.jar
+
+# Maven
+target/
+*.war
+*.ear
+*.zip
+release/
