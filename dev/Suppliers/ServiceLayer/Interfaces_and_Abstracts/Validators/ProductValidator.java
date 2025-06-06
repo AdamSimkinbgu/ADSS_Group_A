@@ -1,13 +1,15 @@
 package Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import Suppliers.DTOs.SupplierProductDTO;
+import Suppliers.ServiceLayer.Interfaces_and_Abstracts.BaseValidator;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.IValidator;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
-public class ProductValidator implements IValidator<SupplierProductDTO> {
+public class ProductValidator extends BaseValidator implements IValidator<SupplierProductDTO> {
 
    @Override
    public ServiceResponse<?> validateCreateDTO(SupplierProductDTO target) {
@@ -15,25 +17,30 @@ public class ProductValidator implements IValidator<SupplierProductDTO> {
       if (target == null) {
          errors.add("SupplierProductDTO cannot be null");
       } else {
-         if (target.getName() == null) {
-            errors.add("Product name cannot be null");
-         } else if (target.getName().isEmpty()) {
-            errors.add("Product name cannot be empty");
-         } else if (!target.getName().matches("^[a-zA-Z ]{1,50}$")) {
+         if (target.getSupplierId() <= 0) {
+            errors.add("Supplier ID must be greater than 0");
+         }
+
+         if (!isValidSupplierProductName(target.getName())) {
             errors.add(
                   "Product name must be between 1 and 50 characters long and can only contain letters, numbers, and spaces");
+         } else {
+            target.setName(normalizeName(target.getName()));
          }
-         if (target.getSupplierCatalogNumber() == null) {
-            errors.add("Supplier catalog number cannot be null");
-         } else if (target.getSupplierCatalogNumber().isEmpty()) {
-            errors.add("Supplier catalog number cannot be empty");
+
+         if (!isValidCatalogNumber(target.getSupplierCatalogNumber())) {
+            errors.add(
+                  "Supplier catalog number must be between 1 and 20 characters long and can only contain letters, numbers, and spaces");
          }
-         if (target.getPrice() == null) {
-            errors.add("Product price cannot be null");
+
+         if (target.getPrice() == null || target.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+            errors.add("Product price cannot be null or negative");
          }
-         if (target.getWeight() == null) {
-            errors.add("Product weight cannot be null");
+
+         if (target.getWeight() == null || target.getWeight().compareTo(BigDecimal.ZERO) < 0) {
+            errors.add("Product weight cannot be null or negative");
          }
+
          if (target.getExpiresInDays() <= 0) {
             errors.add("Product expiration days must be greater than 0");
          }

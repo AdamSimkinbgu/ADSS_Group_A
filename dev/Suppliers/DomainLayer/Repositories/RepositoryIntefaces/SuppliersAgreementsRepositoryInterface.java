@@ -15,9 +15,9 @@ public interface SuppliersAgreementsRepositoryInterface {
 
    Optional<SupplierDTO> getSupplierById(int id) throws SQLException;
 
-   void updateSupplier(SupplierDTO supplier) throws SQLException;
+   boolean updateSupplier(SupplierDTO supplier) throws SQLException;
 
-   void deleteSupplier(int id) throws SQLException;
+   boolean deleteSupplier(int id) throws SQLException;
 
    boolean supplierExists(int id) throws SQLException;
 
@@ -27,9 +27,9 @@ public interface SuppliersAgreementsRepositoryInterface {
 
    Optional<AgreementDTO> getAgreementById(int agreementId) throws SQLException;
 
-   void updateAgreement(AgreementDTO agreement) throws SQLException;
+   boolean updateAgreement(AgreementDTO agreement) throws SQLException;
 
-   void removeAgreementFromSupplier(int agreementId, int supplierId) throws SQLException;
+   boolean removeAgreementFromSupplier(int agreementId, int supplierId) throws SQLException;
 
    boolean agreementExists(int agreementId) throws SQLException;
 
@@ -43,9 +43,9 @@ public interface SuppliersAgreementsRepositoryInterface {
 
    Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId) throws SQLException;
 
-   void updateSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
+   boolean updateSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
 
-   void deleteSupplierProduct(int supplierId, int productId) throws SQLException;
+   boolean deleteSupplierProduct(int supplierId, int productId) throws SQLException;
 
    List<SupplierProductDTO> getAllSupplierProductsById(int supplierId) throws SQLException;
 

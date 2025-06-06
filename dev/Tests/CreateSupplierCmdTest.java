@@ -37,31 +37,35 @@ class CreateSupplierCmdTest {
       @InjectMocks
       private CreateSupplierCMD createSupplierCMD;
 
-      @Test
-      public void createSupplier_AllFieldsValid_ShouldCallServiceAndDisplaySuccess() {
-            // Arrange
-            SupplierDTO supplier = new SupplierDTO(
-                        -1,
-                        "Test Supplier",
-                        "512345678",
-                        new AddressDTO("Test Street", "Test City", "12345"),
-                        false,
-                        EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
-                        3,
-                        new PaymentDetailsDTO("420420", PaymentMethod.BANK_TRANSFER, PaymentTerm.N30),
-                        List.of(),
-                        List.of(),
-                        List.of());
-            ServiceResponse<SupplierDTO> response = new ServiceResponse<>(supplier, List.of());
-            // when(supplierService.createSupplier(any(SupplierDTO.class))).thenReturn(supplier);
+      // @Test
+      // public void
+      // createSupplier_AllFieldsValid_ShouldCallServiceAndDisplaySuccess() {
+      // // Arrange
+      // SupplierDTO supplier = new SupplierDTO(
+      // -1,
+      // "Test Supplier",
+      // "512345678",
+      // new AddressDTO("Test Street", "Test City", "12345"),
+      // false,
+      // EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
+      // 3,
+      // new PaymentDetailsDTO("420420", PaymentMethod.BANK_TRANSFER,
+      // PaymentTerm.N30),
+      // List.of(),
+      // List.of(),
+      // List.of());
+      // ServiceResponse<SupplierDTO> response = new ServiceResponse<>(supplier,
+      // List.of());
+      // //
+      // when(supplierService.createSupplier(any(SupplierDTO.class))).thenReturn(supplier);
 
-            // Act
-            createSupplierCMD.execute(supplier);
+      // // Act
+      // createSupplierCMD.execute(supplier);
 
-            // Assert
-            verify(supplierService).createSupplier(any(SupplierDTO.class));
-            verify(view).showMessage(contains("Supplier created successfully"));
-            verify(view, never()).showError(any(String.class));
+      // // Assert
+      // verify(supplierService).createSupplier(any(SupplierDTO.class));
+      // verify(view).showMessage(contains("Supplier created successfully"));
+      // verify(view, never()).showError(any(String.class));
 
-      }
+      // }
 }

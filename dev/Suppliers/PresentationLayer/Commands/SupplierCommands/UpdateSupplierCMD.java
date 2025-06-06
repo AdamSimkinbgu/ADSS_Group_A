@@ -44,7 +44,6 @@ public class UpdateSupplierCMD implements CommandInterface {
             view.showError("Supplier with ID " + intID + " not found");
             return;
          }
-         supplierDTO = res.getValue();
       } catch (Exception e) {
          view.showError("Failed to retrieve supplier: " + e.getMessage());
          return;
@@ -53,7 +52,7 @@ public class UpdateSupplierCMD implements CommandInterface {
       form.fillUpdate(supplierDTO).ifPresent(dto -> {
          ServiceResponse<?> res = service.updateSupplier(dto, intID);
          if (res.isSuccess()) {
-            view.showMessage("-- Supplier updated successfully --\n" + dto);
+            view.showMessage("-- Supplier updated successfully --");
          } else {
             view.showError("-- Failed to update supplier --");
             AtomicInteger counter = new AtomicInteger(1);

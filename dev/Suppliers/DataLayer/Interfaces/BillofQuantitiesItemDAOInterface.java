@@ -1,22 +1,21 @@
 package Suppliers.DataLayer.Interfaces;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import Suppliers.DTOs.BillofQuantitiesItemDTO;
 
 public interface BillofQuantitiesItemDAOInterface {
 
-   BillofQuantitiesItemDTO createBillofQuantitiesItem(BillofQuantitiesItemDTO item) throws SQLException;
+   BillofQuantitiesItemDTO createBillofQuantitiesItem(BillofQuantitiesItemDTO item);
 
-   void updateBillofQuantitiesItem(BillofQuantitiesItemDTO item) throws SQLException;
+   boolean updateBillofQuantitiesItem(BillofQuantitiesItemDTO item);
 
-   BillofQuantitiesItemDTO getBillofQuantitiesItemById(int agreementId, int lineId) throws SQLException;
+   BillofQuantitiesItemDTO getBillofQuantitiesItemById(int agreementId, int lineId);
 
-   void deleteBillofQuantitiesItem(int agreementId, int lineId) throws SQLException;
+   boolean deleteBillofQuantitiesItem(int agreementId, int lineId);
 
-   void deleteAllBillofQuantitiesItems(int id) throws SQLException;
+   boolean deleteAllBillofQuantitiesItems(int id);
 
-   List<BillofQuantitiesItemDTO> getAllBillofQuantitiesItems(int agreementId) throws SQLException;
+   List<BillofQuantitiesItemDTO> getAllBillofQantitiesItemsForAgreementId(int agreementId);
 
 }

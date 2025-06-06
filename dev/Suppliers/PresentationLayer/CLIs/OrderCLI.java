@@ -34,11 +34,12 @@ public class OrderCLI {
             view.showMessage("2. Update Order");
             view.showMessage("3. Remove Order");
             view.showMessage("4. List Orders");
-            view.showMessage("Type 'return' to go back.");
+            view.showMessage("Type 'back' or '0' to go back.");
 
-            String choice = view.readLine("Choose an option: ").trim().toLowerCase();
-            if (choice.equals("return")) {
-                return;
+            String choice = view.readLine("Choose an option: ").toLowerCase();
+            if (choice.equals("back") || choice.equals("0")) {
+                view.showMessage(" === Returning to the Suppliers main menu ===");
+                break;
             }
 
             switch (choice) {
@@ -65,10 +66,11 @@ public class OrderCLI {
             view.showMessage("\n--- Create Order ---");
             view.showMessage("1. Create Order");
             view.showMessage("2. Create Periodic Order");
-            view.showMessage("Type 'back' to go back.");
+            view.showMessage("Type 'back' or '0' to go back.");
 
-            String choice = view.readLine("Choose an option: ").trim().toLowerCase();
-            if (choice.equals("back")) {
+            String choice = view.readLine("Choose an option: ").toLowerCase();
+            if (choice.equals("back") || choice.equals("0")) {
+                view.showMessage(" === Returning to the Orders menu ===");
                 return;
             }
             switch (choice) {
@@ -89,11 +91,12 @@ public class OrderCLI {
             view.showMessage("\n--- Update Order ---");
             view.showMessage("1. Update Order");
             view.showMessage("2. Update Periodic Order");
-            view.showMessage("Type 'back' to go back.");
+            view.showMessage("Type 'back' or '0' to go back.");
 
-            String choice = view.readLine("Choose an option: ").trim().toLowerCase();
-            if (choice.equals("back")) {
-                return;
+            String choice = view.readLine("Choose an option: ").toLowerCase();
+            if (choice.equals("back") || choice.equals("0")) {
+                view.showMessage(" === Returning to the Orders menu ===");
+                break;
             }
             switch (choice) {
                 case "1":
@@ -113,11 +116,12 @@ public class OrderCLI {
             view.showMessage("\n--- Remove Order ---");
             view.showMessage("1. Remove Order");
             view.showMessage("2. Remove Periodic Order");
-            view.showMessage("Type 'back' to go back.");
+            view.showMessage("Type 'back' or '0' to go back.");
 
-            String choice = view.readLine("Choose an option: ").trim().toLowerCase();
-            if (choice.equals("back")) {
-                return;
+            String choice = view.readLine("Choose an option: ").toLowerCase();
+            if (choice.equals("back") || choice.equals("0")) {
+                view.showMessage(" === Returning to the Orders menu ===");
+                break;
             }
             switch (choice) {
                 case "1":
@@ -137,11 +141,12 @@ public class OrderCLI {
             view.showMessage("\n--- List Orders ---");
             view.showMessage("1. View All Orders");
             view.showMessage("2. View All Periodic Orders");
-            view.showMessage("Type 'back' to go back.");
+            view.showMessage("Type 'back' or '0' to go back.");
 
-            String choice = view.readLine("Choose an option: ").trim().toLowerCase();
-            if (choice.equals("back")) {
-                return;
+            String choice = view.readLine("Choose an option: ").toLowerCase();
+            if (choice.equals("back") || choice.equals("0")) {
+                view.showMessage(" === Returning to the Orders menu ===");
+                break;
             }
             switch (choice) {
                 case "1":

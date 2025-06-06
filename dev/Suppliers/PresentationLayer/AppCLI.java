@@ -4,15 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import Inventory.Service.MainService;
 import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DomainLayer.*;
 import Suppliers.PresentationLayer.CLIs.*;
 import Suppliers.PresentationLayer.Commands.AgreementCommands.*;
-import Suppliers.PresentationLayer.Commands.ProductCommands.CreateProductCMD;
-import Suppliers.PresentationLayer.Commands.ProductCommands.RemoveProductCMD;
-import Suppliers.PresentationLayer.Commands.ProductCommands.UpdateProductCMD;
-import Suppliers.PresentationLayer.Commands.ProductCommands.ViewAllProductsCMD;
+import Suppliers.PresentationLayer.Commands.OrderCommands.*;
+import Suppliers.PresentationLayer.Commands.ProductCommands.*;
 import Suppliers.PresentationLayer.Commands.SupplierCommands.*;
 import Suppliers.ServiceLayer.*;
 
@@ -20,22 +17,21 @@ public class AppCLI implements View {
    private final SupplierCLI supplierCLI;
    private final ProductCLI productCLI;
    private final AgreementCLI agreementCLI;
+   private final OrderCLI orderCLI;
    private IntegrationService integrationService;
    public static final Scanner scanner = new Scanner(System.in);
 
    public AppCLI(InitializeState initializeState) {
 
       // Initialize the facades
-      SupplierController supplierFacade = new SupplierController(initializeState);
-      OrderFacade orderFacade = new OrderFacade(initializeState);
-
-      // OrderFacade orderFacade = new OrderFacade(supplierFacade);
+      SupplierFacade supplierFacade = new SupplierFacade(initializeState);
+      OrderFacade orderFacade = new OrderFacade(initializeState, supplierFacade);
 
       // Initialize the services
       AgreementService agreementService = new AgreementService(supplierFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
       integrationService = IntegrationService.getIntegrationServiceInstance();
-      // OrderService orderService = new OrderService(orderFacade);
+      OrderService orderService = new OrderService(orderFacade);
       // SystemService systemService = new SystemService(supplierFacade, orderFacade,
       // agreementFacade);
 
@@ -43,13 +39,13 @@ public class AppCLI implements View {
       Map<String, CommandInterface> supplierCommands = initializeSupplierCommands(supplierService);
       Map<String, CommandInterface> productCommands = initializeProductCommands(supplierService);
       Map<String, CommandInterface> agreementCommands = initializeAgreementCommands(agreementService, supplierService);
-      // Map<String, CommandInterface> orderCommands =
-      // initializeOrderCommands(orderFacade);
+      Map<String, CommandInterface> orderCommands = initializeOrderCommands(orderService);
 
       // Initialize the controllers
       this.supplierCLI = new SupplierCLI(this, supplierCommands);
       this.productCLI = new ProductCLI(this, productCommands);
       this.agreementCLI = new AgreementCLI(this, agreementCommands);
+      this.orderCLI = new OrderCLI(this, orderCommands);
    }
 
    private Map<String, CommandInterface> initializeSupplierCommands(SupplierService supplierService) {
@@ -80,9 +76,10 @@ public class AppCLI implements View {
       return commands;
    }
 
-   private Map<String, CommandInterface> initializeOrderCommands(OrderFacade orderFacade) {
+   private Map<String, CommandInterface> initializeOrderCommands(OrderService orderService) {
       Map<String, CommandInterface> commands = new HashMap<>();
-      // commands.put("CreateOrderCMD", new CreateOrderCMD(this, orderFacade));
+      commands.put("CreateOrderCMD", new CreateOrderCMD(this, orderService));
+      commands.put("CreatePeriodicOrderCMD", new CreatePeriodicOrderCMD(this, orderService));
       // commands.put("UpdateOrderCMD", new UpdateOrderCMD(this, orderFacade));
       // commands.put("RemoveOrderCMD", new RemoveOrderCMD(this, orderFacade));
       // commands.put("ViewAllOrdersCMD", new ViewAllOrdersCMD(this, orderFacade));
@@ -96,10 +93,11 @@ public class AppCLI implements View {
          showMessage("2. Product Management");
          showMessage("3. Agreement Management");
          showMessage("4. Order Management");
-         showMessage("Type 'exit' to quit.");
+         showMessage("Type 'back' or '0' to quit.");
 
          String choice = readLine("Choose an option: ").toLowerCase();
-         if (choice.equals("exit")) {
+         if (choice.equals("back") || choice.equals("0")) {
+            showMessage(" === Exiting the Supplier Management System. Goodbye! ===");
             break;
          }
          switch (choice) {
@@ -113,7 +111,7 @@ public class AppCLI implements View {
                agreementCLI.start();
                break;
             case "4":
-               // orderController.start();
+               orderCLI.start();
                break;
             default:
                showError("Invalid option");
@@ -133,6 +131,7 @@ public class AppCLI implements View {
 
    @Override
    public String readLine(String prompt) {
+      showMessage("--------------------------------------------------------------");
       showMessage(prompt);
       return scanner.nextLine();
    }

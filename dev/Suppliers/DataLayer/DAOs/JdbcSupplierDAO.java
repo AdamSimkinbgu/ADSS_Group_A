@@ -10,15 +10,16 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import Suppliers.DTOs.ContactInfoDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DataLayer.Interfaces.SupplierDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
-public class JdbcSupplierDAO implements SupplierDAOInterface {
+public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcSupplierDAO.class);
 
     @Override
-    public SupplierDTO createSupplier(SupplierDTO supplier) throws SQLException {
+    public SupplierDTO createSupplier(SupplierDTO supplier) {
         if (supplier == null) {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
@@ -47,6 +48,21 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
                     supplier.setId(id);
+                    try (PreparedStatement contactStatement = Database.getConnection()
+                            .prepareStatement(
+                                    "INSERT INTO contact_info (supplier_id, name, email, phone) VALUES (?, ?, ?, ?)")) {
+                        for (ContactInfoDTO contact : supplier.getContactsInfoDTOList()) {
+                            contactStatement.setInt(1, id);
+                            contactStatement.setString(2, contact.getName());
+                            contactStatement.setString(3, contact.getEmail());
+                            contactStatement.setString(4, contact.getPhone());
+                            contactStatement.addBatch();
+                        }
+                        contactStatement.executeBatch();
+                        supplier.setContacts(supplier.getContactsInfoDTOList());
+                        LOGGER.info("{} contacts for supplier ID {} created successfully",
+                                supplier.getContactsInfoDTOList().size(), id);
+                    }
                     LOGGER.info("Supplier created successfully with ID: {}", id);
                 } else {
                     LOGGER.error("Creating supplier failed, no ID obtained.");
@@ -54,14 +70,18 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Error creating supplier: {}", supplier, e);
-            throw e; // rethrow the exception for further handling
+            LOGGER.error("Error creating supplier: {}", supplier);
+            try {
+                handleSQLException(e);
+            } catch (Exception ex) {
+                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+            }
         }
         return supplier;
     }
 
     @Override
-    public Optional<SupplierDTO> getSupplier(int id) throws SQLException {
+    public Optional<SupplierDTO> getSupplier(int id) {
         if (id < 0) {
             LOGGER.error("Invalid supplier ID: {}", id);
             throw new IllegalArgumentException("Supplier ID must be positive");
@@ -85,7 +105,7 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
                         resultSet.getString("bank_account_number"),
                         resultSet.getString("payment_method"),
                         resultSet.getString("payment_term"));
-                LOGGER.info("Supplier retrieved successfully: {}", supplier);
+                LOGGER.info("Supplier retrieved successfully: {}", supplier.getId());
                 return Optional.of(supplier);
             } else {
                 LOGGER.warn("No supplier found with ID: {}", id);
@@ -93,17 +113,22 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             }
         } catch (SQLException e) {
             LOGGER.error("Error retrieving supplier with ID: {}", id, e);
-            throw e; // rethrow the exception for further handling
+            try {
+                handleSQLException(e);
+            } catch (Exception ex) {
+                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+            }
         }
+        return Optional.empty();
     }
 
     @Override
-    public void updateSupplier(SupplierDTO supplier) throws SQLException {
+    public boolean updateSupplier(SupplierDTO supplier) {
         if (supplier == null || supplier.getId() < 0) {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
         }
-        LOGGER.info("Updating supplier: {}", supplier);
+        LOGGER.info("Updating supplier: {}", supplier.getId());
         String sql = "UPDATE suppliers SET supplier_id = ?, name = ?, tax_number = ?, self_supply = ?, supply_days_mask = ?, lead_supply_days = ?, street = ?, city = ?, building_number = ?, bank_account_number = ?, payment_method = ?, payment_term = ? WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, supplier.getId());
@@ -121,18 +146,29 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             preparedStatement.setInt(13, supplier.getId());
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
-                LOGGER.info("Supplier updated successfully: {}", supplier);
+                for (ContactInfoDTO contact : supplier.getContactsInfoDTOList()) {
+                    if (contact.getSupplierId() < 0) {
+                        contact.setSupplierId(supplier.getId());
+                    }
+                }
+                LOGGER.info("Supplier updated successfully: {}", supplier.getId());
+                return true;
             } else {
-                LOGGER.warn("No rows affected when updating supplier: {}", supplier);
+                LOGGER.warn("No rows affected when updating supplier: {}", supplier.getId());
             }
         } catch (SQLException e) {
             LOGGER.error("Error updating supplier: {}", supplier, e);
-            throw e; // rethrow the exception for further handling
+            try {
+                handleSQLException(e);
+            } catch (Exception ex) {
+                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+            }
         }
+        return false;
     }
 
     @Override
-    public void deleteSupplier(int id) throws SQLException {
+    public boolean deleteSupplier(int id) {
         if (id < 0) {
             LOGGER.error("Invalid supplier ID: {}", id);
             throw new IllegalArgumentException("Supplier ID must be positive");
@@ -144,22 +180,32 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 LOGGER.info("Supplier deleted successfully with ID: {}", id);
+                return true;
             } else {
                 LOGGER.warn("No supplier found with ID: {}", id);
             }
         } catch (SQLException e) {
             LOGGER.error("Error deleting supplier with ID: {}", id, e);
-            throw e; // rethrow the exception for further handling
+            try {
+                handleSQLException(e);
+            } catch (Exception ex) {
+                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+            }
         }
+        return false;
     }
 
     @Override
-    public List<SupplierDTO> getAllSuppliers() throws SQLException {
+    public List<SupplierDTO> getAllSuppliers() {
         LOGGER.info("Retrieving all suppliers");
+        List<SupplierDTO> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM suppliers";
+        List<ContactInfoDTO> contactsForSupplier = new ArrayList<>();
+
+        String contactSql = "SELECT * FROM contact_info WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
-            var resultSet = preparedStatement.executeQuery();
-            List<SupplierDTO> suppliers = new ArrayList<>();
+            ResultSet resultSet = preparedStatement.executeQuery();
+
             while (resultSet.next()) {
                 SupplierDTO supplier = new SupplierDTO(
                         resultSet.getInt("supplier_id"),
@@ -174,18 +220,40 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
                         resultSet.getString("bank_account_number"),
                         resultSet.getString("payment_method"),
                         resultSet.getString("payment_term"));
+                try (PreparedStatement contactStatement = Database.getConnection().prepareStatement(contactSql)) {
+                    contactStatement.setInt(1, supplier.getId());
+                    ResultSet contactResultSet = contactStatement.executeQuery();
+                    while (contactResultSet.next()) {
+                        ContactInfoDTO contact = new ContactInfoDTO(
+                                contactResultSet.getInt("supplier_id"),
+                                contactResultSet.getString("name"),
+                                contactResultSet.getString("email"),
+                                contactResultSet.getString("phone"));
+                        if (contact.getSupplierId() == supplier.getId()) {
+                            contactsForSupplier.add(contact);
+                        }
+                    }
+                }
+                supplier.setContacts(contactsForSupplier);
+
                 suppliers.add(supplier);
+                contactsForSupplier = new ArrayList<>();
             }
             LOGGER.info("Retrieved {} suppliers", suppliers.size());
-            return suppliers;
         } catch (SQLException e) {
             LOGGER.error("Error retrieving all suppliers", e);
-            throw e; // rethrow the exception for further handling
+            try {
+                handleSQLException(e);
+            } catch (Exception ex) {
+                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+            }
         }
+
+        return suppliers;
     }
 
     @Override
-    public boolean supplierExists(int id) throws SQLException {
+    public boolean supplierExists(int id) {
         if (id < 0) {
             LOGGER.error("Invalid supplier ID: {}", id);
             throw new IllegalArgumentException("Supplier ID must be positive");
@@ -205,7 +273,13 @@ public class JdbcSupplierDAO implements SupplierDAOInterface {
             }
         } catch (SQLException e) {
             LOGGER.error("Error checking if supplier exists with ID: {}", id, e);
-            throw e; // rethrow the exception for further handling
+            try {
+                handleSQLException(e);
+            } catch (Exception ex) {
+                LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+            }
         }
+        return false;
     }
+
 }

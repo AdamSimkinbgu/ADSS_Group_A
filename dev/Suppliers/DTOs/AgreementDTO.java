@@ -1,6 +1,7 @@
 package Suppliers.DTOs;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import Suppliers.DomainLayer.Classes.Agreement;
@@ -100,15 +101,46 @@ public class AgreementDTO {
 
    @Override
    public String toString() {
-      return "{\n" +
-            "  \"agreementId\": " + agreementId + ",\n" +
-            "  \"supplierId\": " + supplierId + ",\n" +
-            "  \"supplierName\": \"" + supplierName + "\",\n" +
-            "  \"valid\": " + valid + ",\n" +
-            "  \"agreementStartDate\": \"" + agreementStartDate + "\",\n" +
-            "  \"agreementEndDate\": \"" + agreementEndDate + "\",\n" +
-            "  \"billOfQuantitiesItems\": " + billOfQuantitiesItems + "\n" +
-            "}";
+      DateTimeFormatter df = DateTimeFormatter.ISO_LOCAL_DATE;
+      String start = (agreementStartDate != null)
+            ? agreementStartDate.format(df)
+            : "N/A";
+      String end = (agreementEndDate != null)
+            ? agreementEndDate.format(df)
+            : "N/A";
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(String.format(
+            "Agreement [%4d]  Supplier: %-15s (ID=%d)%n",
+            agreementId,
+            supplierName != null ? supplierName : "[no name]",
+            supplierId));
+      sb.append(String.format(
+            "  Valid: %s    Period: %s → %s%n",
+            valid ? "Yes" : "No",
+            start,
+            end));
+
+      sb.append("  ────────────────────────────────────────────────\n");
+      if (billOfQuantitiesItems == null || billOfQuantitiesItems.isEmpty()) {
+         sb.append("  [No Bill-of-Quantities items]\n");
+      } else {
+         sb.append("  Bill-of-Quantities Items:\n");
+         for (BillofQuantitiesItemDTO item : billOfQuantitiesItems) {
+            // Indent each item’s toString() by two spaces
+            String[] lines = item.toString().split("\\r?\\n");
+            for (String line : lines) {
+               sb.append("    ").append(line).append("\n");
+            }
+         }
+         sb.append(String.format(
+               "  (%d total BoQ item%s)%n",
+               billOfQuantitiesItems.size(),
+               billOfQuantitiesItems.size() == 1 ? "" : "s"));
+      }
+
+      sb.append("=====================================================\n");
+      return sb.toString();
    }
 
    @Override

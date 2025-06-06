@@ -4,15 +4,15 @@ import java.util.List;
 
 import Suppliers.DTOs.AgreementDTO;
 import Suppliers.DomainLayer.AgreementFacade;
-import Suppliers.DomainLayer.SupplierController;
+import Suppliers.DomainLayer.SupplierFacade;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.AgreementValidator;
 
 public class AgreementService extends BaseService {
-   private final SupplierController supplierController;
+   private final SupplierFacade supplierController;
    private final AgreementValidator agreementValidator;
 
-   public AgreementService(SupplierController supplierController) {
+   public AgreementService(SupplierFacade supplierController) {
       this.supplierController = supplierController;
       this.agreementValidator = new AgreementValidator();
    }

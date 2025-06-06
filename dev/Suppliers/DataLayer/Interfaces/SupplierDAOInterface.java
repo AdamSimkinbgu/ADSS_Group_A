@@ -1,22 +1,20 @@
 package Suppliers.DataLayer.Interfaces;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import Suppliers.DTOs.SupplierDTO;
 
 public interface SupplierDAOInterface {
-   SupplierDTO createSupplier(SupplierDTO supplier) throws SQLException;
+   SupplierDTO createSupplier(SupplierDTO supplier);
 
-   Optional<SupplierDTO> getSupplier(int id) throws SQLException;
+   Optional<SupplierDTO> getSupplier(int id);
 
-   void updateSupplier(SupplierDTO supplier) throws SQLException;
+   boolean updateSupplier(SupplierDTO supplier);
 
-   void deleteSupplier(int id) throws SQLException;
+   boolean deleteSupplier(int id);
 
-   List<SupplierDTO> getAllSuppliers() throws SQLException;
+   List<SupplierDTO> getAllSuppliers();
 
-   boolean supplierExists(int id) throws SQLException;
-
+   boolean supplierExists(int id);
 }

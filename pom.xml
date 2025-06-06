@@ -120,6 +120,9 @@
           <!-- Tell Maven: “When compiling main sources, ignore anything under dev/Tests.” -->
           <exclude>**/Tests/**/*.java</exclude>
         </excludes>
+          <source>22</source>
+          <target>22</target>
+          <compilerArgs>--enable-preview</compilerArgs>
       </configuration>
     </plugin>
 

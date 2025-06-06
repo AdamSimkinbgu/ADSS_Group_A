@@ -5,7 +5,7 @@ import java.util.List;
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
-import Suppliers.DomainLayer.SupplierController;
+import Suppliers.DomainLayer.SupplierFacade;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.ProductValidator;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValidator;
@@ -15,11 +15,11 @@ import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.SupplierValida
  * ServiceResponse<T> envelope.
  */
 public class SupplierService extends BaseService {
-   private final SupplierController supplierFacade;
+   private final SupplierFacade supplierFacade;
    private final SupplierValidator supplierValidator = new SupplierValidator();
    private final ProductValidator productValidator = new ProductValidator();
 
-   public SupplierService(SupplierController facade) {
+   public SupplierService(SupplierFacade facade) {
       this.supplierFacade = facade;
 
    }
@@ -39,11 +39,15 @@ public class SupplierService extends BaseService {
    }
 
    public ServiceResponse<?> updateSupplier(SupplierDTO supplierDTO, int supplierID) {
+
       ServiceResponse<List<String>> response = supplierValidator.validateUpdateDTO(supplierDTO);
       if (response.isSuccess()) {
          try {
-            supplierFacade.updateSupplier(supplierDTO, supplierID);
-            return ServiceResponse.ok("Supplier with ID " + supplierID + " updated successfully");
+            if (supplierFacade.updateSupplier(supplierDTO, supplierID)) {
+               return ServiceResponse.ok("Supplier with ID " + supplierID + " updated successfully");
+            } else {
+               return ServiceResponse.fail(List.of("Failed to update supplier with ID " + supplierID));
+            }
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to update supplier: " + e.getMessage()));
          }
@@ -164,7 +168,7 @@ public class SupplierService extends BaseService {
          return ServiceResponse.fail(List.of("Invalid supplier or product ID"));
       }
       try {
-         supplierFacade.removeProductFromSupplierAndMemory(supplierID, productID);
+         supplierFacade.removeProductFromSupplierAndDB(supplierID, productID);
          return ServiceResponse
                .ok("Product with ID " + productID + " removed successfully from supplier with ID " + supplierID);
       } catch (Exception e) {

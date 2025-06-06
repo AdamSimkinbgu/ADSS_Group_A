@@ -30,16 +30,30 @@ public record CatalogProductDTO(
             return productId;
       }
 
+      public String getProductName() {
+            return name;
+      }
+
+      public String getManufacturerName() {
+            return manufacturerName;
+      }
+
       @Override
       public String toString() {
+            final int MAX_NAME = 20;
+            final int MAX_MF = 12;
+            String mf = (manufacturerName != null && manufacturerName.length() > MAX_MF)
+                        ? manufacturerName.substring(0, MAX_MF - 3) + "..."
+                        : (manufacturerName != null ? manufacturerName : "[no mf]");
+
+            String nm = (name != null && name.length() > MAX_NAME)
+                        ? name.substring(0, MAX_NAME - 3) + "..."
+                        : (name != null ? name : "[no name]");
+
             return String.format(
-                        "{\n" +
-                                    "  \"productId\": %d,\n" +
-                                    "  \"name\": \"%s\",\n" +
-                                    "  \"manufacturerName\": \"%s\"\n" +
-                                    "}",
+                        "CatalogProd [ID=%6d]  MF: %-12s  Name: %-12s",
                         productId,
-                        name,
-                        manufacturerName);
+                        mf,
+                        nm);
       }
 }

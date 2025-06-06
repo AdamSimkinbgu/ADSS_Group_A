@@ -1,9 +1,6 @@
-// cli/forms/SupplierForm.java
 package Suppliers.PresentationLayer.Forms;
 
 import Suppliers.DTOs.*;
-import Suppliers.DTOs.Enums.PaymentMethod;
-import Suppliers.DTOs.Enums.PaymentTerm;
 import Suppliers.PresentationLayer.InteractiveForm;
 import Suppliers.PresentationLayer.View;
 
@@ -58,10 +55,11 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
             }
 
             /* payment details */
-            PaymentDetailsDTO payment = new PaymentDetailsDTO(
-                        askNonEmpty("Bank account number: "),
-                        PaymentMethod.valueOf(askNonEmpty("Payment method (CASH/CARD/...): ").toUpperCase()),
-                        PaymentTerm.valueOf(askNonEmpty("Payment term (N30/…): ").toUpperCase()));
+            PaymentDetailsDTO payment = askPaymentDetails(
+                        "Payment details (Bank account, method, and term):\n" +
+                                    "  Bank account: 6 digits\n" +
+                                    "  Method: CASH, CREDIT_CARD, BANK_TRANSFER, CASH_ON_DELIVERY\n" +
+                                    "  Term: N30, N60, N90, PREPAID, POSTPAID");
 
             /* contacts (0-n) */
             List<ContactInfoDTO> contacts = new ArrayList<>();
@@ -83,9 +81,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                         supplyDays,
                         leadSupplyDays,
                         payment,
-                        contacts,
-                        new ArrayList<>(),
-                        new ArrayList<>());
+                        contacts);
       }
 
       @Override
@@ -104,7 +100,8 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                   }
                   case "selfSupply" -> supplierDTO.setSelfSupply(askBoolean("New self supply? (y/n): "));
                   case "supplyDays" -> supplierDTO.setSupplyDays(
-                              askDaysOfWeek("New supply days (1 - Sunday, 2 - Monday, ...): "));
+                              askDaysOfWeek(
+                                          "Enter new Supply days (By words, e.g. 1 - MONDAY, 2 - TUESDAY, ..., 7 - SUNDAY): "));
                   case "leadSupplyDays" -> {
                         int leadSupplyDays;
                         while (true) {
@@ -122,46 +119,13 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
                         }
                   }
                   case "paymentDetails" -> {
-                        PaymentDetailsDTO payment = supplierDTO.getPaymentDetailsDTO();
-                        payment.setBankAccountNumber(askNonEmpty("New bank account: "));
-                        payment.setPaymentMethod(
-                                    (PaymentMethod.valueOf(askNonEmpty("New method (CASH/CARD/...): ").toUpperCase())));
-                        payment.setPaymentTerm(PaymentTerm.valueOf(askNonEmpty("New term (N30/…): ").toUpperCase()));
+                        supplierDTO.setPaymentDetails(
+                                    askPaymentDetails("New payment details (Bank account, method, and term):\n"));
                   }
                   case "contacts" -> {
-                        List<ContactInfoDTO> contacts = supplierDTO.getContactsInfoDTOList();
-                        while (view.readLine("Add contact? (y/n): ").equalsIgnoreCase("y")) {
-                              contacts.add(new ContactInfoDTO(
-                                          askNonEmpty("  Name: "),
-                                          askNonEmpty("  Email: "),
-                                          askNonEmpty("  Phone: ")));
-                        }
+                        supplierDTO.setContacts(
+                                    updateContacts(supplierDTO.getContactsInfoDTOList()));
                   }
-                  // case "products" -> {
-                  // List<SupplierProductDTO> products = supplierDTO.getProducts();
-                  // for (SupplierProductDTO product : products) {
-                  // view.showMessage(product.toString());
-                  // }
-                  // int productId = askInt("Enter product ID to update: ");
-                  // SupplierProductDTO product = products.stream()
-                  // .filter(p -> p.getProductId() == productId)
-                  // .findFirst()
-                  // .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-                  // switch (askNonEmpty(
-                  // "What do you want to change? (supplierCatalogNumber, productName, price,
-                  // weight, expiresInDays, manufacturerName)")) {
-                  // case "supplierCatalogNumber" ->
-                  // product.setSupplierCatalogNumber(askNonEmpty("New supplier catalog number:
-                  // "));
-                  // case "productName" -> product.setName(askNonEmpty("New product name: "));
-                  // case "price" -> product.setPrice(askBigDecimal("New price: "));
-                  // case "weight" -> product.setWeight(askBigDecimal("New weight: "));
-                  // case "expiresInDays" -> product.setExpiresInDays(askInt("New expires in days:
-                  // "));
-                  // case "manufacturerName" -> product.setManufacturerName(askNonEmpty("New
-                  // manufacturer name: "));
-                  // }
-                  // }
                   default -> view.showError("Invalid input, please try again.");
             }
             return supplierDTO;

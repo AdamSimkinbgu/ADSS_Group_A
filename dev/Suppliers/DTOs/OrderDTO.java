@@ -1,21 +1,21 @@
 package Suppliers.DTOs;
 
 import Suppliers.DTOs.Enums.OrderStatus;
-import Suppliers.DomainLayer.Classes.Address;
-import Suppliers.DomainLayer.Classes.OrderItemLine;
-import Suppliers.DomainLayer.Classes.Order;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDTO {
     private int orderId;
-    private int supplierId; // internal? or taxnum ?
+    private int supplierId;
     private String supplierName;
     private LocalDate orderDate;
     private LocalDate creationDate;
-    private Address address;
+    private AddressDTO address;
     private String contactPhoneNumber;
     private List<OrderItemLineDTO> items;
     private OrderStatus status;
@@ -23,9 +23,22 @@ public class OrderDTO {
     public OrderDTO() {
     }
 
+    public OrderDTO(int supplierId, LocalDate orderDate, LocalDate creationDate,
+            AddressDTO address, String contactPhoneNumber, List<OrderItemLineDTO> items, OrderStatus status) {
+        this.orderId = -1;
+        this.supplierId = supplierId;
+        this.supplierName = "";
+        this.orderDate = orderDate;
+        this.creationDate = creationDate;
+        this.address = address;
+        this.contactPhoneNumber = contactPhoneNumber;
+        this.items = items;
+        this.status = status;
+    }
+
     public OrderDTO(Integer orderId, Integer supplierId, String supplierName,
             LocalDate orderDate, LocalDate creationDate,
-            Address address, String contactPhoneNumber,
+            AddressDTO address, String contactPhoneNumber,
             List<OrderItemLineDTO> items, OrderStatus status) {
         this.orderId = orderId;
         this.supplierId = supplierId;
@@ -40,7 +53,7 @@ public class OrderDTO {
 
     public OrderDTO(Integer orderId, Integer supplierId, String supplierName,
             LocalDate orderDate, LocalDate creationDate,
-            Address address, String contactPhoneNumber,
+            AddressDTO address, String contactPhoneNumber,
             List<OrderItemLineDTO> items) {
         this.orderId = orderId;
         this.supplierId = supplierId;
@@ -53,7 +66,7 @@ public class OrderDTO {
         this.status = OrderStatus.SENT;
     }
 
-    public OrderDTO(Order order) {
+    public OrderDTO(OrderDTO order) {
         this.orderId = order.getOrderId();
         this.supplierId = order.getSupplierId();
         this.supplierName = order.getSupplierName();
@@ -63,12 +76,13 @@ public class OrderDTO {
         this.contactPhoneNumber = order.getContactPhoneNumber();
         this.status = order.getStatus();
 
-        if (order.getAllItems().isEmpty()) {
-            this.items = new ArrayList<OrderItemLineDTO>();
-        } else {
-            for (OrderItemLine item : order.getAllItems()) {
+        if (order.getItems() != null) {
+            this.items = new ArrayList<>();
+            for (OrderItemLineDTO item : order.getItems()) {
                 this.items.add(new OrderItemLineDTO(item));
             }
+        } else {
+            this.items = new ArrayList<>();
         }
     }
 
@@ -112,11 +126,11 @@ public class OrderDTO {
         this.creationDate = creationDate;
     }
 
-    public Address getAddress() {
+    public AddressDTO getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(AddressDTO address) {
         this.address = address;
     }
 
@@ -136,11 +150,96 @@ public class OrderDTO {
         this.items = items;
     }
 
+    public Map<Integer, Integer> getProductsAndQuantities() {
+        Map<Integer, Integer> productAndPrices = new HashMap<>();
+        if (items != null) {
+            for (OrderItemLineDTO item : items) {
+                productAndPrices.put(item.getProductId(), item.getQuantity());
+            }
+        }
+        return productAndPrices;
+    }
+
+    public void addItem(OrderItemLineDTO item) {
+        if (this.items == null) {
+            this.items = new ArrayList<>();
+        }
+        this.items.add(item);
+    }
+
     public OrderStatus getStatus() {
         return status;
     }
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    private final int MAX_SUPPLIER_NAME = 20;
+
+    private String truncate(String s, int maxLen) {
+        if (s == null)
+            return "";
+        if (s.length() <= maxLen)
+            return s;
+        return s.substring(0, maxLen - 3) + "...";
+    }
+
+    @Override
+    public String toString() {
+        // Helper to truncate very long strings (if necessary) to a max length:
+
+        // Format dates as YYYY-MM-DD
+        DateTimeFormatter df = DateTimeFormatter.ISO_LOCAL_DATE;
+        String orderDateStr = orderDate != null ? orderDate.format(df) : "N/A";
+        String creationDateStr = creationDate != null ? creationDate.format(df) : "N/A";
+
+        // Build the “header” lines:
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format(
+                "Order [%4d]  Supplier: %-20s  (ID=%d)  Status: %s%n",
+                orderId,
+                truncate(supplierName, MAX_SUPPLIER_NAME),
+                supplierId,
+                status != null ? status.name() : "N/A"));
+        sb.append(String.format(
+                "  Order Date:    %s    Created On: %s%n",
+                orderDateStr,
+                creationDateStr));
+
+        // Ship-to address (AddressDTO assumed to have its own toString, or build
+        // inline):
+        if (address != null) {
+            // e.g. AddressDTO.toString() might be “123 Main St, Springfield” already
+            sb.append(String.format("  Ship To:       %s%n", address.toString()));
+        } else {
+            sb.append("  Ship To:       [no address]\n");
+        }
+
+        // Contact phone
+        sb.append(String.format("  Contact Phone: %s%n",
+                contactPhoneNumber != null ? contactPhoneNumber : "N/A"));
+
+        sb.append("  --------------------------------------------------\n");
+
+        // Items section
+        if (items == null || items.isEmpty()) {
+            sb.append("  [No items in this order]\n");
+        } else {
+            sb.append("  Items:\n");
+            for (OrderItemLineDTO line : items) {
+                // Indent each line’s toString by two spaces
+                String[] lineParts = line.toString().split("\\r?\\n");
+                for (String part : lineParts) {
+                    sb.append("    ").append(part).append("\n");
+                }
+            }
+            sb.append(String.format("  (%d item%s total)%n",
+                    items.size(),
+                    items.size() == 1 ? "" : "s"));
+        }
+
+        sb.append("======================================================");
+        return sb.toString();
     }
 }

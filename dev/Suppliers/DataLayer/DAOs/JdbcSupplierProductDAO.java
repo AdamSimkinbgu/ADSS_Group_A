@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,11 +16,11 @@ import Suppliers.DTOs.SupplierProductDTO;
 import Suppliers.DataLayer.Interfaces.SupplierProductDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
-public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
+public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDAOInterface {
    private Logger LOGGER = LoggerFactory.getLogger(JdbcSupplierProductDAO.class);
 
    @Override
-   public SupplierProductDTO createSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException {
+   public SupplierProductDTO createSupplierProduct(SupplierProductDTO supplierProduct) {
       if (supplierProduct == null || supplierProduct.getSupplierId() < 0) {
          LOGGER.error("Invalid supplier product data: {}", supplierProduct);
          throw new IllegalArgumentException("Invalid supplier product data");
@@ -51,12 +52,18 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
                throw new SQLException("Creating supplier product failed, no ID obtained.");
             }
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
       return supplierProduct;
    }
 
    @Override
-   public Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId) throws SQLException {
+   public Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId) {
       if (supplierId < 0 || productId < 0) {
          LOGGER.error("Invalid supplier or product ID: supplierId={}, productId={}", supplierId, productId);
          throw new IllegalArgumentException("Invalid supplier or product ID");
@@ -86,13 +93,17 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
             throw e;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error preparing statement for supplier product retrieval: {}", e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return Optional.empty();
    }
 
    @Override
-   public void updateSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException {
+   public boolean updateSupplierProduct(SupplierProductDTO supplierProduct) {
       if (supplierProduct == null || supplierProduct.getSupplierId() < 0 || supplierProduct.getProductId() < 0) {
          LOGGER.error("Invalid supplier product data: {}", supplierProduct);
          throw new IllegalArgumentException("Invalid supplier product data");
@@ -113,17 +124,22 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
          int affectedRows = pstmt.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.error("Updating supplier product failed, no rows affected.");
-            throw new SQLException("Updating supplier product failed, no rows affected.");
+            return false;
          }
          LOGGER.info("Updated supplier product with ID: {}", supplierProduct.getProductId());
+         return true;
       } catch (SQLException e) {
-         LOGGER.error("Error updating supplier product: {}", e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public void deleteSupplierProduct(int supplierId, int productId) throws SQLException {
+   public boolean deleteSupplierProduct(int supplierId, int productId) {
       if (supplierId < 0 || productId < 0) {
          LOGGER.error("Invalid supplier or product ID: supplierId={}, productId={}", supplierId, productId);
          throw new IllegalArgumentException("Invalid supplier or product ID");
@@ -135,17 +151,23 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
          int affectedRows = pstmt.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No supplier product found for supplierId={} and productId={}", supplierId, productId);
+            return false;
          } else {
             LOGGER.info("Deleted supplier product with ID: {} for supplier: {}", productId, supplierId);
+            return true;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error deleting supplier product: {}", e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public List<SupplierProductDTO> getAllSupplierProducts() throws SQLException {
+   public List<SupplierProductDTO> getAllSupplierProducts() {
       String sql = "SELECT * FROM supplier_products";
       try (Statement stmt = Database.getConnection().createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
@@ -164,13 +186,17 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
          }
          return supplierProducts;
       } catch (SQLException e) {
-         LOGGER.error("Error retrieving all supplier products: {}", e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public List<SupplierProductDTO> getAllSupplierProductsForSupplier(int supplierId) throws SQLException {
+   public List<SupplierProductDTO> getAllSupplierProductsForSupplier(int supplierId) {
       if (supplierId < 0) {
          LOGGER.error("Invalid supplier ID: {}", supplierId);
          throw new IllegalArgumentException("Invalid supplier ID");
@@ -198,15 +224,18 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
             throw e;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error preparing statement for retrieving supplier products for supplier ID {}: {}", supplierId,
-               e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public List<CatalogProductDTO> getCatalogProducts() throws SQLException {
-      // we need unique productID, their names and their manufacturer names
+   public List<CatalogProductDTO> getCatalogProducts() {
+
       String sql = "SELECT DISTINCT product_id, name, manufacturer_name FROM supplier_products";
       try (Statement stmt = Database.getConnection().createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
@@ -221,13 +250,17 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
          LOGGER.info("Retrieved {} catalog products", catalogProducts.size());
          return catalogProducts;
       } catch (SQLException e) {
-         LOGGER.error("Error retrieving catalog products: {}", e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public boolean supplierProductExists(int supplierId, int productId) throws SQLException {
+   public boolean supplierProductExists(int supplierId, int productId) {
       if (supplierId < 0 || productId < 0) {
          LOGGER.error("Invalid supplier or product ID: supplierId={}, productId={}", supplierId, productId);
          throw new IllegalArgumentException("Invalid supplier or product ID");
@@ -242,13 +275,17 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
             return exists;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error checking if supplier product exists: {}", e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public List<Integer> getAllSupplierIdsForProductId(int productId) throws SQLException {
+   public List<Integer> getAllSupplierIdsForProductId(int productId) {
       if (productId < 0) {
          LOGGER.error("Invalid product ID: {}", productId);
          throw new IllegalArgumentException("Invalid product ID");
@@ -268,14 +305,17 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
             throw e;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error preparing statement for retrieving supplier IDs for product ID {}: {}", productId,
-               e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public List<Integer> getAllProductIdsForSupplierId(int supplierId) throws SQLException {
+   public List<Integer> getAllProductIdsForSupplierId(int supplierId) {
       if (supplierId < 0) {
          LOGGER.error("Invalid supplier ID: {}", supplierId);
          throw new IllegalArgumentException("Invalid supplier ID");
@@ -295,10 +335,13 @@ public class JdbcSupplierProductDAO implements SupplierProductDAOInterface {
             throw e;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error preparing statement for retrieving product IDs for supplier ID {}: {}", supplierId,
-               e.getMessage());
-         throw e;
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
 }

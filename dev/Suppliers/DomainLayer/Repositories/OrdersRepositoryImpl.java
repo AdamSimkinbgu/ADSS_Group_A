@@ -1,22 +1,52 @@
 package Suppliers.DomainLayer.Repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
-import Suppliers.DomainLayer.Classes.Order;
+import Suppliers.DataLayer.DAOs.JdbcOrderDAO;
+import Suppliers.DataLayer.DAOs.JdbcOrderItemLineDAO;
+import Suppliers.DataLayer.Interfaces.OrderDAOInterface;
+import Suppliers.DataLayer.Interfaces.OrderItemLineDAOInterface;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.OrdersRepositoryInterface;
 
 public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
+   private static final Logger LOGGER = LoggerFactory.getLogger(OrdersRepositoryImpl.class);
+   private OrderDAOInterface ordersRepository;
+   private OrderItemLineDAOInterface orderItemLineDAO;
 
-   @Override
-   public OrderDTO createRegularOrder(Order order) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'createRegularOrder'");
+   public OrdersRepositoryImpl() {
+      this.ordersRepository = new JdbcOrderDAO();
+      this.orderItemLineDAO = new JdbcOrderItemLineDAO();
    }
 
    @Override
-   public void updateRegularOrder(Order order) {
+   public OrderDTO createRegularOrder(OrderDTO order) {
+      if (order == null) {
+         throw new IllegalArgumentException("OrderDTO cannot be null");
+      }
+      OrderDTO createdOrder = ordersRepository.addOrder(order);
+      List<OrderItemLineDTO> itemLines = new ArrayList<>();
+      for (OrderItemLineDTO itemLine : order.getItems()) {
+         itemLine.setOrderID(createdOrder.getOrderId());
+         OrderItemLineDTO createdItemLine = orderItemLineDAO.addOrderItemLine(itemLine);
+         if (createdItemLine == null) {
+            LOGGER.error("Failed to create order item line for order ID: {}", createdOrder.getOrderId());
+         }
+         itemLines.add(createdItemLine);
+      }
+      createdOrder.setItems(itemLines);
+      LOGGER.info("Regular order created with ID: and items: {}", createdOrder.getOrderId(), itemLines);
+      return createdOrder;
+   }
+
+   @Override
+   public void updateRegularOrder(OrderDTO order) {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'updateRegularOrder'");
    }
@@ -28,13 +58,13 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
    }
 
    @Override
-   public Order getRegularOrderById(int orderId) {
+   public OrderDTO getRegularOrderById(int orderId) {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'getRegularOrderById'");
    }
 
    @Override
-   public List<Order> getAllRegularOrders() {
+   public List<OrderDTO> getAllRegularOrders() {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'getAllRegularOrders'");
    }

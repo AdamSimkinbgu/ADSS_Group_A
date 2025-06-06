@@ -4,7 +4,6 @@ import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
-import Suppliers.DomainLayer.Classes.Order;
 
 public interface OrdersRepositoryInterface {
    /**
@@ -13,14 +12,14 @@ public interface OrdersRepositoryInterface {
     * @param order The order to be created.
     * @return The created order.
     */
-   OrderDTO createRegularOrder(Order order);
+   OrderDTO createRegularOrder(OrderDTO order);
 
    /**
     * Updates an existing order in the repository.
     * 
     * @param order The order to be updated.
     */
-   void updateRegularOrder(Order order);
+   void updateRegularOrder(OrderDTO order);
 
    /**
     * Deletes an order from the repository.
@@ -35,14 +34,14 @@ public interface OrdersRepositoryInterface {
     * @param orderId The ID of the order to be retrieved.
     * @return The order with the specified ID, or null if not found.
     */
-   Order getRegularOrderById(int orderId);
+   OrderDTO getRegularOrderById(int orderId);
 
    /**
     * Retrieves all orders in the repository.
     *
     * @return A list of all orders.
     */
-   List<Order> getAllRegularOrders();
+   List<OrderDTO> getAllRegularOrders();
 
    /**
     * Retrieves all orders for a specific supplier.

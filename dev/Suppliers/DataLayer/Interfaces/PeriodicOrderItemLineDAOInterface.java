@@ -35,12 +35,12 @@ public interface PeriodicOrderItemLineDAOInterface {
     *
     * @param id The ID of the periodic order item line to delete.
     */
-   void deletePeriodicOrderItemLine(int id);
+   boolean deletePeriodicOrderItemLine(int id);
 
    /**
     * Updates an existing periodic order item line in the database.
     *
     * @param periodicOrderItemLine The periodic order item line to be updated.
     */
-   void updatePeriodicOrderItemLine(PeriodicOrderItemLineDTO periodicOrderItemLine);
+   boolean updatePeriodicOrderItemLine(PeriodicOrderItemLineDTO periodicOrderItemLine);
 }

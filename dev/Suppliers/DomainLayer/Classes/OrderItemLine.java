@@ -3,6 +3,8 @@ package Suppliers.DomainLayer.Classes;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import Suppliers.DTOs.OrderItemLineDTO;
+
 /**
  * Represents a single line item in an order, including product details,
  * quantity, pricing, and any applicable discount.
@@ -13,7 +15,7 @@ public class OrderItemLine implements Serializable {
     private int orderItemLineID;
     private int quantity;
     private BigDecimal unitPrice;
-    private int supplierProductCatalogNumber;
+    private String supplierProductCatalogNumber;
     private String productName;
     private BigDecimal discount;
 
@@ -33,7 +35,7 @@ public class OrderItemLine implements Serializable {
             int productId,
             int quantity,
             BigDecimal unitPrice,
-            int supplierProductCatalogNumber,
+            String supplierProductCatalogNumber,
             String productName) {
         this.orderId = orderId;
         this.orderItemLineID = orderItemLineID;
@@ -62,11 +64,22 @@ public class OrderItemLine implements Serializable {
             int orderItemLineID,
             int quantity,
             BigDecimal unitPrice,
-            int supplierProductCatalogNumber,
+            String supplierProductCatalogNumber,
             String productName,
             BigDecimal discount) {
         this(orderId, orderItemLineID, productId, quantity, unitPrice, supplierProductCatalogNumber, productName);
         this.discount = discount;
+    }
+
+    public OrderItemLine(OrderItemLineDTO item) {
+        this.orderId = item.getOrderID();
+        this.productId = item.getProductId();
+        this.orderItemLineID = item.getOrderItemLineID();
+        this.quantity = item.getQuantity();
+        this.unitPrice = item.getUnitPrice();
+        this.supplierProductCatalogNumber = item.getSupplierProductCatalogNumber();
+        this.productName = item.getProductName();
+        this.discount = item.getDiscount();
     }
 
     /**
@@ -143,7 +156,7 @@ public class OrderItemLine implements Serializable {
     /**
      * @return the supplier's catalog number for this product
      */
-    public int getSupplierProductCatalogNumber() {
+    public String getSupplierProductCatalogNumber() {
         return supplierProductCatalogNumber;
     }
 
@@ -152,7 +165,7 @@ public class OrderItemLine implements Serializable {
      *
      * @param supplierProductCatalogNumber the catalog number to set
      */
-    public void setSupplierProductCatalogNumber(int supplierProductCatalogNumber) {
+    public void setSupplierProductCatalogNumber(String supplierProductCatalogNumber) {
         this.supplierProductCatalogNumber = supplierProductCatalogNumber;
     }
 

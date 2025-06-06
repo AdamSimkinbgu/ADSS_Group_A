@@ -2,6 +2,7 @@ package Suppliers.DataLayer.DAOs;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,11 +12,11 @@ import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DataLayer.Interfaces.BillofQuantitiesItemDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
-public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInterface {
+public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuantitiesItemDAOInterface {
    private static Logger LOGGER = LoggerFactory.getLogger(JdbcBillofQuantitiesItemsDAO.class);
 
    @Override
-   public BillofQuantitiesItemDTO createBillofQuantitiesItem(BillofQuantitiesItemDTO item) throws SQLException {
+   public BillofQuantitiesItemDTO createBillofQuantitiesItem(BillofQuantitiesItemDTO item) {
       if (item == null || item.getAgreementId() < 0 || item.getProductId() < 0) {
          LOGGER.error("Invalid Bill of Quantities Item data: {}", item);
          throw new IllegalArgumentException("Invalid Bill of Quantities Item data");
@@ -42,12 +43,18 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
                throw new SQLException("Creating Bill of Quantities Item failed, no ID obtained.");
             }
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
       return item;
    }
 
    @Override
-   public void updateBillofQuantitiesItem(BillofQuantitiesItemDTO item) throws SQLException {
+   public boolean updateBillofQuantitiesItem(BillofQuantitiesItemDTO item) {
       if (item == null || item.getLineInBillID() < 0 || item.getAgreementId() < 0) {
          LOGGER.error("Invalid Bill of Quantities Item data for update: {}", item);
          throw new IllegalArgumentException("Invalid Bill of Quantities Item data for update");
@@ -62,14 +69,22 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.error("Updating Bill of Quantities Item failed, no rows affected.");
-            throw new SQLException("Updating Bill of Quantities Item failed, no rows affected.");
+            return false;
          }
          LOGGER.info("Updated Bill of Quantities Item with ID: {}", item.getLineInBillID());
+         return true;
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public void deleteBillofQuantitiesItem(int agreementId, int lineId) throws SQLException {
+   public boolean deleteBillofQuantitiesItem(int agreementId, int lineId) {
       if (agreementId < 0 || lineId < 0) {
          LOGGER.error("Invalid Bill of Quantities Item ID for deletion: agreementId={}, itemId={}", agreementId,
                lineId);
@@ -82,14 +97,22 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.error("Deleting Bill of Quantities Item failed, no rows affected.");
-            throw new SQLException("Deleting Bill of Quantities Item failed, no rows affected.");
+            return false;
          }
          LOGGER.info("Deleted Bill of Quantities Item with ID: {}", lineId);
+         return true;
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public BillofQuantitiesItemDTO getBillofQuantitiesItemById(int agreementId, int lineId) throws SQLException {
+   public BillofQuantitiesItemDTO getBillofQuantitiesItemById(int agreementId, int lineId) {
       if (agreementId < 0 || lineId < 0) {
          LOGGER.error("Invalid Bill of Quantities Item ID: agreementId={}, itemId={}", agreementId, lineId);
          throw new IllegalArgumentException("Invalid Bill of Quantities Item ID");
@@ -113,11 +136,18 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
                return null;
             }
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return null;
    }
 
    @Override
-   public List<BillofQuantitiesItemDTO> getAllBillofQuantitiesItems(int agreementId) throws SQLException {
+   public List<BillofQuantitiesItemDTO> getAllBillofQantitiesItemsForAgreementId(int agreementId) {
       if (agreementId < 0) {
          LOGGER.error("Invalid Agreement ID: {}", agreementId);
          throw new IllegalArgumentException("Invalid Agreement ID");
@@ -139,10 +169,17 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
             LOGGER.info("Retrieved all Bill of Quantities Items for Agreement ID: {}", agreementId);
             return items;
          }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
-   public void deleteAllBillofQuantitiesItems(int agreementId) throws SQLException {
+   public boolean deleteAllBillofQuantitiesItems(int agreementId) {
       if (agreementId < 0) {
          LOGGER.error("Invalid Agreement ID for deletion: {}", agreementId);
          throw new IllegalArgumentException("Invalid Agreement ID for deletion");
@@ -153,134 +190,18 @@ public class JdbcBillofQuantitiesItemsDAO implements BillofQuantitiesItemDAOInte
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No Bill of Quantities Items found for Agreement ID: {}", agreementId);
+            return false;
          } else {
             LOGGER.info("Deleted all Bill of Quantities Items for Agreement ID: {}", agreementId);
+            return true;
+         }
+      } catch (SQLException e) {
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
          }
       }
+      return false;
    }
-
 }
-/*
- * package Suppliers.DataLayer.util;
- * 
- * import org.slf4j.Logger;
- * import org.slf4j.LoggerFactory;
- * 
- * import java.sql.*;
- * 
- * public final class Database {
- * private static final Logger log = LoggerFactory.getLogger(Database.class);
- * private static final String DB_URL = "jdbc:sqlite:supply.db";
- * private static Connection conn;
- * 
- * static {
- * try {
- * Class.forName("org.sqlite.JDBC");
- * conn = DriverManager.getConnection(DB_URL);
- * log.info("Connected to SQLite at {}", DB_URL);
- * 
- * try (Statement st = conn.createStatement()) {
- * // enforce FK rules in SQLite
- * st.executeUpdate("PRAGMA foreign_keys = ON;");
- * 
- * st.executeUpdate("""
- * CREATE TABLE IF NOT EXISTS suppliers(
- * supplier_id INTEGER PRIMARY KEY AUTOINCREMENT,
- * name TEXT NOT NULL,
- * tax_number TEXT NOT NULL,
- * self_supply INTEGER NOT NULL CHECK(self_supply IN (0,1)),
- * supply_days_mask TEXT NOT NULL
- * CHECK(length(supply_days_mask)=7
- * AND supply_days_mask GLOB '[01]*'),
- * street TEXT NOT NULL,
- * city TEXT NOT NULL,
- * building_number TEXT NOT NULL,
- * bank_account_number TEXT NOT NULL,
- * payment_method TEXT NOT NULL
- * CHECK(payment_method IN
- * ('CASH','CASH_ON_DELIVERY',
- * 'CREDIT_CARD','BANK_TRANSFER')),
- * payment_term TEXT NOT NULL
- * CHECK(payment_term IN ('N30','N60','N90','COD')),
- * created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
- * UNIQUE(name, tax_number)
- * );
- * """);
- * 
- * st.executeUpdate("""
- * CREATE TABLE IF NOT EXISTS contacts(
- * supplier_id INTEGER NOT NULL,
- * phone TEXT NOT NULL,
- * name TEXT NOT NULL,
- * email TEXT NOT NULL,
- * PRIMARY KEY (supplier_id, phone),
- * UNIQUE (supplier_id, email),
- * FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id)
- * ON DELETE CASCADE
- * );
- * """);
- * 
- * st.executeUpdate("""
- * CREATE TABLE IF NOT EXISTS supplier_products(
- * product_id INTEGER PRIMARY KEY AUTOINCREMENT,
- * supplier_id INTEGER NOT NULL,
- * supplier_catalog_number TEXT NOT NULL,
- * manufacturer_name TEXT NOT NULL,
- * name TEXT NOT NULL,
- * price REAL NOT NULL CHECK(price >= 0),
- * days_to_expiry INTEGER NOT NULL CHECK(days_to_expiry >= 0),
- * FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id)
- * ON DELETE CASCADE
- * );
- * """);
- * st.executeUpdate("""
- * CREATE INDEX IF NOT EXISTS idx_supplier_products_supplier
- * ON supplier_products(supplier_id);
- * """);
- * 
- * st.executeUpdate("""
- * CREATE TABLE IF NOT EXISTS agreements(
- * agreement_id INTEGER PRIMARY KEY AUTOINCREMENT,
- * supplier_id INTEGER NOT NULL,
- * agreement_start_date TEXT NOT NULL,
- * agreement_end_date TEXT NOT NULL,
- * has_fixed_supply_days INTEGER NOT NULL
- * CHECK(has_fixed_supply_days IN (0,1)),
- * valid INTEGER NOT NULL DEFAULT 1
- * CHECK(valid IN (0,1)),
- * CHECK(agreement_end_date >= agreement_start_date),
- * FOREIGN KEY(supplier_id) REFERENCES suppliers(supplier_id)
- * ON DELETE CASCADE
- * );
- * """);
- * 
- * st.executeUpdate("""
- * CREATE TABLE IF NOT EXISTS boq_items(
- * agreement_id INTEGER NOT NULL,
- * line_in_bill INTEGER NOT NULL CHECK(line_in_bill > 0),
- * product_id INTEGER NOT NULL,
- * quantity INTEGER NOT NULL CHECK(quantity > 0),
- * discount_percent REAL NOT NULL
- * CHECK(discount_percent BETWEEN 0 AND 100),
- * PRIMARY KEY (agreement_id, line_in_bill),
- * FOREIGN KEY(agreement_id) REFERENCES agreements(agreement_id)
- * ON DELETE CASCADE,
- * FOREIGN KEY(product_id) REFERENCES supplier_products(product_id)
- * );
- * """);
- * 
- * log.info("Ensured database schema exists");
- * }
- * } catch (Exception e) {
- * log.error("Database initialization failed", e);
- * throw new ExceptionInInitializerError(e);
- * }
- * }
- * 
- * private Database() {}
- * 
- * public static Connection getConnection() throws SQLException {
- * return conn;
- * }
- * }
- */

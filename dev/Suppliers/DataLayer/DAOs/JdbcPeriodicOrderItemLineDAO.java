@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInterface {
+public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrderItemLineDAOInterface {
    private static final Logger LOGGER = LoggerFactory.getLogger(JdbcPeriodicOrderItemLineDAO.class);
 
    @Override
@@ -22,7 +22,7 @@ public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInt
          LOGGER.error("Attempted to add a null periodic order item line.");
          throw new IllegalArgumentException("Periodic order item line cannot be null");
       }
-      String sql = "INSERT INTO periodic_order_item_lines (periodic_order_id, product_id, quantity) VALUES (?, ?, ?) ON CONFLICT (periodic_order_id, product_id) DO UPDATE SET quantity = EXCLUDED.quantity, unit_price = EXCLUDED.unit_price RETURNING periodic_order_item_line_id";
+      String sql = "INSERT INTO periodic_order_item_lines (periodic_order_id, product_id, quantity) VALUES (?, ?, ?)";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, periodicOrderItemLine.getPeriodicOrderId());
@@ -47,9 +47,13 @@ public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInt
             }
          }
       } catch (SQLException e) {
-         LOGGER.error("Error adding periodic order item line: {}", e.getMessage(), e);
-         throw new RuntimeException("Error adding periodic order item line", e);
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return null;
    }
 
    @Override
@@ -74,9 +78,13 @@ public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInt
             return null;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error retrieving periodic order item line: {}", e.getMessage(), e);
-         throw new RuntimeException("Error retrieving periodic order item line", e);
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return null;
    }
 
    @Override
@@ -100,13 +108,17 @@ public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInt
          }
          return itemLines;
       } catch (SQLException e) {
-         LOGGER.error("Error listing periodic order item lines: {}", e.getMessage(), e);
-         throw new RuntimeException("Error listing periodic order item lines", e);
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return new ArrayList<>();
    }
 
    @Override
-   public void deletePeriodicOrderItemLine(int id) {
+   public boolean deletePeriodicOrderItemLine(int id) {
       if (id <= 0) {
          LOGGER.error("Invalid periodic order item line ID: {}", id);
          throw new IllegalArgumentException("Periodic order item line ID must be greater than 0");
@@ -117,18 +129,24 @@ public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInt
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No periodic order item line found with ID: {}", id);
+            return false;
          } else {
             LOGGER.info("Periodic order item line with ID {} deleted successfully.", id);
+            return true;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error deleting periodic order item line: {}", e.getMessage(), e);
-         throw new RuntimeException("Error deleting periodic order item line", e);
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
    @Override
-   public void updatePeriodicOrderItemLine(PeriodicOrderItemLineDTO periodicOrderItemLine) {
-      // we can update only the quantity of the periodic order item line
+   public boolean updatePeriodicOrderItemLine(PeriodicOrderItemLineDTO periodicOrderItemLine) {
+
       if (periodicOrderItemLine == null || periodicOrderItemLine.getPeriodicOrderItemLineId() <= 0) {
          LOGGER.error("Invalid periodic order item line: {}", periodicOrderItemLine);
          throw new IllegalArgumentException("Periodic order item line cannot be null and must have a valid ID");
@@ -142,14 +160,20 @@ public class JdbcPeriodicOrderItemLineDAO implements PeriodicOrderItemLineDAOInt
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
             LOGGER.info("Periodic order item line updated successfully.");
+            return true;
          } else {
             LOGGER.warn("No periodic order item line found with ID: {}",
                   periodicOrderItemLine.getPeriodicOrderItemLineId());
+            return false;
          }
       } catch (SQLException e) {
-         LOGGER.error("Error updating periodic order item line: {}", e.getMessage(), e);
-         throw new RuntimeException("Error updating periodic order item line", e);
+         try {
+            handleSQLException(e);
+         } catch (Exception ex) {
+            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
+         }
       }
+      return false;
    }
 
 }

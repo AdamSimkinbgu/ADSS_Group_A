@@ -34,7 +34,7 @@ public interface OrderDAOInterface {
     *
     * @param orderID The ID of the order to delete.
     */
-   void deleteOrder(int orderID);
+   boolean deleteOrder(int orderID);
 
    /**
     * Updates an existing order in the database.
@@ -42,6 +42,6 @@ public interface OrderDAOInterface {
     * @param updatedOrderDTO The OrderDTO object containing the updated order
     *                        details.
     */
-   void updateOrder(OrderDTO updatedOrderDTO);
+   boolean updateOrder(OrderDTO updatedOrderDTO);
 
 }
