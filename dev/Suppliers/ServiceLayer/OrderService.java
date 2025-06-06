@@ -21,12 +21,12 @@ public class OrderService extends BaseService {
       this.orderFacade = orderFacade;
    }
 
-   public ServiceResponse<?> createOrder(OrderDTO dto) {
+   public ServiceResponse<?> createOrder(OrderDTO dto) {  // change the name  to addOrderManually
       if (dto == null) {
          return ServiceResponse.fail(List.of("OrderDTO cannot be null"));
       }
       try {
-         OrderDTO order = orderFacade.addOrder(dto);
+         OrderDTO order = orderFacade.addOrderManually(dto);
          return ServiceResponse.ok(order);
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));

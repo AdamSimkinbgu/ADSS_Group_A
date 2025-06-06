@@ -24,6 +24,12 @@ public class PeriodicOrderDTO {
         this.isActive = isActive;
 
     }
+    public PeriodicOrderDTO (DayOfWeek arrivalDate, HashMap<Integer, Integer> productsInOrder, boolean isActive) {
+        this.periodicOrderID = 0;
+        this.deliveryDay = arrivalDate;
+        this.productsInOrder = productsInOrder;
+        this.isActive = isActive;
+    }
 
     public PeriodicOrderDTO(PeriodicOrder periodicOrder) {
         this.periodicOrderID = periodicOrder.getPeriodicOrderID();

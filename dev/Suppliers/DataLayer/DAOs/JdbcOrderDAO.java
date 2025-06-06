@@ -28,8 +28,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          throw new IllegalArgumentException("Order cannot be null");
       }
       String sql = "INSERT INTO orders (supplier_id, order_date, creation_date, status) VALUES (?, ?, ?, ?)";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
-            PreparedStatement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, orderDTO.getSupplierId());
          preparedStatement.setString(2, orderDTO.getOrderDate().toString());
          preparedStatement.setString(3, LocalDate.now().toString());
@@ -61,7 +60,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
    }
 
    @Override
-   public Optional<OrderDTO> getOrder(int orderID) {
+   public Optional<OrderDTO> getOrderByID(int orderID) {
       if (orderID <= 0) {
          LOGGER.error("Invalid order ID: {}", orderID);
          throw new IllegalArgumentException("Order ID must be greater than 0");

@@ -20,7 +20,7 @@ public interface OrderDAOInterface {
     * @param orderID The ID of the order to retrieve.
     * @return An OrderDTO object representing the order, or null if not found.
     */
-   Optional<OrderDTO> getOrder(int orderID);
+   Optional<OrderDTO> getOrderByID(int orderID);
 
    /**
     * Lists all orders in the database.
