@@ -1,10 +1,12 @@
 package Suppliers.ServiceLayer;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
+import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DomainLayer.SupplierFacade;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.ProductValidator;
@@ -30,6 +32,8 @@ public class SupplierService extends BaseService {
          try {
             SupplierDTO supplier = supplierFacade.createSupplier(supplierDTO);
             return ServiceResponse.ok("Supplier created successfully with ID: " + supplier.getId());
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to create supplier: " + e.getMessage()));
          }
@@ -48,6 +52,8 @@ public class SupplierService extends BaseService {
             } else {
                return ServiceResponse.fail(List.of("Failed to update supplier with ID " + supplierID));
             }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to update supplier: " + e.getMessage()));
          }
@@ -62,6 +68,8 @@ public class SupplierService extends BaseService {
          try {
             supplierFacade.removeSupplier(id);
             return ServiceResponse.ok("Supplier with ID " + id + " removed successfully");
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to remove supplier: " + e.getMessage()));
          }
@@ -80,6 +88,8 @@ public class SupplierService extends BaseService {
             } else {
                return ServiceResponse.fail(List.of("Supplier not found"));
             }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to retrieve supplier: " + e.getMessage()));
          }
@@ -92,6 +102,8 @@ public class SupplierService extends BaseService {
       try {
          List<SupplierDTO> suppliers = supplierFacade.getAllSuppliers();
          return ServiceResponse.ok(suppliers);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to retrieve suppliers: " + e.getMessage()));
       }
@@ -107,6 +119,8 @@ public class SupplierService extends BaseService {
             } else {
                return ServiceResponse.fail(List.of("Supplier with ID " + supplierID + " does not exist"));
             }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to check supplier existence: " + e.getMessage()));
          }
@@ -130,6 +144,8 @@ public class SupplierService extends BaseService {
             }
             supplierFacade.addProductToSupplierAndMemory(supplierID, productDTO);
             return ServiceResponse.ok("Product added successfully to supplier with ID " + supplierID);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to add product: " + e.getMessage()));
          }
@@ -154,6 +170,8 @@ public class SupplierService extends BaseService {
             }
             supplierFacade.updateProductInSupplierAndMemory(supplierID, productDTO);
             return ServiceResponse.ok("Product updated successfully for supplier with ID " + supplierID);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to update product: " + e.getMessage()));
          }
@@ -171,6 +189,8 @@ public class SupplierService extends BaseService {
          supplierFacade.removeProductFromSupplierAndDB(supplierID, productID);
          return ServiceResponse
                .ok("Product with ID " + productID + " removed successfully from supplier with ID " + supplierID);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to remove product: " + e.getMessage()));
       }
@@ -182,6 +202,8 @@ public class SupplierService extends BaseService {
          try {
             List<SupplierProductDTO> products = supplierFacade.getSupplierProducts(supplierID);
             return ServiceResponse.ok(products);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to retrieve products: " + e.getMessage()));
          }
@@ -194,6 +216,8 @@ public class SupplierService extends BaseService {
       try {
          List<CatalogProductDTO> products = supplierFacade.getProductCatalog();
          return ServiceResponse.ok(products);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to retrieve all products: " + e.getMessage()));
       }
@@ -209,6 +233,8 @@ public class SupplierService extends BaseService {
             } else {
                return ServiceResponse.fail(List.of("No products found for supplier with ID " + supplierID));
             }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
          } catch (Exception e) {
             return ServiceResponse.fail(List.of("Failed to retrieve products: " + e.getMessage()));
          }

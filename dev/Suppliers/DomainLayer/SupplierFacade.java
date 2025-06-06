@@ -64,7 +64,7 @@ public class SupplierFacade {
       // check if there is nothing to update
       if (supplier.get().equals(supplierDTO)) {
          LOGGER.info("No changes detected for supplier ID: {}", supplierID);
-         return false; // No changes to update
+         return true; // No changes to update
       }
       if (suppliersAgreementsRepo.updateSupplier(supplierDTO)) {
          LOGGER.info("Supplier with ID {} updated successfully", supplierID);

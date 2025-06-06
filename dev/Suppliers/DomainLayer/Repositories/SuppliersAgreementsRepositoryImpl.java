@@ -158,15 +158,15 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                } else {
                   LOGGER.info("No changes detected in contact: {}", contact.getName());
                }
-            } else {
-               LOGGER.info("Creating new contact: {}", contact.getName());
-               contact.setSupplierId(supplier.getId());
-               contactInfoDAO.createContactInfo(contact);
-               contactsChanged++;
             }
          }
       }
-      return contactsChanged > 0;
+      if (contactsChanged > 0) {
+         LOGGER.info("Updated {} contact(s) for supplier with ID: {}", contactsChanged, supplier.getId());
+      } else {
+         LOGGER.info("No changes detected in contacts for supplier with ID: {}", supplier.getId());
+      }
+      return true;
    }
 
    @Override
@@ -352,13 +352,39 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to create a null supplier product");
          throw new IllegalArgumentException("Supplier product cannot be null");
       }
-      if (supplierProduct.getSupplierId() < 0 || supplierProduct.getProductId() < 0) {
-         LOGGER.error("Attempted to create supplier product with negative IDs: supplierId={}, productId={}",
-               supplierProduct.getSupplierId(), supplierProduct.getProductId());
-         throw new IllegalArgumentException("Supplier ID and Product ID cannot be negative");
+      if (supplierProduct.getSupplierId() < 0) {
+         LOGGER.error("Attempted to create supplier product with negative supplier ID: {}",
+               supplierProduct.getSupplierId());
+         throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
+      if (supplierProduct.getProductId() >= 0) {
+         LOGGER.error("Attempted to create supplier product with existing product ID: {}",
+               supplierProduct.getProductId());
+         throw new IllegalArgumentException("Product ID must be negative for new products");
+      }
+      // supplierProduct.setProductId(findNextProductId(supplierProduct.getName(),
+      // supplierProduct.getManufacturerName()));
       SupplierProductDTO createdProduct = saveSupplierProductInMemoryDB(supplierProduct);
       return createdProduct;
+   }
+
+   private int findNextProductId(String productName, String manufacturerName) {
+      LOGGER.info("Finding product ID for product: {} by manufacturer: {}", productName, manufacturerName);
+      List<CatalogProductDTO> catalogProducts = supplierProductDAO.getCatalogProducts();
+      int maxProductId = catalogProducts.stream()
+            .filter(product -> product.getProductName().equalsIgnoreCase(productName)
+                  && product.getManufacturerName().equalsIgnoreCase(manufacturerName))
+            .mapToInt(CatalogProductDTO::getProductId)
+            .max()
+            .orElse(-1);
+      if (maxProductId < 0) {
+         LOGGER.info("New product name and manufacturer found, setting product ID to the next available ID");
+         return catalogProducts.size() + 1; // Assuming product IDs are sequential
+      } else {
+         LOGGER.info("Found existing product ID: {} and setting it for product: {} by manufacturer: {}",
+               maxProductId, productName, manufacturerName);
+         return maxProductId;
+      }
    }
 
    public SupplierProductDTO saveSupplierProductInMemoryDB(SupplierProductDTO supplierProductToSave) {

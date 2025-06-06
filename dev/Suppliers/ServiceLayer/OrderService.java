@@ -5,6 +5,7 @@ import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DomainLayer.OrderFacade;
 
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
@@ -23,6 +24,8 @@ public class OrderService extends BaseService {
       try {
          OrderDTO order = orderFacade.addOrder(dto);
          return ServiceResponse.ok(order);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
       }
@@ -61,6 +64,8 @@ public class OrderService extends BaseService {
          PeriodicOrderDTO createdPeriodicOrder = orderFacade.createPeriodicOrder(
                periodicOrderDTO.getDeliveryDay(), periodicOrderDTO.getProductsInOrder());
          return ServiceResponse.ok(createdPeriodicOrder);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to create periodic order: " + e.getMessage()));
       }
