@@ -77,7 +77,7 @@ public final class Database {
 
                 /* ───────────────────────── contacts ───────────────────────── */
                 st.executeUpdate("""
-                            CREATE TABLE IF NOT EXISTS contacts(
+                            CREATE TABLE IF NOT EXISTS contact_info(
                                 supplier_id INTEGER NOT NULL,
                                 phone       TEXT    NOT NULL,
                                 name        TEXT    NOT NULL,
@@ -243,7 +243,7 @@ public final class Database {
             st.executeUpdate("DELETE FROM boq_items;");
             st.executeUpdate("DELETE FROM agreements;");
             st.executeUpdate("DELETE FROM supplier_products;");
-            st.executeUpdate("DELETE FROM contacts;");
+            st.executeUpdate("DELETE FROM contact_info;");
             st.executeUpdate("DELETE FROM suppliers;");
             st.executeUpdate("DELETE FROM sqlite_sequence;"); // reset autoincrement
             // counters
