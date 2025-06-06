@@ -431,18 +431,18 @@ public final class Database {
             st.executeUpdate("""
                         INSERT OR IGNORE INTO supplier_products(
                             supplier_id, supplier_catalog_number, manufacturer_name, name, price, weight, days_to_expiry
-                        ) VALUES
-                            (1,'123456','Yotvata',     'Milk 3%',           10.00, 1.0, 30),
-                            (1,'654321','Telma',       'Cornflacks Cariot',  20.00, 2.0, 60),
-                            (2,'789012','Tnuva',       'Cottage Cheese',     15.00, 1.5, 45),
-                            (2,'210987','DeliMeat',    'Pastrami Sandwich',  25.00, 3.0, 90),
-                            (3,'345678','Tnuva',       'Milk 3%',            30.00, 2.5, 15),
-                            (3,'876543','Ossem',       'Bamba',              40.00, 4.0, 120),
-                            (4,'444111','Galil',       'Olive Oil 1L',       25.00, 1.2, 180),
-                            (4,'444112','Galil',       'Zaatar Mix 200g',   12.50,  0.3,  90),
-                            (4,'444113','Galil',       'Pita Bread Pack (5)', 5.00,  0.5,   2),
-                            (5,'555111','Neve',        'Fresh Milk 2L',       15.00,  2.0,   7),
-                            (5,'555112','Neve',        'Labneh 250g',         8.00,  0.4,  14)
+                        ) VALUES                                                                    --product ID
+                            (1,'123456','Yotvata',     'Milk 3%',           10.00, 1.0, 30),        --1
+                            (1,'654321','Telma',       'Cornflacks Cariot',  20.00, 2.0, 60),       --2
+                            (2,'789012','Tnuva',       'Cottage Cheese',     15.00, 1.5, 45),       --3
+                            (2,'210987','DeliMeat',    'Pastrami Sandwich',  25.00, 3.0, 90),       --4
+                            (3,'345678','Tnuva',       'Milk 3%',            30.00, 2.5, 15),       --5
+                            (3,'876543','Ossem',       'Bamba',              40.00, 4.0, 120),      --6
+                            (4,'444111','Galil',       'Olive Oil 1L',       25.00, 1.2, 180),      --7
+                            (4,'444112','Galil',       'Zaatar Mix 200g',   12.50,  0.3,  90),   --8
+                            (4,'444113','Galil',       'Pita Bread Pack (5)', 5.00,  0.5,   2),     --9
+                            (5,'555111','Neve',        'Fresh Milk 2L',       15.00,  2.0,   7),    --10
+                            (5,'555112','Neve',        'Labneh 250g',         8.00,  0.4,  14)      --11
                         ;
                     """);
             LOGGER.info("Inserted default supplier products");
