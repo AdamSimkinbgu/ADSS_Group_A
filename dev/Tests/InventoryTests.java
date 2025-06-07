@@ -48,7 +48,7 @@ public class InventoryTests {
         main.AddProduct(p);
         List<SupplyDTO> ls = new ArrayList<>();
         ls.add(new SupplyDTO(100, 10, LocalDate.now().plusDays(7)));
-        main.DeliverOrder(new OrderPackageDTO(2,LocalDate.now(),ls));
+        main.DeliverOrder(new OrderPackageDTO(2, LocalDate.now(), ls));
         assertDoesNotThrow(() -> main.UpdateInventoryRestock());
     }
 
@@ -58,7 +58,7 @@ public class InventoryTests {
         List<SupplyDTO> ls = new ArrayList<>();
         ls.add(new SupplyDTO(99, 10, LocalDate.now().plusDays(7)));
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            main.DeliverOrder(new OrderPackageDTO(1,LocalDate.now(), ls));
+            main.DeliverOrder(new OrderPackageDTO(1, LocalDate.now(), ls));
             main.UpdateInventoryRestock();
         });
         assertFalse(exception.getMessage().contains("no product with this ip"));
@@ -66,14 +66,14 @@ public class InventoryTests {
 
     @Test
     public void testGetMissingReportWithMissingProduct() {
-        main.AddProduct(new ProductDTO(55,"Cheese", "Tnuva", 20, 50, 6.0f, new Position(1, 1), new Position(2, 2)));
+        main.AddProduct(new ProductDTO(55, "Cheese", "Tnuva", 20, 50, 6.0f, new Position(1, 1), new Position(2, 2)));
         String report = main.GetMissingReport();
         assertFalse(report.contains("Cheese"));
     }
 
     @Test
     public void testGetBadReportWithNoBadProducts() {
-        main.AddProduct(new ProductDTO(56,"Yogurt", "Tara", 10, 10, 4.5f,
+        main.AddProduct(new ProductDTO(56, "Yogurt", "Tara", 10, 10, 4.5f,
                 new Position(1, 1), new Position(2, 2)));
         String report = main.GetBadReport();
         assertFalse(report.contains("Yogurt"));
@@ -81,7 +81,7 @@ public class InventoryTests {
 
     @Test
     public void testAddBadProductAffectsReport() {
-        main.AddProduct(new ProductDTO(57,"Eggs", "Local", 10, 10, 12.0f,
+        main.AddProduct(new ProductDTO(57, "Eggs", "Local", 10, 10, 12.0f,
                 new Position(1, 1), new Position(2, 2)));
         main.AddBadProduct(57, 3);
         String report = main.GetBadReport();
@@ -90,7 +90,7 @@ public class InventoryTests {
 
     @Test
     public void testMoveProductChangesStoreShelf() {
-        main.AddProduct(new ProductDTO(80,"Tomato", "Farm", 5, 5, 3.0f,
+        main.AddProduct(new ProductDTO(80, "Tomato", "Farm", 5, 5, 3.0f,
                 new Position(0, 0), new Position(1, 1)));
         Position newPos = new Position(4, 4);
         main.MoveProduct(80, true, newPos);
@@ -101,7 +101,7 @@ public class InventoryTests {
 
     @Test
     public void testSearchByIdReturnsCorrectInfo() {
-        main.AddProduct(new ProductDTO(81,"Cucumber", "Farm", 5, 5, 2.5f,
+        main.AddProduct(new ProductDTO(81, "Cucumber", "Farm", 5, 5, 2.5f,
                 new Position(1, 1), new Position(2, 2)));
         ProductDomain p = main.Search(81);
         assertEquals("Cucumber", p.getproductName());
@@ -109,7 +109,7 @@ public class InventoryTests {
 
     @Test
     public void testMoveProductChangesWarehouseShelf() {
-        main.AddProduct(new ProductDTO(82,"Apple", "Farm", 5, 5, 2.5f,
+        main.AddProduct(new ProductDTO(82, "Apple", "Farm", 5, 5, 2.5f,
                 new Position(1, 1), new Position(2, 2)));
         Position newWarehousePos = new Position(5, 5);
         main.MoveProduct(82, false, newWarehousePos);
@@ -118,7 +118,7 @@ public class InventoryTests {
         assertEquals(5, p.getwareHouseShelf().shelf());
     }
 
-    // --------------- New tests added -----------------
+    // // --------------- New tests added -----------------
 
     @Test
     public void testAddCategorySuccessfully() {
@@ -139,7 +139,7 @@ public class InventoryTests {
         ProductDTO p = new ProductDTO(10, "Juice", "Prigat", 10, 20, 5.0f,
                 new Position(1, 1), new Position(2, 2));
         main.AddProduct(p);
-        DiscountDTO d = new DiscountDTO( 0.1f, LocalDate.now().plusDays(7), 10);
+        DiscountDTO d = new DiscountDTO(0.1f, LocalDate.now().plusDays(7), 10);
         d.setpId(10);
         assertDoesNotThrow(() -> main.AddDiscount(d));
     }
@@ -147,7 +147,7 @@ public class InventoryTests {
     @Test
     public void testAddDiscountToCategory() {
         main.AddCategory("Snacks");
-        DiscountDTO d = new DiscountDTO( 0.2f, LocalDate.now().plusDays(5), "Snacks");
+        DiscountDTO d = new DiscountDTO(0.2f, LocalDate.now().plusDays(5), "Snacks");
         assertDoesNotThrow(() -> main.AddDiscount(d));
     }
 
@@ -164,7 +164,7 @@ public class InventoryTests {
                 new Position(1, 1), new Position(2, 2));
         main.AddProduct(p);
         // Adding a discount
-        DiscountDTO d = new DiscountDTO( 0.5f, LocalDate.now().plusDays(2), 1);
+        DiscountDTO d = new DiscountDTO(0.5f, LocalDate.now().plusDays(2), 1);
         d.setpId(11);
         main.AddDiscount(d);
 
@@ -174,7 +174,6 @@ public class InventoryTests {
 
         main.DeliverOrder(new OrderPackageDTO(1, LocalDate.now(), ls));
         main.UpdateInventoryRestock();
-
 
         HashMap<Integer, Integer> products = new HashMap<>();
         products.put(11, 2);
@@ -195,12 +194,11 @@ public class InventoryTests {
 
     @Test
     public void testAddBadProductCausesMissing() {
-        main.AddProduct(new ProductDTO(90,"Ketchup", "Heinz", 1, 5, 4.5f,
+        main.AddProduct(new ProductDTO(90, "Ketchup", "Heinz", 1, 5, 4.5f,
                 new Position(1, 1), new Position(2, 2)));
         String msg = main.AddBadProduct(90, 2);
         assertTrue(msg.contains("Warning"));
     }
-
 
     @Test
     public void testMoveProductInvalidId() {

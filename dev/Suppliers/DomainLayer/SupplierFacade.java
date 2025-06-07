@@ -3,7 +3,6 @@ package Suppliers.DomainLayer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.InvalidParameterException;
-import java.sql.SQLException;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -64,7 +63,7 @@ public class SupplierFacade {
       // check if there is nothing to update
       if (supplier.get().equals(supplierDTO)) {
          LOGGER.info("No changes detected for supplier ID: {}", supplierID);
-         return false; // No changes to update
+         return true; // No changes to update
       }
       if (suppliersAgreementsRepo.updateSupplier(supplierDTO)) {
          LOGGER.info("Supplier with ID {} updated successfully", supplierID);
@@ -82,20 +81,6 @@ public class SupplierFacade {
       }
       return supplier.get();
 
-   }
-
-   public void addAgreementToSupplier(AgreementDTO agreementDTO) {
-      if (agreementDTO == null) {
-         LOGGER.error("AgreementDTO cannot be null");
-         throw new InvalidParameterException("AgreementDTO cannot be null");
-      }
-
-      SupplierDTO supplier = suppliersAgreementsRepo.getSupplierById(agreementDTO.getSupplierId())
-            .orElseThrow(
-                  () -> new IllegalArgumentException("Supplier not found for ID: " + agreementDTO.getSupplierId()));
-      agreementDTO.setSupplierName(supplier.getName());
-      agreementDTO.setSupplierId(supplier.getId());
-      suppliersAgreementsRepo.addAgreementToSupplier(agreementDTO, supplier.getId());
    }
 
    public List<SupplierDTO> getAllSuppliers() {
@@ -227,6 +212,9 @@ public class SupplierFacade {
       Optional<AgreementDTO> existingAgreement = suppliersAgreementsRepo.getAgreementById(agreementId);
       if (existingAgreement.isEmpty()) {
          throw new IllegalArgumentException("Agreement not found for ID: " + agreementId);
+      } else if (updatedAgreement.equals(existingAgreement.get())) {
+         LOGGER.info("No changes detected for agreement ID: {}", agreementId);
+         return; // No changes to update
       }
       suppliersAgreementsRepo.updateAgreement(updatedAgreement);
 

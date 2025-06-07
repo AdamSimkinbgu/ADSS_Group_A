@@ -26,13 +26,13 @@ public class PresentationMenu {
         om.registerModule(new JavaTimeModule());
     }
 
-    public boolean Integration(){
+    public boolean Integration() {
         return ms.SetIntegrationService();
     }
 
     public void Initialize(InitializeState input) {
         // Initialize the inventory with the given input
-        ms.Initialize(input);
+        // ms.Initialize(input);
     }
 
     public void Menu() {
@@ -240,7 +240,6 @@ public class PresentationMenu {
     // VVVVVVVVV
     private void AddNewCategory() {
 
-
         // get name
         System.out.println("Enter category name: ");
         scanner.nextLine(); // clear the input buffer
@@ -251,7 +250,6 @@ public class PresentationMenu {
     }
 
     private void AddToCategory() {
-
 
         System.out.println("Enter the name of the category: ");
         scanner.nextLine(); // clear the input buffer
@@ -274,7 +272,7 @@ public class PresentationMenu {
             System.out.println(response);
         } else if (pOrc == 2) {
             System.out.println("Enter the name of the category: ");
-            //scanner.nextLine(); // clear the input buffer
+            // scanner.nextLine(); // clear the input buffer
             String subCatName = scanner.nextLine();
 
             String response = ms.AddToCategory(catName, subCatName);
@@ -285,7 +283,6 @@ public class PresentationMenu {
 
     // VVVVVVVVV
     private void MoveProduct() {
-
 
         // get id
         System.out.println("Enter product id: ");
@@ -419,7 +416,7 @@ public class PresentationMenu {
             s = om.readValue(response, SaleDTO.class);
             System.out.println("=====Sale Report=====");
             System.out.println("Sale id: " + s.getId());
-            for(Integer key : s.getProducts().keySet()) {
+            for (Integer key : s.getProducts().keySet()) {
                 System.out.println("Product id: " + key + ", Quantity: " + s.getProducts().get(key));
             }
 
@@ -432,7 +429,6 @@ public class PresentationMenu {
 
     // VVVVVVVV
     private void AddBadProduct() {
-
 
         // get id
         System.out.println("Enter product id: ");
@@ -471,7 +467,7 @@ public class PresentationMenu {
             } else if (input != 0) {
                 System.out.println("Invalid input.");
             }
-        }while (input != 0);
+        } while (input != 0);
     }
 
     // VVVVVVVV
@@ -489,18 +485,18 @@ public class PresentationMenu {
 
         System.out.println("To search category by name press 1 and to search product by id press 2");
         int choice = scanner.nextInt();
-        if( choice != 1 && choice != 2) {
+        if (choice != 1 && choice != 2) {
             System.out.println("Invalid choice");
             return;
-        }
-        else if (choice == 1) {
+        } else if (choice == 1) {
 
             // get category name
             System.out.println("Enter category name: ");
             String catName = scanner.next();
             String response = ms.Search(catName);
             try {
-                ArrayList<ProductService> ls = om.readValue(response, new TypeReference<ArrayList<ProductService>>() {});
+                ArrayList<ProductService> ls = om.readValue(response, new TypeReference<ArrayList<ProductService>>() {
+                });
                 System.out.println("=====Category Report=====");
                 System.out.println("------------------------------------------------");
                 System.out.printf("| %-15s | %-8s | %-7s | %-8s | %-8s |%n",
@@ -520,8 +516,7 @@ public class PresentationMenu {
             }
             return;
 
-        }
-        else {
+        } else {
 
             // get id
             System.out.println("Enter product id: ");
@@ -547,8 +542,6 @@ public class PresentationMenu {
         }
     }
 
-
-
     private void OrderMissing() {
         String msg = ms.AddMissingOrder();
         System.out.println(msg);
@@ -558,18 +551,19 @@ public class PresentationMenu {
 
         int pId = 0;
 
-        HashMap<Integer,Integer> order = new HashMap<>();
+        HashMap<Integer, Integer> order = new HashMap<>();
 
-        //get the product list
+        // get the product list
         while (pId != -1) {
             System.out.println("Enter product ID (to end enter -1): ");
             pId = scanner.nextInt();
 
-            if(pId< -1)System.out.println("Invalid product ID.");
+            if (pId < -1)
+                System.out.println("Invalid product ID.");
             else if (pId != -1) {
                 System.out.println("Enter quantity");
                 int quantity = scanner.nextInt();
-                order.put(pId,quantity);
+                order.put(pId, quantity);
             }
         }
         System.out.println("Enter a day of the week by number (1-7)");
@@ -579,7 +573,7 @@ public class PresentationMenu {
         System.out.println(msg);
     }
 
-    private void DeleteRecurringOrder(){
+    private void DeleteRecurringOrder() {
         System.out.println("Enter the order ID to delete: ");
         int orderId = scanner.nextInt();
         if (orderId < 0) {
@@ -590,6 +584,5 @@ public class PresentationMenu {
         String response = ms.DeleteRecurringOrder(orderId);
         System.out.println(response);
     }
-
 
 }

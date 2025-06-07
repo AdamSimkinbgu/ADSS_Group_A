@@ -1,15 +1,12 @@
 package Suppliers.DomainLayer;
 
-import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
-import Suppliers.DTOs.SupplierProductDTO;
 import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 
-import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.util.*;
 

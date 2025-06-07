@@ -26,7 +26,7 @@ public class RemoveOrderCMD implements CommandInterface {
         }
 
         try {
-            ServiceResponse<?> res = orderService.removeOrder(String.valueOf(orderId));
+            ServiceResponse<?> res = orderService.removeOrder(orderId);
             if (res.isSuccess()) {
                 view.showMessage("-- Order removed successfully --");
             } else {

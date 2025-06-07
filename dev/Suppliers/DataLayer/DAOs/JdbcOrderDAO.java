@@ -12,10 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Suppliers.DTOs.OrderDTO;
-import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DataLayer.Interfaces.OrderDAOInterface;
-import Suppliers.DataLayer.Interfaces.OrderItemLineDAOInterface;
 import Suppliers.DataLayer.util.Database;
 
 public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
@@ -51,11 +49,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -67,14 +62,17 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          throw new IllegalArgumentException("Order ID must be greater than 0");
       }
       String sql = "SELECT * FROM orders WHERE order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, orderID);
          ResultSet resultSet = preparedStatement.executeQuery();
          if (resultSet.next()) {
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setOrderId(resultSet.getInt("order_id"));
             orderDTO.setSupplierId(resultSet.getInt("supplier_id"));
-            orderDTO.setOrderDate(resultSet.getDate("order_date").toLocalDate());
+            orderDTO.setOrderDate(LocalDate.parse(resultSet.getString("order_date")));
+            orderDTO.setCreationDate(LocalDate.parse(resultSet.getString("creation_date")));
+            // orderDTO.setContactPhoneNumber(resultSet.getString("contact_phone_number"));
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
             orderDTO.setSupplierName(getSupplierName(orderDTO.getSupplierId()));
             LOGGER.info("Order retrieved: {}", orderDTO);
@@ -84,11 +82,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             return Optional.empty();
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return Optional.empty();
    }
@@ -110,11 +105,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.info("Retrieved {} orders", orders.size());
          return orders;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -126,7 +118,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          throw new IllegalArgumentException("Order ID must be greater than 0");
       }
       String sql = "DELETE FROM orders WHERE order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, orderID);
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
@@ -136,11 +129,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.info("Order with ID {} deleted successfully", orderID);
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -152,7 +142,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          throw new IllegalArgumentException("Order cannot be null and must have a valid ID");
       }
       String sql = "UPDATE orders SET supplier_id = ?, order_date = ?, status = ? WHERE order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, updatedOrderDTO.getSupplierId());
          preparedStatement.setString(2, updatedOrderDTO.getOrderDate().toString());
          preparedStatement.setString(3, updatedOrderDTO.getStatus().name());
@@ -166,18 +157,16 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.info("Order with ID {} updated successfully", updatedOrderDTO.getOrderId());
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
 
    private String getSupplierName(int supplierId) {
       String sql = "SELECT name FROM suppliers WHERE supplier_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, supplierId);
          ResultSet resultSet = preparedStatement.executeQuery();
          if (resultSet.next()) {
@@ -187,11 +176,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             return null;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }

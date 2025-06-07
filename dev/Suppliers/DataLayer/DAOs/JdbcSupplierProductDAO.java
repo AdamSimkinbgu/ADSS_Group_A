@@ -28,7 +28,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
       String sql = "INSERT INTO supplier_products (supplier_id, supplier_catalog_number, manufacturer_name, "
             + "name, price, weight, days_to_expiry) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql,
+            Statement.RETURN_GENERATED_KEYS)) {
          pstmt.setInt(1, supplierProduct.getSupplierId());
          pstmt.setString(2, supplierProduct.getSupplierCatalogNumber());
          pstmt.setString(3, supplierProduct.getManufacturerName());
@@ -53,11 +54,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return supplierProduct;
    }
@@ -85,7 +83,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
                      rs.getString("manufacturer_name"));
                return Optional.of(supplierProduct);
             } else {
-               LOGGER.info("No supplier product found for supplierId={} and productId={}", supplierId, productId);
+               LOGGER.warn("No supplier product found for supplierId={} and productId={}", supplierId, productId);
                return Optional.empty();
             }
          } catch (SQLException e) {
@@ -93,11 +91,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             throw e;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return Optional.empty();
    }
@@ -129,11 +124,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
          LOGGER.info("Updated supplier product with ID: {}", supplierProduct.getProductId());
          return true;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -157,11 +149,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             return true;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -186,11 +175,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
          }
          return supplierProducts;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -224,11 +210,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             throw e;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -250,11 +233,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
          LOGGER.info("Retrieved {} catalog products", catalogProducts.size());
          return catalogProducts;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -275,11 +255,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             return exists;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -305,11 +282,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             throw e;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }
@@ -335,11 +309,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             throw e;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }

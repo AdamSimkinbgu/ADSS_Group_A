@@ -3,7 +3,7 @@ package Suppliers.ServiceLayer;
 import java.util.List;
 
 import Suppliers.DTOs.AgreementDTO;
-import Suppliers.DomainLayer.AgreementFacade;
+import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DomainLayer.SupplierFacade;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.AgreementValidator;
@@ -25,6 +25,8 @@ public class AgreementService extends BaseService {
       try {
          AgreementDTO actualAgreementDTO = supplierController.createAgreement(agreementDTO);
          return ServiceResponse.ok(actualAgreementDTO);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to create agreement: " + e.getMessage()));
       }
@@ -38,6 +40,8 @@ public class AgreementService extends BaseService {
       try {
          supplierController.updateAgreement(agreementID, updatedAgreement);
          return ServiceResponse.ok("Agreement updated successfully");
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to update agreement: " + e.getMessage()));
       }
@@ -53,6 +57,8 @@ public class AgreementService extends BaseService {
       try {
          supplierController.removeAgreement(agreementID, supplierID);
          return ServiceResponse.ok("Agreement removed successfully");
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to remove agreement: " + e.getMessage()));
       }
@@ -69,6 +75,8 @@ public class AgreementService extends BaseService {
             return ServiceResponse.fail(List.of("Agreement not found for ID: " + agreementID));
          }
          return ServiceResponse.ok(agreement);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to retrieve agreement: " + e.getMessage()));
       }
@@ -92,6 +100,8 @@ public class AgreementService extends BaseService {
             return ServiceResponse.fail(List.of("No agreements found for supplier ID: " + supplierId));
          }
          return ServiceResponse.ok(agreements);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
       } catch (Exception e) {
          return ServiceResponse.fail(List.of("Failed to retrieve agreements: " + e.getMessage()));
       }
