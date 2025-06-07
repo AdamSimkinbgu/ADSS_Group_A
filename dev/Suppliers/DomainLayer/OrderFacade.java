@@ -106,8 +106,8 @@ public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay, HashMap<Integer,
         return orderHandler.handleOrder(infoDTO);
     }
 
-    public OrderDTO createOrderByShortage(int branchId, HashMap<Integer, Integer> shortage){
-            if (shortage == null || shortage.isEmpty()) {
+    public OrderDTO createOrderByShortage(OrderInfoDTO infoDTO) throws SQLException {
+            if (infoDTO == null || infoDTO.isEmpty()) {
                 throw new IllegalArgumentException("Shortage map cannot be null or empty");
             }
             OrderInfoDTO infoDTO = new OrderInfoDTO(branchId, shortage);

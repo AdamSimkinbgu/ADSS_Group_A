@@ -203,4 +203,28 @@ public class OrderHandler {
 
       return new OrderResultDTO(success, failure);
    }
+
+    public OrderDTO getOrderById(int orderID) {
+      return null ; //TODO
+    }
+
+   public List<OrderDTO> getAllOrders() {
+      return null; //TODO 
+   }
+
+   public OrderDTO updateOrderInfo(OrderDTO updatedOrder) {
+      return null; //TODO 
+   }
+
+   public OrderDTO updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) {
+   }
+
+   public List<OrderDTO> getOrdersBySupplier(int supplierID) {
+   }
+
+   public HashMap<Integer, OrderDTO> getOrdersForToday() {
+   }
+
+   public OrderDTO markOrderAsCollected(int orderID) {
+   }
 }
