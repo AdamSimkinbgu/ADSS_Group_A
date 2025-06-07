@@ -192,6 +192,8 @@ public class MainService {
         ServiceResponse<?> response = is.getCatalog();
         if (!response.isSuccess()) {
             return response.getErrors().toString();
+        } else if (response.getValue() == null) {
+            return "No products in catalog";
         }
         List<CatalogProductDTO> catalog = (List<CatalogProductDTO>) response.getValue();
 

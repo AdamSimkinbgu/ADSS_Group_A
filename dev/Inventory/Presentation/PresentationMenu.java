@@ -136,7 +136,7 @@ public class PresentationMenu {
             }
             System.out.println(table.toString());
         } catch (Exception e) {
-            System.out.println();
+            System.out.println(msg);
             return;
         }
 

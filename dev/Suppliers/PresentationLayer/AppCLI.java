@@ -30,8 +30,9 @@ public class AppCLI implements View {
       // Initialize the services
       AgreementService agreementService = new AgreementService(supplierFacade);
       SupplierService supplierService = new SupplierService(supplierFacade);
-      integrationService = IntegrationService.getIntegrationServiceInstance();
       OrderService orderService = new OrderService(orderFacade);
+      IntegrationService.setIntegrationServiceInstance(supplierService, orderService);
+      integrationService = IntegrationService.getIntegrationServiceInstance();
       // SystemService systemService = new SystemService(supplierFacade, orderFacade,
       // agreementFacade);
 
