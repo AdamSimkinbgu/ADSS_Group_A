@@ -38,15 +38,11 @@ class JdbcOrderDAOTest {
    void insertAndFetchOrder_roundTrip() throws SQLException {
       // Arrange: assume supplier_id=1 exists, build a minimal OrderDTO
       OrderDTO toInsert = new OrderDTO(
-            /* orderId = */ -1,
             /* supplierId = */ 1,
-            /* supplierName = */ "Supplier X",
             /* orderDate = */ LocalDate.of(2025, 6, 1),
-            /* creationDate = */ LocalDate.of(2025, 5, 30),
             /* address = */ new AddressDTO("123 Elm St", "Gotham", "10001"),
             /* contactPhoneNumber = */ "555-9999",
-            /* items = */ List.of(),
-            /* status = */ Suppliers.DTOs.Enums.OrderStatus.PENDING);
+            /* items = */ List.of());
 
       // Act: insert & fetch
       OrderDTO created = dao.addOrder(toInsert);

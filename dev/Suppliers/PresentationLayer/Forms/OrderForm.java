@@ -23,7 +23,6 @@ public class OrderForm extends InteractiveForm<OrderDTO> {
         view.showMessage("Please fill in the following details:");
         int supplierId = askInt("Enter the supplier ID:");
         LocalDate orderDate = askDate("Enter the order date (DD-MM-YYYY):");
-        LocalDate creationDate = LocalDate.now();
         AddressDTO addressDTO = askAddress("Enter the delivery address details:");
         String contactPhoneNumber = askPhone("Enter contact phone number:");
         List<OrderItemLineDTO> items = new ArrayList<>();
@@ -38,9 +37,7 @@ public class OrderForm extends InteractiveForm<OrderDTO> {
             OrderItemLineDTO line = new OrderItemLineDTO(productId, quantity);
             items.add(line);
         }
-        OrderStatus status = OrderStatus.SENT;
-        OrderDTO dto = new OrderDTO(supplierId, orderDate, creationDate,
-                addressDTO, contactPhoneNumber, items, status);
+        OrderDTO dto = new OrderDTO(supplierId, orderDate, addressDTO, contactPhoneNumber, items);
         return dto;
     }
 

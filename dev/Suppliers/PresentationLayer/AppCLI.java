@@ -39,7 +39,7 @@ public class AppCLI implements View {
       Map<String, CommandInterface> supplierCommands = initializeSupplierCommands(supplierService);
       Map<String, CommandInterface> productCommands = initializeProductCommands(supplierService);
       Map<String, CommandInterface> agreementCommands = initializeAgreementCommands(agreementService, supplierService);
-      Map<String, CommandInterface> orderCommands = initializeOrderCommands(orderService);
+      Map<String, CommandInterface> orderCommands = initializeOrderCommands(orderService, supplierService);
 
       // Initialize the controllers
       this.supplierCLI = new SupplierCLI(this, supplierCommands);
@@ -76,13 +76,20 @@ public class AppCLI implements View {
       return commands;
    }
 
-   private Map<String, CommandInterface> initializeOrderCommands(OrderService orderService) {
+   private Map<String, CommandInterface> initializeOrderCommands(OrderService orderService,
+         SupplierService supplierService) {
       Map<String, CommandInterface> commands = new HashMap<>();
-      commands.put("CreateOrderCMD", new CreateOrderCMD(this, orderService));
-      commands.put("CreatePeriodicOrderCMD", new CreatePeriodicOrderCMD(this, orderService));
-      // commands.put("UpdateOrderCMD", new UpdateOrderCMD(this, orderFacade));
-      // commands.put("RemoveOrderCMD", new RemoveOrderCMD(this, orderFacade));
-      // commands.put("ViewAllOrdersCMD", new ViewAllOrdersCMD(this, orderFacade));
+
+      commands.put("CreateOrderCMD", new CreateOrderCMD(this, orderService, supplierService));
+      commands.put("UpdateOrderCMD", new UpdateOrderCMD(this, orderService, supplierService));
+      commands.put("RemoveOrderCMD", new RemoveOrderCMD(this, orderService));
+      commands.put("ViewAllOrdersCMD", new ViewAllOrdersCMD(this, orderService));
+      // Periodic order commands
+      commands.put("CreatePeriodicOrderCMD", new CreatePeriodicOrderCMD(this, orderService, supplierService));
+      commands.put("UpdatePeriodicOrderCMD", new UpdatePeriodicOrderCMD(this, orderService, supplierService));
+      commands.put("RemovePeriodicOrderCMD", new RemovePeriodicOrderCMD(this, orderService));
+      commands.put("ViewAllPeriodicOrdersCMD", new ViewAllPeriodicOrdersCMD(this, orderService));
+      commands.put("ViewAllPeriodicOrdersForTodayCMD", new ViewAllPeriodicOrdersForTodayCMD(this, orderService));
       return commands;
    }
 

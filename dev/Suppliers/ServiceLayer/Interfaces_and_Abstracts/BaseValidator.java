@@ -263,4 +263,20 @@ public abstract class BaseValidator {
       }
       return true;
    }
+
+   protected boolean isDateInPast(LocalDate date) {
+      if (date == null) {
+         return false;
+      }
+      LocalDate today = LocalDate.now();
+      return date.isBefore(today);
+   }
+
+   protected boolean isDateInFuture(LocalDate date) {
+      if (date == null) {
+         return false;
+      }
+      LocalDate today = LocalDate.now();
+      return date.isAfter(today);
+   }
 }
