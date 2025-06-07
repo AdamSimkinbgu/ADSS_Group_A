@@ -71,7 +71,7 @@ public class AppCLI implements View {
       Map<String, CommandInterface> commands = new HashMap<>();
       commands.put("CreateAgreementCMD", new CreateAgreementCMD(this, agreementService));
       commands.put("UpdateAgreementCMD", new UpdateAgreementCMD(this, agreementService));
-      commands.put("RemoveAgreementCMD", new RemoveAgreementCMD(this, agreementService, supplierService));
+      commands.put("RemoveAgreementCMD", new RemoveAgreementCMD(this, agreementService));
       commands.put("ViewAllAgreementsForSupplierCMD", new ViewAgreementsBySupplierIdCMD(this, agreementService));
       return commands;
    }

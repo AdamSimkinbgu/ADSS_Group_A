@@ -1,34 +1,23 @@
 package Suppliers.DomainLayer.Repositories;
 
-import java.math.BigDecimal;
-import java.time.DayOfWeek;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import Suppliers.DTOs.AddressDTO;
 import Suppliers.DTOs.AgreementDTO;
 import Suppliers.DTOs.BillofQuantitiesItemDTO;
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.ContactInfoDTO;
-import Suppliers.DTOs.PaymentDetailsDTO;
 import Suppliers.DTOs.SupplierDTO;
 import Suppliers.DTOs.SupplierProductDTO;
 import Suppliers.DTOs.Enums.InitializeState;
-import Suppliers.DTOs.Enums.PaymentMethod;
-import Suppliers.DTOs.Enums.PaymentTerm;
 import Suppliers.DataLayer.DAOs.*;
 
 import Suppliers.DataLayer.Interfaces.*;
 import Suppliers.DataLayer.util.Database;
-import Suppliers.DomainLayer.Classes.Agreement;
-import Suppliers.DomainLayer.Classes.BillofQuantitiesItem;
-import Suppliers.DomainLayer.Classes.Supplier;
-import Suppliers.DomainLayer.Classes.SupplierProduct;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.SuppliersAgreementsRepositoryInterface;
 
 public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRepositoryInterface {
@@ -59,6 +48,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
 
    public void initialize(InitializeState state) {
       LOGGER.info("Initiating SuppliersAgreementsRepositoryImpl with state: {}", state);
+      Database.setDB_URL(Database.getURL("dev"));
       switch (state) {
          case CURRENT_STATE -> {
             LOGGER.info("Loading current state from database");
@@ -368,25 +358,6 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       return createdProduct;
    }
 
-   private int findNextProductId(String productName, String manufacturerName) {
-      LOGGER.info("Finding product ID for product: {} by manufacturer: {}", productName, manufacturerName);
-      List<CatalogProductDTO> catalogProducts = supplierProductDAO.getCatalogProducts();
-      int maxProductId = catalogProducts.stream()
-            .filter(product -> product.getProductName().equalsIgnoreCase(productName)
-                  && product.getManufacturerName().equalsIgnoreCase(manufacturerName))
-            .mapToInt(CatalogProductDTO::getProductId)
-            .max()
-            .orElse(-1);
-      if (maxProductId < 0) {
-         LOGGER.info("New product name and manufacturer found, setting product ID to the next available ID");
-         return catalogProducts.size() + 1; // Assuming product IDs are sequential
-      } else {
-         LOGGER.info("Found existing product ID: {} and setting it for product: {} by manufacturer: {}",
-               maxProductId, productName, manufacturerName);
-         return maxProductId;
-      }
-   }
-
    public SupplierProductDTO saveSupplierProductInMemoryDB(SupplierProductDTO supplierProductToSave) {
       LOGGER.debug("Attempting to save the supplier product in memory and in DB: {}", supplierProductToSave.getName() +
             " with supplierId: " + supplierProductToSave.getSupplierId());
@@ -619,6 +590,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
 
    private void loadEmptyState() {
       LOGGER.info("Clearing data base for empty state...");
+      Database.setDB_URL(Database.getURL("dev"));
       Database.deleteAllData();
       LOGGER.info("Empty state loaded into DB!");
    }

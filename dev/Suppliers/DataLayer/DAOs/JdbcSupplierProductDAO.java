@@ -28,7 +28,8 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
       String sql = "INSERT INTO supplier_products (supplier_id, supplier_catalog_number, manufacturer_name, "
             + "name, price, weight, days_to_expiry) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql,
+            Statement.RETURN_GENERATED_KEYS)) {
          pstmt.setInt(1, supplierProduct.getSupplierId());
          pstmt.setString(2, supplierProduct.getSupplierCatalogNumber());
          pstmt.setString(3, supplierProduct.getManufacturerName());
@@ -82,7 +83,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
                      rs.getString("manufacturer_name"));
                return Optional.of(supplierProduct);
             } else {
-               LOGGER.info("No supplier product found for supplierId={} and productId={}", supplierId, productId);
+               LOGGER.warn("No supplier product found for supplierId={} and productId={}", supplierId, productId);
                return Optional.empty();
             }
          } catch (SQLException e) {

@@ -82,7 +82,7 @@ public class OrderPackageDTO {
       if (!(o instanceof OrderPackageDTO))
          return false;
       OrderPackageDTO that = (OrderPackageDTO) o;
-      return (orderId == orderId) &&
+      return (orderId == that.orderId) &&
             deliveryDate.equals(that.deliveryDate) &&
             supplies.equals(that.supplies);
    }

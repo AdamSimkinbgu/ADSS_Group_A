@@ -8,7 +8,6 @@ import Suppliers.DataLayer.DAOs.JdbcSupplierDAO;
 import Suppliers.DataLayer.util.Database;
 import Suppliers.DTOs.AgreementDTO;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
@@ -64,16 +63,17 @@ class JdbcAgreementDAOTest {
    }
 
    @Test
-   void insertingWithMissingForeignKey_throwsDataAccessException() {
-      // Attempt to insert an agreement for a supplier_id that does not exist (e.g.,
+   void insertingWithSupplierThatWasNotAssigned_throwsDataAccessException() {
+      // Attempt to insert an agreement for a supplier_id that does not exist
+      // (e.g.,
       // 9999)
       AgreementDTO bad = new AgreementDTO(
-            /* supplierId = */ 9999,
+            /* supplierId = */ -1,
             /* supplierName = */ "Nonexistent",
             /* start = */ LocalDate.of(2025, 1, 1),
             /* end = */ LocalDate.of(2025, 1, 2),
             /* items = */ List.of());
-      assertThrows(DataAccessException.class, () -> dao.createAgreement(bad),
+      assertThrows(IllegalArgumentException.class, () -> dao.createAgreement(bad),
             "Inserting an agreement with nonexistent supplier_id should fail FK constraint");
    }
 }

@@ -26,7 +26,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
         }
         LOGGER.info("Creating supplier: {}", supplier.getName());
         String sql = "INSERT INTO suppliers (name, tax_number, self_supply, supply_days_mask, lead_supply_days, street, city, building_number,  bank_account_number, payment_method, payment_term) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
+        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
+                sql,
                 PreparedStatement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, supplier.getName());
             preparedStatement.setString(2, supplier.getTaxNumber());
@@ -84,7 +85,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
         }
         LOGGER.info("Retrieving supplier with ID: {}", id);
         String sql = "SELECT * FROM suppliers WHERE supplier_id = ?";
-        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = Database.getConnection()
+                .prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -122,7 +124,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
         }
         LOGGER.info("Updating supplier: {}", supplier.getId());
         String sql = "UPDATE suppliers SET supplier_id = ?, name = ?, tax_number = ?, self_supply = ?, supply_days_mask = ?, lead_supply_days = ?, street = ?, city = ?, building_number = ?, bank_account_number = ?, payment_method = ?, payment_term = ? WHERE supplier_id = ?";
-        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = Database.getConnection()
+                .prepareStatement(sql)) {
             preparedStatement.setInt(1, supplier.getId());
             preparedStatement.setString(2, supplier.getName());
             preparedStatement.setString(3, supplier.getTaxNumber());
@@ -163,7 +166,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
         }
         LOGGER.info("Deleting supplier with ID: {}", id);
         String sql = "DELETE FROM suppliers WHERE supplier_id = ?";
-        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = Database.getConnection()
+                .prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
@@ -187,7 +191,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
         List<ContactInfoDTO> contactsForSupplier = new ArrayList<>();
 
         String contactSql = "SELECT * FROM contact_info WHERE supplier_id = ?";
-        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = Database.getConnection()
+                .prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -204,7 +209,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                         resultSet.getString("bank_account_number"),
                         resultSet.getString("payment_method"),
                         resultSet.getString("payment_term"));
-                try (PreparedStatement contactStatement = Database.getConnection().prepareStatement(contactSql)) {
+                try (PreparedStatement contactStatement = Database.getConnection()
+                        .prepareStatement(contactSql)) {
                     contactStatement.setInt(1, supplier.getId());
                     ResultSet contactResultSet = contactStatement.executeQuery();
                     while (contactResultSet.next()) {
@@ -240,7 +246,8 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
         }
         LOGGER.info("Checking if supplier exists with ID: {}", id);
         String sql = "SELECT COUNT(*) FROM suppliers WHERE supplier_id = ?";
-        try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = Database.getConnection()
+                .prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

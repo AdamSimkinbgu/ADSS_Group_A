@@ -1,6 +1,5 @@
 package Suppliers.ServiceLayer;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import Suppliers.DTOs.CatalogProductDTO;

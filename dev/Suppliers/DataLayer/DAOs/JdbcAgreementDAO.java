@@ -30,7 +30,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
       }
       String sql = "INSERT INTO agreements (supplier_id, agreement_start_date, "
             + "agreement_end_date, valid) VALUES (?, ?, ?, ?)";
-      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement pstmt = Database.getConnection().prepareStatement(sql,
+            Statement.RETURN_GENERATED_KEYS)) {
          pstmt.setInt(1, agreement.getSupplierId());
          pstmt.setString(2, Date.valueOf(agreement.getAgreementStartDate()).toString());
          pstmt.setString(3, Date.valueOf(agreement.getAgreementEndDate()).toString());
@@ -46,7 +47,6 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             if (generatedKeys.next()) {
                int id = generatedKeys.getInt(1);
                agreement.setAgreementId(id);
-               LOGGER.info("Created agreement with ID: {}", id);
             } else {
                LOGGER.error("Creating agreement failed, no ID obtained.");
                throw new SQLException("Creating agreement failed, no ID obtained.");
@@ -57,13 +57,14 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             item.setAgreementId(agreement.getAgreementId());
             billofQuantitiesItemsDAO.createBillofQuantitiesItem(item);
          }
-         LOGGER.info("Inserted {} bill of quantities items for agreement ID: {}",
+         LOGGER.debug("Inserted {} bill of quantities items for agreement ID: {}",
                agreement.getBillOfQuantitiesItems().size(), agreement.getAgreementId());
 
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
          handleSQLException(e);
       }
+      LOGGER.info("Created agreement with ID: {}", agreement.getAgreementId());
       return agreement;
    }
 
@@ -90,7 +91,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                for (BillofQuantitiesItemDTO item : items) {
                   item.setAgreementId(id);
                   String productCatalogSql = "SELECT name FROM supplier_products WHERE product_id = ?";
-                  try (PreparedStatement productPstmt = Database.getConnection().prepareStatement(productCatalogSql)) {
+                  try (PreparedStatement productPstmt = Database.getConnection()
+                        .prepareStatement(productCatalogSql)) {
                      productPstmt.setInt(1, item.getProductId());
                      try (ResultSet productRs = productPstmt.executeQuery()) {
                         if (productRs.next()) {
@@ -106,7 +108,8 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                }
                agreement.setBillOfQuantitiesItems(items);
                String supplierSql = "SELECT name FROM suppliers WHERE supplier_id = ?";
-               try (PreparedStatement supplierPstmt = Database.getConnection().prepareStatement(supplierSql)) {
+               try (PreparedStatement supplierPstmt = Database.getConnection()
+                     .prepareStatement(supplierSql)) {
                   supplierPstmt.setInt(1, agreement.getSupplierId());
                   try (ResultSet supplierRs = supplierPstmt.executeQuery()) {
                      if (supplierRs.next()) {
@@ -153,11 +156,11 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             LOGGER.warn("No agreement found with ID: {}", agreement.getAgreementId());
             return false;
          } else {
-            LOGGER.info("Updated agreement with ID: {}", agreement.getAgreementId());
             for (BillofQuantitiesItemDTO item : agreement.getBillOfQuantitiesItems()) {
                item.setAgreementId(agreement.getAgreementId());
                billofQuantitiesItemsDAO.updateBillofQuantitiesItem(item);
             }
+            LOGGER.info("Updated agreement with ID: {}", agreement.getAgreementId());
             return true;
          }
 
