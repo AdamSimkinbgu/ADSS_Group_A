@@ -242,27 +242,9 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          supplierIdsToSpecifications.remove(id);
          agreementsCache.remove(id);
       }
-      // delete all supplier products for this supplier
-      List<SupplierProductDTO> supplierProducts = supplierProductDAO.getAllSupplierProductsForSupplier(id);
-      if (supplierProducts.isEmpty()) {
-         LOGGER.warn("No supplier products found for supplier with ID: {}", id);
-      } else {
-         for (SupplierProductDTO product : supplierProducts) {
-            if (product.getProductId() < 0) {
-               LOGGER.warn("Product ID cannot be negative in supplier product: {}, skipping", product);
-               continue; // Skip items with negative product IDs
-            }
-            // Remove from cache
-            List<SupplierProduct> products = supplierIdsToSpecifications.get(id);
-            if (products != null) {
-               products.removeIf(p -> p.getProductId() == product.getProductId());
-               if (products.isEmpty()) {
-                  supplierIdsToSpecifications.remove(id);
-               }
-            }
-            supplierProductDAO.deleteSupplierProduct(id, product.getProductId());
-            LOGGER.info("Deleted supplier product: {} for supplier with ID: {}", product, id);
-         }
+      if (!supplierDAO.deleteSupplier(id)) {
+         LOGGER.error("Failed to delete supplier with ID: {}", id);
+         throw new RuntimeException("Failed to delete supplier");
       }
       LOGGER.info("Supplier with ID {} deleted successfully from DB", id);
       return true;
@@ -317,7 +299,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       return createdAgreementDTO;
    }
 
-   public AgreementDTO saveAgreementInMemoryDB(AgreementDTO agreementToSave) {
+   private AgreementDTO saveAgreementInMemoryDB(AgreementDTO agreementToSave) {
       Optional<SupplierDTO> optionalSupplier = getSupplierById(agreementToSave.getSupplierId());
       if (optionalSupplier.isPresent()) {
          SupplierDTO supplier = optionalSupplier.get();
@@ -358,6 +340,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             if (item.getProductId() < 0) {
                LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
             }
+            item.setAgreementId(savedAgreement.getAgreementId());
             BillofQuantitiesItemDTO createdBOQitem = billofQuantitiesItemDAO.createBillofQuantitiesItem(item);
             if (createdBOQitem == null) {
                LOGGER.error("Failed to create Bill of Quantities item: {}", item);
@@ -541,7 +524,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       return createdProduct;
    }
 
-   public SupplierProductDTO saveSupplierProductInMemoryDB(SupplierProductDTO supplierProductToSave) {
+   private SupplierProductDTO saveSupplierProductInMemoryDB(SupplierProductDTO supplierProductToSave) {
       LOGGER.debug("Attempting to save the supplier product in memory and in DB: {}", supplierProductToSave.getName() +
             " with supplierId: " + supplierProductToSave.getSupplierId());
       if (supplierProductToSave.getProductId() < 0) {

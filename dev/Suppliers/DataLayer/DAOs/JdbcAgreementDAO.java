@@ -109,7 +109,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
          handleSQLException(e);
       }
-      return false;
+      return true;
    }
 
    @Override

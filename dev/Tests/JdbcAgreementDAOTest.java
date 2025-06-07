@@ -2,7 +2,6 @@ package Tests;
 
 import org.junit.jupiter.api.*;
 
-import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DataLayer.DAOs.JdbcAgreementDAO;
 import Suppliers.DataLayer.DAOs.JdbcSupplierDAO;
 import Suppliers.DataLayer.util.Database;
@@ -19,9 +18,13 @@ class JdbcAgreementDAOTest {
    private JdbcAgreementDAO dao;
    private JdbcSupplierDAO daoSup;
 
+   @BeforeAll
+   static void initDatabase() throws SQLException {
+      Database.setDB_URL(Database.DB_TEST_URL);
+   }
+
    @BeforeEach
    void setUp() throws SQLException {
-      Database.setDB_URL(Database.DB_TEST_URL);
       Database.seedDefaultData();
       dao = new JdbcAgreementDAO();
       daoSup = new JdbcSupplierDAO();
