@@ -80,26 +80,20 @@ public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay, HashMap<Integer,
 //                                        Order
 //#######################################################################################################################
 
-//    public OrderDTO addOrderManually(OrderDTO orderDTO) {
-//        if (orderDTO == null) {
-//            throw new IllegalArgumentException("OrderDTO cannot be null");
-//        }
-//        // Validate that all products exist in the supplier's catalog
-//        List<OrderItemLineDTO> filteredProducts = filterItemsThatSupplierDoesntHave(orderDTO.getItems(), orderDTO.getSupplierId()); // why Suplieer id ?? becuse it manulay? ifwe dont have this ?
-//        if (filteredProducts.isEmpty()) {
-//            LOGGER.warn("No valid products found for the order. Please check the product IDs.");
-//            return null;
-//        }
-//        filteredProducts = supplierFacade.setProductNameAndCategoryForOrderItems(filteredProducts, orderDTO.getSupplierId());
-//        filteredProducts = supplierFacade.setSupplierPricesAndDiscountsByBestPrice(filteredProducts, orderDTO.getSupplierId());
-//        orderDTO.setItems(filteredProducts);
-//        orderDTO.setSupplierName(supplierFacade.getSupplierDTO(orderDTO.getSupplierId()).getName());
-//        OrderDTO order = orderHandler.addOrder(orderDTO);
-//        if (order == null) {
-//            throw new RuntimeException("Failed to add order");
-//        }
-//        return order;
-//    }
+    public OrderDTO addOrderManually(OrderDTO orderDTO) {
+        if (orderDTO == null) {
+            throw new IllegalArgumentException("OrderDTO cannot be null");
+        }
+        // Validate that all products exist in the supplier's catalog
+        List<OrderItemLineDTO> filteredProducts = filterItemsThatSupplierDoesntHave(orderDTO.getItems(), orderDTO.getSupplierId()); // why Suplieer id ?? becuse it manulay? ifwe dont have this ?
+        if (filteredProducts.isEmpty()) {
+            LOGGER.warn("No valid products found for the order. Please check the product IDs.");
+            return null;
+        }
+    }
+
+
+
 
 
     public OrderResultDTO createOrder(OrderInfoDTO infoDTO) throws SQLException {
