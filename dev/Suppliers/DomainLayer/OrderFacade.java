@@ -2,6 +2,7 @@ package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.InitializeState;
+import Suppliers.DomainLayer.Classes.PeriodicOrder;
 import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 
 import java.sql.SQLException;
@@ -60,21 +61,10 @@ public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay, HashMap<Integer,
     return periodicOrderDTO;
 }
 
-    public PeriodicOrderDTO executePeriodicOrder(int periodicOrderID) {
-        PeriodicOrder periodicOrder = periodicOrderController.getPeriodicOrderById(periodicOrderID);
-        if (periodicOrder == null) {
-            LOGGER.warn("Periodic order with ID {} not found", periodicOrderID);
-            throw new IllegalArgumentException("Invalid periodic order ID");
-        }
+    public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day) {
+        List<PeriodicOrder> periodicOrders = PeriodicOrderHandler.getAllActivePeriodicOrdersByDay(day);
 
-        OrderInfoDTO orderInfo = periodicOrder.toOrderInfoDTO(); // נניח שיש מתודה כזו
-        try {
-            orderHandler.handleOrder(orderInfo);
-            LOGGER.info("Executed periodic order ID {}", periodicOrderID);
-        } catch (SQLException e) {
-            LOGGER.error("Failed to execute periodic order ID {}: {}", periodicOrderID, e.getMessage());
-            throw new RuntimeException(e);
-        }
+        return orderHandler.executePeriodicOrdersForDay(day);
     }
 //#######################################################################################################################
 //                                        Order

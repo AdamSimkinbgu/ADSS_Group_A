@@ -7,6 +7,7 @@ import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.OrdersRepositoryIn
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 import java.util.ArrayList;
@@ -226,5 +227,13 @@ public class OrderHandler {
    }
 
    public OrderDTO markOrderAsCollected(int orderID) {
+   }
+
+   public OrderDTO removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) {
+   }
+
+   public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day) {
+
+
    }
 }

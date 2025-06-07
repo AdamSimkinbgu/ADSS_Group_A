@@ -12,10 +12,12 @@ import Suppliers.DataLayer.DAOs.JdbcPeriodicOrderDAO;
 import Suppliers.DataLayer.DAOs.JdbcPeriodicOrderItemLineDAO;
 import Suppliers.DataLayer.Interfaces.PeriodicOrderDAOInterface;
 import Suppliers.DataLayer.Interfaces.PeriodicOrderItemLineDAOInterface;
+import Suppliers.DomainLayer.Classes.PeriodicOrder;
 
 public class PeriodicOrderHandler {
    private final PeriodicOrderDAOInterface periodicOrderDAO = new JdbcPeriodicOrderDAO();
    private final PeriodicOrderItemLineDAOInterface periodicOrderItemLineDAO = new JdbcPeriodicOrderItemLineDAO();
+
 
    public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay, Map<Integer, Integer> filteredProducts) {
       if (fixedDay == null || filteredProducts == null || filteredProducts.isEmpty()) {
@@ -41,4 +43,8 @@ public class PeriodicOrderHandler {
       createdPeriodicOrder.setProductsInOrder(productsThatProccessedWell);
       return createdPeriodicOrder;
    }
+
+   public static List<PeriodicOrder> getAllActivePeriodicOrdersByDay(DayOfWeek day) {
+   }
+
 }
