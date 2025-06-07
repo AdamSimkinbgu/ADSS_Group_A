@@ -2,6 +2,7 @@ package Suppliers.DTOs;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import Suppliers.DomainLayer.Classes.Agreement;
@@ -18,17 +19,32 @@ public class AgreementDTO {
    public AgreementDTO() {
    }
 
-   public AgreementDTO(Agreement agreement) {
-      this.agreementId = agreement.getAgreementId();
-      this.supplierId = agreement.getSupplierId();
-      this.supplierName = agreement.getSupplierName();
-      this.valid = agreement.isValid();
-      this.agreementStartDate = agreement.getAgreementStartDate();
-      this.agreementEndDate = agreement.getAgreementEndDate();
-      this.billOfQuantitiesItems = agreement.getBillOfQuantitiesItems().stream()
-            .map(item -> new BillofQuantitiesItemDTO(item, this.agreementId))
-            .toList();
+//   public AgreementDTO(Agreement agreement) {
+//      this.agreementId = agreement.getAgreementId();
+//      this.supplierId = agreement.getSupplierId();
+//      this.supplierName = agreement.getSupplierName();
+//      this.valid = agreement.isValid();
+//      this.agreementStartDate = agreement.getAgreementStartDate();
+//      this.agreementEndDate = agreement.getAgreementEndDate();
+//      this.billOfQuantitiesItems = agreement.getBillOfQuantitiesItems().stream()
+//            .map(item -> new BillofQuantitiesItemDTO(item, this.agreementId))
+//            .toList();
+//   }
+
+   public AgreementDTO(int supplierId,            // for the AgreementDAO
+                       int agreementId,
+                       LocalDate startDate,
+                       LocalDate endDate,
+                       boolean valid) {
+      this.supplierId = supplierId;
+      this.agreementId = agreementId;
+      this.agreementStartDate = startDate;
+      this.agreementEndDate = endDate;
+      this.valid = valid;
+      this.supplierName = "";
+      this.billOfQuantitiesItems = new ArrayList<>();
    }
+
 
    public AgreementDTO(int supplierId, String supplierName,
          LocalDate agreementStartDate, LocalDate agreementEndDate,

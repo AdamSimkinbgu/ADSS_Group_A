@@ -3,7 +3,6 @@ package Suppliers.DomainLayer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.InvalidParameterException;
-import java.sql.SQLException;
 import java.util.*;
 
 import Suppliers.DomainLayer.Classes.Supplier;
@@ -383,14 +382,46 @@ public class SupplierFacade {
          LOGGER.warn("No suppliers found in the database for product ID: {}", productId);
          return Collections.emptyList();
       }
-      return supplierIds;
+      List <Supplier> result = new ArrayList<>();
+      for (Integer id : supplierIds) {
+         Optional<SupplierDTO> optionalSupplierDTO = suppliersAgreementsRepo.getSupplierById(id);
+         if (optionalSupplierDTO.isPresent()) {
+            result.add(new Supplier(optionalSupplierDTO.get()));
+         }
+      }
+      return result;
+   }
+
+   /**
+    * Retrieves a SupplierProductDTO for a specific supplier/product pair.
+    *
+    * @param supplierId the supplier's ID
+    * @param productId  the product's ID
+    * @return Optional containing SupplierProductDTO if found, or empty otherwise
+    */
+   Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId){
+      return suppliersAgreementsRepo.getSupplierProductById(supplierId,productId);
    }
 
 
-   SupplierProductDTO getSupplierProductById(int supplierId, int productId){}
-   List<AgreementDTO> getAgreementsForSupplier(int supplierId){}
-   List<BillofQuantitiesItemDTO> getBoQItemsForAgreement(int agreementId){}
+   /**
+    * Retrieves all agreements for a given supplier.
+    *
+    * @param supplierId the supplier's ID
+    * @return a List of AgreementDTO objects (could be empty if none found)
+    */
+   public List<AgreementDTO> getAgreementsForSupplier(int supplierId) {
+      return suppliersAgreementsRepo.getAllAgreementsForSupplier(supplierId);
+   }
 
-
+   /**
+    * Retrieves all Bill of Quantities items for a given agreementId.
+    *
+    * @param agreementId the agreement's ID
+    * @return a List of BillofQuantitiesItemDTO (could be empty if none found)
+    */
+   public List<BillofQuantitiesItemDTO> getBoQItemsForAgreement(int agreementId) {
+      return suppliersAgreementsRepo.getBillOfQuantitiesItemsForAgreement(agreementId);
+   }
 
 }
