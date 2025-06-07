@@ -3,8 +3,7 @@ package Suppliers.DataLayer.Interfaces;
 import java.util.List;
 import java.util.Optional;
 
-import Suppliers.DTOs.AgreementDTO;
-import Suppliers.DTOs.BillofQuantitiesItemDTO;
+import Suppliers.DTOs.AgreementDTO;;
 
 public interface AgreementDAOInterface {
    AgreementDTO createAgreement(AgreementDTO agreement);
@@ -19,9 +18,6 @@ public interface AgreementDAOInterface {
 
    List<AgreementDTO> getAllAgreementsForSupplier(int supplierId);
 
-   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId);
-
    boolean agreementExists(int id);
 
-   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsByProductId(int productId);
 }

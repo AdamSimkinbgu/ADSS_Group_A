@@ -1,6 +1,7 @@
 package Suppliers.DataLayer.DAOs;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,36 +106,34 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
    }
 
    @Override
-   public BillofQuantitiesItemDTO getBillofQuantitiesItemById(int agreementId, int lineId) {
-      if (agreementId < 0 || lineId < 0) {
-         LOGGER.error("Invalid Bill of Quantities Item ID: agreementId={}, itemId={}", agreementId, lineId);
-         throw new IllegalArgumentException("Invalid Bill of Quantities Item ID");
+   public List<BillofQuantitiesItemDTO> getBillofQuantitiesItemsById(int lineId) {
+      if (lineId < 0) {
+         LOGGER.error("Invalid product ID: {}", lineId);
+         throw new IllegalArgumentException("Invalid product ID");
       }
-      String sql = "SELECT * FROM boq_items WHERE agreement_id = ? AND line_in_bill = ?";
+      String sql = "SELECT * FROM boq_items WHERE line_in_bill = ?";
       try (PreparedStatement preparedStatement = Database.getConnection()
             .prepareStatement(sql)) {
-         preparedStatement.setInt(1, agreementId);
-         preparedStatement.setInt(2, lineId);
-         try (var resultSet = preparedStatement.executeQuery()) {
-            if (resultSet.next()) {
+         preparedStatement.setInt(1, lineId);
+         try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            List<BillofQuantitiesItemDTO> items = new ArrayList<>();
+            while (resultSet.next()) {
                BillofQuantitiesItemDTO item = new BillofQuantitiesItemDTO();
                item.setAgreementId(resultSet.getInt("agreement_id"));
                item.setLineInBillID(resultSet.getInt("line_in_bill"));
                item.setProductId(resultSet.getInt("product_id"));
                item.setQuantity(resultSet.getInt("quantity"));
                item.setDiscountPercent(resultSet.getBigDecimal("discount_percent"));
-               LOGGER.debug("Retrieved Bill of Quantities Item with ID: {}", lineId);
-               return item;
-            } else {
-               LOGGER.warn("No Bill of Quantities Item found with ID: {}", lineId);
-               return null;
+               items.add(item);
             }
+            LOGGER.debug("Retrieved Bill of Quantities Items for Line ID: {}", lineId);
+            return items;
          }
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
          handleSQLException(e);
       }
-      return null;
+      return new ArrayList<>();
    }
 
    @Override

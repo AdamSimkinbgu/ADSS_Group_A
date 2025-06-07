@@ -33,7 +33,7 @@ public final class Database {
             conn = DriverManager.getConnection("jdbc:sqlite:supply.db");
             LOGGER.info("Connected to SQLite at {}", "jdbc:sqlite:supply.db");
             System.out.println("---------- SQLITE FILE INFO (after connection) ----------");
-            try (Statement st = Database.getConnection().createStatement()) {
+            try (Statement st = conn.createStatement()) {
                 // enforce FK rules in SQLite
                 st.executeUpdate("PRAGMA foreign_keys = ON;");
 
@@ -364,6 +364,7 @@ public final class Database {
                 }
                 LOGGER.info("Ensured database schema exists");
             }
+            conn.close();
         } catch (Exception e) {
             LOGGER.error("Database initialization failed", e);
             throw new ExceptionInInitializerError(e);
@@ -373,7 +374,7 @@ public final class Database {
             conn = DriverManager.getConnection("jdbc:sqlite:supplyTest.db");
             LOGGER.info("Connected to SQLite at {}", "jdbc:sqlite:supplyTest.db");
             System.out.println("---------- SQLITE FILE INFO (after connection) ----------");
-            try (Statement st = Database.getConnection().createStatement()) {
+            try (Statement st = conn.createStatement()) {
                 // enforce FK rules in SQLite
                 st.executeUpdate("PRAGMA foreign_keys = ON;");
 
@@ -704,6 +705,7 @@ public final class Database {
                 }
                 LOGGER.info("Ensured test database schema exists");
             }
+            conn.close();
         } catch (Exception e) {
             LOGGER.error("Database initialization failed", e);
             throw new ExceptionInInitializerError(e);
@@ -769,7 +771,7 @@ public final class Database {
      */
     public static void seedDefaultData() {
         deleteAllData();
-        try (Statement st = DriverManager.getConnection(DB_URL).createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             // ────────────── 1. PRAGMA ──────────────
             st.executeUpdate("PRAGMA foreign_keys = ON;");
 

@@ -49,21 +49,6 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
                     supplier.setId(id);
-                    try (PreparedStatement contactStatement = Database.getConnection()
-                            .prepareStatement(
-                                    "INSERT INTO contact_info (supplier_id, name, email, phone) VALUES (?, ?, ?, ?)")) {
-                        for (ContactInfoDTO contact : supplier.getContactsInfoDTOList()) {
-                            contactStatement.setInt(1, id);
-                            contactStatement.setString(2, contact.getName());
-                            contactStatement.setString(3, contact.getEmail());
-                            contactStatement.setString(4, contact.getPhone());
-                            contactStatement.addBatch();
-                        }
-                        contactStatement.executeBatch();
-                        supplier.setContacts(supplier.getContactsInfoDTOList());
-                        LOGGER.info("{} contacts for supplier ID {} created successfully",
-                                supplier.getContactsInfoDTOList().size(), id);
-                    }
                     LOGGER.info("Supplier created successfully with ID: {}", id);
                 } else {
                     LOGGER.error("Creating supplier failed, no ID obtained.");
@@ -141,11 +126,6 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             preparedStatement.setInt(13, supplier.getId());
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
-                for (ContactInfoDTO contact : supplier.getContactsInfoDTOList()) {
-                    if (contact.getSupplierId() < 0) {
-                        contact.setSupplierId(supplier.getId());
-                    }
-                }
                 LOGGER.info("Supplier updated successfully: {}", supplier.getId());
                 return true;
             } else {

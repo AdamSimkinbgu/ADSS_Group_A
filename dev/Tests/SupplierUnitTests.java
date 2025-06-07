@@ -21,7 +21,7 @@ class SupplierUnitTests {
 
       @BeforeEach
       void setUp() {
-            Database.setDB_URL(Database.DB_TEST_URL);
+            Database.setDB_URL(Database.getURL("test"));
             facade = new SupplierFacade(InitializeState.NO_DATA_STATE);
 
             // Create one “seed” supplier that all subsequent tests can refer to:
@@ -40,7 +40,7 @@ class SupplierUnitTests {
             // Act: insert supplier
             seedSupplier = facade.createSupplier(dto);
             assertNotNull(seedSupplier);
-            assertTrue(seedSupplier.getId() > 0, "Seed supplier must have positive ID");
+            assertTrue(seedSupplier.getId() == 1, "Seed supplier must have positive ID");
       }
 
       // ----------------------------
@@ -262,11 +262,11 @@ class SupplierUnitTests {
             AgreementDTO created = facade.createAgreement(toInsert);
             assertNotNull(created);
             assertTrue(created.getAgreementId() > 0);
-
             // 3) Fetch by ID
             AgreementDTO fetched = facade.getAgreement(created.getAgreementId());
             assertEquals(created.getAgreementId(), fetched.getAgreementId());
             assertEquals(seedSupplier.getId(), fetched.getSupplierId());
+
             assertTrue(fetched.isValid());
 
             // 4) getAgreementsBySupplierId(...)
