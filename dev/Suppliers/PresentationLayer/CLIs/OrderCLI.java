@@ -25,15 +25,21 @@ public class OrderCLI {
         orderCommands.put("UpdatePeriodicOrderCMD", commands.get("UpdatePeriodicOrderCMD"));
         orderCommands.put("RemovePeriodicOrderCMD", commands.get("RemovePeriodicOrderCMD"));
         orderCommands.put("ViewAllPeriodicOrdersCMD", commands.get("ViewAllPeriodicOrdersCMD"));
+        orderCommands.put("ViewAllPeriodicOrdersForTodayCMD", commands.get("ViewAllPeriodicOrdersForTodayCMD"));
     }
 
     public void start() {
         while (true) {
-            view.showMessage("\n=== Order Management Menu ===");
+            view.showMessage("\n === Order Management Menu ===");
             view.showMessage("1. Create Order");
             view.showMessage("2. Update Order");
             view.showMessage("3. Remove Order");
             view.showMessage("4. List Orders");
+            view.showMessage("5. Create Periodic Order");
+            view.showMessage("6. Update Periodic Order");
+            view.showMessage("7. Remove Periodic Order");
+            view.showMessage("8. List Periodic Orders");
+            view.showMessage("9. View All Periodic Orders for Today");
             view.showMessage("Type 'back' or '0' to go back.");
 
             String choice = view.readLine("Choose an option: ").toLowerCase();
@@ -44,119 +50,35 @@ public class OrderCLI {
 
             switch (choice) {
                 case "1":
-                    showCreateSubmenu();
-                    break;
-                case "2":
-                    showUpdateSubmenu();
-                    break;
-                case "3":
-                    showRemoveSubmenu();
-                    break;
-                case "4":
-                    showListSubmenu();
-                    break;
-                default:
-                    view.showError("Invalid option. Choose 1–4 or 'return'.");
-            }
-        }
-    }
-
-    private void showCreateSubmenu() {
-        while (true) {
-            view.showMessage("\n--- Create Order ---");
-            view.showMessage("1. Create Order");
-            view.showMessage("2. Create Periodic Order");
-            view.showMessage("Type 'back' or '0' to go back.");
-
-            String choice = view.readLine("Choose an option: ").toLowerCase();
-            if (choice.equals("back") || choice.equals("0")) {
-                view.showMessage(" === Returning to the Orders menu ===");
-                return;
-            }
-            switch (choice) {
-                case "1":
                     runCommand("CreateOrderCMD");
                     break;
                 case "2":
-                    runCommand("CreatePeriodicOrderCMD");
-                    break;
-                default:
-                    view.showError("Invalid option. Choose 1–2 or 'back'.");
-            }
-        }
-    }
-
-    private void showUpdateSubmenu() {
-        while (true) {
-            view.showMessage("\n--- Update Order ---");
-            view.showMessage("1. Update Order");
-            view.showMessage("2. Update Periodic Order");
-            view.showMessage("Type 'back' or '0' to go back.");
-
-            String choice = view.readLine("Choose an option: ").toLowerCase();
-            if (choice.equals("back") || choice.equals("0")) {
-                view.showMessage(" === Returning to the Orders menu ===");
-                break;
-            }
-            switch (choice) {
-                case "1":
                     runCommand("UpdateOrderCMD");
                     break;
-                case "2":
-                    runCommand("UpdatePeriodicOrderCMD");
-                    break;
-                default:
-                    view.showError("Invalid option. Choose 1–2 or 'back'.");
-            }
-        }
-    }
-
-    private void showRemoveSubmenu() {
-        while (true) {
-            view.showMessage("\n--- Remove Order ---");
-            view.showMessage("1. Remove Order");
-            view.showMessage("2. Remove Periodic Order");
-            view.showMessage("Type 'back' or '0' to go back.");
-
-            String choice = view.readLine("Choose an option: ").toLowerCase();
-            if (choice.equals("back") || choice.equals("0")) {
-                view.showMessage(" === Returning to the Orders menu ===");
-                break;
-            }
-            switch (choice) {
-                case "1":
+                case "3":
                     runCommand("RemoveOrderCMD");
                     break;
-                case "2":
-                    runCommand("RemovePeriodicOrderCMD");
-                    break;
-                default:
-                    view.showError("Invalid option. Choose 1–2 or 'back'.");
-            }
-        }
-    }
-
-    private void showListSubmenu() {
-        while (true) {
-            view.showMessage("\n--- List Orders ---");
-            view.showMessage("1. View All Orders");
-            view.showMessage("2. View All Periodic Orders");
-            view.showMessage("Type 'back' or '0' to go back.");
-
-            String choice = view.readLine("Choose an option: ").toLowerCase();
-            if (choice.equals("back") || choice.equals("0")) {
-                view.showMessage(" === Returning to the Orders menu ===");
-                break;
-            }
-            switch (choice) {
-                case "1":
+                case "4":
                     runCommand("ViewAllOrdersCMD");
                     break;
-                case "2":
+                case "5":
+                    runCommand("CreatePeriodicOrderCMD");
+                    break;
+                case "6":
+                    runCommand("UpdatePeriodicOrderCMD");
+                    break;
+                case "7":
+                    runCommand("RemovePeriodicOrderCMD");
+                    break;
+                case "8":
                     runCommand("ViewAllPeriodicOrdersCMD");
                     break;
+                case "9":
+                    runCommand("ViewAllPeriodicOrdersForTodayCMD");
+                    break;
                 default:
-                    view.showError("Invalid option. Choose 1–2 or 'back'.");
+                    view.showError("Invalid option. Please try again.");
+                    break;
             }
         }
     }
