@@ -100,14 +100,17 @@ public class MainDomain {
             SPdao.DeleteAll();
             Pdao.DeleteAll();
             if (input == InitializeState.DEFAULT_STATE) {
-                ProductDTO pdto = new ProductDTO( 1,"Milk", "Dairy", 25,75, (float)4.6, new Position(1, 1), new Position(2, 1));
+                ProductDTO pdto = new ProductDTO( 1,"Milk 3%", "Yotvata", 25,75, (float)4.6, new Position(1, 1), new Position(2, 1));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 2,"Bread", "Bakery", 10,50, (float)1.5, new Position(1, 2), new Position(2, 2));
+                pdto = new ProductDTO( 2,"Cornflacks Cariot", "Telma", 10,50, (float)1.5, new Position(1, 2), new Position(2, 2));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 3,"Eggs", "Dairy", 20,100, (float)2.5, new Position(1, 3), new Position(2, 3));
+                pdto = new ProductDTO( 3,"Cottage Cheese", "Tnuva", 20,100, (float)2.5, new Position(1, 3), new Position(2, 3));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 4,"Chicken", "Meat", 50,200, (float)15.0, new Position(1, 4), new Position(2, 4));
+                pdto = new ProductDTO( 4,"Pastrami Sandwich", "DeliMeat", 50,200, (float)15.0, new Position(1, 4), new Position(2, 4));
                 AddProduct(pdto);
+                pdto = new ProductDTO( 5,"Milk 3%", "Tnuva", 30,75, (float)4.7, new Position(1, 5), new Position(2, 5));
+                AddProduct(pdto);
+
 
                 SupplyDTO sdto = new SupplyDTO(1, 100, LocalDate.now());
                 prodMap.get(1).AddSupply(sdto);
@@ -117,17 +120,19 @@ public class MainDomain {
                 prodMap.get(3).AddSupply(sdto);
                 sdto = new SupplyDTO(4, 300, LocalDate.now());
                 prodMap.get(4).AddSupply(sdto);
+                sdto = new SupplyDTO(5, 100, LocalDate.now());
+                prodMap.get(5).AddSupply(sdto);
 
                 // add categories
                 AddCategory("milk");
-                AddCategory("bread");
+                AddCategory("milk products");
                 AddCategory("food");
                 AddToCategory("milk", 1);
-                AddToCategory("bread", 2);
-                AddToCategory("food", 3);
+                AddToCategory("milk", 5);
+                AddToCategory("milk products", 3);
                 AddToCategory("food", 4);
                 AddToCategory("food", "milk");
-                AddToCategory("food", "bread");
+                AddToCategory("milk", "milk products");
 
             }
         }
@@ -136,8 +141,8 @@ public class MainDomain {
     // todo
     public int AddProduct(ProductDTO pdto) {
         for (ProductDomain p : prodMap.values()) {
-            if (p.getproductName().equals(pdto.getproductName()))
-                throw new IllegalArgumentException("Product name alredy in stock");
+            if (p.getproductID() == pdto.getproductId())
+                throw new IllegalArgumentException("Product already in stock");
         }
 
         Pdao.Add(pdto);
@@ -151,6 +156,8 @@ public class MainDomain {
         List<Integer> ret = new ArrayList<>();
         for (OrderPackageDTO o : orders) {
             for(SupplyDTO sdto: o.getSupplies()) {
+                if(!prodMap.containsKey(sdto.getProductID()))
+                    throw new IllegalArgumentException("no product with this id: " + sdto.getProductID());
                 sdto = SPdao.Add(sdto);
                 prodMap.get(sdto.getProductID()).AddSupply(sdto);
             }
@@ -226,19 +233,24 @@ public class MainDomain {
 
     // VVVVVV
     public String GetBadReport() {
-        StringBuilder ret = new StringBuilder("=====Bad Report=====\n");
-        int badNum ;
+        int badNum;
+        StringBuilder ret = new StringBuilder();
+        ret.append("=====Bad Report=====\n");
+        ret.append("------------------------------------------\n");
+        ret.append(String.format("| %-15s | %-15s | %-6s |%n",
+                "Product Name", "Manufacturer", "Bad Qty"));
+        ret.append("------------------------------------------\n");
+
         for (ProductDomain p : prodMap.values()) {
             badNum = p.GetBads();
             if (badNum > 0) {
-                ret.append(p.getproductName())
-                        .append(", ")
-                        .append(p.getmanufactuerName())
-                        .append(": ")
-                        .append(badNum)
-                        .append(" \n");
+                ret.append(String.format("| %-15s | %-15s | %6d |%n",
+                        p.getproductName(),
+                        p.getmanufactuerName(),
+                        badNum));
             }
         }
+        ret.append("------------------------------------------\n");
         return ret.toString();
 
     }
@@ -247,10 +259,14 @@ public class MainDomain {
         StringBuilder table = new StringBuilder();
 
         table.append("=====Current Inventory Report=====\n");
-        table.append(String.format("%-15s %-10s %-10s%n", "Id", "Name", "Quantity"));
-        table.append("----------------------------------------\n");
+        table.append(String.format("%-15s %-20s %-20s %-10s%n", "Id", "Name", "Manufacturer", "Quantity"));
+        table.append("---------------------------------------------------------------------\n");
         for (ProductDomain p : prodMap.values()) {
-            table.append(String.format("%-15d %-10s %-10d%n", p.getproductID(), p.getproductName(), p.getQuantity()));
+            table.append(String.format("%-15d %-20s %-20s %-10d%n",
+                    p.getproductID(),
+                    p.getproductName(),
+                    p.getmanufactuerName(),
+                    p.getQuantity()));
         }
         return table.toString();
 

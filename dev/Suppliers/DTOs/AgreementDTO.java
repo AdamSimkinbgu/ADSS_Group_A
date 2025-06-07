@@ -58,6 +58,18 @@ public class AgreementDTO {
       this.billOfQuantitiesItems = billOfQuantitiesItems;
    }
 
+   public AgreementDTO(AgreementDTO other) {
+      this.agreementId = other.agreementId;
+      this.supplierId = other.supplierId;
+      this.supplierName = other.supplierName;
+      this.valid = other.valid;
+      this.agreementStartDate = other.agreementStartDate;
+      this.agreementEndDate = other.agreementEndDate;
+      this.billOfQuantitiesItems = other.billOfQuantitiesItems != null
+            ? List.copyOf(other.billOfQuantitiesItems)
+            : List.of();
+   }
+
    // Getters and Setters
    public int getAgreementId() {
       return agreementId;

@@ -3,18 +3,15 @@ package Suppliers.PresentationLayer.Commands.AgreementCommands;
 import Suppliers.PresentationLayer.CommandInterface;
 import Suppliers.PresentationLayer.View;
 import Suppliers.ServiceLayer.AgreementService;
-import Suppliers.ServiceLayer.SupplierService;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 public class RemoveAgreementCMD implements CommandInterface {
    private final View view;
    private final AgreementService agreementService;
-   private final SupplierService supplierService;
 
-   public RemoveAgreementCMD(View view, AgreementService agreementService, SupplierService supplierService) {
+   public RemoveAgreementCMD(View view, AgreementService agreementService) {
       this.view = view;
       this.agreementService = agreementService;
-      this.supplierService = supplierService;
    }
 
    @Override

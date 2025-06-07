@@ -1,6 +1,5 @@
 package Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 

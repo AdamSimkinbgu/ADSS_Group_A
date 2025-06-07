@@ -23,47 +23,17 @@ public class OrderDTO {
     public OrderDTO() {
     }
 
-    public OrderDTO(int supplierId, LocalDate orderDate, LocalDate creationDate,
-            AddressDTO address, String contactPhoneNumber, List<OrderItemLineDTO> items, OrderStatus status) {
+    public OrderDTO(int supplierId, LocalDate orderDate, AddressDTO address, String contactPhoneNumber,
+            List<OrderItemLineDTO> items) {
         this.orderId = -1;
         this.supplierId = supplierId;
         this.supplierName = "";
         this.orderDate = orderDate;
-        this.creationDate = creationDate;
+        this.creationDate = LocalDate.now();
         this.address = address;
         this.contactPhoneNumber = contactPhoneNumber;
         this.items = items;
-        this.status = status;
-    }
-
-    public OrderDTO(Integer orderId, Integer supplierId, String supplierName,
-            LocalDate orderDate, LocalDate creationDate,
-            AddressDTO address, String contactPhoneNumber,
-            List<OrderItemLineDTO> items, OrderStatus status) {
-        this.orderId = orderId;
-        this.supplierId = supplierId;
-        this.supplierName = supplierName;
-        this.orderDate = orderDate;
-        this.creationDate = creationDate;
-        this.address = address;
-        this.contactPhoneNumber = contactPhoneNumber;
-        this.items = items;
-        this.status = status;
-    }
-
-    public OrderDTO(Integer orderId, Integer supplierId, String supplierName,
-            LocalDate orderDate, LocalDate creationDate,
-            AddressDTO address, String contactPhoneNumber,
-            List<OrderItemLineDTO> items) {
-        this.orderId = orderId;
-        this.supplierId = supplierId;
-        this.supplierName = supplierName;
-        this.orderDate = orderDate;
-        this.creationDate = creationDate;
-        this.address = address;
-        this.contactPhoneNumber = contactPhoneNumber;
-        this.items = items;
-        this.status = OrderStatus.SENT;
+        this.status = OrderStatus.PENDING;
     }
 
     public OrderDTO(OrderDTO order) {

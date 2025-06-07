@@ -87,6 +87,7 @@ public final class SupplierForm extends InteractiveForm<SupplierDTO> {
       @Override
       protected SupplierDTO update(SupplierDTO supplierDTO) throws Cancelled {
             view.showMessage("Updating supplier... (enter 'cancel' to cancel)");
+            view.showMessage("Current details: \n" + supplierDTO);
             // we have the dto, now we ask the user for what he wants to change
             switch (askNonEmpty(
                         "What do you want to change? (name, taxNumber, address, selfSupply, supplyDays, paymentDetails, contacts)")) {

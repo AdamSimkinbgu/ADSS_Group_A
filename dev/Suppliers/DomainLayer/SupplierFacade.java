@@ -64,7 +64,7 @@ public class SupplierFacade {
       // check if there is nothing to update
       if (supplier.get().equals(supplierDTO)) {
          LOGGER.info("No changes detected for supplier ID: {}", supplierID);
-         return false; // No changes to update
+         return true; // No changes to update
       }
       if (suppliersAgreementsRepo.updateSupplier(supplierDTO)) {
          LOGGER.info("Supplier with ID {} updated successfully", supplierID);
@@ -82,20 +82,6 @@ public class SupplierFacade {
       }
       return supplier.get();
 
-   }
-
-   public void addAgreementToSupplier(AgreementDTO agreementDTO) {
-      if (agreementDTO == null) {
-         LOGGER.error("AgreementDTO cannot be null");
-         throw new InvalidParameterException("AgreementDTO cannot be null");
-      }
-
-      SupplierDTO supplier = suppliersAgreementsRepo.getSupplierById(agreementDTO.getSupplierId())
-              .orElseThrow(
-                      () -> new IllegalArgumentException("Supplier not found for ID: " + agreementDTO.getSupplierId()));
-      agreementDTO.setSupplierName(supplier.getName());
-      agreementDTO.setSupplierId(supplier.getId());
-      suppliersAgreementsRepo.addAgreementToSupplier(agreementDTO, supplier.getId());
    }
 
    public List<SupplierDTO> getAllSuppliers() {
@@ -225,13 +211,16 @@ public class SupplierFacade {
       Optional<AgreementDTO> existingAgreement = suppliersAgreementsRepo.getAgreementById(agreementId);
       if (existingAgreement.isEmpty()) {
          throw new IllegalArgumentException("Agreement not found for ID: " + agreementId);
+      } else if (updatedAgreement.equals(existingAgreement.get())) {
+         LOGGER.info("No changes detected for agreement ID: {}", agreementId);
+         return; // No changes to update
       }
       suppliersAgreementsRepo.updateAgreement(updatedAgreement);
 
    }
 
    public List<OrderItemLineDTO> setProductNameAndCategoryForOrderItems(List<OrderItemLineDTO> productsToProcess,
-                                                                        int supplierId) {
+         int supplierId) {
       if (productsToProcess == null || productsToProcess.isEmpty()) {
          LOGGER.warn("No products found for supplier ID: {}", supplierId);
          return Collections.emptyList();
@@ -262,7 +251,8 @@ public class SupplierFacade {
 
    }
 
-   public List<OrderItemLineDTO> setSupplierPricesAndDiscountsByBestPrice(List<OrderItemLineDTO> items, int supplierId) {
+   public List<OrderItemLineDTO> setSupplierPricesAndDiscountsByBestPrice(
+         List<OrderItemLineDTO> items, int supplierId) {
       if (items == null || items.isEmpty()) {
          throw new IllegalArgumentException("Items cannot be null or empty");
       }
@@ -279,12 +269,12 @@ public class SupplierFacade {
             continue; // Skip invalid product IDs
          }
          SupplierProductDTO supplierProduct = supplierProducts.stream()
-                 .filter(product -> product.getProductId() == item.getProductId())
-                 .findFirst()
-                 .orElse(null);
+               .filter(product -> product.getProductId() == item.getProductId())
+               .findFirst()
+               .orElse(null);
          if (supplierProduct == null) {
             LOGGER.warn("No supplier product found for product ID: {} in supplier ID: {}", item.getProductId(),
-                    supplierId);
+                  supplierId);
             continue; // Skip items with no matching supplier product
          }
          OrderItemLineDTO copyToWorkOn = new OrderItemLineDTO(item);
@@ -292,10 +282,10 @@ public class SupplierFacade {
          BigDecimal priceBeforeDiscount = supplierProduct.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
          // set the initial price
          List<AgreementDTO> agreements = suppliersAgreementsRepo
-                 .getAllAgreementsForSupplier(supplierId);
+               .getAllAgreementsForSupplier(supplierId);
          if (agreements == null || agreements.isEmpty()) {
             LOGGER.info("No agreements found for supplier ID: {} - using default price and no discount",
-                    supplierId);
+                  supplierId);
             item.setUnitPrice(supplierProduct.getPrice());
             item.setDiscount(BigDecimal.ZERO);
             updatedItems.add(item);
@@ -304,16 +294,16 @@ public class SupplierFacade {
          while (copyToWorkOn.getQuantity() > 0) {
             if (done) {
                bestPriceAccumulate = bestPriceAccumulate.add(
-                       supplierProduct.getPrice().multiply(BigDecimal.valueOf(copyToWorkOn.getQuantity())));
+                     supplierProduct.getPrice().multiply(BigDecimal.valueOf(copyToWorkOn.getQuantity())));
                LOGGER.info("No way to improve price for product ID: {}, adding remaining quantity at default price",
-                       item.getProductId());
+                     item.getProductId());
             }
             int currentBestQuantity = 0;
             BigDecimal currentBestPrice = BigDecimal.valueOf(Double.MAX_VALUE);
             // search each agreement boq lines for possible prices and discounts
             for (AgreementDTO agreement : agreements) {
                List<BillofQuantitiesItemDTO> billOfQuantitiesItems = suppliersAgreementsRepo
-                       .getBillOfQuantitiesItemsForAgreement(agreement.getAgreementId());
+                     .getBillOfQuantitiesItemsForAgreement(agreement.getAgreementId());
                if (billOfQuantitiesItems == null || billOfQuantitiesItems.isEmpty()) {
                   LOGGER.warn("No Bill of Quantities items found for agreement ID: {}", agreement.getAgreementId());
                   continue; // Skip this agreement if no items found
@@ -323,13 +313,13 @@ public class SupplierFacade {
                   // equal to the
                   // quantity we have to work on - whats left to process
                   if (itemInBOQ.getProductId() == item.getProductId()
-                          && itemInBOQ.getQuantity() <= copyToWorkOn.getQuantity()) {
+                        && itemInBOQ.getQuantity() <= copyToWorkOn.getQuantity()) {
                      // only if the possible price is less than the current best price
                      if (supplierProduct.getPrice().doubleValue() * itemInBOQ.getQuantity()
-                             * itemInBOQ.getDiscountPercent().doubleValue() < currentBestPrice.doubleValue()) {
+                           * itemInBOQ.getDiscountPercent().doubleValue() < currentBestPrice.doubleValue()) {
                         // set the best values for the current item found so far
                         currentBestPrice = BigDecimal.valueOf(supplierProduct.getPrice().doubleValue()
-                                * itemInBOQ.getQuantity() * itemInBOQ.getDiscountPercent().doubleValue());
+                              * itemInBOQ.getQuantity() * itemInBOQ.getDiscountPercent().doubleValue());
                         currentBestQuantity = itemInBOQ.getQuantity();
                      }
                   }
@@ -350,7 +340,7 @@ public class SupplierFacade {
          }
          if (bestPriceAccumulate.compareTo(priceBeforeDiscount) < 0) {
             BigDecimal ratio = bestPriceAccumulate
-                    .divide(priceBeforeDiscount, 4, RoundingMode.HALF_UP);
+                  .divide(priceBeforeDiscount, 4, RoundingMode.HALF_UP);
 
             // discount = 1 – ratio
             item.setDiscount(BigDecimal.ONE.subtract(ratio));
@@ -364,7 +354,7 @@ public class SupplierFacade {
          LOGGER.warn("No valid items found after setting prices and discounts for supplier ID: {}", supplierId);
       } else {
          LOGGER.info("Successfully set prices and discounts for {} items for supplier ID: {}", updatedItems.size(),
-                 supplierId);
+               supplierId);
       }
       return updatedItems;
    }

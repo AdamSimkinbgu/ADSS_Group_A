@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,6 +113,18 @@ public abstract class InteractiveForm<T> {
         } catch (Exception e) {
             view.showError("Invalid date. Please enter a valid date in YYYY-MM-DD format.");
             return askDate(prompt); // retry
+        }
+    }
+
+    protected DayOfWeek askDayOfWeek(String prompt) throws Cancelled {
+        String line = ask(prompt).trim().toUpperCase();
+        while (true) {
+            try {
+                return DayOfWeek.valueOf(line);
+            } catch (IllegalArgumentException e) {
+                view.showError("Invalid day of week. Please enter a valid day (e.g., MONDAY, TUESDAY, ...).");
+                line = ask(prompt).trim().toUpperCase();
+            }
         }
     }
 
@@ -282,6 +295,58 @@ public abstract class InteractiveForm<T> {
         String city = askNonEmpty(" City: ");
         String buildingNumber = askNonEmpty(" Building number: ");
         return new AddressDTO(street, city, buildingNumber);
+    }
+
+    protected HashMap<Integer, Integer> askForPeriodicOrderProducts() throws Cancelled {
+        HashMap<Integer, Integer> products = new HashMap<>();
+        while (true) {
+            String action = askNonEmpty(
+                    "What do you want to do with products? (add/edit/remove/list/done): ").trim().toLowerCase();
+            if (action.equals("done")) {
+                return products;
+            }
+            int productId;
+            switch (action) {
+                case "add":
+                    productId = askInt(" Enter product ID: ");
+                    if (products.containsKey(productId)) {
+                        view.showError("Product ID already exists. Use edit to change quantity.");
+                        continue;
+                    }
+                    products.put(productId, askInt(" Enter quantity: "));
+                    view.showMessage("Product added: ID = " + productId + ", Quantity = " + products.get(productId));
+                    break;
+                case "edit":
+                    productId = askInt(" Enter product ID: ");
+                    if (!products.containsKey(productId)) {
+                        view.showError("Product ID not found. Use add to create a new product.");
+                        continue;
+                    }
+                    int newQuantity = askInt(" Enter new quantity: ");
+                    products.put(productId, newQuantity);
+                    view.showMessage("Product updated: ID = " + productId + ", New Quantity = " + newQuantity);
+                    break;
+                case "remove":
+                    int removeId = askInt(" Enter product ID to remove: ");
+                    if (!products.containsKey(removeId)) {
+                        view.showError("Product ID not found. Cannot remove.");
+                        continue;
+                    }
+                    products.remove(removeId);
+                    view.showMessage("Product removed: ID = " + removeId);
+                    break;
+                case "list":
+                    if (products.isEmpty()) {
+                        view.showMessage("No products in the order.");
+                    } else {
+                        view.showMessage("Current products in the order:");
+                        products.forEach((id, qty) -> view.showMessage("Product ID: " + id + ", Quantity: " + qty));
+                    }
+                    break;
+                default:
+                    view.showError("Invalid action. Please enter add, edit, remove, or done.");
+            }
+        }
     }
 
 }

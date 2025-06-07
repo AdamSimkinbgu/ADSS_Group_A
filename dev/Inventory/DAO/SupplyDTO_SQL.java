@@ -163,5 +163,14 @@ public class SupplyDTO_SQL implements SupplyDAO {
         } catch (SQLException e) {
             throw new RuntimeException("SQL Exception: " + e.getMessage());
         }
+
+        sql = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'supplies'";
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
     }
 }

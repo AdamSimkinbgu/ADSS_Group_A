@@ -48,7 +48,7 @@ public class Agreement implements Serializable {
         this.agreementId = agreementDTO.getAgreementId();
         this.supplierId = agreementDTO.getSupplierId();
         this.supplierName = agreementDTO.getSupplierName();
-        this.valid = true;
+        this.valid = agreementDTO.isValid();
         this.agreementStartDate = agreementDTO.getAgreementStartDate();
         this.agreementEndDate = agreementDTO.getAgreementEndDate();
         this.billOfQuantitiesItems = new ArrayList<>();
