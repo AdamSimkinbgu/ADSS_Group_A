@@ -31,8 +31,8 @@ public final class Database {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:supply.db");
-            LOGGER.info("Connected to SQLite at {}", "jdbc:sqlite:supply.db");
-            System.out.println("---------- SQLITE FILE INFO (after connection) ----------");
+            LOGGER.debug("Connected to SQLite at {}", "jdbc:sqlite:supply.db");
+            LOGGER.debug("---------- SQLITE FILE INFO (after connection) ----------");
             try (Statement st = conn.createStatement()) {
                 // enforce FK rules in SQLite
                 st.executeUpdate("PRAGMA foreign_keys = ON;");
@@ -357,12 +357,12 @@ public final class Database {
                 if (rs.next()) {
                     int foreignKeysEnabled = rs.getInt(1);
                     if (foreignKeysEnabled == 1) {
-                        LOGGER.info("Foreign keys are enabled in the database");
+                        LOGGER.debug("Foreign keys are enabled in the database");
                     } else {
                         LOGGER.warn("Foreign keys are NOT enabled in the database");
                     }
                 }
-                LOGGER.info("Ensured database schema exists");
+                LOGGER.debug("Ensured database schema exists");
             }
             conn.close();
         } catch (Exception e) {
@@ -372,8 +372,8 @@ public final class Database {
         try {
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:supplyTest.db");
-            LOGGER.info("Connected to SQLite at {}", "jdbc:sqlite:supplyTest.db");
-            System.out.println("---------- SQLITE FILE INFO (after connection) ----------");
+            LOGGER.debug("Connected to SQLite at {}", "jdbc:sqlite:supplyTest.db");
+            LOGGER.debug("---------- SQLITE FILE INFO (after connection) ----------");
             try (Statement st = conn.createStatement()) {
                 // enforce FK rules in SQLite
                 st.executeUpdate("PRAGMA foreign_keys = ON;");
@@ -698,12 +698,12 @@ public final class Database {
                 if (rs.next()) {
                     int foreignKeysEnabled = rs.getInt(1);
                     if (foreignKeysEnabled == 1) {
-                        LOGGER.info("Foreign keys are enabled in the test database");
+                        LOGGER.debug("Foreign keys are enabled in the test database");
                     } else {
                         LOGGER.warn("Foreign keys are NOT enabled in the test database");
                     }
                 }
-                LOGGER.info("Ensured test database schema exists");
+                LOGGER.debug("Ensured test database schema exists");
             }
             conn.close();
         } catch (Exception e) {
@@ -725,7 +725,7 @@ public final class Database {
             st.executeUpdate("DELETE FROM suppliers;");
             st.executeUpdate("DELETE FROM sqlite_sequence;"); // reset autoincrement
             // counters
-            LOGGER.info("All data deleted from the database");
+            LOGGER.debug("All data deleted from the database");
         } catch (SQLException e) {
             LOGGER.error("Failed to delete all data", e);
         }
@@ -740,11 +740,11 @@ public final class Database {
             // close the previous connection if it exists
             if (conn != null && !conn.isClosed()) {
                 conn.close();
-                LOGGER.info("Closed previous connection to SQLite at {}", DB_URL);
+                LOGGER.debug("Closed previous connection to SQLite at {}", DB_URL);
             }
             // create a new connection
             conn = DriverManager.getConnection(DB_URL);
-            LOGGER.info("Reconnected to SQLite at {}", DB_URL);
+            LOGGER.debug("Reconnected to SQLite at {}", DB_URL);
         }
         return conn;
     }
@@ -756,7 +756,7 @@ public final class Database {
     public static void setDB_URL(String dbUrl) {
         if (dbUrl != null && !dbUrl.isBlank()) {
             DB_URL = dbUrl;
-            LOGGER.info("Database URL set to {}", DB_URL);
+            LOGGER.debug("Database URL set to {}", DB_URL);
         } else {
             LOGGER.warn("Invalid database URL provided, keeping the previous one: {}", DB_URL);
         }
@@ -789,7 +789,7 @@ public final class Database {
                                     ('Supplier 5','999888777',    1,'0000011',0,'Pine Avenue','Beer-Sheva','12','555666','CASH_ON_DELIVERY','COD')
                                 ;
                             """);
-            LOGGER.info("Inserted default suppliers");
+            LOGGER.debug("Inserted default suppliers");
             // ────────────── 3. contacts ──────────────
             st.executeUpdate("""
                         INSERT OR IGNORE INTO contact_info(
@@ -801,7 +801,7 @@ public final class Database {
                             (5,'055-000-0006','Carol Gold','carol.gold@example.com')
                         ;
                     """);
-            LOGGER.info("Inserted default contacts");
+            LOGGER.debug("Inserted default contacts");
             // ────────────── 4. supplier_products ──────────────
             st.executeUpdate("""
                         INSERT OR IGNORE INTO supplier_products(
@@ -820,7 +820,7 @@ public final class Database {
                             (5,'555112','Neve',        'Labneh 250g',         8.00,  0.4,  14)      --11
                         ;
                     """);
-            LOGGER.info("Inserted default supplier products");
+            LOGGER.debug("Inserted default supplier products");
             // ────────────── 5. agreements ──────────────
             st.executeUpdate("""
                         INSERT OR IGNORE INTO agreements(
@@ -838,7 +838,7 @@ public final class Database {
                             (5,'2025-06-15','2025-12-31',1)
                         ;
                     """);
-            LOGGER.info("Inserted default agreements");
+            LOGGER.debug("Inserted default agreements");
             // ────────────── 6. boq_items ──────────────
             st.executeUpdate("""
                         INSERT OR IGNORE INTO boq_items(
@@ -859,7 +859,7 @@ public final class Database {
                             (5,2,11,   180,    0.75)   -- “Labneh 250g” (product_id = 11)
                         ;
                     """);
-            LOGGER.info("Inserted default BOQ items");
+            LOGGER.debug("Inserted default BOQ items");
             LOGGER.warn("Orders and periodic orders are not seeded by default");
         } catch (SQLException e) {
             LOGGER.error("Failed to seed default data", e);
@@ -869,9 +869,9 @@ public final class Database {
     public static void provideStatisticsAboutTheCurrentStateOfTheWholeDatabase() {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
-            System.out.println("Current database tables:");
+            LOGGER.debug("Current database tables:");
             while (rs.next()) {
-                System.out.println("- " + rs.getString("name"));
+                LOGGER.debug("- " + rs.getString("name"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -880,7 +880,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM suppliers;");
             if (rs.next()) {
-                System.out.println("Total suppliers: " + rs.getInt("total"));
+                LOGGER.debug("Total suppliers: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -889,7 +889,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM supplier_products;");
             if (rs.next()) {
-                System.out.println("Total supplier products: " + rs.getInt("total"));
+                LOGGER.debug("Total supplier products: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -898,7 +898,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM agreements;");
             if (rs.next()) {
-                System.out.println("Total agreements: " + rs.getInt("total"));
+                LOGGER.debug("Total agreements: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -907,7 +907,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM boq_items;");
             if (rs.next()) {
-                System.out.println("Total BOQ items: " + rs.getInt("total"));
+                LOGGER.debug("Total BOQ items: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -916,7 +916,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM orders;");
             if (rs.next()) {
-                System.out.println("Total orders: " + rs.getInt("total"));
+                LOGGER.debug("Total orders: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -925,7 +925,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM periodic_orders;");
             if (rs.next()) {
-                System.out.println("Total periodic orders: " + rs.getInt("total"));
+                LOGGER.debug("Total periodic orders: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -934,7 +934,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM contact_info;");
             if (rs.next()) {
-                System.out.println("Total contacts: " + rs.getInt("total"));
+                LOGGER.debug("Total contacts: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -943,7 +943,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM order_item_lines;");
             if (rs.next()) {
-                System.out.println("Total order item lines: " + rs.getInt("total"));
+                LOGGER.debug("Total order item lines: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -952,7 +952,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM periodic_order_item_lines;");
             if (rs.next()) {
-                System.out.println("Total periodic order item lines: " + rs.getInt("total"));
+                LOGGER.debug("Total periodic order item lines: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -961,7 +961,7 @@ public final class Database {
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM sqlite_sequence;");
             if (rs.next()) {
-                System.out.println("Total autoincrement sequences: " + rs.getInt("total"));
+                LOGGER.debug("Total autoincrement sequences: " + rs.getInt("total"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -969,9 +969,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT name, sql FROM sqlite_master WHERE type='table';");
-            System.out.println("Table definitions:");
+            LOGGER.debug("Table definitions:");
             while (rs.next()) {
-                System.out.println(rs.getString("name") + ": " + rs.getString("sql"));
+                LOGGER.debug(rs.getString("name") + ": " + rs.getString("sql"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -979,9 +979,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM suppliers LIMIT 5;");
-            System.out.println("Sample suppliers data:");
+            LOGGER.debug("Sample suppliers data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("supplier_id") + ": " + rs.getString("name"));
+                LOGGER.debug(rs.getInt("supplier_id") + ": " + rs.getString("name"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -989,9 +989,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM supplier_products LIMIT 5;");
-            System.out.println("Sample supplier products data:");
+            LOGGER.debug("Sample supplier products data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("product_id") + ": " + rs.getString("name"));
+                LOGGER.debug(rs.getInt("product_id") + ": " + rs.getString("name"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -999,9 +999,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM agreements LIMIT 5;");
-            System.out.println("Sample agreements data:");
+            LOGGER.debug("Sample agreements data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("agreement_id") + ": " + rs.getString("agreement_start_date"));
+                LOGGER.debug(rs.getInt("agreement_id") + ": " + rs.getString("agreement_start_date"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1009,9 +1009,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM boq_items LIMIT 5;");
-            System.out.println("Sample BOQ items data:");
+            LOGGER.debug("Sample BOQ items data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("agreement_id") + ": " + rs.getInt("line_in_bill"));
+                LOGGER.debug(rs.getInt("agreement_id") + ": " + rs.getInt("line_in_bill"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1019,9 +1019,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM orders LIMIT 5;");
-            System.out.println("Sample orders data:");
+            LOGGER.debug("Sample orders data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("order_id") + ": " + rs.getString("order_date"));
+                LOGGER.debug(rs.getInt("order_id") + ": " + rs.getString("order_date"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1029,9 +1029,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM periodic_orders LIMIT 5;");
-            System.out.println("Sample periodic orders data:");
+            LOGGER.debug("Sample periodic orders data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("periodic_order_id") + ": " + rs.getString("requested_day_mask"));
+                LOGGER.debug(rs.getInt("periodic_order_id") + ": " + rs.getString("requested_day_mask"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1039,9 +1039,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM contact_info LIMIT 5;");
-            System.out.println("Sample contacts data:");
+            LOGGER.debug("Sample contacts data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("supplier_id") + ": " + rs.getString("name"));
+                LOGGER.debug(rs.getInt("supplier_id") + ": " + rs.getString("name"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1049,9 +1049,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM order_item_lines LIMIT 5;");
-            System.out.println("Sample order item lines data:");
+            LOGGER.debug("Sample order item lines data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("order_id") + ": " + rs.getInt("line_number"));
+                LOGGER.debug(rs.getInt("order_id") + ": " + rs.getInt("line_number"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1059,9 +1059,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM periodic_order_item_lines LIMIT 5;");
-            System.out.println("Sample periodic order item lines data:");
+            LOGGER.debug("Sample periodic order item lines data:");
             while (rs.next()) {
-                System.out.println(rs.getInt("periodic_order_id") + ": " + rs.getInt("line_number"));
+                LOGGER.debug(rs.getInt("periodic_order_id") + ": " + rs.getInt("line_number"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1069,9 +1069,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM sqlite_sequence LIMIT 5;");
-            System.out.println("Sample autoincrement sequences data:");
+            LOGGER.debug("Sample autoincrement sequences data:");
             while (rs.next()) {
-                System.out.println(rs.getString("name") + ": " + rs.getInt("seq"));
+                LOGGER.debug(rs.getString("name") + ": " + rs.getInt("seq"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1079,9 +1079,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT name, sql FROM sqlite_master WHERE type='trigger';");
-            System.out.println("Triggers in the database:");
+            LOGGER.debug("Triggers in the database:");
             while (rs.next()) {
-                System.out.println(rs.getString("name") + ": " + rs.getString("sql"));
+                LOGGER.debug(rs.getString("name") + ": " + rs.getString("sql"));
             }
             rs.close();
         } catch (SQLException e) {
@@ -1089,9 +1089,9 @@ public final class Database {
         }
         try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM sqlite_master WHERE type='view';");
-            System.out.println("Views in the database:");
+            LOGGER.debug("Views in the database:");
             while (rs.next()) {
-                System.out.println(rs.getString("name") + ": " + rs.getString("sql"));
+                LOGGER.debug(rs.getString("name") + ": " + rs.getString("sql"));
             }
             rs.close();
         } catch (SQLException e) {
