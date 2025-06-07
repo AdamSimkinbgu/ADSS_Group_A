@@ -297,8 +297,9 @@ public abstract class InteractiveForm<T> {
         return new AddressDTO(street, city, buildingNumber);
     }
 
-    protected HashMap<Integer, Integer> askForPeriodicOrderProducts() throws Cancelled {
-        HashMap<Integer, Integer> products = new HashMap<>();
+    protected HashMap<Integer, Integer> askForPeriodicOrderProducts(HashMap<Integer, Integer> existingProds)
+            throws Cancelled {
+        HashMap<Integer, Integer> products = new HashMap<>(existingProds != null ? existingProds : new HashMap<>());
         while (true) {
             String action = askNonEmpty(
                     "What do you want to do with products? (add/edit/remove/list/done): ").trim().toLowerCase();

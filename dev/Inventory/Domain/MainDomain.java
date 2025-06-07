@@ -26,7 +26,7 @@ public class MainDomain {
     private final List<DiscountDomain> disLst;
     private final List<SaleDomain> saleLst;
     private final List<CategoryDomain> categoryLst;
-    private  List<OrderPackageDTO> orders;
+    private List<OrderPackageDTO> orders;
 
     // todo assign DAOs
     public MainDomain() {
@@ -48,7 +48,7 @@ public class MainDomain {
     // todo check
     public void InventoryInitialization(InitializeState input) {
 
-        if(input == InitializeState.CURRENT_STATE) {
+        if (input == InitializeState.CURRENT_STATE) {
 
             // uplode product
             List<ProductDTO> pls = Pdao.GetAll();
@@ -72,7 +72,7 @@ public class MainDomain {
                 if (d.getpId() != -1) {
                     prodMap.get(d.getpId()).AddDiscount(dis);
                 } else {
-                    //todo : fix this
+                    // todo : fix this
                     for (CategoryDomain c : categoryLst) {
                         if (c.Isin(d.getCatName())) {
                             c.AddDiscount(dis, d.getCatName());
@@ -90,9 +90,7 @@ public class MainDomain {
 
             }
 
-
-        }
-        else {
+        } else {
             Sdao.DeleteAll();
             Ddao.deleteAll();
             Cdao.deleteAll();
@@ -100,17 +98,21 @@ public class MainDomain {
             SPdao.DeleteAll();
             Pdao.DeleteAll();
             if (input == InitializeState.DEFAULT_STATE) {
-                ProductDTO pdto = new ProductDTO( 1,"Milk 3%", "Yotvata", 25,75, (float)4.6, new Position(1, 1), new Position(2, 1));
+                ProductDTO pdto = new ProductDTO(1, "Milk 3%", "Yotvata", 25, 75, (float) 4.6, new Position(1, 1),
+                        new Position(2, 1));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 2,"Cornflacks Cariot", "Telma", 10,50, (float)1.5, new Position(1, 2), new Position(2, 2));
+                pdto = new ProductDTO(2, "Cornflacks Cariot", "Telma", 10, 50, (float) 1.5, new Position(1, 2),
+                        new Position(2, 2));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 3,"Cottage Cheese", "Tnuva", 20,100, (float)2.5, new Position(1, 3), new Position(2, 3));
+                pdto = new ProductDTO(3, "Cottage Cheese", "Tnuva", 20, 100, (float) 2.5, new Position(1, 3),
+                        new Position(2, 3));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 4,"Pastrami Sandwich", "DeliMeat", 50,200, (float)15.0, new Position(1, 4), new Position(2, 4));
+                pdto = new ProductDTO(4, "Pastrami Sandwich", "DeliMeat", 50, 200, (float) 15.0, new Position(1, 4),
+                        new Position(2, 4));
                 AddProduct(pdto);
-                pdto = new ProductDTO( 5,"Milk 3%", "Tnuva", 30,75, (float)4.7, new Position(1, 5), new Position(2, 5));
+                pdto = new ProductDTO(5, "Milk 3%", "Tnuva", 30, 75, (float) 4.7, new Position(1, 5),
+                        new Position(2, 5));
                 AddProduct(pdto);
-
 
                 SupplyDTO sdto = new SupplyDTO(1, 100, LocalDate.now());
                 prodMap.get(1).AddSupply(sdto);
@@ -155,8 +157,8 @@ public class MainDomain {
     public List<Integer> UpdateInventoryRestock() {
         List<Integer> ret = new ArrayList<>();
         for (OrderPackageDTO o : orders) {
-            for(SupplyDTO sdto: o.getSupplies()) {
-                if(!prodMap.containsKey(sdto.getProductID()))
+            for (SupplyDTO sdto : o.getSupplies()) {
+                if (!prodMap.containsKey(sdto.getProductID()))
                     throw new IllegalArgumentException("no product with this id: " + sdto.getProductID());
                 sdto = SPdao.Add(sdto);
                 prodMap.get(sdto.getProductID()).AddSupply(sdto);
@@ -200,7 +202,7 @@ public class MainDomain {
     // todo change
     public String GetMissingReport() {
         StringBuilder ret = new StringBuilder("=====Missing Report=====\n");
-        int missNum ;
+        int missNum;
         for (ProductDomain p : prodMap.values()) {
             missNum = p.GetMissing();
             if (missNum > 0) {
@@ -314,13 +316,12 @@ public class MainDomain {
     public List<ProductService> Search(String name) {
         List<ProductService> ret = new ArrayList<>();
         CategoryDomain cat = null;
-        for(CategoryDomain c: categoryLst){
-            if(c.Isin(name)){
+        for (CategoryDomain c : categoryLst) {
+            if (c.Isin(name)) {
                 cat = c.getSub(name);
                 break;
             }
         }
-
 
         for (int pId : cat.getProductLs()) {
             ret.add(new ProductService(prodMap.get(pId)));
@@ -339,7 +340,7 @@ public class MainDomain {
                 throw new IllegalArgumentException("pId invalid");
 
             // Add to database
-            if( prodMap.get(dis.getpId()).getDiscount() != null) {
+            if (prodMap.get(dis.getpId()).getDiscount() != null) {
                 // delete old discount
                 Ddao.delete(new DiscountDTO(prodMap.get(dis.getpId()).getDiscount(), dis.getpId()));
             }
@@ -354,7 +355,7 @@ public class MainDomain {
             for (CategoryDomain c : categoryLst) {
                 if (c.Isin(dis.getCatName())) {
                     // Add to database
-                    if( c.getDisDom() != null) {
+                    if (c.getDisDom() != null) {
                         // delete old discount
                         Ddao.delete(new DiscountDTO(c.getDisDom(), dis.getCatName()));
                     }
@@ -451,7 +452,7 @@ public class MainDomain {
         for (ProductDomain p : prodMap.values()) {
             missingA = p.GetMissing();
             if (missingA > 0) {
-                ls.add(new SupplyDTO(p.getproductID(), 2*missingA, LocalDate.now()));
+                ls.add(new SupplyDTO(p.getproductID(), 2 * missingA, LocalDate.now()));
             }
         }
 
@@ -461,20 +462,22 @@ public class MainDomain {
 
     // todo check
     public void DeliverOrder(OrderPackageDTO order) {
-        //add to database
+        // add to database
         ODdao.Add(order);
-            // add to orders
+        // add to orders
         orders.add(order);
     }
 
     // todo check
     // remove from catalog all product already in system
     public ArrayList<ProductDTO> cleanCatalog(ArrayList<ProductDTO> ls) {
+        List<ProductDTO> toRemove = new ArrayList<>();
         for (ProductDTO p : ls) {
             if (prodMap.containsKey(p.getproductId())) {
-                ls.remove(p);
+                toRemove.add(p);
             }
         }
+        ls.removeAll(toRemove);
 
         return ls;
     }

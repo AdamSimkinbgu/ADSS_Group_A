@@ -113,10 +113,8 @@ public class OrderService extends BaseService {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateCreateDTO(periodicOrderDTO);
       if (validationResponse.isSuccess()) {
          try {
-            // PeriodicOrderDTO createdPeriodicOrder =
-            // orderFacade.addPeriodicOrder(periodicOrderDTO);
-            // return ServiceResponse.ok(createdPeriodicOrder);
-            return ServiceResponse.fail(List.of("Not implemented"));
+            PeriodicOrderDTO createdPeriodicOrder = orderFacade.createPeriodicOrder(periodicOrderDTO);
+            return ServiceResponse.ok(createdPeriodicOrder);
          } catch (DataAccessException e) {
             return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
          } catch (Exception e) {
@@ -131,15 +129,12 @@ public class OrderService extends BaseService {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateGetDTO(periodicOrderId);
       if (validationResponse.isSuccess()) {
          try {
-            // PeriodicOrderDTO periodicOrder =
-            // orderFacade.getPeriodicOrder(periodicOrderId);
-            // if (periodicOrder != null) {
-            // return ServiceResponse.ok(periodicOrder);
-            // } else {
-            // return ServiceResponse.fail(List.of("Periodic order with ID " +
-            // periodicOrderId + " not found."));
-            // }
-            return ServiceResponse.fail(List.of("Not implemented"));
+            PeriodicOrderDTO periodicOrder = orderFacade.getPeriodicOrder(periodicOrderId);
+            if (periodicOrder != null) {
+               return ServiceResponse.ok(periodicOrder);
+            } else {
+               return ServiceResponse.fail(List.of("Periodic order with ID " + periodicOrderId + " not found."));
+            }
          } catch (DataAccessException e) {
             return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
          } catch (Exception e) {
@@ -154,10 +149,8 @@ public class OrderService extends BaseService {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateUpdateDTO(updatedDto);
       if (validationResponse.isSuccess()) {
          try {
-            // PeriodicOrderDTO updatedPeriodicOrder =
-            // orderFacade.updatePeriodicOrder(updatedDto);
-            // return ServiceResponse.ok(updatedPeriodicOrder);
-            return ServiceResponse.fail(List.of("Not implemented"));
+            PeriodicOrderDTO updatedPeriodicOrder = orderFacade.updatePeriodicOrder(updatedDto);
+            return ServiceResponse.ok(updatedPeriodicOrder);
          } catch (DataAccessException e) {
             return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
          } catch (Exception e) {
@@ -172,14 +165,13 @@ public class OrderService extends BaseService {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateRemoveDTO(periodicOrderId);
       if (validationResponse.isSuccess()) {
          try {
-            // boolean removed = orderFacade.deletePeriodicOrder(periodicOrderId);
-            // if (removed) {
-            // return ServiceResponse.ok(true);
-            // } else {
-            // return ServiceResponse.fail(List.of("Periodic order with ID " +
-            // periodicOrderId + " not found."));
-            // }
-            return ServiceResponse.fail(List.of("Not implemented"));
+            boolean removed = orderFacade.deletePeriodicOrder(periodicOrderId);
+            if (removed) {
+               return ServiceResponse.ok(true);
+            } else {
+               return ServiceResponse.fail(List.of("Periodic order with ID " +
+                     periodicOrderId + " not found."));
+            }
          } catch (DataAccessException e) {
             return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
          } catch (Exception e) {
@@ -192,8 +184,7 @@ public class OrderService extends BaseService {
 
    public ServiceResponse<List<PeriodicOrderDTO>> getAllPeriodicOrders() {
       try {
-         // List<PeriodicOrderDTO> periodicOrders = orderFacade.getAllPeriodicOrders();
-         List<PeriodicOrderDTO> periodicOrders = new ArrayList<>(); // Placeholder for actual implementation
+         List<PeriodicOrderDTO> periodicOrders = orderFacade.getAllPeriodicOrders();
          if (periodicOrders == null || periodicOrders.isEmpty()) {
             return ServiceResponse.fail(List.of());
          }

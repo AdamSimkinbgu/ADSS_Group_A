@@ -2,14 +2,17 @@ package Inventory.Presentation;
 
 import Inventory.DTO.*;
 import Inventory.Service.*;
+import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.Enums.InitializeState;
 import com.fasterxml.jackson.core.type.TypeReference;
 import Inventory.type.Position;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -31,8 +34,7 @@ public class PresentationMenu {
     }
 
     public void Initialize(InitializeState input) {
-        // Initialize the inventory with the given input
-        // ms.Initialize(input);
+        ms.Initialize(input);
     }
 
     public void Menu() {
@@ -554,6 +556,7 @@ public class PresentationMenu {
         HashMap<Integer, Integer> order = new HashMap<>();
 
         // get the product list
+        InventoryReport();
         while (pId != -1) {
             System.out.println("Enter product ID (to end enter -1): ");
             pId = scanner.nextInt();
@@ -566,14 +569,27 @@ public class PresentationMenu {
                 order.put(pId, quantity);
             }
         }
-        System.out.println("Enter a day of the week by number (1-7)");
-        int day = scanner.nextInt();
+        System.out
+                .println("Enter a day of the week (Sunday, Monday, Tuesday, wednesday, thursday, Friday, Saturday): ");
+        String dayInput = scanner.next();
+        DayOfWeek day;
+        try {
+            day = DayOfWeek.valueOf(dayInput.toUpperCase());
+            if (day == null) {
+                System.out.println("Invalid day of the week.");
+                return;
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid day of the week.");
+            return;
+        }
 
         String msg = ms.AddRecurringOrder(order, day);
         System.out.println(msg);
     }
 
     private void DeleteRecurringOrder() {
+        System.out.println(ms.GetRecurringOrders());
         System.out.println("Enter the order ID to delete: ");
         int orderId = scanner.nextInt();
         if (orderId < 0) {

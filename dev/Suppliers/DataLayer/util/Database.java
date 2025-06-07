@@ -859,6 +859,29 @@ public final class Database {
                             (5,2,11,   180,    0.75)   -- “Labneh 250g” (product_id = 11)
                         ;
                     """);
+            // ────────────── 7. orders and periodic_orders ──────────────
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO periodic_orders(
+                            delivery_day, is_active
+                        ) VALUES
+                            ('Monday', 1),  -- periodic order for Mondays
+                            ('Wednesday', 1),  -- periodic order for Wednesdays
+                            ('Friday', 1)   -- periodic order for Fridays
+                        ;
+                    """);
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO periodic_order_item_lines(
+                            periodic_order_id, line_number, product_id, quantity
+                        ) VALUES
+                            (1, 1, 1, 100),  -- “Milk 3%” from supplier 1
+                            (1, 2, 2, 50),   -- “Cornflacks Cariot” from supplier 1
+                            (2, 1, 3, 75),   -- “Cottage Cheese” from supplier 2
+                            (2, 2, 4, 30),   -- “Pastrami Sandwich” from supplier 2
+                            (3, 1, 5, 200),   -- “Cottage Cheese” from supplier 3
+                            (3, 2, 6, 120)    -- “Pastrami Sandwich” from supplier 3
+                        ;
+                    """);
+
             LOGGER.debug("Inserted default BOQ items");
             LOGGER.warn("Orders and periodic orders are not seeded by default");
         } catch (SQLException e) {

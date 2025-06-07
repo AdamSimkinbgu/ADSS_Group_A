@@ -2,8 +2,11 @@ package Suppliers.ServiceLayer;
 
 import Inventory.Service.MainService;
 import Suppliers.DTOs.CatalogProductDTO;
+import Suppliers.DTOs.PeriodicOrderDTO;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
+import java.time.DayOfWeek;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +53,19 @@ public class IntegrationService {
         return ServiceResponse.fail(List.of("Integration service not set up"));
     }
 
-    public ServiceResponse<?> createPeriodicOrder(Map<Integer, Integer> pOrder, int day) {
-        return ServiceResponse.fail(List.of("Integration service not set up"));
+    public ServiceResponse<?> createPeriodicOrder(HashMap<Integer, Integer> pOrder, DayOfWeek day) {
+        if (pOrder == null || pOrder.isEmpty()) {
+            return ServiceResponse.fail(List.of("Periodic order cannot be empty"));
+        }
+        if (day == null) {
+            return ServiceResponse.fail(List.of("Day of the week cannot be null"));
+        }
+        ServiceResponse<?> response = orderService.createPeriodicOrder(new PeriodicOrderDTO(day, pOrder));
+        if (response.isSuccess() && response.getValue() != null) {
+            return ServiceResponse.ok(response.getValue());
+        } else {
+            return ServiceResponse.fail(response.getErrors());
+        }
     }
 
     public ServiceResponse<?> createShortageOrder(Map<Integer, Integer> pOrder) {

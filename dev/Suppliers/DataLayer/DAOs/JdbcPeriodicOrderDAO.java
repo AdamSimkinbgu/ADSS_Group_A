@@ -1,6 +1,7 @@
 package Suppliers.DataLayer.DAOs;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import Suppliers.DataLayer.util.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.sql.PreparedStatement;
 
@@ -28,7 +30,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setString(1, periodicOrder.getDeliveryDay().name());
-         preparedStatement.setInt(2, periodicOrder.isActive() ? 1 : 0);
+         preparedStatement.setInt(2, 1);
 
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected == 0) {
@@ -62,7 +64,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
       try (PreparedStatement preparedStatement = Database.getConnection()
             .prepareStatement(sql)) {
          preparedStatement.setString(1, periodicOrder.getDeliveryDay().name());
-         preparedStatement.setInt(2, periodicOrder.isActive() ? 1 : 0);
+         preparedStatement.setInt(2, 1);
          preparedStatement.setInt(3, periodicOrder.getPeriodicOrderID());
 
          LOGGER.debug("Updating periodic order: {}", periodicOrder);
@@ -130,7 +132,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          if (resultSet.next()) {
             PeriodicOrderDTO periodicOrder = new PeriodicOrderDTO();
             periodicOrder.setPeriodicOrderID(resultSet.getInt("periodic_order_id"));
-            periodicOrder.setDeliveryDay(LocalDate.parse(resultSet.getString("delivery_day")).getDayOfWeek());
+            periodicOrder.setDeliveryDay(DayOfWeek.valueOf(resultSet.getString("delivery_day").toUpperCase()));
             periodicOrder.setActive(resultSet.getBoolean("is_active"));
             LOGGER.info("Retrieved periodic order: {}", periodicOrder);
             return periodicOrder;
@@ -150,11 +152,11 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
       String sql = "SELECT * FROM periodic_orders";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
-         List<PeriodicOrderDTO> periodicOrders = new java.util.ArrayList<>();
+         List<PeriodicOrderDTO> periodicOrders = new ArrayList<>();
          while (resultSet.next()) {
             PeriodicOrderDTO periodicOrder = new PeriodicOrderDTO();
             periodicOrder.setPeriodicOrderID(resultSet.getInt("periodic_order_id"));
-            periodicOrder.setDeliveryDay(LocalDate.parse(resultSet.getString("delivery_day")).getDayOfWeek());
+            periodicOrder.setDeliveryDay(DayOfWeek.valueOf(resultSet.getString("delivery_day").toUpperCase()));
             periodicOrder.setActive(resultSet.getBoolean("is_active"));
             periodicOrders.add(periodicOrder);
          }

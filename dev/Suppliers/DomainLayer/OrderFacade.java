@@ -4,6 +4,7 @@ import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DTOs.PeriodicOrderItemLineDTO;
 import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 
@@ -39,24 +40,25 @@ public class OrderFacade extends BaseFacade {
     // ##################################################################################################################
     // Periodic Order
     // ##################################################################################################################
-    public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay,
-            HashMap<Integer, Integer> productsAndAmount) {
-        if (productsAndAmount == null || productsAndAmount.isEmpty()) {
-            throw new IllegalArgumentException("Products and amount cannot be null or empty");
+    public PeriodicOrderDTO createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
+        if (periodicOrderDTO == null) {
+            throw new IllegalArgumentException("PeriodicOrderDTO cannot be null");
         }
         // Validate that all products exist in the supplier's catalog
-        Map<Integer, Integer> filteredProducts = filterProductsThatDontHaveSupplier(productsAndAmount);
+        Map<Integer, Integer> filteredProducts = filterProductsThatDontHaveSupplier(
+                periodicOrderDTO.getProductsInOrder());
         if (filteredProducts.isEmpty()) {
             LOGGER.warn("No valid products found for the periodic order. Please check the product IDs.");
             return null;
         }
-        PeriodicOrderDTO periodicOrderDTO = periodicOrderController
-                .createPeriodicOrder(fixedDay, filteredProducts);
-        if (periodicOrderDTO == null) {
-            LOGGER.error("Failed to create periodic order for day: {}", fixedDay);
+        periodicOrderDTO.setProductsInOrder(new HashMap<>(filteredProducts));
+        // Create the periodic order
+        periodicOrderDTO = periodicOrderController.createPeriodicOrder(periodicOrderDTO);
+        if (periodicOrderDTO.getPeriodicOrderID() == -1) {
+            LOGGER.error("Failed to create periodic order for day: {}", periodicOrderDTO.getDeliveryDay());
             throw new RuntimeException("Failed to create periodic order");
         }
-        LOGGER.info("Periodic order created successfully for day: {}", fixedDay);
+        LOGGER.info("Periodic order created successfully for day: {}", periodicOrderDTO.getDeliveryDay());
         return periodicOrderDTO;
 
     }
@@ -151,6 +153,58 @@ public class OrderFacade extends BaseFacade {
             }
         }
         return filteredItems;
+    }
+
+    public boolean deletePeriodicOrder(int periodicOrderId) {
+        if (periodicOrderId <= 0) {
+            LOGGER.error("Invalid periodic order ID: {}", periodicOrderId);
+            throw new IllegalArgumentException("Periodic order ID must be greater than 0");
+        }
+        boolean deleted = periodicOrderController.deletePeriodicOrder(periodicOrderId);
+        if (!deleted) {
+            LOGGER.warn("Periodic order with ID {} not found or could not be deleted.", periodicOrderId);
+        } else {
+            LOGGER.info("Periodic order with ID {} deleted successfully.", periodicOrderId);
+        }
+        return deleted;
+    }
+
+    public PeriodicOrderDTO getPeriodicOrder(int periodicOrderId) {
+        if (periodicOrderId <= 0) {
+            LOGGER.error("Invalid periodic order ID: {}", periodicOrderId);
+            throw new IllegalArgumentException("Periodic order ID must be greater than 0");
+        }
+        PeriodicOrderDTO periodicOrder = periodicOrderController.getPeriodicOrder(periodicOrderId);
+        if (periodicOrder == null) {
+            LOGGER.warn("Periodic order with ID {} not found.", periodicOrderId);
+            return null;
+        }
+        LOGGER.info("Fetched periodic order with ID {} successfully.", periodicOrderId);
+        return periodicOrder;
+    }
+
+    public List<PeriodicOrderDTO> getAllPeriodicOrders() {
+        List<PeriodicOrderDTO> periodicOrders = periodicOrderController.getAllPeriodicOrders();
+        if (periodicOrders == null || periodicOrders.isEmpty()) {
+            LOGGER.info("No periodic orders found.");
+            return Collections.emptyList();
+        }
+        LOGGER.info("Fetched {} periodic orders.", periodicOrders.size());
+        return periodicOrders;
+    }
+
+    public PeriodicOrderDTO updatePeriodicOrder(PeriodicOrderDTO updatedDto) {
+        if (updatedDto == null || updatedDto.getPeriodicOrderID() <= 0) {
+            LOGGER.error("Invalid periodic order DTO: {}", updatedDto);
+            throw new IllegalArgumentException("Periodic order DTO cannot be null and must have a valid ID");
+        }
+        PeriodicOrderDTO updatedOrder = periodicOrderController.updatePeriodicOrder(updatedDto);
+        if (updatedOrder == null) {
+            LOGGER.error("Failed to update periodic order with ID: {}", updatedDto.getPeriodicOrderID());
+            throw new RuntimeException("Failed to update periodic order");
+        }
+        LOGGER.info("Periodic order with ID {} updated successfully.", updatedDto.getPeriodicOrderID());
+        return updatedOrder;
     }
 
 }

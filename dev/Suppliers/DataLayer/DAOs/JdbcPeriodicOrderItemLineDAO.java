@@ -67,7 +67,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          ResultSet resultSet = preparedStatement.executeQuery();
          if (resultSet.next()) {
             PeriodicOrderItemLineDTO periodicOrderItemLine = new PeriodicOrderItemLineDTO();
-            periodicOrderItemLine.setPeriodicOrderItemLineId(resultSet.getInt("periodic_order_item_line_id"));
+            periodicOrderItemLine.setPeriodicOrderItemLineId(resultSet.getInt("line_number"));
             periodicOrderItemLine.setPeriodicOrderId(resultSet.getInt("periodic_order_id"));
             periodicOrderItemLine.setProductId(resultSet.getInt("product_id"));
             periodicOrderItemLine.setQuantity(resultSet.getInt("quantity"));
@@ -97,7 +97,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          List<PeriodicOrderItemLineDTO> itemLines = new ArrayList<>();
          while (resultSet.next()) {
             PeriodicOrderItemLineDTO itemLine = new PeriodicOrderItemLineDTO();
-            itemLine.setPeriodicOrderItemLineId(resultSet.getInt("periodic_order_item_line_id"));
+            itemLine.setPeriodicOrderItemLineId(resultSet.getInt("line_number"));
             itemLine.setPeriodicOrderId(resultSet.getInt("periodic_order_id"));
             itemLine.setProductId(resultSet.getInt("product_id"));
             itemLine.setQuantity(resultSet.getInt("quantity"));

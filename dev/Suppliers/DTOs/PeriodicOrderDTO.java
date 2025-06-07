@@ -21,7 +21,13 @@ public class PeriodicOrderDTO {
         this.deliveryDay = arrivalDate;
         this.productsInOrder = productsInOrder;
         this.isActive = isActive;
+    }
 
+    public PeriodicOrderDTO(DayOfWeek deliveryDay, HashMap<Integer, Integer> productsInOrder) {
+        this.periodicOrderID = -1; // Default ID for new periodic orders
+        this.deliveryDay = deliveryDay;
+        this.productsInOrder = productsInOrder;
+        this.isActive = false;
     }
 
     public PeriodicOrderDTO(PeriodicOrder periodicOrder) {
