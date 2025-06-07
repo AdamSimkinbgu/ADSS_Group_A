@@ -376,20 +376,17 @@ public class SupplierFacade {
     * @return a list of supplier IDs supplying the specified product;
     *         returns an empty list if no suppliers are found
     */
-   public List<Supplier> getAllSuppliersForProductId(int productId) {
+   public List<Supplier> getAllSuppliersForProduct(int productId) {
       List<Integer> supplierIds = suppliersAgreementsRepo.getAllSuppliersForProductId(productId);
       if (supplierIds == null || supplierIds.isEmpty()) {
          LOGGER.warn("No suppliers found in the database for product ID: {}", productId);
          return Collections.emptyList();
       }
-      List <Supplier> result = new ArrayList<>();
-      for (Integer id : supplierIds) {
-         Optional<SupplierDTO> optionalSupplierDTO = suppliersAgreementsRepo.getSupplierById(id);
-         if (optionalSupplierDTO.isPresent()) {
-            result.add(new Supplier(optionalSupplierDTO.get()));
-         }
-      }
-      return result;
+      return supplierIds.stream()
+              .map(suppliersAgreementsRepo::getSupplierById)
+              .filter(Optional::isPresent)
+              .map(opt -> new Supplier(opt.get()))
+              .toList();
    }
 
    /**

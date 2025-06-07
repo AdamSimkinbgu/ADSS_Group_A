@@ -2,9 +2,9 @@ package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.InitializeState;
-import Suppliers.DomainLayer.Classes.Supplier;
 import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
 
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.*;
 
@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 
 public class OrderFacade extends BaseFacade {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderFacade.class);
-    private final SupplierFacade supplierFacade;
+
     private PeriodicOrderHandler periodicOrderController;
     private OrderHandler orderHandler;
 
     public OrderFacade(InitializeState initializeState, SupplierFacade supplierFacade) {
-        this.supplierFacade = supplierFacade;
-        this.orderHandler = new OrderHandler();
+
+        this.orderHandler = new OrderHandler(supplierFacade);
         this.periodicOrderController = new PeriodicOrderHandler();
         initialize(initializeState);
     }
@@ -58,69 +58,111 @@ public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay, HashMap<Integer,
     }
     LOGGER.info("Periodic order created successfully for day: {}", fixedDay);
     return periodicOrderDTO;
-
 }
+
+    public PeriodicOrderDTO executePeriodicOrder(int periodicOrderID) {
+        PeriodicOrder periodicOrder = periodicOrderController.getPeriodicOrderById(periodicOrderID);
+        if (periodicOrder == null) {
+            LOGGER.warn("Periodic order with ID {} not found", periodicOrderID);
+            throw new IllegalArgumentException("Invalid periodic order ID");
+        }
+
+        OrderInfoDTO orderInfo = periodicOrder.toOrderInfoDTO(); // נניח שיש מתודה כזו
+        try {
+            orderHandler.handleOrder(orderInfo);
+            LOGGER.info("Executed periodic order ID {}", periodicOrderID);
+        } catch (SQLException e) {
+            LOGGER.error("Failed to execute periodic order ID {}: {}", periodicOrderID, e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 //#######################################################################################################################
 //                                        Order
 //#######################################################################################################################
 
-    public OrderDTO addOrderManually(OrderDTO orderDTO) {
-        if (orderDTO == null) {
-            throw new IllegalArgumentException("OrderDTO cannot be null");
-        }
-        // Validate that all products exist in the supplier's catalog
-        List<OrderItemLineDTO> filteredProducts = filterItemsThatSupplierDoesntHave(orderDTO.getItems(), orderDTO.getSupplierId()); // why Suplieer id ?? becuse it manulay? ifwe dont have this ?
-        if (filteredProducts.isEmpty()) {
-            LOGGER.warn("No valid products found for the order. Please check the product IDs.");
-            return null;
-        }
-        filteredProducts = supplierFacade.setProductNameAndCategoryForOrderItems(filteredProducts, orderDTO.getSupplierId());
-        filteredProducts = supplierFacade.setSupplierPricesAndDiscountsByBestPrice(filteredProducts, orderDTO.getSupplierId());
-        orderDTO.setItems(filteredProducts);
-        orderDTO.setSupplierName(supplierFacade.getSupplierDTO(orderDTO.getSupplierId()).getName());
-        OrderDTO order = orderHandler.addOrder(orderDTO);
-        if (order == null) {
-            throw new RuntimeException("Failed to add order");
-        }
-        return order;
+//    public OrderDTO addOrderManually(OrderDTO orderDTO) {
+//        if (orderDTO == null) {
+//            throw new IllegalArgumentException("OrderDTO cannot be null");
+//        }
+//        // Validate that all products exist in the supplier's catalog
+//        List<OrderItemLineDTO> filteredProducts = filterItemsThatSupplierDoesntHave(orderDTO.getItems(), orderDTO.getSupplierId()); // why Suplieer id ?? becuse it manulay? ifwe dont have this ?
+//        if (filteredProducts.isEmpty()) {
+//            LOGGER.warn("No valid products found for the order. Please check the product IDs.");
+//            return null;
+//        }
+//        filteredProducts = supplierFacade.setProductNameAndCategoryForOrderItems(filteredProducts, orderDTO.getSupplierId());
+//        filteredProducts = supplierFacade.setSupplierPricesAndDiscountsByBestPrice(filteredProducts, orderDTO.getSupplierId());
+//        orderDTO.setItems(filteredProducts);
+//        orderDTO.setSupplierName(supplierFacade.getSupplierDTO(orderDTO.getSupplierId()).getName());
+//        OrderDTO order = orderHandler.addOrder(orderDTO);
+//        if (order == null) {
+//            throw new RuntimeException("Failed to add order");
+//        }
+//        return order;
+//    }
+
+
+    public OrderResultDTO createOrder(OrderInfoDTO infoDTO) throws SQLException {
+        return orderHandler.handleOrder(infoDTO);
     }
 
-
-    public OrderDTO createOrder(OrderInfoDTO infoDTO) {
-        if (infoDTO == null) {
-            throw new IllegalArgumentException("OrderDTO cannot be null");
-        }
-        // Validate that there are products to order
-        if (infoDTO.getProducts() == null || infoDTO.getProducts().isEmpty()) {
-            throw new IllegalArgumentException("OrderDTO.products cannot be null or empty");
-        }
-        Map<Integer, Integer> products = infoDTO.getProducts(); // productId -> quantity
-
-
-        return null ;
+    public OrderDTO createOrderByShortage(int branchId, HashMap<Integer, Integer> shortage){
+            if (shortage == null || shortage.isEmpty()) {
+                throw new IllegalArgumentException("Shortage map cannot be null or empty");
+            }
+            OrderInfoDTO infoDTO = new OrderInfoDTO(branchId, shortage);
+            try {
+                return orderHandler.handleOrder(infoDTO).getCreatedOrder();
+            } catch (SQLException e) {
+                LOGGER.error("Error creating order by shortage: {}", e.getMessage());
+                throw new RuntimeException("Error creating order by shortage", e);
+            }
     }
 
-    public OrderDTO createOrderByShortage(int branchId, HashMap<Integer, Integer> shortage) {
-        return null; // TODO: Implement this method
-
+    public OrderDTO getOrderById(int orderID) {
+        return orderHandler.getOrderById(orderID);
     }
-
-    public OrderDTO getOrder(int orderID) {
-        return null; // TODO: Implement this method
-    }
-
-
 
     public List<OrderDTO> listOrders() {
-            return null; // TODO: Implement this method 
-    }
-    
-    public OrderDTO updateOrder(OrderDTO updatedOrder) {
-        return null; // TODO: Implement this method
+        return orderHandler.getAllOrders();
     }
 
+    public OrderDTO updateOrderInfo(OrderDTO updatedOrder) {
+        if (updatedOrder == null) {
+            throw new IllegalArgumentException("Updated order cannot be null");
+        }
+        return orderHandler.updateOrderInfo(updatedOrder);
+    }
 
+    public OrderDTO removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) {
+        if (productsToRemove == null || productsToRemove.isEmpty()) {
+            throw new IllegalArgumentException("Products to remove cannot be null or empty");
+        }
+        return orderHandler.removeProductsFromOrder(orderID, productsToRemove);
+    }
+    public OrderDTO updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) {
+        if (productsToAdd == null || productsToAdd.isEmpty()) {
+            throw new IllegalArgumentException("Products to add cannot be null or empty");
+        }
+        return orderHandler.updateProductsInOrder(orderID, productsToAdd);
+    }
 
+    public void printOrder(int supplierID) {
+        List<OrderDTO> orders = orderHandler.getOrdersBySupplier(supplierID);
+        orders.forEach(order -> LOGGER.info(order.toString()));
+    }
+    public void printOrders() {
+        List<OrderDTO> orders = orderHandler.getAllOrders();
+        orders.forEach(order -> LOGGER.info(order.toString()));
+    }
+
+    public HashMap<Integer, OrderDTO> getAllOrderForToday() {
+        return orderHandler.getOrdersForToday();
+    }
+
+    public OrderDTO markOrderAsCollected(int orderID) {
+        return orderHandler.markOrderAsCollected(orderID);
+    }
 //#######################################################################################################################
 //                                        Help functions
 //#######################################################################################################################
@@ -163,34 +205,4 @@ public PeriodicOrderDTO createPeriodicOrder(DayOfWeek fixedDay, HashMap<Integer,
         return filteredItems;
     }
 
-    /**
-     * Retrieves, for each productId in the input map, a list of Supplier objects
-     * who carry that product (without checking quantity), sorted by base unit price
-     * and then by delivery time.
-     *
-     * @param products Map of productId -> quantity (quantity is not used for filtering here)
-     * @return Map of productId -> List<Supplier> sorted by unit price and delivery time
-     */
-    public Map<Integer, List<Supplier>> getSuppliersForProductsSortedByPriceAndDelivery(Map<Integer, Integer> products) {
-        {
-            Map<Integer, List<Supplier>> result = new HashMap<>();
-
-            for (Integer productId : products.keySet()) {
-                List<Integer> supplierIds = getAllSuppliersForProductId(productId);
-
-                if (supplierIds == null || supplierIds.isEmpty()) {
-                    LOGGER.warn("No suppliers found in the database for product ID: {}", productId);
-                    result.put(productId, Collections.emptyList());
-                    continue;
-                }
-                List<Supplier> suppliers = new ArrayList<>();
-                for (Integer supplierId : supplierIds) {
-
-                }
-
-
-            }
-
-        }
-    }
 }
