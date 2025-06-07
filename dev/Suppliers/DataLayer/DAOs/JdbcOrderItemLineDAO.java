@@ -10,7 +10,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DataLayer.Interfaces.OrderItemLineDAOInterface;
 import Suppliers.DataLayer.util.Database;
@@ -39,7 +38,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          preparedStatement.setBigDecimal(5,
                orderItemLine.getDiscount() != null ? orderItemLine.getDiscount() : BigDecimal.ZERO);
 
-         LOGGER.info("Adding order item line: {}", orderItemLine);
+         LOGGER.debug("Adding order item line: {}", orderItemLine);
          int rowsEffected = preparedStatement.executeUpdate();
          if (rowsEffected == 0) {
             LOGGER.error("Creating order item line failed, no rows affected.");
@@ -48,7 +47,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                orderItemLine.setOrderItemLineID(generatedKeys.getInt(1));
-               LOGGER.info("Order item line created with lineID: {}", orderItemLine.getOrderItemLineID());
+               LOGGER.debug("Order item line created with lineID: {}", orderItemLine.getOrderItemLineID());
                return orderItemLine;
             } else {
                LOGGER.error("Creating order item line failed, no ID obtained.");
@@ -83,7 +82,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
                orderItemLine.setDiscount(resultSet.getBigDecimal("discount_pct"));
                orderItemLine.setSupplierProductCatalogNumber(resultSet.getString("supplier_product_catalog_number"));
                orderItemLine.setProductName(resultSet.getString("product_name"));
-               LOGGER.info("Retrieved order item line: {}", orderItemLine);
+               LOGGER.debug("Retrieved order item line: {}", orderItemLine);
                return orderItemLine;
             } else {
                LOGGER.warn("No order item line found with orderId: {} and lineId: {}", orderId, lineId);
@@ -121,7 +120,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
                orderItemLine.setUnitPrice(resultSet.getBigDecimal("price"));
                orderItemLines.add(orderItemLine);
             }
-            LOGGER.info("Listed {} order item lines", orderItemLines.size());
+            LOGGER.debug("Listed {} order item lines", orderItemLines.size());
             return orderItemLines;
          }
 
@@ -146,7 +145,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
             LOGGER.warn("No order item line found with ID: {}", id);
             return false;
          } else {
-            LOGGER.info("Deleted order item line with ID: {}", id);
+            LOGGER.debug("Deleted order item line with ID: {}", id);
             return true;
          }
       } catch (SQLException e) {
@@ -182,6 +181,35 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          handleSQLException(e);
       }
       return false;
+   }
+
+   public List<OrderItemLineDTO> getAllOrderItemLinesForOrder(int orderId) {
+      if (orderId <= 0) {
+         LOGGER.error("Invalid order ID: {}", orderId);
+         throw new IllegalArgumentException("Order ID must be greater than 0");
+      }
+      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
+            "SELECT * FROM order_item_lines WHERE order_id = ?")) {
+         preparedStatement.setInt(1, orderId);
+         ResultSet resultSet = preparedStatement.executeQuery();
+         List<OrderItemLineDTO> orderItemLines = new ArrayList<>();
+         while (resultSet.next()) {
+            OrderItemLineDTO orderItemLine = new OrderItemLineDTO();
+            orderItemLine.setOrderItemLineID(resultSet.getInt("order_item_line_id"));
+            orderItemLine.setOrderID(resultSet.getInt("order_id"));
+            orderItemLine.setProductId(resultSet.getInt("product_id"));
+            orderItemLine.setQuantity(resultSet.getInt("quantity"));
+            orderItemLine.setUnitPrice(resultSet.getBigDecimal("price"));
+            orderItemLines.add(orderItemLine);
+         }
+         LOGGER.debug("Retrieved {} order item lines for order ID: {}", orderItemLines.size(), orderId);
+         return orderItemLines;
+      } catch (SQLException e) {
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
+      }
+      return new ArrayList<>();
+
    }
 
 }

@@ -101,6 +101,7 @@ public class BillofQuantitiesItemDTO {
                   : productName.substring(0, MAX_PRODNAME - 3) + "...")
             : "[no product]";
 
+      @SuppressWarnings("deprecation")
       String disc = (discountPercent != null)
             ? discountPercent.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + "%"
             : "0%";

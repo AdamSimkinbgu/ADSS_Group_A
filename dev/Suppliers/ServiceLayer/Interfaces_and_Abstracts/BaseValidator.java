@@ -2,7 +2,6 @@ package Suppliers.ServiceLayer.Interfaces_and_Abstracts;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 import Suppliers.DTOs.AddressDTO;
 import Suppliers.DTOs.BillofQuantitiesItemDTO;

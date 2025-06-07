@@ -10,6 +10,22 @@ public final class Database {
     private static String DB_URL = "jdbc:sqlite:supply.db";
     private static Connection conn;
     public static final String DB_TEST_URL = "jdbc:sqlite:supplyTest.db";
+    public static final String DB_DEV_URL = "jdbc:sqlite:supply.db";
+
+    public static String getURL(String env) {
+        if (env == null || env.isEmpty()) {
+            return DB_URL;
+        }
+        switch (env.toLowerCase()) {
+            case "test":
+                return DB_TEST_URL;
+            case "dev":
+                return DB_DEV_URL;
+            default:
+                LOGGER.warn("Unknown environment: {}, using default DB URL", env);
+                return DB_URL;
+        }
+    }
 
     static {
         try {
@@ -337,9 +353,18 @@ public final class Database {
                         """);
 
                 // ───────────────── inventory_notifications (optional) ─────────────────
-
+                ResultSet rs = st.executeQuery("PRAGMA foreign_keys;");
+                if (rs.next()) {
+                    int foreignKeysEnabled = rs.getInt(1);
+                    if (foreignKeysEnabled == 1) {
+                        LOGGER.info("Foreign keys are enabled in the database");
+                    } else {
+                        LOGGER.warn("Foreign keys are NOT enabled in the database");
+                    }
+                }
                 LOGGER.info("Ensured database schema exists");
             }
+            conn.close();
         } catch (Exception e) {
             LOGGER.error("Database initialization failed", e);
             throw new ExceptionInInitializerError(e);
@@ -669,9 +694,18 @@ public final class Database {
                         """);
 
                 // ───────────────── inventory_notifications (optional) ─────────────────
-
-                LOGGER.info("Ensured database schema exists");
+                ResultSet rs = st.executeQuery("PRAGMA foreign_keys;");
+                if (rs.next()) {
+                    int foreignKeysEnabled = rs.getInt(1);
+                    if (foreignKeysEnabled == 1) {
+                        LOGGER.info("Foreign keys are enabled in the test database");
+                    } else {
+                        LOGGER.warn("Foreign keys are NOT enabled in the test database");
+                    }
+                }
+                LOGGER.info("Ensured test database schema exists");
             }
+            conn.close();
         } catch (Exception e) {
             LOGGER.error("Database initialization failed", e);
             throw new ExceptionInInitializerError(e);
@@ -679,7 +713,7 @@ public final class Database {
     }
 
     public static void deleteAllData() {
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             st.executeUpdate("DELETE FROM periodic_order_item_lines;");
             st.executeUpdate("DELETE FROM boq_items;");
             st.executeUpdate("DELETE FROM order_item_lines;");
@@ -701,7 +735,22 @@ public final class Database {
     }
 
     public static Connection getConnection() throws SQLException {
+        // make sure the connection is using the correct URL
+        if (conn == null || conn.isClosed() || !conn.getMetaData().getURL().equals(DB_URL)) {
+            // close the previous connection if it exists
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+                LOGGER.info("Closed previous connection to SQLite at {}", DB_URL);
+            }
+            // create a new connection
+            conn = DriverManager.getConnection(DB_URL);
+            LOGGER.info("Reconnected to SQLite at {}", DB_URL);
+        }
         return conn;
+    }
+
+    public static String getDBUrl() {
+        return DB_URL;
     }
 
     public static void setDB_URL(String dbUrl) {
@@ -722,7 +771,7 @@ public final class Database {
      */
     public static void seedDefaultData() {
         deleteAllData();
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             // ────────────── 1. PRAGMA ──────────────
             st.executeUpdate("PRAGMA foreign_keys = ON;");
 
@@ -818,7 +867,7 @@ public final class Database {
     }
 
     public static void provideStatisticsAboutTheCurrentStateOfTheWholeDatabase() {
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT name FROM sqlite_master WHERE type='table';");
             System.out.println("Current database tables:");
             while (rs.next()) {
@@ -828,7 +877,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve database statistics", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM suppliers;");
             if (rs.next()) {
                 System.out.println("Total suppliers: " + rs.getInt("total"));
@@ -837,7 +886,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve supplier count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM supplier_products;");
             if (rs.next()) {
                 System.out.println("Total supplier products: " + rs.getInt("total"));
@@ -846,7 +895,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve supplier product count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM agreements;");
             if (rs.next()) {
                 System.out.println("Total agreements: " + rs.getInt("total"));
@@ -855,7 +904,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve agreement count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM boq_items;");
             if (rs.next()) {
                 System.out.println("Total BOQ items: " + rs.getInt("total"));
@@ -864,7 +913,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve BOQ item count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM orders;");
             if (rs.next()) {
                 System.out.println("Total orders: " + rs.getInt("total"));
@@ -873,7 +922,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve order count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM periodic_orders;");
             if (rs.next()) {
                 System.out.println("Total periodic orders: " + rs.getInt("total"));
@@ -882,7 +931,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve periodic order count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM contact_info;");
             if (rs.next()) {
                 System.out.println("Total contacts: " + rs.getInt("total"));
@@ -891,7 +940,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve contact count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM order_item_lines;");
             if (rs.next()) {
                 System.out.println("Total order item lines: " + rs.getInt("total"));
@@ -900,7 +949,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve order item line count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM periodic_order_item_lines;");
             if (rs.next()) {
                 System.out.println("Total periodic order item lines: " + rs.getInt("total"));
@@ -909,7 +958,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve periodic order item line count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT COUNT(*) AS total FROM sqlite_sequence;");
             if (rs.next()) {
                 System.out.println("Total autoincrement sequences: " + rs.getInt("total"));
@@ -918,7 +967,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve autoincrement sequence count", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT name, sql FROM sqlite_master WHERE type='table';");
             System.out.println("Table definitions:");
             while (rs.next()) {
@@ -928,7 +977,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve table definitions", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM suppliers LIMIT 5;");
             System.out.println("Sample suppliers data:");
             while (rs.next()) {
@@ -938,7 +987,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample suppliers data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM supplier_products LIMIT 5;");
             System.out.println("Sample supplier products data:");
             while (rs.next()) {
@@ -948,7 +997,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample supplier products data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM agreements LIMIT 5;");
             System.out.println("Sample agreements data:");
             while (rs.next()) {
@@ -958,7 +1007,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample agreements data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM boq_items LIMIT 5;");
             System.out.println("Sample BOQ items data:");
             while (rs.next()) {
@@ -968,7 +1017,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample BOQ items data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM orders LIMIT 5;");
             System.out.println("Sample orders data:");
             while (rs.next()) {
@@ -978,7 +1027,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample orders data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM periodic_orders LIMIT 5;");
             System.out.println("Sample periodic orders data:");
             while (rs.next()) {
@@ -988,7 +1037,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample periodic orders data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM contact_info LIMIT 5;");
             System.out.println("Sample contacts data:");
             while (rs.next()) {
@@ -998,7 +1047,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample contacts data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM order_item_lines LIMIT 5;");
             System.out.println("Sample order item lines data:");
             while (rs.next()) {
@@ -1008,7 +1057,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample order item lines data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM periodic_order_item_lines LIMIT 5;");
             System.out.println("Sample periodic order item lines data:");
             while (rs.next()) {
@@ -1018,7 +1067,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample periodic order item lines data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM sqlite_sequence LIMIT 5;");
             System.out.println("Sample autoincrement sequences data:");
             while (rs.next()) {
@@ -1028,7 +1077,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve sample autoincrement sequences data", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT name, sql FROM sqlite_master WHERE type='trigger';");
             System.out.println("Triggers in the database:");
             while (rs.next()) {
@@ -1038,7 +1087,7 @@ public final class Database {
         } catch (SQLException e) {
             LOGGER.error("Failed to retrieve triggers", e);
         }
-        try (Statement st = conn.createStatement()) {
+        try (Statement st = Database.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery("SELECT * FROM sqlite_master WHERE type='view';");
             System.out.println("Views in the database:");
             while (rs.next()) {

@@ -26,16 +26,17 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          LOGGER.error("Invalid supplier ID: {}", contactInfo.getSupplierId());
          throw new IllegalArgumentException("Invalid supplier ID");
       }
-      LOGGER.info("Creating contact info for supplier ID: {}", contactInfo.getSupplierId());
+      LOGGER.debug("Creating contact info for supplier ID: {}", contactInfo.getSupplierId());
       String sql = "INSERT INTO contact_info (supplier_id, name, email, phone) VALUES (?, ?, ?, ?)";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, contactInfo.getSupplierId());
          preparedStatement.setString(2, contactInfo.getName());
          preparedStatement.setString(3, contactInfo.getEmail());
          preparedStatement.setString(4, contactInfo.getPhone());
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Contact info created successfully for supplier ID: {}", contactInfo.getSupplierId());
+            LOGGER.debug("Contact info created successfully for supplier ID: {}", contactInfo.getSupplierId());
             return contactInfo;
          } else {
             LOGGER.warn("No rows affected when creating contact info for supplier ID: {}", contactInfo.getSupplierId());
@@ -59,9 +60,10 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          LOGGER.error("Invalid supplier ID: {}", contactInfo.getSupplierId());
          throw new IllegalArgumentException("Invalid supplier ID");
       }
-      LOGGER.info("Updating contact info for supplier ID: {}", contactInfo.getSupplierId());
+      LOGGER.debug("Updating contact info for supplier ID: {}", contactInfo.getSupplierId());
       String sql = "UPDATE contact_info SET name = ?, email = ?, phone = ? WHERE supplier_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setString(1, contactInfo.getName());
          preparedStatement.setString(2, contactInfo.getEmail());
          preparedStatement.setString(3, contactInfo.getPhone());
@@ -88,14 +90,15 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          LOGGER.error("Invalid contact info ID: {}", supplierId);
          throw new IllegalArgumentException("Invalid contact info ID");
       }
-      LOGGER.info("Deleting contact info with ID: {}", supplierId);
+      LOGGER.debug("Deleting contact info with ID: {}", supplierId);
       String sql = "DELETE FROM contact_info WHERE supplier_id = ? AND name = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, supplierId);
          preparedStatement.setString(2, name);
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Contact info deleted successfully for supplier ID: {}", supplierId);
+            LOGGER.debug("Contact info deleted successfully for supplier ID: {}", supplierId);
             return true;
          } else {
             LOGGER.warn("No rows affected when deleting contact info for supplier ID: {}", supplierId);
@@ -114,10 +117,11 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          LOGGER.error("Invalid supplier ID: {}", supplierId);
          throw new IllegalArgumentException("Invalid supplier ID");
       }
-      LOGGER.info("Retrieving contact info for supplier ID: {}", supplierId);
+      LOGGER.debug("Retrieving contact info for supplier ID: {}", supplierId);
       String sql = "SELECT * FROM contact_info WHERE supplier_id = ?";
       List<ContactInfoDTO> contactInfos = new ArrayList<>();
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, supplierId);
          ResultSet resultSet = preparedStatement.executeQuery();
          while (resultSet.next()) {

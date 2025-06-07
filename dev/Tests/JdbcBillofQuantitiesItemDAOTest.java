@@ -60,8 +60,8 @@ class JdbcBillofQuantitiesItemDAOTest {
             /* agreementId = */ 1,
             /* lineInBillId = */ -1,
             /* productName = */ "Bad Widget",
-            /* quantity = */ 0,
             /* productId = */ 1,
+            /* quantity = */ 0,
             /* discountPercent = */ new java.math.BigDecimal("5.00"));
       assertThrows(DataAccessException.class, () -> dao.createBillofQuantitiesItem(bad),
             "Inserting a BOQ item with quantity=0 should violate CHECK(quantity>0)");

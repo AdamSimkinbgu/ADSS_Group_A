@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import Suppliers.DTOs.PeriodicOrderItemLineDTO;
 import Suppliers.DataLayer.Interfaces.PeriodicOrderItemLineDAOInterface;
 import Suppliers.DataLayer.util.Database;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                periodicOrderItemLine.setPeriodicOrderItemLineId(generatedKeys.getInt(1));
-               LOGGER.info("Periodic order item line created with ID: {}",
+               LOGGER.debug("Periodic order item line created with ID: {}",
                      periodicOrderItemLine.getPeriodicOrderItemLineId());
                return periodicOrderItemLine;
             } else {
@@ -60,7 +61,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          throw new IllegalArgumentException("Periodic order item line ID must be greater than 0");
       }
       String sql = "SELECT * FROM periodic_order_item_lines WHERE periodic_order_item_line_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, id);
          ResultSet resultSet = preparedStatement.executeQuery();
          if (resultSet.next()) {
@@ -88,7 +90,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          throw new IllegalArgumentException("Periodic order ID must be greater than 0");
       }
       String sql = "SELECT * FROM periodic_order_item_lines WHERE periodic_order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, periodicOrderId);
          ResultSet resultSet = preparedStatement.executeQuery();
          List<PeriodicOrderItemLineDTO> itemLines = new ArrayList<>();
@@ -115,14 +118,15 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          throw new IllegalArgumentException("Periodic order item line ID must be greater than 0");
       }
       String sql = "DELETE FROM periodic_order_item_lines WHERE periodic_order_item_line_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, id);
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
             LOGGER.warn("No periodic order item line found with ID: {}", id);
             return false;
          } else {
-            LOGGER.info("Periodic order item line with ID {} deleted successfully.", id);
+            LOGGER.debug("Periodic order item line with ID {} deleted successfully.", id);
             return true;
          }
       } catch (SQLException e) {
@@ -140,7 +144,8 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          throw new IllegalArgumentException("Periodic order item line cannot be null and must have a valid ID");
       }
       String sql = "UPDATE periodic_order_item_lines SET quantity = ? WHERE periodic_order_id = ? AND line_number = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, periodicOrderItemLine.getQuantity());
          preparedStatement.setInt(2, periodicOrderItemLine.getPeriodicOrderId());
          preparedStatement.setInt(3, periodicOrderItemLine.getPeriodicOrderItemLineId());
@@ -159,6 +164,33 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          handleSQLException(e);
       }
       return false;
+   }
+
+   public List<PeriodicOrderItemLineDTO> getAllPeriodicOrderItemLinesForPeriodicOrder(int i) {
+      if (i <= 0) {
+         LOGGER.error("Invalid periodic order ID: {}", i);
+         throw new IllegalArgumentException("Periodic order ID must be greater than 0");
+      }
+      String sql = "SELECT * FROM periodic_order_item_lines WHERE periodic_order_id = ?";
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
+         preparedStatement.setInt(1, i);
+         ResultSet resultSet = preparedStatement.executeQuery();
+         List<PeriodicOrderItemLineDTO> itemLines = new ArrayList<>();
+         while (resultSet.next()) {
+            PeriodicOrderItemLineDTO itemLine = new PeriodicOrderItemLineDTO();
+            itemLine.setPeriodicOrderItemLineId(resultSet.getInt("periodic_order_item_line_id"));
+            itemLine.setPeriodicOrderId(resultSet.getInt("periodic_order_id"));
+            itemLine.setProductId(resultSet.getInt("product_id"));
+            itemLine.setQuantity(resultSet.getInt("quantity"));
+            itemLines.add(itemLine);
+         }
+         return itemLines;
+      } catch (SQLException e) {
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
+      }
+      return new ArrayList<>();
    }
 
 }

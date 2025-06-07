@@ -3,7 +3,6 @@ package Suppliers.DomainLayer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.InvalidParameterException;
-import java.sql.SQLException;
 import java.util.*;
 
 import org.slf4j.Logger;
