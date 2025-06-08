@@ -1,17 +1,15 @@
-package Tests;
-
-import org.junit.jupiter.api.*;
-
+import Suppliers.DTOs.PeriodicOrderItemLineDTO;
 import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DataLayer.DAOs.JdbcPeriodicOrderItemLineDAO;
 import Suppliers.DataLayer.util.Database;
-import Suppliers.DTOs.PeriodicOrderItemLineDTO;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JdbcPeriodicOrderItemLineDAOTest {
    private Connection conn;

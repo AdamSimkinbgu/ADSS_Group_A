@@ -1,12 +1,10 @@
-package Tests;
-
-import org.junit.jupiter.api.*;
-
-import Suppliers.DataLayer.DAOs.DataAccessException;
+import Suppliers.DTOs.AddressDTO;
+import Suppliers.DTOs.OrderDTO;
 import Suppliers.DataLayer.DAOs.JdbcOrderDAO;
 import Suppliers.DataLayer.util.Database;
-import Suppliers.DTOs.OrderDTO;
-import Suppliers.DTOs.AddressDTO;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,7 +47,7 @@ class JdbcOrderDAOTest {
       assertNotNull(created, "Created order should not be null");
       assertTrue(created.getOrderId() > 0);
 
-      Optional<OrderDTO> fetchedOpt = dao.getOrder(created.getOrderId());
+      Optional<OrderDTO> fetchedOpt = dao.getOrderByID(created.getOrderId());
       assertTrue(fetchedOpt.isPresent());
       OrderDTO fetched = fetchedOpt.get();
 

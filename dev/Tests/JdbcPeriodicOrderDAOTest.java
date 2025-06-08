@@ -1,20 +1,11 @@
-package Tests;
 
-import org.junit.jupiter.api.*;
-
-import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DataLayer.DAOs.JdbcPeriodicOrderDAO;
 import Suppliers.DataLayer.util.Database;
-import Suppliers.DTOs.PeriodicOrderDTO;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.DayOfWeek;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class JdbcPeriodicOrderDAOTest {
    private Connection conn;

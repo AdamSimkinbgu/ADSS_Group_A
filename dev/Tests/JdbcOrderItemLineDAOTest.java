@@ -1,18 +1,16 @@
-package Tests;
-
-import org.junit.jupiter.api.*;
-
+import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DataLayer.DAOs.JdbcOrderItemLineDAO;
 import Suppliers.DataLayer.util.Database;
-import Suppliers.DTOs.OrderItemLineDTO;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JdbcOrderItemLineDAOTest {
    private Connection conn;

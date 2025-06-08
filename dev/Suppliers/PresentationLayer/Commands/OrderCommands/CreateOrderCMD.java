@@ -43,11 +43,11 @@ public class CreateOrderCMD implements CommandInterface {
         products.forEach(product -> view.showMessage(
                 String.format(format, productCounter.getAndIncrement() + ". ") + product.toString()));
 
-        form.fillBuild().ifPresent(orderDTO -> {
+        form.fillBuild().ifPresent(infoDTO -> {
             try {
-                ServiceResponse<?> res = orderService.createOrder(orderDTO);
+                ServiceResponse<?> res = orderService.createOrder(infoDTO);
                 if (res.isSuccess()) {
-                    view.showMessage("-- Order created successfully --\n" + orderDTO);
+                    view.showMessage("-- Order created successfully --\n" + infoDTO);
                 } else {
                     view.showError("-- Failed to create order --");
                     AtomicInteger counter = new AtomicInteger(1);

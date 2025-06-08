@@ -230,28 +230,6 @@ public class OrderFacade extends BaseFacade {
     }
 
     public OrderDTO updateOrder(OrderDTO updatedDto) {
+        return null;
     }
 }
-
-
-// old function dont need that
-//        public PeriodicOrderDTO createPeriodicOrder (DayOfWeek fixedDay, HashMap < Integer, Integer > productsAndAmount)
-//        {
-//            if (productsAndAmount == null || productsAndAmount.isEmpty()) {
-//                throw new IllegalArgumentException("Products and amount cannot be null or empty");
-//            }
-//            // Validate that all products exist in the supplier's catalog
-//            Map<Integer, Integer> filteredProducts = filterProductsThatDontHaveSupplier(productsAndAmount);
-//            if (filteredProducts.isEmpty()) {
-//                LOGGER.warn("No valid products found for the periodic order. Please check the product IDs.");
-//                return null;
-//            }
-//            PeriodicOrderDTO periodicOrderDTO = periodicOrderHandler
-//                    .createPeriodicOrder(fixedDay, filteredProducts);
-//            if (periodicOrderDTO == null) {
-//                LOGGER.error("Failed to create periodic order for day: {}", fixedDay);
-//                throw new RuntimeException("Failed to create periodic order");
-//            }
-//            LOGGER.info("Periodic order created successfully for day: {}", fixedDay);
-//            return periodicOrderDTO;
-//        }
