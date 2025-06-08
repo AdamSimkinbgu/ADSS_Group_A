@@ -149,7 +149,7 @@ public class OrderService extends BaseService {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateUpdateDTO(updatedDto);
       if (validationResponse.isSuccess()) {
          try {
-            PeriodicOrderDTO updatedPeriodicOrder = orderFacade.updatePeriodicOrder(updatedDto);
+            boolean updatedPeriodicOrder = orderFacade.updatePeriodicOrder(updatedDto);
             return ServiceResponse.ok(updatedPeriodicOrder);
          } catch (DataAccessException e) {
             return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));

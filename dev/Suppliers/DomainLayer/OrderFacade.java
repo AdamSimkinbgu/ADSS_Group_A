@@ -18,13 +18,13 @@ public class OrderFacade extends BaseFacade {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderFacade.class);
     private final SupplierFacade supplierFacade;
 
-    private PeriodicOrderHandler periodicOrderController;
-    private OrderController orderController;
+    private PeriodicOrderHandler periodicOrderHandler;
+    private OrderHandler orderHandler;
 
     public OrderFacade(InitializeState initializeState, SupplierFacade supplierFacade) {
         this.supplierFacade = supplierFacade;
-        this.orderController = new OrderController();
-        this.periodicOrderController = new PeriodicOrderHandler();
+        this.orderHandler = new OrderHandler();
+        this.periodicOrderHandler = new PeriodicOrderHandler();
         initialize(initializeState);
     }
 
@@ -53,7 +53,7 @@ public class OrderFacade extends BaseFacade {
         }
         periodicOrderDTO.setProductsInOrder(new HashMap<>(filteredProducts));
         // Create the periodic order
-        periodicOrderDTO = periodicOrderController.createPeriodicOrder(periodicOrderDTO);
+        periodicOrderDTO = periodicOrderHandler.createPeriodicOrder(periodicOrderDTO);
         if (periodicOrderDTO.getPeriodicOrderID() == -1) {
             LOGGER.error("Failed to create periodic order for day: {}", periodicOrderDTO.getDeliveryDay());
             throw new RuntimeException("Failed to create periodic order");
@@ -85,7 +85,7 @@ public class OrderFacade extends BaseFacade {
         orderDTO.setItems(filteredProducts);
         orderDTO.setSupplierName(
                 supplierFacade.getSupplierDTO(orderDTO.getSupplierId()).getName());
-        OrderDTO order = orderController.addOrder(orderDTO);
+        OrderDTO order = orderHandler.addOrder(orderDTO);
         if (order == null) {
             throw new RuntimeException("Failed to add order");
         }
@@ -160,7 +160,7 @@ public class OrderFacade extends BaseFacade {
             LOGGER.error("Invalid periodic order ID: {}", periodicOrderId);
             throw new IllegalArgumentException("Periodic order ID must be greater than 0");
         }
-        boolean deleted = periodicOrderController.deletePeriodicOrder(periodicOrderId);
+        boolean deleted = periodicOrderHandler.deletePeriodicOrder(periodicOrderId);
         if (!deleted) {
             LOGGER.warn("Periodic order with ID {} not found or could not be deleted.", periodicOrderId);
         } else {
@@ -174,7 +174,7 @@ public class OrderFacade extends BaseFacade {
             LOGGER.error("Invalid periodic order ID: {}", periodicOrderId);
             throw new IllegalArgumentException("Periodic order ID must be greater than 0");
         }
-        PeriodicOrderDTO periodicOrder = periodicOrderController.getPeriodicOrder(periodicOrderId);
+        PeriodicOrderDTO periodicOrder = periodicOrderHandler.getPeriodicOrder(periodicOrderId);
         if (periodicOrder == null) {
             LOGGER.warn("Periodic order with ID {} not found.", periodicOrderId);
             return null;
@@ -184,7 +184,7 @@ public class OrderFacade extends BaseFacade {
     }
 
     public List<PeriodicOrderDTO> getAllPeriodicOrders() {
-        List<PeriodicOrderDTO> periodicOrders = periodicOrderController.getAllPeriodicOrders();
+        List<PeriodicOrderDTO> periodicOrders = periodicOrderHandler.getAllPeriodicOrders();
         if (periodicOrders == null || periodicOrders.isEmpty()) {
             LOGGER.info("No periodic orders found.");
             return Collections.emptyList();
@@ -193,18 +193,17 @@ public class OrderFacade extends BaseFacade {
         return periodicOrders;
     }
 
-    public PeriodicOrderDTO updatePeriodicOrder(PeriodicOrderDTO updatedDto) {
+    public boolean updatePeriodicOrder(PeriodicOrderDTO updatedDto) {
         if (updatedDto == null || updatedDto.getPeriodicOrderID() <= 0) {
             LOGGER.error("Invalid periodic order DTO: {}", updatedDto);
             throw new IllegalArgumentException("Periodic order DTO cannot be null and must have a valid ID");
         }
-        PeriodicOrderDTO updatedOrder = periodicOrderController.updatePeriodicOrder(updatedDto);
-        if (updatedOrder == null) {
+        if (periodicOrderHandler.updatePeriodicOrder(updatedDto)) {
             LOGGER.error("Failed to update periodic order with ID: {}", updatedDto.getPeriodicOrderID());
             throw new RuntimeException("Failed to update periodic order");
         }
         LOGGER.info("Periodic order with ID {} updated successfully.", updatedDto.getPeriodicOrderID());
-        return updatedOrder;
+        return true;
     }
 
 }
