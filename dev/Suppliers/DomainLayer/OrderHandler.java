@@ -4,7 +4,7 @@ import Suppliers.DTOs.OrderDTO;
 import Suppliers.DomainLayer.Repositories.OrdersRepositoryImpl;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.OrdersRepositoryInterface;
 
-public class OrderController {
+public class OrderHandler {
    private static final OrdersRepositoryInterface ordersRepository = new OrdersRepositoryImpl();
 
    public OrderDTO addOrder(OrderDTO orderDTO) {

@@ -56,15 +56,19 @@ public interface OrdersRepositoryInterface {
     * Updates an existing periodic order in the repository.
     * 
     * @param periodicOrderDTO The periodic order to be updated.
+    *
+    * @return true if the periodic order was successfully updated, false otherwise.
     */
-   void updatePeriodicOrder(PeriodicOrderDTO periodicOrderDTO);
+   boolean updatePeriodicOrder(PeriodicOrderDTO periodicOrderDTO);
 
    /**
     * Deletes a periodic order from the repository.
     *
     * @param periodicOrderId The ID of the periodic order to be deleted.
+    *
+    * @return true if the periodic order was successfully deleted, false otherwise.
     */
-   void deletePeriodicOrder(int periodicOrderId);
+   boolean deletePeriodicOrder(int periodicOrderId);
 
    /**
     * Retrieves a periodic order by its ID.

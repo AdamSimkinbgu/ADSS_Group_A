@@ -23,10 +23,6 @@ public class OrderValidator extends BaseValidator implements IValidator<OrderDTO
             return ServiceResponse.fail(errors);
         }
 
-        if (target.getSupplierId() <= 0) {
-            errors.add("Supplier ID must be a positive integer");
-        }
-
         if (isDateInPast(target.getOrderDate())) {
             errors.add("Order date cannot be null and must be today or in the future");
         }
@@ -57,11 +53,6 @@ public class OrderValidator extends BaseValidator implements IValidator<OrderDTO
                     errors.add("Each order item must have a positive quantity");
                 }
             }
-        }
-
-        // 8) status: not null
-        if (target.getStatus() == null) {
-            errors.add("Order status cannot be null");
         }
 
         return errors.isEmpty() ? ServiceResponse.ok(null) : ServiceResponse.fail(errors);
