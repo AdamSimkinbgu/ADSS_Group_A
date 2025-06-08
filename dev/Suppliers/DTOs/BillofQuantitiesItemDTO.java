@@ -26,6 +26,7 @@ public class BillofQuantitiesItemDTO {
 
    public BillofQuantitiesItemDTO(int agreementId, int lineInBillId, String itemName, int itemId, int quantity,
          BigDecimal discountPercent) {
+      this.agreementId = agreementId;
       this.lineInBillID = lineInBillId;
       this.productName = itemName;
       this.productId = itemId;
@@ -100,6 +101,7 @@ public class BillofQuantitiesItemDTO {
                   : productName.substring(0, MAX_PRODNAME - 3) + "...")
             : "[no product]";
 
+      @SuppressWarnings("deprecation")
       String disc = (discountPercent != null)
             ? discountPercent.setScale(2, BigDecimal.ROUND_HALF_UP).toString() + "%"
             : "0%";

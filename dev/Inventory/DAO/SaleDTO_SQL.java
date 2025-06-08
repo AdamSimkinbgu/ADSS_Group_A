@@ -134,6 +134,14 @@ public class SaleDTO_SQL implements SaleDAO {
         } catch (SQLException e) {
             throw new RuntimeException("SQL Exception: " + e.getMessage());
         }
+
+        String sql = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'sales'";
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
     }
 
 }

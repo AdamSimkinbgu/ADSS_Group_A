@@ -37,6 +37,18 @@ public class OrderItemLineDTO {
         this.discount = item.getDiscount();
     }
 
+    public OrderItemLineDTO(int orderID, int productId, String supplierProductCatalogNumber, int quantity,
+            BigDecimal unitPrice, String productName, BigDecimal discount) {
+        this.orderID = orderID;
+        this.productId = productId;
+        this.supplierProductCatalogNumber = supplierProductCatalogNumber;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.productName = productName;
+        this.orderItemLineID = -1; // Default value, will be set by DAO
+        this.discount = discount != null ? discount : BigDecimal.ZERO; // Default to zero if null
+    }
+
     public int getOrderID() {
         return orderID;
     }

@@ -2,9 +2,10 @@ package Inventory.Service;
 
 import Inventory.DTO.*;
 import Inventory.Domain.MainDomain;
-import Inventory.Domain.SaleDomain;
-import Suppliers.DTOs.Enums.InitializeState;
+
 import Suppliers.DTOs.OrderPackageDTO;
+import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.ServiceLayer.IntegrationService;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,10 +15,11 @@ import Suppliers.DTOs.CatalogProductDTO;
 
 import Inventory.type.Position;
 
+import java.time.DayOfWeek;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainService {
     private MainDomain md;
@@ -30,12 +32,9 @@ public class MainService {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
         md = new MainDomain();
-        //md.InventoryInitialization(0);
     }
 
-
-    public  void Initialize(InitializeState input) {
-        //todo
+    public void Initialize(InitializeState input) {
         md.InventoryInitialization(input);
     }
 
@@ -56,7 +55,7 @@ public class MainService {
     public String AddProduct(String message) {
         try {
             ProductDTO p = om.readValue(message, ProductDTO.class);
-            int pId = md.AddProduct(p);
+            md.AddProduct(p);
 
             // order the product
             HashMap<Integer, Integer> order = new HashMap<>();
@@ -98,7 +97,6 @@ public class MainService {
     }
 
     public String AddDiscount(String json) {
-        int pid = 0;
         try {
             DiscountDTO d = om.readValue(json, DiscountDTO.class);
             md.AddDiscount(d);
@@ -164,8 +162,7 @@ public class MainService {
 
     public String Search(String name) {
         try {
-            ArrayList<ProductService> ls = new ArrayList<>();
-            md.Search(name);
+            List<ProductService> ls = md.Search(name);
             return om.writeValueAsString(ls);
         } catch (IllegalArgumentException e) {
             return "Search failed: " + e.getMessage();
@@ -193,28 +190,32 @@ public class MainService {
         ArrayList<ProductDTO> ls = new ArrayList<>();
         // todo call the get Catalog func
         ServiceResponse<?> response = is.getCatalog();
-        if(!response.isSuccess()){
+        if (!response.isSuccess()) {
             return response.getErrors().toString();
+        } else if (response.getValue() == null) {
+            return "No products in catalog";
         }
         List<CatalogProductDTO> catalog = (List<CatalogProductDTO>) response.getValue();
 
         // convert CatalogProductDTO to ProductDTO
-        for(CatalogProductDTO cp : catalog){
+        for (CatalogProductDTO cp : catalog) {
             ProductDTO p = new ProductDTO(cp.productId(), cp.name(), cp.manufacturerName());
             ls.add(p);
         }
 
-
         ls = md.cleanCatalog(ls);
 
-        try {
-            return om.writeValueAsString(ls);
-        } catch (Exception e) {
-            return "Error";
+        StringBuilder sb = new StringBuilder();
+        int counter = 1;
+        sb.append("Product List:\n");
+        sb.append("──────────────────────────────────────\n");
+        for (ProductDTO p : ls) {
+            sb.append(String.format("%d. %s\n", counter++, p.toString()));
         }
+        return sb.toString();
     }
 
-    public String AddRecurringOrder(HashMap<Integer, Integer> order, int day) {
+    public String AddRecurringOrder(HashMap<Integer, Integer> order, DayOfWeek day) {
 
         for (Integer pId : order.keySet()) {
             if (!md.DoesProdExist(pId)) {
@@ -222,12 +223,12 @@ public class MainService {
             }
         }
 
-
-        //call supply func
-        ServiceResponse<?> response = is.createPeriodicOrder(order,day);
-        if(response.isSuccess())return "Order successfuly build";
-        else return response.getErrors().toString();
-
+        // call supply func
+        ServiceResponse<?> response = is.createPeriodicOrder(order, day);
+        if (response.isSuccess())
+            return "Order successfuly build";
+        else
+            return response.getErrors().toString();
     }
 
     // todo check
@@ -242,10 +243,10 @@ public class MainService {
 
         // call supply func
         ServiceResponse<?> response = is.createShortageOrder(order);
-
-        if(response.isSuccess())return "Order successfuly build";
-        else return response.getErrors().toString();
-
+        if (response.isSuccess())
+            return "Order successfuly build";
+        else
+            return response.getErrors().toString();
 
     }
 
@@ -257,12 +258,27 @@ public class MainService {
         return "done";
     }
 
-
     public String DeleteRecurringOrder(int orderId) {
         ServiceResponse<?> response = is.requestDeletePeriodicOrder(orderId);
 
-        if(response.isSuccess()){
+        if (response.isSuccess()) {
             return "Order deleted successfully";
+        } else {
+            return response.getErrors().toString();
+        }
+    }
+
+    public String GetRecurringOrders() {
+        ServiceResponse<List<PeriodicOrderDTO>> response = (ServiceResponse<List<PeriodicOrderDTO>>) is
+                .viewPeriodicOrders();
+        if (response.isSuccess()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Periodic Orders:\n");
+            int counter = 1;
+            for (PeriodicOrderDTO po : response.getValue()) {
+                sb.append(String.format("%d. %s\n", counter++, po.toString()));
+            }
+            return sb.toString();
         } else {
             return response.getErrors().toString();
         }

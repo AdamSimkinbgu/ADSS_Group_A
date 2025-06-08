@@ -10,7 +10,7 @@ public interface BillofQuantitiesItemDAOInterface {
 
    boolean updateBillofQuantitiesItem(BillofQuantitiesItemDTO item);
 
-   BillofQuantitiesItemDTO getBillofQuantitiesItemById(int agreementId, int lineId);
+   List<BillofQuantitiesItemDTO> getBillofQuantitiesItemsById(int lineId);
 
    boolean deleteBillofQuantitiesItem(int agreementId, int lineId);
 

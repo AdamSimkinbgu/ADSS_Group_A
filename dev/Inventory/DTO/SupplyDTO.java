@@ -67,8 +67,8 @@ public class SupplyDTO {
     public SupplyDTO() {
     }
 
-    public SupplyDTO(int id, int quantity, LocalDate ex) {
-        productID = id;
+    public SupplyDTO(int pid, int quantity, LocalDate ex) {
+        productID = pid;
         quantityWH = quantity;
         expireDate = ex;
         quantityS = 0;

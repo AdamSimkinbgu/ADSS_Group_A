@@ -2,6 +2,7 @@ package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.*;
 import Suppliers.DomainLayer.Classes.Order;
+import Suppliers.DomainLayer.Classes.PeriodicOrder;
 import Suppliers.DomainLayer.Repositories.OrdersRepositoryImpl;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.OrdersRepositoryInterface;
 
@@ -15,8 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import Suppliers.DomainLayer.Classes.Supplier;
+import Suppliers.DomainLayer.Repositories.SuppliersAgreementsRepositoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OrderHandler {
+   private static final Logger LOGGER = LoggerFactory.getLogger(OrderFacade.class);
+
    private  final OrdersRepositoryInterface ordersRepository ;
    private final SupplierFacade supplierFacade;
 
@@ -36,7 +42,7 @@ public class OrderHandler {
       return createdOrder;
    }
 
-   public OrderResultDTO handleOrder(OrderInfoDTO infoDTO) throws SQLException {
+   public OrderResultDTO createOrder(OrderInfoDTO infoDTO)  {
       Map<Integer, Integer> products = infoDTO.getProducts();
       LocalDate creationDate = infoDTO.getCreationDate();
       LocalDate requestDate = infoDTO.getOrderDate();
@@ -155,7 +161,7 @@ public class OrderHandler {
          for (var item : entry.getValue().entrySet()) {
             int productId = item.getKey();
             int quantity = item.getValue();
-            SupplierProduct sp = s.getProduct(productId); // או איך שאת שולפת
+            SupplierProduct sp = s.getProduct(productId);
             if (sp == null)
                throw new IllegalStateException("Supplier " + s.getSupplierId() + " does not offer product " + productId);
 
@@ -205,6 +211,10 @@ public class OrderHandler {
       return new OrderResultDTO(success, failure);
    }
 
+   public  OrderResultDTO createOrderByShortage (Map<Integer, Integer> pOrder)
+   {
+      return null; //TODO
+   }
     public OrderDTO getOrderById(int orderID) {
       return null ; //TODO
     }
@@ -232,8 +242,78 @@ public class OrderHandler {
    public OrderDTO removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) {
    }
 
-   public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day) {
+   public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day ,List<PeriodicOrder> periodicOrders) {
 
 
+   }
+
+   //#######################################################################################################################
+//                                        Help functions
+//#######################################################################################################################
+
+   private Map<Integer, Integer> filterProductsThatDontHaveSupplier (Map < Integer, Integer > productsAndAmount){
+      if (productsAndAmount == null || productsAndAmount.isEmpty()) {
+         throw new IllegalArgumentException("Products and amount cannot be null or empty");
+      }
+      List<CatalogProductDTO> catalogProducts = SuppliersAgreementsRepositoryImpl.getInstance().getCatalogProducts();
+      Map<Integer, Integer> filteredProducts = new HashMap<>();
+      for (Map.Entry<Integer, Integer> entry : productsAndAmount.entrySet()) {
+         int productId = entry.getKey();
+         if (catalogProducts.stream().anyMatch(p -> p.getProductId() == productId)) {
+            filteredProducts.put(productId, entry.getValue());
+         } else {
+            LOGGER.warn("Product ID {} not found in catalog, skipping", productId);
+         }
+      }
+      return filteredProducts;
+   }
+
+   private List<OrderItemLineDTO> filterItemsThatSupplierDoesntHave (List < OrderItemLineDTO > items,int supplierId)
+   {
+      if (items == null || items.isEmpty()) {
+         throw new IllegalArgumentException("Items cannot be null or empty");
+      }
+      List<Integer> supplierProducts = SuppliersAgreementsRepositoryImpl
+              .getInstance().getAllProductsForSupplierId(supplierId);
+      if (supplierProducts == null || supplierProducts.isEmpty()) {
+         throw new IllegalArgumentException("No products found for supplier ID: " + supplierId);
+      }
+      List<OrderItemLineDTO> filteredItems = new ArrayList<>();
+      for (OrderItemLineDTO item : items) {
+         if (supplierProducts.contains(item.getProductId())) {
+            filteredItems.add(item);
+         } else {
+            LOGGER.warn("Product ID {} not found for supplier ID {}, removing from order", item.getProductId(),
+                    supplierId);
+         }
+      }
+      return filteredItems;
+   }
+
+
+   public OrderDTO addOrderManually(OrderDTO orderDTO) {
+      if (orderDTO == null) {
+         throw new IllegalArgumentException("OrderDTO cannot be null");
+      }
+      // Validate that all products exist in the supplier's catalog
+      List<OrderItemLineDTO> filteredProducts = filterItemsThatSupplierDoesntHave(orderDTO.getItems(),
+              orderDTO.getSupplierId());
+      if (filteredProducts.isEmpty()) {
+         LOGGER.warn("No valid products found for the order. Please check the product IDs.");
+         return null;
+      }
+
+      filteredProducts = supplierFacade
+              .setProductNameAndCategoryForOrderItems(filteredProducts, orderDTO.getSupplierId());
+      filteredProducts = supplierFacade
+              .setSupplierPricesAndDiscountsByBestPrice(filteredProducts, orderDTO.getSupplierId());
+      orderDTO.setItems(filteredProducts);
+      orderDTO.setSupplierName(
+              supplierFacade.getSupplierDTO(orderDTO.getSupplierId()).getName());
+      OrderDTO order = orderController.addOrder(orderDTO);
+      if (order == null) {
+         throw new RuntimeException("Failed to add order");
+      }
+      return order;
    }
 }

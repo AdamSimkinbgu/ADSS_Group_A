@@ -1,89 +1,233 @@
 // OrderService.java
 package Suppliers.ServiceLayer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.OrderInfoDTO;
+import Suppliers.DTOs.OrderResultDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DomainLayer.OrderFacade;
 
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.OrderValidator;
-import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.PeriodicOrderValidator;
 
 
 public class OrderService extends BaseService {
    private final OrderFacade orderFacade;
-   OrderValidator orderValidator = new OrderValidator();
-   PeriodicOrderValidator periodicOrderValidator = new PeriodicOrderValidator();
+   private final OrderValidator orderValidator = new OrderValidator();
+
 
    public OrderService(OrderFacade orderFacade) {
       this.orderFacade = orderFacade;
    }
 
-   public ServiceResponse<?> createOrder(OrderDTO dto) {  // change the name  to addOrderManually
-      if (dto == null) {
-         return ServiceResponse.fail(List.of("OrderDTO cannot be null"));
+   public ServiceResponse<?> addOrderManually(OrderDTO dto) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateCreateDTO(dto);
+      if (validationResponse.isSuccess()) {
+         try {
+            OrderDTO createdOrder = orderFacade.addOrderManually(dto);
+            return ServiceResponse.ok(createdOrder);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
       }
-      try {
-         OrderDTO order = orderFacade.addOrderManually(dto);
-         return ServiceResponse.ok(order);
-      } catch (Exception e) {
-         return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
+   }
+
+   public ServiceResponse<?> createOrder(OrderInfoDTO infoDTO) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateCreateDTO(infoDTO);
+      if (validationResponse.isSuccess()) {
+         try {
+            OrderResultDTO createdOrder = orderFacade.createOrder(infoDTO);
+            return ServiceResponse.ok(createdOrder);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
       }
    }
 
-   public ServiceResponse<OrderDTO> updateOrder(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<OrderDTO> updateOrder(OrderDTO updatedDto) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateUpdateDTO(updatedDto);
+      if (validationResponse.isSuccess()) {
+         try {
+            OrderDTO updatedOrder = orderFacade.updateOrder(updatedDto);
+            return ServiceResponse.ok(updatedOrder);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to update order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
    }
 
-   public ServiceResponse<Boolean> removeOrder(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
-   }
-
-   public ServiceResponse<OrderDTO> getOrder(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
-   }
-
-   public ServiceResponse<List<OrderDTO>> viewAllOrders(String ignored) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<Boolean> removeOrder(int orderId) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateRemoveDTO(orderId);
+      if (validationResponse.isSuccess()) {
+         try {
+            // boolean removed = orderFacade.deleteOrder(orderId);
+            // if (removed) {
+            // return ServiceResponse.ok(true);
+            // } else {
+            // return ServiceResponse.fail(List.of("Order with ID " + orderId + " not
+            // found."));
+            // }
+            return ServiceResponse.fail(List.of("Not implemented"));
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to remove order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
    }
 
    public ServiceResponse<OrderDTO> getOrderById(int orderId) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateGetDTO(orderId);
+      if (validationResponse.isSuccess()) {
+         try {
+            OrderDTO order = orderFacade.getOrderById(orderId);
+            if (order != null) {
+               return ServiceResponse.ok(order);
+            } else {
+               return ServiceResponse.fail(List.of("Order with ID " + orderId + " not found."));
+            }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to fetch order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+
    }
 
    public ServiceResponse<List<OrderDTO>> getAllOrders() {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      try {
+         List<OrderDTO> orders = new ArrayList<>(); // Placeholder for actual implementation
+         if (orders == null || orders.isEmpty()) {
+            return ServiceResponse.fail(List.of());
+         }
+         return ServiceResponse.ok(orders);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to fetch all orders: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<?> createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
-      if (periodicOrderDTO == null || periodicOrderDTO.getProductsInOrder() == null
-            || periodicOrderDTO.getProductsInOrder().isEmpty()) {
-         return ServiceResponse.fail(List.of("PeriodicOrderDTO and its products cannot be null or empty"));
-      }
-      try {
-         PeriodicOrderDTO createdPeriodicOrder = orderFacade.createPeriodicOrder(
-               periodicOrderDTO.getDeliveryDay(), periodicOrderDTO.getProductsInOrder());
-         return ServiceResponse.ok(createdPeriodicOrder);
-      } catch (Exception e) {
-         return ServiceResponse.fail(List.of("Failed to create periodic order: " + e.getMessage()));
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateCreateDTO(periodicOrderDTO);
+      if (validationResponse.isSuccess()) {
+         try {
+            PeriodicOrderDTO createdPeriodicOrder = orderFacade.createPeriodicOrder(periodicOrderDTO);
+            return ServiceResponse.ok(createdPeriodicOrder);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to create periodic order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
       }
    }
 
    public ServiceResponse<PeriodicOrderDTO> getPeriodicOrderById(int periodicOrderId) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateGetDTO(periodicOrderId);
+      if (validationResponse.isSuccess()) {
+         try {
+            PeriodicOrderDTO periodicOrder = orderFacade.getPeriodicOrder(periodicOrderId);
+            if (periodicOrder != null) {
+               return ServiceResponse.ok(periodicOrder);
+            } else {
+               return ServiceResponse.fail(List.of("Periodic order with ID " + periodicOrderId + " not found."));
+            }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to fetch periodic order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
    }
 
    public ServiceResponse<?> updatePeriodicOrder(PeriodicOrderDTO updatedDto) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateUpdateDTO(updatedDto);
+      if (validationResponse.isSuccess()) {
+         try {
+            PeriodicOrderDTO updatedPeriodicOrder = orderFacade.updatePeriodicOrder(updatedDto);
+            return ServiceResponse.ok(updatedPeriodicOrder);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to update periodic order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
    }
 
    public ServiceResponse<?> removePeriodicOrder(int periodicOrderId) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateRemoveDTO(periodicOrderId);
+      if (validationResponse.isSuccess()) {
+         try {
+            boolean removed = orderFacade.deletePeriodicOrder(periodicOrderId);
+            if (removed) {
+               return ServiceResponse.ok(true);
+            } else {
+               return ServiceResponse.fail(List.of("Periodic order with ID " +
+                     periodicOrderId + " not found."));
+            }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to remove periodic order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
    }
 
    public ServiceResponse<List<PeriodicOrderDTO>> getAllPeriodicOrders() {
-      return ServiceResponse.fail(List.of("Not implemented"));
+      try {
+         List<PeriodicOrderDTO> periodicOrders = orderFacade.getAllPeriodicOrders();
+         if (periodicOrders == null || periodicOrders.isEmpty()) {
+            return ServiceResponse.fail(List.of());
+         }
+         return ServiceResponse.ok(periodicOrders);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to fetch all periodic orders: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<List<OrderDTO>> getAllPeriodicOrdersForToday() {
+      try {
+         // List<OrderDTO> orders = orderFacade.getAllPeriodicOrdersForToday();
+         List<OrderDTO> orders = new ArrayList<>(); // Placeholder for actual implementation
+         if (orders == null || orders.isEmpty()) {
+            return ServiceResponse.fail(List.of());
+         }
+         return ServiceResponse.ok(orders);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to fetch periodic orders for today: " + e.getMessage()));
+      }
    }
 }

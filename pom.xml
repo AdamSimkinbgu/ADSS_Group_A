@@ -122,7 +122,6 @@
         </excludes>
           <source>22</source>
           <target>22</target>
-          <compilerArgs>--enable-preview</compilerArgs>
       </configuration>
     </plugin>
 
@@ -180,6 +179,7 @@
         <arguments>
           <argument>-jar</argument>
           <argument>${project.basedir}/release/ADSS2025_V02_dev.jar</argument>
+          <!--suppress UnresolvedMavenProperty -->
           <argument>${exec.args}</argument>
         </arguments>
       </configuration>

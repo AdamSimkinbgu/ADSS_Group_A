@@ -103,6 +103,18 @@ public class SupplierDTO {
             this.contacts = new ArrayList<>();
       }
 
+      public SupplierDTO(SupplierDTO other) {
+            this.id = other.id;
+            this.name = other.name;
+            this.taxNumber = other.taxNumber;
+            this.address = new AddressDTO(other.address);
+            this.selfSupply = other.selfSupply;
+            this.supplyDays = EnumSet.copyOf(other.supplyDays);
+            this.leadSupplyDays = other.leadSupplyDays;
+            this.paymentDetails = other.getPaymentDetailsDTO();
+            this.contacts = other.getContactsInfoDTOList();
+      }
+
       public int getId() {
             return id;
       }
