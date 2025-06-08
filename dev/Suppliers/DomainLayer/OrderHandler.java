@@ -427,8 +427,46 @@ public class OrderHandler {
       }
    }
 
-   public OrderResultDTO createOrderByShortage(Map<Integer, Integer> pOrder) {
-      return null; // TODO
+   public OrderResultDTO createOrderByShortage(OrderInfoDTO infoDTO) {
+      // similar to createOrder but first looking for delivery time and then cost
+      if (infoDTO == null) {
+         throw new IllegalArgumentException("OrderInfoDTO cannot be null");
+      }
+
+      // Combine quantities for any repeated product entries
+      Map<Integer, Integer> mergedProducts = mergeProductQuantities(infoDTO.getProducts());
+      if (mergedProducts.isEmpty()) {
+         throw new IllegalArgumentException("No products to order after merging");
+      }
+
+      LocalDate creationDate = infoDTO.getCreationDate();
+      LocalDate requestDate = infoDTO.getOrderDate();
+
+      // FIND FEASIBLE SUPPLIERS
+      List<Integer> failedProductIds = new ArrayList<>();
+      Map<Integer, List<Supplier>> feasibleSuppliers = findFeasibleSuppliers(
+            mergedProducts, creationDate, requestDate, failedProductIds);
+
+      // FILTER OUT UNFULFILLABLE PRODUCTS
+      Map<Integer, Integer> filteredProducts = filterFulfillableProducts(mergedProducts, failedProductIds);
+
+      // SELECT BEST SUPPLIERS WITH FULL DATA
+      Map<Integer, SupplierSelection> selections = chooseBestSuppliers(
+            feasibleSuppliers, filteredProducts, creationDate);
+
+      // GROUP PRODUCTS BY SUPPLIER FOR PERSISTENCE
+      Map<Supplier, Map<Integer, Integer>> grouped = groupProductsBySupplier(selections, filteredProducts);
+
+      // PERSIST ORDERS TO DB
+      try {
+         persistOrders(grouped, requestDate, creationDate);
+      } catch (Exception ex) {
+         LOGGER.error("Failed to persist orders", ex);
+         throw new RuntimeException("Error persisting orders", ex);
+      }
+
+      // BUILD AND RETURN RESULT DTO
+      return buildResult(mergedProducts, selections, failedProductIds);
    }
 
    public OrderDTO getOrderById(int orderID) {

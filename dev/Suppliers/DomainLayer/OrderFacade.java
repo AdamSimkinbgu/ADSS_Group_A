@@ -91,7 +91,7 @@ public class OrderFacade extends BaseFacade {
         return result;
     }
 
-    public OrderResultDTO createOrderByShortage(Map<Integer, Integer> pOrder) {
+    public OrderResultDTO createOrderByShortage(OrderInfoDTO pOrder) {
         LOGGER.info("Facade: createOrderByShortage called with InfoDTO: {}", pOrder);
         OrderResultDTO result = orderHandler.createOrderByShortage(pOrder);
         LOGGER.info("Facade: createOrderByShortage result: {}", result);

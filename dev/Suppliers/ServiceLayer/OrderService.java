@@ -55,6 +55,38 @@ public class OrderService extends BaseService {
       }
    }
 
+   public ServiceResponse<?> createOrderByShortage(OrderInfoDTO infoDTO) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateCreateDTO(infoDTO);
+      if (validationResponse.isSuccess()) {
+         try {
+            OrderResultDTO createdOrder = orderFacade.createOrderByShortage(infoDTO);
+            return ServiceResponse.ok(createdOrder);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to create order by shortage: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+   }
+
+   public ServiceResponse<List<OrderResultDTO>> executePeriodicOrdersForDay(String day) {
+      try {
+         // List<OrderResultDTO> results = orderFacade.executePeriodicOrdersForDay(day);
+         // if (results == null || results.isEmpty()) {
+         // return ServiceResponse.fail(List.of("No periodic orders found for the
+         // specified day."));
+         // }
+         // return ServiceResponse.ok(results);
+         return ServiceResponse.fail(List.of("Method not implemented yet."));
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to execute periodic orders: " + e.getMessage()));
+      }
+   }
+
    public ServiceResponse<OrderDTO> updateOrder(OrderInfoDTO updatedDto) {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateUpdateDTO(updatedDto);
       if (validationResponse.isSuccess()) {
@@ -229,9 +261,8 @@ public class OrderService extends BaseService {
    }
 
    public ServiceResponse<?> completeOrder(int orderId) {
-        orderFacade.markOrderAsCollected(orderId);
-        return ServiceResponse.ok("Order with ID " + orderId + " has been marked as collected.");
+      orderFacade.markOrderAsCollected(orderId);
+      return ServiceResponse.ok("Order with ID " + orderId + " has been marked as collected.");
    }
-
 
 }
