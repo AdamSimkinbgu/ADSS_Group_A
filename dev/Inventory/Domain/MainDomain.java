@@ -487,4 +487,15 @@ public class MainDomain {
         return prodMap.containsKey(pid);
     }
 
+    public void AddSupply(SupplyDTO supply) {
+        if (!prodMap.containsKey(supply.getProductID())) {
+            throw new IllegalArgumentException("Product ID does not exist: " + supply.getProductID());
+        }
+
+        // Add to database
+        SPdao.Add(supply);
+
+        // Add to product
+        prodMap.get(supply.getProductID()).AddSupply(supply);
+    }
 }

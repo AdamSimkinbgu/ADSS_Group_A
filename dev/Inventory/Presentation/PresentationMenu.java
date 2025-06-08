@@ -51,41 +51,44 @@ public class PresentationMenu {
                     MoveOrder();
                     break;
                 case 3:
-                    AddSale();
+                    AddSupply();
                     break;
                 case 4:
-                    AddDiscount();
+                    AddSale();
                     break;
                 case 5:
-                    AddNewCategory();
+                    AddDiscount();
                     break;
                 case 6:
-                    AddToCategory();
+                    AddNewCategory();
                     break;
                 case 7:
-                    AddBadProduct();
+                    AddToCategory();
                     break;
                 case 8:
-                    MoveProduct();
+                    AddBadProduct();
                     break;
                 case 9:
+                    MoveProduct();
+                    break;
+                case 10:
                     Search();
                     break;
                 case 0:
                     return;
-                case 10:
+                case 11:
                     InventoryReport();
                     break;
-                case 11:
+                case 12:
                     BadReport();
                     break;
-                case 12:
+                case 13:
                     MissingReport();
                     break;
-                case 13:
+                case 14:
                     AddRecurringOrder();
                     break;
-                case 14:
+                case 15:
                     DeleteRecurringOrder();
                     break;
 
@@ -101,18 +104,19 @@ public class PresentationMenu {
         System.out.println("==== Main Menu ====");
         System.out.println("1. Add New Product");
         System.out.println("2. Move Delivered Supplies to WareHose");
-        System.out.println("3. Add Sale");
-        System.out.println("4. Add Discount");
-        System.out.println("5. Add New Category");
-        System.out.println("6. Add To Category");
-        System.out.println("7. Report Bad Product");
-        System.out.println("8. Move Product");
-        System.out.println("9. Search For Product Or Category");
-        System.out.println("10. Get Current Inventory Report For Restock");
-        System.out.println("11. Get Bad Product Report");
-        System.out.println("12. Get Missing Report For Restock And Order Missing Product");
-        System.out.println("13. Add A Recurring Order");
-        System.out.println("14. Delete Recurring Order");
+        System.out.println("3. Add Supply");
+        System.out.println("4. Add Sale");
+        System.out.println("5. Add Discount");
+        System.out.println("6. Add New Category");
+        System.out.println("7. Add To Category");
+        System.out.println("8. Report Bad Product");
+        System.out.println("9. Move Product");
+        System.out.println("10. Search For Product Or Category");
+        System.out.println("11. Get Current Inventory Report For Restock");
+        System.out.println("12. Get Bad Product Report");
+        System.out.println("13. Get Missing Report For Restock And Order Missing Product");
+        System.out.println("14. Add A Recurring Order");
+        System.out.println("15. Delete Recurring Order");
         System.out.println("0. Exit");
         System.out.print("Enter your choice: ");
 
@@ -317,6 +321,55 @@ public class PresentationMenu {
 
         String response = ms.MoveProduct(pId, flag, newp);
         System.out.println(response);
+    }
+
+
+    private void AddSupply() {
+        // get id
+        System.out.println("Enter product id: ");
+        int pId = scanner.nextInt();
+        if (pId < 0) {
+            System.out.println("Invalid id ");
+            return;
+        }
+        // get Quantity
+        System.out.println("Enter quantity: ");
+        int quantity = scanner.nextInt();
+        if (quantity < 0) {
+            System.out.println("Invalid quantity");
+            return;
+        }
+        scanner.nextLine(); // clean the input buffer
+        // get expire date
+        System.out.println("Enter expire date (yyyy-MM-dd): ");
+        String input = scanner.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate expireDate;
+        try {
+            expireDate = LocalDate.parse(input, formatter);
+            if (LocalDate.now().isAfter(expireDate)) {
+                System.out.println("Date is in the past. Please enter a valid future date.");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid date format!");
+            return;
+        }
+
+        SupplyDTO supply = new SupplyDTO(pId, quantity, expireDate);
+        String json;
+        try {
+            json = om.writeValueAsString(supply);
+        } catch (Exception e) {
+            System.out.println("Error converting supply to JSON: " + e.getMessage());
+            return;
+        }
+        String msg = ms.AddSupply(json);
+        if (msg == null || msg.isEmpty()) {
+            System.out.println("Supply added successfully.");
+        } else {
+            System.out.println("Error adding supply: " + msg);
+        }
     }
 
     // VVVVVVVV

@@ -84,6 +84,20 @@ public class MainService {
         }
     }
 
+
+    public String AddSupply(String json) {
+        try {
+            SupplyDTO supply = om.readValue(json, SupplyDTO.class);
+            md.AddSupply(supply);
+            return "Supply added successfully.";
+        } catch (IllegalArgumentException e) {
+            return "Problem with the input: " + e.getMessage();
+        } catch (Exception e) {
+            return "Json problem: " + e.getMessage();
+        }
+    }
+
+
     public String AddSale(String json) {
         try {
             SaleDTO sdto = om.readValue(json, SaleDTO.class);
