@@ -22,7 +22,7 @@ public class PeriodicOrderForm extends InteractiveForm<PeriodicOrderDTO> {
         DayOfWeek deliveryDay = askDayOfWeek("Enter delivery day (MONDAY, TUESDAY, ...):");
 
         // 2) productsInOrder (Map<productId, quantity>)
-        HashMap<Integer, Integer> productsInOrder = askForPeriodicOrderProducts(new HashMap<>());
+        HashMap<Integer, Integer> productsInOrder = askForOrderProducts(new HashMap<>());
         // 3) isActive (boolean)
 
         // ID will be assigned by DB → pass -1
@@ -41,7 +41,7 @@ public class PeriodicOrderForm extends InteractiveForm<PeriodicOrderDTO> {
                 case "deliveryday":
                     dto.setDeliveryDay(askDayOfWeek("Enter new delivery day (MONDAY, TUESDAY, ...):"));
                 case "productsinorder":
-                    dto.setProductsInOrder(askForPeriodicOrderProducts(dto.getProductsInOrder()));
+                    dto.setProductsInOrder(askForOrderProducts(dto.getProductsInOrder()));
                 case "done":
                     view.showMessage("Periodic Order updated successfully: \n" + dto);
                     return dto; // Return the updated DTO

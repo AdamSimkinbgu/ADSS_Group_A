@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import Suppliers.DTOs.CatalogProductDTO;
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.OrderInfoDTO;
 import Suppliers.PresentationLayer.CommandInterface;
 import Suppliers.PresentationLayer.Forms.OrderForm;
 import Suppliers.PresentationLayer.View;
@@ -60,7 +61,7 @@ public class UpdateOrderCMD implements CommandInterface {
         products.forEach(product -> view.showMessage(
                 String.format(format, productCounter.getAndIncrement() + ". ") + product.toString()));
 
-        form.fillUpdate(existingOrder).ifPresent(updatedDto -> {
+        form.fillUpdate(new OrderInfoDTO(existingOrder)).ifPresent(updatedDto -> {
             try {
                 ServiceResponse<?> res = orderService.updateOrder(updatedDto);
                 if (res.isSuccess()) {

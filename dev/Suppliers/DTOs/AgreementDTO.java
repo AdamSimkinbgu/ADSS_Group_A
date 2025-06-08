@@ -31,11 +31,11 @@ public class AgreementDTO {
             .toList();
    }
 
-   public AgreementDTO(int supplierId,            // for the AgreementDAO
-                       int agreementId,
-                       LocalDate startDate,
-                       LocalDate endDate,
-                       boolean valid) {
+   public AgreementDTO(int supplierId, // for the AgreementDAO
+         int agreementId,
+         LocalDate startDate,
+         LocalDate endDate,
+         boolean valid) {
       this.supplierId = supplierId;
       this.agreementId = agreementId;
       this.agreementStartDate = startDate;
@@ -44,7 +44,6 @@ public class AgreementDTO {
       this.supplierName = "";
       this.billOfQuantitiesItems = new ArrayList<>();
    }
-
 
    public AgreementDTO(int supplierId, String supplierName,
          LocalDate agreementStartDate, LocalDate agreementEndDate,
@@ -55,7 +54,9 @@ public class AgreementDTO {
       this.valid = true;
       this.agreementStartDate = agreementStartDate;
       this.agreementEndDate = agreementEndDate;
-      this.billOfQuantitiesItems = billOfQuantitiesItems;
+      this.billOfQuantitiesItems = billOfQuantitiesItems != null
+            ? new ArrayList<>(billOfQuantitiesItems)
+            : new ArrayList<>();
    }
 
    public AgreementDTO(AgreementDTO other) {

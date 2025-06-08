@@ -1,6 +1,5 @@
 package Suppliers.DomainLayer;
 
-
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DomainLayer.Classes.PeriodicOrder;
@@ -20,14 +19,12 @@ public class OrderFacade extends BaseFacade {
 
     public OrderFacade(InitializeState initializeState, SupplierFacade supplierFacade) {
 
-        this.orderHandler = new OrderHandler(supplierFacade ,initializeState );
+        this.orderHandler = new OrderHandler(supplierFacade, initializeState);
         this.periodicOrderHandler = new PeriodicOrderHandler();
     }
 
-
-
     // ##################################################################################################################
-    //                                                 Periodic Order
+    // Periodic Order
     // ##################################################################################################################
     public PeriodicOrderDTO createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
         LOGGER.info("Facade: createPeriodicOrder called for day: {} with {} items",
@@ -40,11 +37,10 @@ public class OrderFacade extends BaseFacade {
         return result;
     }
 
-
-    public List<OrderResultDTO> executePeriodicOrdersForDay (DayOfWeek day){
+    public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day) {
         LOGGER.info("Facade: executePeriodicOrdersForDay called for day: {}", day);
         List<PeriodicOrder> periodicOrders = periodicOrderHandler.getAllActivePeriodicOrdersByDay(day);
-        List<OrderResultDTO> results =orderHandler.executePeriodicOrdersForDay(day,periodicOrders );
+        List<OrderResultDTO> results = orderHandler.executePeriodicOrdersForDay(day, periodicOrders);
         LOGGER.info("Facade: executePeriodicOrdersForDay returned {} results", results == null ? 0 : results.size());
         return results;
     }
@@ -55,12 +51,14 @@ public class OrderFacade extends BaseFacade {
         LOGGER.info("Facade: deletePeriodicOrder result: {}", deleted);
         return deleted;
     }
+
     public PeriodicOrderDTO getPeriodicOrder(int periodicOrderId) {
         LOGGER.info("Facade: getPeriodicOrder called for ID: {}", periodicOrderId);
         PeriodicOrderDTO dto = periodicOrderHandler.getPeriodicOrder(periodicOrderId);
         LOGGER.info("Facade: getPeriodicOrder result: {}", dto);
         return dto;
     }
+
     public List<PeriodicOrderDTO> getAllPeriodicOrders() {
         LOGGER.info("Facade: getAllPeriodicOrders called");
         List<PeriodicOrderDTO> list = periodicOrderHandler.getAllPeriodicOrders();
@@ -75,9 +73,9 @@ public class OrderFacade extends BaseFacade {
         LOGGER.info("Facade: updatePeriodicOrder result: {}", updated);
         return updated;
     }
-//#######################################################################################################################
-//                                        Order
-//#######################################################################################################################
+    // #######################################################################################################################
+    // Order
+    // #######################################################################################################################
 
     public OrderDTO addOrderManually(OrderDTO orderDTO) {
         LOGGER.info("Facade: addOrderManually called with DTO: {}", orderDTO);
@@ -86,67 +84,79 @@ public class OrderFacade extends BaseFacade {
         return result;
     }
 
-    public OrderResultDTO createOrder(OrderInfoDTO infoDTO)  {
+    public OrderResultDTO createOrder(OrderInfoDTO infoDTO) {
         LOGGER.info("Facade: createOrder called with InfoDTO: {}", infoDTO);
         OrderResultDTO result = orderHandler.createOrder(infoDTO);
         LOGGER.info("Facade: createOrder result: {}", result);
         return result;
     }
 
-
-    public OrderResultDTO createOrderByShortage (Map<Integer, Integer> pOrder)  {
+    public OrderResultDTO createOrderByShortage(Map<Integer, Integer> pOrder) {
         LOGGER.info("Facade: createOrderByShortage called with InfoDTO: {}", pOrder);
         OrderResultDTO result = orderHandler.createOrderByShortage(pOrder);
         LOGGER.info("Facade: createOrderByShortage result: {}", result);
         return result;
     }
 
-    public OrderDTO getOrderById ( int orderID){
+    public OrderDTO getOrderById(int orderID) {
         return orderHandler.getOrderById(orderID);
     }
 
-    public List<OrderDTO> listOrders () {
+    public List<OrderDTO> listOrders() {
         return orderHandler.getAllOrders();
     }
 
-    public OrderDTO updateOrderInfo (OrderDTO updatedOrder){
+    public OrderDTO updateOrderInfo(OrderDTO updatedOrder) {
         if (updatedOrder == null) {
             throw new IllegalArgumentException("Updated order cannot be null");
         }
         return orderHandler.updateOrderInfo(updatedOrder);
     }
 
-    public OrderDTO removeProductsFromOrder ( int orderID, ArrayList<Integer > productsToRemove){
+    public OrderDTO removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) {
         if (productsToRemove == null || productsToRemove.isEmpty()) {
             throw new IllegalArgumentException("Products to remove cannot be null or empty");
         }
         return orderHandler.removeProductsFromOrder(orderID, productsToRemove);
     }
-    public OrderDTO updateProductsInOrder ( int orderID, HashMap<Integer, Integer > productsToAdd){
+
+    public OrderDTO updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) {
         if (productsToAdd == null || productsToAdd.isEmpty()) {
             throw new IllegalArgumentException("Products to add cannot be null or empty");
         }
         return orderHandler.updateProductsInOrder(orderID, productsToAdd);
     }
 
-    public void printOrder ( int supplierID){
+    public void printOrder(int supplierID) {
         List<OrderDTO> orders = orderHandler.getOrdersBySupplier(supplierID);
         orders.forEach(order -> LOGGER.info(order.toString()));
     }
-    public void printOrders () {
+
+    public void printOrders() {
         List<OrderDTO> orders = orderHandler.getAllOrders();
         orders.forEach(order -> LOGGER.info(order.toString()));
     }
 
-    public HashMap<Integer, OrderDTO> getAllOrderForToday () {
+    public HashMap<Integer, OrderDTO> getAllOrderForToday() {
         return orderHandler.getOrdersForToday();
     }
 
-    public OrderDTO markOrderAsCollected ( int orderID){
+    public OrderDTO markOrderAsCollected(int orderID) {
         return orderHandler.markOrderAsCollected(orderID);
     }
 
-    public OrderDTO updateOrder(OrderDTO updatedDto) {
+    public OrderDTO updateOrder(OrderInfoDTO updatedDto) {
         return null;
+    }
+
+    public boolean deleteOrder(int orderId) {
+        LOGGER.info("Facade: deleteOrder called for ID: {}", orderId);
+        boolean deleted = orderHandler.deleteOrder(orderId);
+        if (deleted) {
+            LOGGER.info("Facade: deleteOrder successful for ID: {}", orderId);
+        } else {
+            LOGGER.warn("Facade: deleteOrder failed for ID: {}", orderId);
+        }
+        return deleted;
     }
 }

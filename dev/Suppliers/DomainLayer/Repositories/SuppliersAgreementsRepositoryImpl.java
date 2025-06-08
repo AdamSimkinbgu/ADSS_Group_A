@@ -479,14 +479,15 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             if (!boqItems.isEmpty()) {
                LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(),
                      agreement.getAgreementId());
-               agreement.setBillOfQuantitiesItems(boqItems);
             } else {
                LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreement.getAgreementId());
             }
+            agreement.setBillOfQuantitiesItems(boqItems);
          }
       }
       for (AgreementDTO agreement : agreements) {
-         agreementsCache.computeIfAbsent(supplierId, k -> new ArrayList<>()).add(new Agreement(agreement));
+         agreementsCache.computeIfAbsent(supplierId, k -> new ArrayList<>());
+         agreementsCache.get(supplierId).add(new Agreement(agreement));
       }
       LOGGER.info("Found {} agreements for supplier with ID: {}", agreements.size(), supplierId);
       return agreements;
@@ -583,6 +584,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       } else {
          Optional<SupplierProductDTO> productInDB = supplierProductDAO.getSupplierProductById(supplierId, productId);
          if (productInDB.isPresent()) {
+            supplierIdsToSpecifications.putIfAbsent(supplierId, new ArrayList<>());
             supplierIdsToSpecifications.get(supplierId).add(new SupplierProduct(productInDB.get()));
             LOGGER.info("Found and cached supplier product: {}", productInDB.get());
             return productInDB;
@@ -799,5 +801,22 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.info("Clearing data base for empty state...");
       Database.deleteAllData();
       LOGGER.info("Empty state loaded into DB!");
+   }
+
+   public Optional<CatalogProductDTO> getCatalogProductById(int pid) {
+      if (pid < 0) {
+         LOGGER.error("Attempted to get catalog product with negative ID: {}", pid);
+         throw new IllegalArgumentException("Product ID cannot be negative");
+      }
+      LOGGER.info("Retrieving catalog product with ID: {}", pid);
+      Optional<CatalogProductDTO> catalogProduct = supplierProductDAO.getCatalogProducts().stream()
+            .filter(product -> product.getProductId() == pid)
+            .findFirst();
+      if (catalogProduct.isEmpty()) {
+         LOGGER.warn("No catalog product found with ID: {}", pid);
+         return Optional.empty();
+      }
+      LOGGER.debug("Catalog product details: {}", catalogProduct.get());
+      return catalogProduct;
    }
 }

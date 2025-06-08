@@ -1,4 +1,4 @@
-
+package Tests;
 
 import Inventory.Domain.MainDomain;
 import Inventory.Domain.ProductDomain;

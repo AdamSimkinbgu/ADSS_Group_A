@@ -26,7 +26,7 @@ public interface OrdersRepositoryInterface {
     *
     * @param orderId The ID of the order to be deleted.
     */
-   void deleteRegularOrder(int orderId);
+   boolean deleteRegularOrder(int orderId);
 
    /**
     * Retrieves an order by its ID.

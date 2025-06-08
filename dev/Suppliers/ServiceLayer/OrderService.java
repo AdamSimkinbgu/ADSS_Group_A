@@ -14,30 +14,29 @@ import Suppliers.DomainLayer.OrderFacade;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.Validators.OrderValidator;
 
-
 public class OrderService extends BaseService {
    private final OrderFacade orderFacade;
    private final OrderValidator orderValidator = new OrderValidator();
-
 
    public OrderService(OrderFacade orderFacade) {
       this.orderFacade = orderFacade;
    }
 
    public ServiceResponse<?> addOrderManually(OrderDTO dto) {
-      ServiceResponse<List<String>> validationResponse = orderValidator.validateCreateDTO(dto);
-      if (validationResponse.isSuccess()) {
-         try {
-            OrderDTO createdOrder = orderFacade.addOrderManually(dto);
-            return ServiceResponse.ok(createdOrder);
-         } catch (DataAccessException e) {
-            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
-         } catch (Exception e) {
-            return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
-         }
-      } else {
-         return ServiceResponse.fail(validationResponse.getErrors());
+      // ServiceResponse<List<String>> validationResponse =
+      // orderValidator.validateCreateDTO(dto);
+      // if (validationResponse.isSuccess()) {
+      try {
+         OrderDTO createdOrder = orderFacade.addOrderManually(dto);
+         return ServiceResponse.ok(createdOrder);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to create order: " + e.getMessage()));
       }
+      // } else {
+      // return ServiceResponse.fail(validationResponse.getErrors());
+      // }
    }
 
    public ServiceResponse<?> createOrder(OrderInfoDTO infoDTO) {
@@ -56,7 +55,7 @@ public class OrderService extends BaseService {
       }
    }
 
-   public ServiceResponse<OrderDTO> updateOrder(OrderDTO updatedDto) {
+   public ServiceResponse<OrderDTO> updateOrder(OrderInfoDTO updatedDto) {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateUpdateDTO(updatedDto);
       if (validationResponse.isSuccess()) {
          try {
@@ -76,14 +75,12 @@ public class OrderService extends BaseService {
       ServiceResponse<List<String>> validationResponse = orderValidator.validateRemoveDTO(orderId);
       if (validationResponse.isSuccess()) {
          try {
-            // boolean removed = orderFacade.deleteOrder(orderId);
-            // if (removed) {
-            // return ServiceResponse.ok(true);
-            // } else {
-            // return ServiceResponse.fail(List.of("Order with ID " + orderId + " not
-            // found."));
-            // }
-            return ServiceResponse.fail(List.of("Not implemented"));
+            boolean removed = orderFacade.deleteOrder(orderId);
+            if (removed) {
+               return ServiceResponse.ok(true);
+            } else {
+               return ServiceResponse.fail(List.of("Order with ID " + orderId + " not found."));
+            }
          } catch (DataAccessException e) {
             return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
          } catch (Exception e) {

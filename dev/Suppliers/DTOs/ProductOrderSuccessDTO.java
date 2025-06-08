@@ -8,14 +8,13 @@ public class ProductOrderSuccessDTO {
     private String supplierName;
 
     public ProductOrderSuccessDTO(int productId, String productName, int quantity,
-                                  int supplierId, String supplierName) {
+            int supplierId, String supplierName) {
         this.productId = productId;
         this.productName = productName;
         this.quantity = quantity;
         this.supplierId = supplierId;
         this.supplierName = supplierName;
     }
-
 
     public int getProductId() {
         return productId;
@@ -57,6 +56,15 @@ public class ProductOrderSuccessDTO {
         this.supplierName = supplierName;
     }
 
-
-
+    @Override
+    public String toString() {
+        return String.format(
+                "✓ [%d] %s  x%d  @ Supplier[%d:%s]",
+                productId,
+                productName,
+                quantity,
+                supplierId,
+                supplierName);
     }
+
+}

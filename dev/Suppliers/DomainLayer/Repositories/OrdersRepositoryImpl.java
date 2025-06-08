@@ -52,9 +52,17 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
    }
 
    @Override
-   public void deleteRegularOrder(int orderId) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'deleteRegularOrder'");
+   public boolean deleteRegularOrder(int orderId) {
+      if (orderId <= 0) {
+         throw new IllegalArgumentException("Order ID must be a positive integer");
+      }
+      boolean deleted = ordersRepository.deleteOrder(orderId);
+      if (deleted) {
+         LOGGER.info("Regular order with ID: {} deleted successfully", orderId);
+      } else {
+         LOGGER.error("Failed to delete regular order with ID: {}", orderId);
+      }
+      return deleted;
    }
 
    @Override
