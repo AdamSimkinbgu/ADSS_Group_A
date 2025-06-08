@@ -2,10 +2,13 @@ package Suppliers.ServiceLayer;
 
 import Inventory.Service.MainService;
 import Suppliers.DTOs.CatalogProductDTO;
+import Suppliers.DTOs.OrderInfoDTO;
+import Suppliers.DTOs.OrderPackageDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
 import Suppliers.ServiceLayer.Interfaces_and_Abstracts.ServiceResponse;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +52,10 @@ public class IntegrationService {
         }
     }
 
-    public ServiceResponse<?> createRegularOrder(Map<Integer, Integer> pOrder) {
-        return ServiceResponse.fail(List.of("Integration service not set up"));
+    public ServiceResponse<?> createRegularOrder(HashMap<Integer, Integer> pOrder) {
+
+
+        return orderService.createOrder(new OrderInfoDTO(LocalDate.now(),pOrder));
     }
 
     public ServiceResponse<?> createPeriodicOrder(HashMap<Integer, Integer> pOrder, DayOfWeek day) {
@@ -69,7 +74,7 @@ public class IntegrationService {
     }
 
     public ServiceResponse<?> createShortageOrder(Map<Integer, Integer> pOrder) {
-        return ServiceResponse.fail(List.of("Integration service not set up"));
+        return orderService.createOrder(new OrderInfoDTO(LocalDate.now(), new HashMap<>(pOrder)));
     }
 
     public ServiceResponse<?> viewPeriodicOrders() {
@@ -91,7 +96,21 @@ public class IntegrationService {
     }
 
     public ServiceResponse<?> completeOrder(int orderId) {
-        return ServiceResponse.fail(List.of("Integration service not set up"));
+        ServiceResponse<?> response = orderService.completeOrder(orderId);
+        if (response.isSuccess()) {
+            return ServiceResponse.ok("Order completed successfully");
+        } else {
+            return ServiceResponse.fail(response.getErrors());
+        }
+    }
+
+    public ServiceResponse<?> deliverOrder(OrderPackageDTO order) {
+        String msg = mainService.DeliverOrder(order);
+        if (msg.equals("done")) {
+            return ServiceResponse.ok("Order delivered successfully");
+        } else {
+            return ServiceResponse.fail(List.of(msg));
+        }
     }
 
 }

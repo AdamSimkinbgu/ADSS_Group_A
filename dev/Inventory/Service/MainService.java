@@ -204,15 +204,12 @@ public class MainService {
         }
 
         ls = md.cleanCatalog(ls);
-
-        StringBuilder sb = new StringBuilder();
-        int counter = 1;
-        sb.append("Product List:\n");
-        sb.append("──────────────────────────────────────\n");
-        for (ProductDTO p : ls) {
-            sb.append(String.format("%d. %s\n", counter++, p.toString()));
+        try{
+            return om.writeValueAsString(ls);
         }
-        return sb.toString();
+        catch (Exception e) {
+            return "Error converting product list to JSON: " + e.getMessage();
+        }
     }
 
     public String AddRecurringOrder(HashMap<Integer, Integer> order, DayOfWeek day) {
@@ -253,8 +250,14 @@ public class MainService {
     // Get called by Supplier Domain
     public String DeliverOrder(OrderPackageDTO order) {
 
-        md.DeliverOrder(order);
-
+        try{
+            md.DeliverOrder(order);
+        }
+        catch (IllegalArgumentException e) {
+            return "Failed to deliver order: " + e.getMessage();
+        } catch (Exception e) {
+            return "Error delivering order: " + e.getMessage();
+        }
         return "done";
     }
 

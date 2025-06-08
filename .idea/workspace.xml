@@ -11,8 +11,10 @@
   <component name="ChangeListManager">
     <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/DomainLayer/OrderHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Presentation/PresentationMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Inventory/Service/MainService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/IntegrationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/IntegrationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/Suppliers/ServiceLayer/OrderService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +70,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "Application.Main.executor": "Debug",
+    "Application.Main.executor": "Run",
     "Downloaded.Files.Path.Enabled": "true",
     "JUnit.InventoryTests.executor": "Run",
     "JUnit.InventoryTests.testUpdateInventoryRestockValidProduct.executor": "Run",
@@ -76,7 +78,7 @@
     "Repository.Attach.JavaDocs": "true",
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging orederSystem-merge-temp",
+    "git-widget-placeholder": "orederSystem-merge-temp",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/doron/OneDrive - post.bgu.ac.il/שולחן העבודה/Studies/BGU/2024-2025/Semester B/Adss/ADSS_Group_A",

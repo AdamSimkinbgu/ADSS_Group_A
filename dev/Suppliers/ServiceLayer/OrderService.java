@@ -230,4 +230,11 @@ public class OrderService extends BaseService {
          return ServiceResponse.fail(List.of("Failed to fetch periodic orders for today: " + e.getMessage()));
       }
    }
+
+   public ServiceResponse<?> completeOrder(int orderId) {
+        orderFacade.markOrderAsCollected(orderId);
+        return ServiceResponse.ok("Order with ID " + orderId + " has been marked as collected.");
+   }
+
+
 }

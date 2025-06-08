@@ -127,18 +127,11 @@ public class PresentationMenu {
         String name = "", manName = "";
 
         String msg = ms.GetProductLst();
-        // print the list
         try {
             ls = om.readValue(msg, new TypeReference<ArrayList<ProductDTO>>() {
             });
-            table.append(String.format("%-15s %-10s %-10s%n", "Id", "Name", "Manufacturer"));
-            for (ProductDTO p : ls) {
-                table.append(String.format("%-15d %-10s %-10s%n", p.getproductId(), p.getproductName(),
-                        p.getmanufacturerName()));
-            }
-            System.out.println(table.toString());
         } catch (Exception e) {
-            System.out.println(msg);
+            System.out.println("Error reading product list: " + e.getMessage());
             return;
         }
 
