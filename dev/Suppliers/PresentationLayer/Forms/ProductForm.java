@@ -34,9 +34,11 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
       @Override
       protected SupplierProductDTO update(SupplierProductDTO dto) throws Cancelled {
             view.showMessage("Updating product... (enter 'cancel' to cancel)");
+            view.showMessage("Current details: \n" + dto);
             switch (askNonEmpty(
-                        "What do you want to change? (supplierCatalogNumber, price, weight, expiresInDays)")) {
-                  case "supplierCatalogNumber" -> dto = new SupplierProductDTO(
+                        "What do you want to change? (supplierCatalogNumber, price, weight, expiresInDays)")
+                        .toLowerCase()) {
+                  case "suppliercatalognumber" -> dto = new SupplierProductDTO(
                               dto.getSupplierId(),
                               dto.getProductId(),
                               askNonEmpty("New Supplier Catalog Number: "),
@@ -63,7 +65,7 @@ public class ProductForm extends InteractiveForm<SupplierProductDTO> {
                               askBigDecimal("New Weight: "),
                               dto.getExpiresInDays(),
                               dto.getManufacturerName());
-                  case "expiresInDays" -> dto = new SupplierProductDTO(
+                  case "expiresindays" -> dto = new SupplierProductDTO(
                               dto.getSupplierId(),
                               dto.getProductId(),
                               dto.getSupplierCatalogNumber(),

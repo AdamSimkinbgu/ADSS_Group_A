@@ -152,10 +152,12 @@ public class SupplierProductDTO {
                         ? supplierCatalogNumber
                         : "[no cat#]";
 
+            @SuppressWarnings("deprecation")
             String pr = (price != null)
                         ? price.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
                         : "0.00";
 
+            @SuppressWarnings("deprecation")
             String wt = (weight != null)
                         ? weight.setScale(2, BigDecimal.ROUND_HALF_UP).toString()
                         : "0.00";

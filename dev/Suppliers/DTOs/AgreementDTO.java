@@ -19,17 +19,17 @@ public class AgreementDTO {
    public AgreementDTO() {
    }
 
-//   public AgreementDTO(Agreement agreement) {
-//      this.agreementId = agreement.getAgreementId();
-//      this.supplierId = agreement.getSupplierId();
-//      this.supplierName = agreement.getSupplierName();
-//      this.valid = agreement.isValid();
-//      this.agreementStartDate = agreement.getAgreementStartDate();
-//      this.agreementEndDate = agreement.getAgreementEndDate();
-//      this.billOfQuantitiesItems = agreement.getBillOfQuantitiesItems().stream()
-//            .map(item -> new BillofQuantitiesItemDTO(item, this.agreementId))
-//            .toList();
-//   }
+   public AgreementDTO(Agreement agreement) {
+      this.agreementId = agreement.getAgreementId();
+      this.supplierId = agreement.getSupplierId();
+      this.supplierName = agreement.getSupplierName();
+      this.valid = agreement.isValid();
+      this.agreementStartDate = agreement.getAgreementStartDate();
+      this.agreementEndDate = agreement.getAgreementEndDate();
+      this.billOfQuantitiesItems = agreement.getBillOfQuantitiesItems().stream()
+            .map(item -> new BillofQuantitiesItemDTO(item, this.agreementId))
+            .toList();
+   }
 
    public AgreementDTO(int supplierId,            // for the AgreementDAO
                        int agreementId,
@@ -56,6 +56,18 @@ public class AgreementDTO {
       this.agreementStartDate = agreementStartDate;
       this.agreementEndDate = agreementEndDate;
       this.billOfQuantitiesItems = billOfQuantitiesItems;
+   }
+
+   public AgreementDTO(AgreementDTO other) {
+      this.agreementId = other.agreementId;
+      this.supplierId = other.supplierId;
+      this.supplierName = other.supplierName;
+      this.valid = other.valid;
+      this.agreementStartDate = other.agreementStartDate;
+      this.agreementEndDate = other.agreementEndDate;
+      this.billOfQuantitiesItems = other.billOfQuantitiesItems != null
+            ? List.copyOf(other.billOfQuantitiesItems)
+            : List.of();
    }
 
    // Getters and Setters

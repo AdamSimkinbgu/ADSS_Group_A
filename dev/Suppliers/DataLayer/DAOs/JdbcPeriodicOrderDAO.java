@@ -1,6 +1,7 @@
 package Suppliers.DataLayer.DAOs;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import Suppliers.DataLayer.util.Database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.sql.PreparedStatement;
 
@@ -28,7 +30,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setString(1, periodicOrder.getDeliveryDay().name());
-         preparedStatement.setInt(2, periodicOrder.isActive() ? 1 : 0);
+         preparedStatement.setInt(2, 1);
 
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected == 0) {
@@ -46,11 +48,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             }
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -62,12 +61,13 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          throw new IllegalArgumentException("Periodic order cannot be null");
       }
       String sql = "UPDATE periodic_orders SET delivery_day = ?, is_active = ? WHERE periodic_order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setString(1, periodicOrder.getDeliveryDay().name());
-         preparedStatement.setInt(2, periodicOrder.isActive() ? 1 : 0);
+         preparedStatement.setInt(2, 1);
          preparedStatement.setInt(3, periodicOrder.getPeriodicOrderID());
 
-         LOGGER.info("Updating periodic order: {}", periodicOrder);
+         LOGGER.debug("Updating periodic order: {}", periodicOrder);
          LOGGER.debug("PreparedStatement: {}", preparedStatement);
 
          int rowsAffected = preparedStatement.executeUpdate();
@@ -79,11 +79,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -95,10 +92,11 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          throw new IllegalArgumentException("Periodic order ID must be greater than 0");
       }
       String sql = "DELETE FROM periodic_orders WHERE periodic_order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, id);
 
-         LOGGER.info("Deleting periodic order with ID: {}", id);
+         LOGGER.debug("Deleting periodic order with ID: {}", id);
          LOGGER.debug("PreparedStatement: {}", preparedStatement);
 
          int rowsAffected = preparedStatement.executeUpdate();
@@ -110,11 +108,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             return false;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return false;
    }
@@ -126,17 +121,18 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          throw new IllegalArgumentException("Periodic order ID must be greater than 0");
       }
       String sql = "SELECT * FROM periodic_orders WHERE periodic_order_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql)) {
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
          preparedStatement.setInt(1, id);
 
-         LOGGER.info("Retrieving periodic order with ID: {}", id);
+         LOGGER.debug("Retrieving periodic order with ID: {}", id);
          LOGGER.debug("PreparedStatement: {}", preparedStatement);
 
          ResultSet resultSet = preparedStatement.executeQuery();
          if (resultSet.next()) {
             PeriodicOrderDTO periodicOrder = new PeriodicOrderDTO();
             periodicOrder.setPeriodicOrderID(resultSet.getInt("periodic_order_id"));
-            periodicOrder.setDeliveryDay(LocalDate.parse(resultSet.getString("delivery_day")).getDayOfWeek());
+            periodicOrder.setDeliveryDay(DayOfWeek.valueOf(resultSet.getString("delivery_day").toUpperCase()));
             periodicOrder.setActive(resultSet.getBoolean("is_active"));
             LOGGER.info("Retrieved periodic order: {}", periodicOrder);
             return periodicOrder;
@@ -145,11 +141,8 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             return null;
          }
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return null;
    }
@@ -159,22 +152,19 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
       String sql = "SELECT * FROM periodic_orders";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery()) {
-         List<PeriodicOrderDTO> periodicOrders = new java.util.ArrayList<>();
+         List<PeriodicOrderDTO> periodicOrders = new ArrayList<>();
          while (resultSet.next()) {
             PeriodicOrderDTO periodicOrder = new PeriodicOrderDTO();
             periodicOrder.setPeriodicOrderID(resultSet.getInt("periodic_order_id"));
-            periodicOrder.setDeliveryDay(LocalDate.parse(resultSet.getString("delivery_day")).getDayOfWeek());
+            periodicOrder.setDeliveryDay(DayOfWeek.valueOf(resultSet.getString("delivery_day").toUpperCase()));
             periodicOrder.setActive(resultSet.getBoolean("is_active"));
             periodicOrders.add(periodicOrder);
          }
-         LOGGER.info("Listed {} periodic orders", periodicOrders.size());
+         LOGGER.debug("Listed {} periodic orders", periodicOrders.size());
          return periodicOrders;
       } catch (SQLException e) {
-         try {
-            handleSQLException(e);
-         } catch (Exception ex) {
-            LOGGER.error("Error handling SQL exception: {}", ex.getMessage());
-         }
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
       }
       return new ArrayList<>();
    }

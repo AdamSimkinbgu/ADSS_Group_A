@@ -110,5 +110,14 @@ public class DiscountDAO_SQL implements DiscountDAO {
         } catch (SQLException e) {
             throw new RuntimeException("SQL Exception: " + e.getMessage());
         }
+
+        sql = "UPDATE sqlite_sequence SET seq = 0 WHERE name = 'discounts'";
+
+        try (Connection conn = DataBase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("SQL Exception: " + e.getMessage());
+        }
     }
 }

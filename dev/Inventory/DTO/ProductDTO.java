@@ -1,6 +1,5 @@
 package Inventory.DTO;
 
-
 import Inventory.Domain.ProductDomain;
 import Inventory.type.Position;
 
@@ -115,4 +114,22 @@ public class ProductDTO {
 
     }
 
+    @Override
+    public String toString() {
+        final int MAX_NAME = 20;
+        final int MAX_MF = 12;
+        String mf = (manufacturerName != null && manufacturerName.length() > MAX_MF)
+                ? manufacturerName.substring(0, MAX_MF - 3) + "..."
+                : (manufacturerName != null ? manufacturerName : "[no mf]");
+
+        String nm = (productName != null && productName.length() > MAX_NAME)
+                ? productName.substring(0, MAX_NAME - 3) + "..."
+                : (productName != null ? productName : "[no name]");
+
+        return String.format(
+                "CatalogProd [ID=%6d]  MF: %-12s  Name: %-12s",
+                productId,
+                mf,
+                nm);
+    }
 }

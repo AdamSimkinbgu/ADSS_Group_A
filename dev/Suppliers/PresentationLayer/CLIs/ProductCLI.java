@@ -26,10 +26,11 @@ public class ProductCLI {
          view.showMessage("2. Update Product");
          view.showMessage("3. Remove Product");
          view.showMessage("4. List Products");
-         view.showMessage("Type 'return' to go back.");
+         view.showMessage("Type 'back' or '0' to go back.");
 
          String choice = view.readLine("Choose an option: ").toLowerCase();
-         if (choice.equals("return")) {
+         if (choice.equals("back") || choice.equals("0")) {
+            view.showMessage(" === Returning to the Suppliers main menu ===");
             break;
          }
          CommandInterface command = productCommands.getOrDefault(choice, null);

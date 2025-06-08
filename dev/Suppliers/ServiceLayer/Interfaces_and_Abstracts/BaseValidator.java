@@ -2,7 +2,6 @@ package Suppliers.ServiceLayer.Interfaces_and_Abstracts;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 import Suppliers.DTOs.AddressDTO;
 import Suppliers.DTOs.BillofQuantitiesItemDTO;
@@ -263,5 +262,21 @@ public abstract class BaseValidator {
          return false; // Discount percentage must be between 0 and 100
       }
       return true;
+   }
+
+   protected boolean isDateInPast(LocalDate date) {
+      if (date == null) {
+         return false;
+      }
+      LocalDate today = LocalDate.now();
+      return date.isBefore(today);
+   }
+
+   protected boolean isDateInFuture(LocalDate date) {
+      if (date == null) {
+         return false;
+      }
+      LocalDate today = LocalDate.now();
+      return date.isAfter(today);
    }
 }
