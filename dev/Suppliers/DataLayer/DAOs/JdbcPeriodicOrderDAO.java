@@ -1,7 +1,6 @@
 package Suppliers.DataLayer.DAOs;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import Suppliers.DataLayer.util.Database;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.sql.PreparedStatement;
 
 public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInterface {
@@ -22,7 +20,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
 
    @Override
    public PeriodicOrderDTO createPeriodicOrder(PeriodicOrderDTO periodicOrder) {
-      if (periodicOrder == null) {
+      if (periodicOrder == null || periodicOrder.getDeliveryDay() == null) {
          LOGGER.error("Attempted to create a null periodic order.");
          throw new IllegalArgumentException("Periodic order cannot be null");
       }

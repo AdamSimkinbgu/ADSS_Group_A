@@ -1,5 +1,6 @@
 package Suppliers.DTOs;
 
+import Suppliers.DTOs.Enums.OrderCatagory;
 import Suppliers.DTOs.Enums.OrderStatus;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class OrderDTO {
     private String contactPhoneNumber;
     private List<OrderItemLineDTO> items;
     private OrderStatus status;
+    private OrderCatagory orderCatagory;
 
     public OrderDTO() {
     }
@@ -35,6 +37,7 @@ public class OrderDTO {
         this.contactPhoneNumber = contactPhoneNumber;
         this.items = items;
         this.status = OrderStatus.PENDING;
+        this.orderCatagory = OrderCatagory.REGULAR; // Default to REGULAR
     }
 
     public OrderDTO(OrderDTO order) {
@@ -55,6 +58,8 @@ public class OrderDTO {
         } else {
             this.items = new ArrayList<>();
         }
+        this.deliveryDate = order.getDeliveryDate() != null ? order.getDeliveryDate() : LocalDate.now();
+        this.orderCatagory = order.getOrderCatagory();
     }
 
     public int getOrderId() {
@@ -220,5 +225,13 @@ public class OrderDTO {
 
         sb.append("======================================================");
         return sb.toString();
+    }
+
+    public OrderCatagory getOrderCatagory() {
+        return orderCatagory;
+    }
+
+    public void setOrderCatagory(OrderCatagory orderCatagory) {
+        this.orderCatagory = orderCatagory;
     }
 }

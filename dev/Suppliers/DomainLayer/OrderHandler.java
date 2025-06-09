@@ -2,9 +2,9 @@ package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.InitializeState;
+import Suppliers.DTOs.Enums.OrderCatagory;
 import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DomainLayer.Classes.ContactInfo;
-import Suppliers.DomainLayer.Classes.PeriodicOrder;
 import Suppliers.DomainLayer.Classes.Supplier;
 import Suppliers.DomainLayer.Repositories.OrdersRepositoryImpl;
 import Suppliers.DomainLayer.Repositories.RepositoryIntefaces.OrdersRepositoryInterface;
@@ -73,7 +73,7 @@ public class OrderHandler {
 
       // PERSIST ORDERS TO DB
       try {
-         persistOrders(grouped, requestDate, creationDate);
+         persistOrders(grouped, requestDate, creationDate, OrderCatagory.REGULAR);
       } catch (Exception ex) {
          LOGGER.error("Failed to persist orders", ex);
          throw new RuntimeException("Error persisting orders", ex);
@@ -346,7 +346,8 @@ public class OrderHandler {
    private void persistOrders(
          Map<Supplier, Map<Integer, Integer>> groupedOrders,
          LocalDate requestDate,
-         LocalDate creationDate) {
+         LocalDate creationDate,
+         OrderCatagory orderCategory) {
 
       for (Map.Entry<Supplier, Map<Integer, Integer>> entry : groupedOrders.entrySet()) {
          Supplier supplier = entry.getKey();
@@ -416,6 +417,7 @@ public class OrderHandler {
 
          // Persist the order using the repository
          try {
+            orderDTO.setOrderCatagory(orderCategory);
             OrderDTO createdOrder = ordersRepository.createRegularOrder(orderDTO);
             LOGGER.info("Successfully created order {} for supplier {} with {} items",
                   createdOrder.getOrderId(), supplier.getName(), items.size());
@@ -459,7 +461,7 @@ public class OrderHandler {
 
       // PERSIST ORDERS TO DB
       try {
-         persistOrders(grouped, requestDate, creationDate);
+         persistOrders(grouped, requestDate, creationDate, OrderCatagory.REGULAR);
       } catch (Exception ex) {
          LOGGER.error("Failed to persist orders", ex);
          throw new RuntimeException("Error persisting orders", ex);
@@ -577,8 +579,53 @@ public class OrderHandler {
       return null; // TODO
    }
 
-   public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day, List<PeriodicOrder> periodicOrders) {
-      return null; // TODO
+   public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek dayOfWeek, List<PeriodicOrderDTO> periodicOrders) {
+      if (dayOfWeek == null || periodicOrders == null || periodicOrders.isEmpty()) {
+         throw new IllegalArgumentException("Day of week and periodic orders cannot be null or empty");
+      }
+
+      List<OrderResultDTO> results = new ArrayList<>();
+      for (PeriodicOrderDTO periodicOrder : periodicOrders) {
+         if (periodicOrder.getDeliveryDay() == dayOfWeek && periodicOrder.isActive()) {
+            // Combine quantities for any repeated product entries
+            Map<Integer, Integer> mergedProducts = mergeProductQuantities(periodicOrder.getProductsInOrder());
+            if (mergedProducts.isEmpty()) {
+               throw new IllegalArgumentException("No products to order after merging");
+            }
+
+            LocalDate creationDate = LocalDate.now();
+            LocalDate requestDate = periodicOrder.getNextDeliveryDate();
+
+            // FIND FEASIBLE SUPPLIERS
+            List<Integer> failedProductIds = new ArrayList<>();
+            Map<Integer, List<Supplier>> feasibleSuppliers = findFeasibleSuppliers(
+                  mergedProducts, creationDate, requestDate, failedProductIds);
+
+            // FILTER OUT UNFULFILLABLE PRODUCTS
+            Map<Integer, Integer> filteredProducts = filterFulfillableProducts(mergedProducts, failedProductIds);
+
+            // SELECT BEST SUPPLIERS WITH FULL DATA
+            Map<Integer, SupplierSelection> selections = chooseBestSuppliers(
+                  feasibleSuppliers, filteredProducts, creationDate);
+
+            // GROUP PRODUCTS BY SUPPLIER FOR PERSISTENCE
+            Map<Supplier, Map<Integer, Integer>> grouped = groupProductsBySupplier(selections, filteredProducts);
+
+            // PERSIST ORDERS TO DB
+            try {
+
+               persistOrders(grouped, requestDate, creationDate, OrderCatagory.PERIODIC);
+            } catch (Exception ex) {
+               LOGGER.error("Failed to persist orders", ex);
+               throw new RuntimeException("Error persisting orders", ex);
+            }
+
+            // BUILD AND RETURN RESULT DTO
+            OrderResultDTO res = buildResult(mergedProducts, selections, failedProductIds);
+            results.add(res);
+         }
+      }
+      return results;
    }
 
    // #######################################################################################################################

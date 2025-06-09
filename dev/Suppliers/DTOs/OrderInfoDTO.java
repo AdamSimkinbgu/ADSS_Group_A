@@ -31,6 +31,10 @@ public class OrderInfoDTO {
         }
     }
 
+    public OrderInfoDTO() {
+        // TODO Auto-generated constructor stub
+    }
+
     public HashMap<Integer, Integer> getProducts() {
         return products;
     }

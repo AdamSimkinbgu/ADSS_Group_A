@@ -346,4 +346,20 @@ public class OrderService extends BaseService {
          return ServiceResponse.fail(validationResponse.getErrors());
       }
    }
+
+   public ServiceResponse<?> executePeriodicOrdersForThisWeek() {
+      try {
+         int executedCount = orderFacade.executePeriodicOrdersForThisWeek();
+         if (executedCount > 0) {
+            return ServiceResponse.ok("Executed " + executedCount + " periodic orders for this week.");
+         } else {
+            return ServiceResponse.fail(List.of("No periodic orders to execute for this week."));
+         }
+      } catch (DataAccessException e) {
+         throw new RuntimeException("Error handling SQL exception: " + e.getMessage(), e);
+      } catch (Exception e) {
+         throw new RuntimeException("Failed to execute periodic orders for this week: " + e.getMessage(), e);
+      }
+
+   }
 }

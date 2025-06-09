@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.Enums.OrderCatagory;
 import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DataLayer.Interfaces.OrderDAOInterface;
 import Suppliers.DataLayer.util.Database;
@@ -25,13 +26,14 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.error("Attempted to add a null order.");
          throw new IllegalArgumentException("Order cannot be null");
       }
-      String sql = "INSERT INTO orders (supplier_id, order_date, creation_date, status) VALUES (?, ?, ?, ?)";
+      String sql = "INSERT INTO orders (supplier_id, order_date, creation_date, status, order_catagory) VALUES (?, ?, ?, ?, ?)";
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
             PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, orderDTO.getSupplierId());
          preparedStatement.setString(2, orderDTO.getOrderDate().toString());
          preparedStatement.setString(3, LocalDate.now().toString());
          preparedStatement.setString(4, orderDTO.getStatus().name());
+         preparedStatement.setString(5, "REGULAR");
 
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
@@ -74,7 +76,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             orderDTO.setCreationDate(LocalDate.parse(resultSet.getString("creation_date")));
             // orderDTO.setContactPhoneNumber(resultSet.getString("contact_phone_number"));
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
-            orderDTO.setSupplierName(getSupplierName(orderDTO.getSupplierId()));
+            orderDTO.setOrderCatagory(OrderCatagory.valueOf(resultSet.getString("order_catagory")));
             LOGGER.info("Order retrieved: {}", orderDTO);
             return Optional.of(orderDTO);
          } else {
@@ -142,13 +144,22 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          LOGGER.error("Invalid order data for update: {}", updatedOrderDTO);
          throw new IllegalArgumentException("Order cannot be null and must have a valid ID");
       }
-      String sql = "UPDATE orders SET supplier_id = ?, order_date = ?, status = ? WHERE order_id = ?";
+      String sql = "UPDATE orders SET supplier_id = ?, order_date = ?, status = ?, delivery_date = ? WHERE order_id = ?";
       try (PreparedStatement preparedStatement = Database.getConnection()
             .prepareStatement(sql)) {
          preparedStatement.setInt(1, updatedOrderDTO.getSupplierId());
          preparedStatement.setString(2, updatedOrderDTO.getOrderDate().toString());
          preparedStatement.setString(3, updatedOrderDTO.getStatus().name());
-         preparedStatement.setInt(4, updatedOrderDTO.getOrderId());
+         if (updatedOrderDTO.getStatus() == OrderStatus.DELIVERED && updatedOrderDTO.getDeliveryDate() == null) {
+            LOGGER.info("Order changed to DELIVERED, setting delivery date to current date");
+            updatedOrderDTO.setDeliveryDate();
+         }
+         if (updatedOrderDTO.getDeliveryDate() == null) {
+            preparedStatement.setNull(4, java.sql.Types.DATE);
+         } else {
+            preparedStatement.setString(4, updatedOrderDTO.getDeliveryDate().toString());
+         }
+         preparedStatement.setInt(5, updatedOrderDTO.getOrderId());
 
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
@@ -162,25 +173,6 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          handleSQLException(e);
       }
       return false;
-   }
-
-   private String getSupplierName(int supplierId) {
-      String sql = "SELECT name FROM suppliers WHERE supplier_id = ?";
-      try (PreparedStatement preparedStatement = Database.getConnection()
-            .prepareStatement(sql)) {
-         preparedStatement.setInt(1, supplierId);
-         ResultSet resultSet = preparedStatement.executeQuery();
-         if (resultSet.next()) {
-            return resultSet.getString("name");
-         } else {
-            LOGGER.warn("No supplier found with ID: {}", supplierId);
-            return null;
-         }
-      } catch (SQLException e) {
-         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
-         handleSQLException(e);
-      }
-      return null;
    }
 
    @Override
@@ -202,7 +194,6 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             orderDTO.setOrderDate(LocalDate.parse(resultSet.getString("order_date")));
             orderDTO.setCreationDate(LocalDate.parse(resultSet.getString("creation_date")));
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
-            orderDTO.setSupplierName(getSupplierName(orderDTO.getSupplierId()));
             orders.add(orderDTO);
          }
          LOGGER.info("Retrieved {} orders with status: {}", orders.size(), delivered);

@@ -93,6 +93,7 @@ public class AppCLI implements View {
       commands.put("ViewAllPeriodicOrdersForTodayCMD", new ViewAllPeriodicOrdersForTodayCMD(this, orderService));
       commands.put("DeliverOrderToInventoryCMD", new DeliverOrderToInventoryCMD(this, orderService));
       commands.put("AdvanceOrderStatusCMD", new AdvanceOrderStatusCMD(this, orderService));
+      commands.put("ExecutePeriodicOrdersForThisWeekCMD", new ExecutePeriodicOrdersForThisWeekCMD(this, orderService));
       return commands;
    }
 

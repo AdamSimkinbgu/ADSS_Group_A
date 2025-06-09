@@ -30,6 +30,8 @@ public class OrderCLI {
         // Additional command for delivering orders to inventory
         orderCommands.put("DeliverOrderToInventoryCMD", commands.get("DeliverOrderToInventoryCMD"));
         orderCommands.put("AdvanceOrderStatusCMD", commands.get("AdvanceOrderStatusCMD"));
+        // Command to execute periodic orders for the current week
+        orderCommands.put("ExecutePeriodicOrdersForThisWeekCMD", commands.get("ExecutePeriodicOrdersForThisWeekCMD"));
     }
 
     public void start() {
@@ -46,6 +48,7 @@ public class OrderCLI {
             view.showMessage("9. View All Periodic Orders for Today");
             view.showMessage("10. Deliver Order to Inventory");
             view.showMessage("11. Advance Order Status");
+            view.showMessage("12. Execute Periodic Orders for This Week");
             view.showMessage("Type 'back' or '0' to go back.");
 
             String choice = view.readLine("Choose an option: ").toLowerCase();
@@ -87,6 +90,9 @@ public class OrderCLI {
                     break;
                 case "11":
                     runCommand("AdvanceOrderStatusCMD");
+                    break;
+                case "12":
+                    runCommand("ExecutePeriodicOrdersForThisWeekCMD");
                     break;
                 default:
                     view.showError("Invalid option. Please try again.");

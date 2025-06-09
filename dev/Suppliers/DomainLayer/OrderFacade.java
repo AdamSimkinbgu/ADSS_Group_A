@@ -3,12 +3,8 @@ package Suppliers.DomainLayer;
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.InitializeState;
 import Suppliers.DTOs.Enums.OrderStatus;
-import Suppliers.DomainLayer.Classes.PeriodicOrder;
 
-import java.sql.SQLException;
-import java.time.DayOfWeek;
 import java.util.*;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +37,6 @@ public class OrderFacade extends BaseFacade {
 
         LOGGER.info("Facade: createPeriodicOrder result: {}", result);
         return result;
-    }
-
-    public List<OrderResultDTO> executePeriodicOrdersForDay(DayOfWeek day) {
-        LOGGER.info("Facade: executePeriodicOrdersForDay called for day: {}", day);
-        List<PeriodicOrder> periodicOrders = periodicOrderHandler.getAllActivePeriodicOrdersByDay(day);
-        List<OrderResultDTO> results = orderHandler.executePeriodicOrdersForDay(day, periodicOrders);
-        LOGGER.info("Facade: executePeriodicOrdersForDay returned {} results", results == null ? 0 : results.size());
-        return results;
     }
 
     public boolean deletePeriodicOrder(int periodicOrderId) {
@@ -219,5 +207,29 @@ public class OrderFacade extends BaseFacade {
         order.setStatus(status);
         orderHandler.updateOrderInfo(order);
         LOGGER.info("Facade: advanceOrderStatus updated order ID: {} to status: {}", orderId, status);
+    }
+
+    public int executePeriodicOrdersForThisWeek() {
+        LOGGER.info("Facade: executePeriodicOrdersForThisWeek called");
+        List<PeriodicOrderDTO> periodicOrders = periodicOrderHandler.getAllActivePeriodicOrdersByDayForThisWeek();
+        if (periodicOrders == null || periodicOrders.isEmpty()) {
+            LOGGER.info("No periodic orders found for this week");
+            return 0;
+        }
+        int executedCount = 0;
+        for (PeriodicOrderDTO periodicOrder : periodicOrders) {
+
+            List<OrderResultDTO> results = orderHandler.executePeriodicOrdersForDay(periodicOrder.getDeliveryDay(),
+                    Collections.singletonList(periodicOrder));
+            if (results != null && !results.isEmpty()) {
+                executedCount += results.size();
+                LOGGER.info("Executed {} orders for periodic order ID: {}", results.size(),
+                        periodicOrder.getPeriodicOrderID());
+            } else {
+                LOGGER.warn("No orders executed for periodic order ID: {}", periodicOrder.getPeriodicOrderID());
+            }
+        }
+        LOGGER.info("Facade: executePeriodicOrdersForThisWeek executed {} orders", executedCount);
+        return executedCount;
     }
 }

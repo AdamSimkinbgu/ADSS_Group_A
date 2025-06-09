@@ -3,6 +3,7 @@ package Suppliers.DTOs;
 import Suppliers.DomainLayer.Classes.PeriodicOrder;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,8 @@ public class PeriodicOrderDTO {
         this.productsInOrder = productsInOrder;
         this.isActive = false;
     }
-    public PeriodicOrderDTO (DayOfWeek arrivalDate, HashMap<Integer, Integer> productsInOrder, boolean isActive) {
+
+    public PeriodicOrderDTO(DayOfWeek arrivalDate, HashMap<Integer, Integer> productsInOrder, boolean isActive) {
         this.periodicOrderID = 0;
         this.deliveryDay = arrivalDate;
         this.productsInOrder = productsInOrder;
@@ -115,5 +117,17 @@ public class PeriodicOrderDTO {
 
         sb.append("==============================================\n");
         return sb.toString();
+    }
+
+    public LocalDate getNextDeliveryDate() {
+        if (deliveryDay == null) {
+            return null; // No delivery day set
+        }
+        LocalDate today = LocalDate.now();
+        LocalDate nextDelivery = today.with(deliveryDay);
+        if (nextDelivery.isBefore(today) || nextDelivery.equals(today)) {
+            nextDelivery = nextDelivery.plusWeeks(1);
+        }
+        return nextDelivery;
     }
 }

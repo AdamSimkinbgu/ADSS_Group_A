@@ -61,36 +61,6 @@ public final class Database {
                                 UNIQUE(tax_number)
                             );
                         """);
-                // create a trigger to detect deletions and adjust the supplier_id accordingly
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_supplier_autoincrement
-                // AFTER INSERT ON suppliers
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE suppliers
-                // SET supplier_id = (
-                // COALESCE(
-                // (SELECT MAX(supplier_id) + 1 FROM suppliers),
-                // 1
-                // )
-                // )
-                // WHERE rowid = NEW.rowid; -- patch only the row we just inserted
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_supplier_reseq_after_delete
-                // AFTER DELETE ON suppliers
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE suppliers
-                // SET supplier_id = supplier_id - 1
-                // WHERE supplier_id > OLD.supplier_id;
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE INDEX IF NOT EXISTS idx_suppliers_tax_number
-                // ON suppliers(tax_number);
-                // """);
 
                 /* ───────────────────────── contacts ───────────────────────── */
                 st.executeUpdate("""
@@ -123,36 +93,6 @@ public final class Database {
                                     ON UPDATE CASCADE
                             );
                         """);
-                // st.executeUpdate("""
-                // CREATE INDEX IF NOT EXISTS idx_supplier_products_supplier
-                // ON supplier_products(supplier_id);
-                // """);
-                // // create a trigger to detect deletions and adjust the product_id accordingly
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_product_autoincrement
-                // AFTER INSERT ON supplier_products
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE supplier_products
-                // SET product_id = (
-                // COALESCE(
-                // (SELECT MAX(product_id) + 1 FROM supplier_products),
-                // 1
-                // )
-                // )
-                // WHERE rowid = NEW.rowid; -- patch only the row we just inserted
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_product_reseq_after_delete
-                // AFTER DELETE ON supplier_products
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE supplier_products
-                // SET product_id = product_id - 1
-                // WHERE product_id > OLD.product_id;
-                // END;
-                // """);
 
                 /* ───────────────────────── agreements ──────────────────────── */
                 st.executeUpdate("""
@@ -228,11 +168,10 @@ public final class Database {
                                status               TEXT    NOT NULL
                                                      CHECK(status IN
                                                         ('PENDING','SENT','DELIVERED','COMPLETED','CANCELLED')),
-                               periodic_order_id    INTEGER NULL,
+                               order_catagory       TEXT NOT NULL CHECK(order_catagory IN
+                                                        ('REGULAR','PERIODIC')),
                                FOREIGN KEY(supplier_id)
-                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE,
-                               FOREIGN KEY(periodic_order_id)
-                                   REFERENCES periodic_orders(periodic_order_id) ON DELETE SET NULL
+                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE
                             );
                         """);
 
@@ -402,36 +341,6 @@ public final class Database {
                                 UNIQUE(tax_number)
                             );
                         """);
-                // create a trigger to detect deletions and adjust the supplier_id accordingly
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_supplier_autoincrement
-                // AFTER INSERT ON suppliers
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE suppliers
-                // SET supplier_id = (
-                // COALESCE(
-                // (SELECT MAX(supplier_id) + 1 FROM suppliers),
-                // 1
-                // )
-                // )
-                // WHERE rowid = NEW.rowid; -- patch only the row we just inserted
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_supplier_reseq_after_delete
-                // AFTER DELETE ON suppliers
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE suppliers
-                // SET supplier_id = supplier_id - 1
-                // WHERE supplier_id > OLD.supplier_id;
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE INDEX IF NOT EXISTS idx_suppliers_tax_number
-                // ON suppliers(tax_number);
-                // """);
 
                 /* ───────────────────────── contacts ───────────────────────── */
                 st.executeUpdate("""
@@ -464,36 +373,6 @@ public final class Database {
                                     ON UPDATE CASCADE
                             );
                         """);
-                // st.executeUpdate("""
-                // CREATE INDEX IF NOT EXISTS idx_supplier_products_supplier
-                // ON supplier_products(supplier_id);
-                // """);
-                // // create a trigger to detect deletions and adjust the product_id accordingly
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_product_autoincrement
-                // AFTER INSERT ON supplier_products
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE supplier_products
-                // SET product_id = (
-                // COALESCE(
-                // (SELECT MAX(product_id) + 1 FROM supplier_products),
-                // 1
-                // )
-                // )
-                // WHERE rowid = NEW.rowid; -- patch only the row we just inserted
-                // END;
-                // """);
-                // st.executeUpdate("""
-                // CREATE TRIGGER IF NOT EXISTS trg_product_reseq_after_delete
-                // AFTER DELETE ON supplier_products
-                // FOR EACH ROW
-                // BEGIN
-                // UPDATE supplier_products
-                // SET product_id = product_id - 1
-                // WHERE product_id > OLD.product_id;
-                // END;
-                // """);
 
                 /* ───────────────────────── agreements ──────────────────────── */
                 st.executeUpdate("""
@@ -569,11 +448,10 @@ public final class Database {
                                status               TEXT    NOT NULL
                                                      CHECK(status IN
                                                         ('PENDING','SENT','DELIVERED','COMPLETED','CANCELLED')),
-                               periodic_order_id    INTEGER NULL,
+                               order_catagory       TEXT NOT NULL CHECK(order_catagory IN
+                                                        ('REGULAR','PERIODIC')),
                                FOREIGN KEY(supplier_id)
-                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE,
-                               FOREIGN KEY(periodic_order_id)
-                                   REFERENCES periodic_orders(periodic_order_id) ON DELETE SET NULL
+                                   REFERENCES suppliers(supplier_id) ON DELETE CASCADE
                             );
                         """);
 

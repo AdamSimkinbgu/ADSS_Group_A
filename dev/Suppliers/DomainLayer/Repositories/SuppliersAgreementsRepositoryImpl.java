@@ -112,7 +112,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       LOGGER.info("Retrieving supplier with ID: {}", id);
       if (suppliersCache.containsKey(id)) {
-         LOGGER.info("Supplier found in cache: {}", suppliersCache.get(id));
+         LOGGER.debug("Supplier found in cache: {}", suppliersCache.get(id));
          return Optional.of(new SupplierDTO(suppliersCache.get(id)));
       }
       Optional<SupplierDTO> supplier = supplierDAO.getSupplier(id);
