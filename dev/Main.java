@@ -17,6 +17,7 @@ public class Main {
       integrateModules(presentationMenu, appCLI);
       boolean showedStatistics = false;
       while (true) {
+         System.out.println("\nMain Menu:");
          System.out.println("1. Supplier Management");
          System.out.println("2. Inventory Management");
          System.out.println("3. Exit");

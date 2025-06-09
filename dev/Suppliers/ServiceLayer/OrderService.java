@@ -4,10 +4,13 @@ package Suppliers.ServiceLayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import Inventory.DTO.SupplyDTO;
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.OrderInfoDTO;
+import Suppliers.DTOs.OrderPackageDTO;
 import Suppliers.DTOs.OrderResultDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DomainLayer.OrderFacade;
 
@@ -146,7 +149,7 @@ public class OrderService extends BaseService {
 
    public ServiceResponse<List<OrderDTO>> getAllOrders() {
       try {
-         List<OrderDTO> orders = new ArrayList<>(); // Placeholder for actual implementation
+         List<OrderDTO> orders = orderFacade.getAllOrders();
          if (orders == null || orders.isEmpty()) {
             return ServiceResponse.fail(List.of());
          }
@@ -261,8 +264,86 @@ public class OrderService extends BaseService {
    }
 
    public ServiceResponse<?> completeOrder(int orderId) {
-      orderFacade.markOrderAsCollected(orderId);
-      return ServiceResponse.ok("Order with ID " + orderId + " has been marked as collected.");
+      if (orderFacade.markOrderAsCollected(orderId)) {
+         return ServiceResponse.ok("Order with ID " + orderId + " has been marked as completed.");
+      } else {
+         return ServiceResponse.fail(List.of("Failed to mark order with ID " + orderId + " as completed."));
+      }
    }
 
+   public ServiceResponse<?> deliverOrderToInventory(int orderId) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateGetDTO(orderId);
+      if (validationResponse.isSuccess()) {
+         OrderDTO order = null;
+         try {
+            order = orderFacade.getOrderById(orderId);
+            if (order == null) {
+               return ServiceResponse.fail(List.of("Order with ID " + orderId + " not found."));
+            }
+            if (!order.getStatus().equals(OrderStatus.DELIVERED)) {
+               return ServiceResponse.fail(List.of("Order with ID " + orderId + " is not in DELIVERED status."));
+            }
+            try {
+               List<SupplyDTO> items = orderFacade.getSupplyDTOFromOrder(order);
+               ServiceResponse<?> orderToInventory = IntegrationService.getIntegrationServiceInstance()
+                     .deliverOrder(new OrderPackageDTO(order.getOrderId(), order.getDeliveryDate(), items));
+               if (orderToInventory.isSuccess()) {
+                  return ServiceResponse.ok("Order with ID " + orderId + " has been delivered to inventory.");
+               } else {
+                  return ServiceResponse.fail(orderToInventory.getErrors());
+               }
+            } catch (DataAccessException e) {
+               return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+            } catch (Exception e) {
+               return ServiceResponse.fail(List.of("Failed to deliver order to inventory: " + e.getMessage()));
+            }
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to fetch order: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+
+   }
+
+   public ServiceResponse<List<OrderDTO>> getOrdersInDeliveredStatus() {
+      try {
+         List<OrderDTO> orders = orderFacade.getOrdersInDeliveredStatus();
+         if (orders == null || orders.isEmpty()) {
+            return ServiceResponse.fail(List.of("No orders in delivered status found."));
+         }
+         return ServiceResponse.ok(orders);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to fetch orders in delivered status: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<?> advanceOrderStatus(int orderId, OrderStatus status) {
+      ServiceResponse<List<String>> validationResponse = orderValidator.validateGetDTO(orderId);
+      if (validationResponse.isSuccess()) {
+         try {
+            OrderDTO order = orderFacade.getOrderById(orderId);
+            if (order == null) {
+               return ServiceResponse.fail(List.of("Order with ID " + orderId + " not found."));
+            }
+            if (order.getStatus().ordinal() >= status.ordinal() || status.equals(OrderStatus.CANCELLED)
+                  || status.equals(OrderStatus.COMPLETED)) {
+               return ServiceResponse
+                     .fail(List.of("Cannot advance order status to " + status + " from " + order.getStatus()));
+            }
+            orderFacade.advanceOrderStatus(orderId, status);
+            return ServiceResponse.ok("Order status advanced to " + status);
+         } catch (DataAccessException e) {
+            return ServiceResponse.fail(List.of("Error handling SQL exception: " + e.getMessage()));
+         } catch (Exception e) {
+            return ServiceResponse.fail(List.of("Failed to advance order status: " + e.getMessage()));
+         }
+      } else {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+   }
 }

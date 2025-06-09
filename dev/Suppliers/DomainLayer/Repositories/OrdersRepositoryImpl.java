@@ -2,6 +2,7 @@ package Suppliers.DomainLayer.Repositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.OrderItemLineDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DataLayer.DAOs.JdbcOrderDAO;
 import Suppliers.DataLayer.DAOs.JdbcOrderItemLineDAO;
 import Suppliers.DataLayer.Interfaces.OrderDAOInterface;
@@ -46,9 +48,17 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
    }
 
    @Override
-   public void updateRegularOrder(OrderDTO order) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'updateRegularOrder'");
+   public boolean updateRegularOrder(OrderDTO order) {
+      if (order == null || order.getOrderId() <= 0) {
+         throw new IllegalArgumentException("OrderDTO cannot be null and must have a valid ID");
+      }
+      boolean updated = ordersRepository.updateOrder(order);
+      if (updated) {
+         LOGGER.info("Regular order with ID: {} updated successfully", order.getOrderId());
+      } else {
+         LOGGER.error("Failed to update regular order with ID: {}", order.getOrderId());
+      }
+      return updated;
    }
 
    @Override
@@ -67,14 +77,46 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
 
    @Override
    public OrderDTO getRegularOrderById(int orderId) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getRegularOrderById'");
+      if (orderId <= 0) {
+         throw new IllegalArgumentException("Order ID must be a positive integer");
+      }
+      Optional<OrderDTO> orderopt = ordersRepository.getOrderByID(orderId);
+      if (orderopt.isEmpty()) {
+         LOGGER.warn("No regular order found with ID: {}", orderId);
+         return null;
+      }
+      OrderDTO order = orderopt.get();
+      if (order == null) {
+         LOGGER.warn("No regular order found with ID: {}", orderId);
+         return null;
+      }
+      List<OrderItemLineDTO> itemLines = orderItemLineDAO.listOrderItemLines(orderId);
+      if (itemLines != null && !itemLines.isEmpty()) {
+         order.setItems(itemLines);
+      } else {
+         LOGGER.warn("No item lines found for order ID: {}", orderId);
+      }
+      LOGGER.info("Retrieved regular order with ID: {}", orderId);
+      return order;
    }
 
    @Override
    public List<OrderDTO> getAllRegularOrders() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAllRegularOrders'");
+      List<OrderDTO> orders = ordersRepository.listOrders();
+      if (orders == null || orders.isEmpty()) {
+         LOGGER.warn("No regular orders found in the repository");
+         return new ArrayList<>();
+      }
+      for (OrderDTO order : orders) {
+         List<OrderItemLineDTO> itemLines = orderItemLineDAO.listOrderItemLines(order.getOrderId());
+         if (itemLines != null && !itemLines.isEmpty()) {
+            order.setItems(itemLines);
+         } else {
+            LOGGER.warn("No item lines found for order ID: {}", order.getOrderId());
+         }
+      }
+      LOGGER.info("Retrieved {} regular orders from the repository", orders.size());
+      return orders;
    }
 
    @Override
@@ -114,32 +156,24 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
    }
 
    @Override
-   public List<OrderDTO> getAllSentRegularOrders() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAllSentRegularOrders'");
-   }
-
-   @Override
-   public List<OrderDTO> getAllOnDeliveryRegularOrders() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAllOnDeliveryRegularOrders'");
-   }
-
-   @Override
-   public List<OrderDTO> getAllDeliveredRegularOrders() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAllDeliveredRegularOrders'");
-   }
-
-   @Override
-   public List<OrderDTO> getAllCompletedRegularOrders() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAllCompletedRegularOrders'");
-   }
-
-   @Override
-   public List<OrderDTO> getAllCanceledRegularOrders() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getAllCanceledRegularOrders'");
+   public List<OrderDTO> getOrdersByStatus(OrderStatus delivered) {
+      if (delivered == null) {
+         throw new IllegalArgumentException("OrderStatus cannot be null");
+      }
+      List<OrderDTO> orders = ordersRepository.getOrdersByStatus(delivered);
+      if (orders == null || orders.isEmpty()) {
+         LOGGER.warn("No orders found with status: {}", delivered);
+         return new ArrayList<>();
+      }
+      for (OrderDTO order : orders) {
+         List<OrderItemLineDTO> itemLines = orderItemLineDAO.listOrderItemLines(order.getOrderId());
+         if (itemLines != null && !itemLines.isEmpty()) {
+            order.setItems(itemLines);
+         } else {
+            LOGGER.warn("No item lines found for order ID: {}", order.getOrderId());
+         }
+      }
+      LOGGER.info("Retrieved {} orders with status: {}", orders.size(), delivered);
+      return orders;
    }
 }

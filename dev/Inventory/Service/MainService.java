@@ -60,7 +60,7 @@ public class MainService {
             // order the product
             HashMap<Integer, Integer> order = new HashMap<>();
             order.put(p.getproductId(), 2 * p.getminimalAmountStock());
-            is.createRegularOrder(order);
+            is.createShortageOrder(order);
 
             return "Product added successfully.";
         } catch (IllegalArgumentException e) {
@@ -204,10 +204,9 @@ public class MainService {
         }
 
         ls = md.cleanCatalog(ls);
-        try{
+        try {
             return om.writeValueAsString(ls);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return "Error converting product list to JSON: " + e.getMessage();
         }
     }
@@ -250,10 +249,9 @@ public class MainService {
     // Get called by Supplier Domain
     public String DeliverOrder(OrderPackageDTO order) {
 
-        try{
+        try {
             md.DeliverOrder(order);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return "Failed to deliver order: " + e.getMessage();
         } catch (Exception e) {
             return "Error delivering order: " + e.getMessage();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import Suppliers.DTOs.OrderDTO;
 import Suppliers.DTOs.PeriodicOrderDTO;
+import Suppliers.DTOs.Enums.OrderStatus;
 
 public interface OrdersRepositoryInterface {
    /**
@@ -18,8 +19,10 @@ public interface OrdersRepositoryInterface {
     * Updates an existing order in the repository.
     * 
     * @param order The order to be updated.
+    *
+    * @return true if the order was updated successfully, false otherwise.
     */
-   void updateRegularOrder(OrderDTO order);
+   boolean updateRegularOrder(OrderDTO order);
 
    /**
     * Deletes an order from the repository.
@@ -90,38 +93,6 @@ public interface OrdersRepositoryInterface {
     */
    List<PeriodicOrderDTO> getPeriodicOrdersBySupplierId(int supplierId);
 
-   /**
-    * Retrieves all sent Regular Orders
-    * * @return A list of all sent Regular Orders.
-    */
-   List<OrderDTO> getAllSentRegularOrders();
-
-   /**
-    * Retrieves all on delivery Regular Orders
-    * 
-    * @return A list of all on delivery Regular Orders.
-    */
-   List<OrderDTO> getAllOnDeliveryRegularOrders();
-
-   /**
-    * Retrieves all delivered Regular Orders
-    * 
-    * @return A list of all delivered Regular Orders.
-    */
-   List<OrderDTO> getAllDeliveredRegularOrders();
-
-   /**
-    * Retrieves all completed Regular Orders
-    * 
-    * @return A list of all completed Regular Orders.
-    */
-   List<OrderDTO> getAllCompletedRegularOrders();
-
-   /**
-    * Retrieves all canceled Regular Orders
-    * 
-    * @return A list of all canceled Regular Orders.
-    */
-   List<OrderDTO> getAllCanceledRegularOrders();
+   List<OrderDTO> getOrdersByStatus(OrderStatus delivered);
 
 }

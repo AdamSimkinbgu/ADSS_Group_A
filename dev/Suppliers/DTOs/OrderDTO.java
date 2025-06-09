@@ -15,6 +15,7 @@ public class OrderDTO {
     private String supplierName;
     private LocalDate orderDate;
     private LocalDate creationDate;
+    private LocalDate deliveryDate;
     private AddressDTO address;
     private String contactPhoneNumber;
     private List<OrderItemLineDTO> items;
@@ -108,6 +109,14 @@ public class OrderDTO {
         return contactPhoneNumber;
     }
 
+    public void setDeliveryDate() {
+        this.deliveryDate = LocalDate.now();
+    }
+
+    public LocalDate getDeliveryDate() {
+        return deliveryDate;
+    }
+
     public void setContactPhoneNumber(String contactPhoneNumber) {
         this.contactPhoneNumber = contactPhoneNumber;
     }
@@ -143,6 +152,9 @@ public class OrderDTO {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+        if (status == OrderStatus.DELIVERED) {
+            setDeliveryDate();
+        }
     }
 
     private final int MAX_SUPPLIER_NAME = 20;
@@ -199,10 +211,7 @@ public class OrderDTO {
             sb.append("  Items:\n");
             for (OrderItemLineDTO line : items) {
                 // Indent each line’s toString by two spaces
-                String[] lineParts = line.toString().split("\\r?\\n");
-                for (String part : lineParts) {
-                    sb.append("    ").append(part).append("\n");
-                }
+                sb.append("    ").append(line.toString()).append("\n");
             }
             sb.append(String.format("  (%d item%s total)%n",
                     items.size(),

@@ -2,25 +2,31 @@ package Suppliers.DomainLayer;
 
 import Suppliers.DTOs.*;
 import Suppliers.DTOs.Enums.InitializeState;
+import Suppliers.DTOs.Enums.OrderStatus;
 import Suppliers.DomainLayer.Classes.PeriodicOrder;
 
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import Inventory.DTO.SupplyDTO;
 
 public class OrderFacade extends BaseFacade {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderFacade.class);
 
     private final PeriodicOrderHandler periodicOrderHandler;
     private final OrderHandler orderHandler;
+    private final SupplierFacade supplierFacade;
 
     public OrderFacade(InitializeState initializeState, SupplierFacade supplierFacade) {
 
         this.orderHandler = new OrderHandler(supplierFacade, initializeState);
         this.periodicOrderHandler = new PeriodicOrderHandler();
+        this.supplierFacade = supplierFacade;
     }
 
     // ##################################################################################################################
@@ -106,7 +112,7 @@ public class OrderFacade extends BaseFacade {
         return orderHandler.getAllOrders();
     }
 
-    public OrderDTO updateOrderInfo(OrderDTO updatedOrder) {
+    public boolean updateOrderInfo(OrderDTO updatedOrder) {
         if (updatedOrder == null) {
             throw new IllegalArgumentException("Updated order cannot be null");
         }
@@ -141,8 +147,8 @@ public class OrderFacade extends BaseFacade {
         return orderHandler.getOrdersForToday();
     }
 
-    public OrderDTO markOrderAsCollected(int orderID) {
-        return orderHandler.markOrderAsCollected(orderID);
+    public boolean markOrderAsCollected(int orderID) {
+        return orderHandler.markOrderAsCompleted(orderID);
     }
 
     public OrderDTO updateOrder(OrderInfoDTO updatedDto) {
@@ -158,5 +164,60 @@ public class OrderFacade extends BaseFacade {
             LOGGER.warn("Facade: deleteOrder failed for ID: {}", orderId);
         }
         return deleted;
+    }
+
+    public List<OrderDTO> getAllOrders() {
+        LOGGER.info("Facade: getAllOrders called");
+        List<OrderDTO> orders = orderHandler.getAllOrders();
+        int size = orders == null ? 0 : orders.size();
+        LOGGER.info("Facade: getAllOrders returned {} entries", size);
+        return size == 0 ? Collections.emptyList() : orders;
+    }
+
+    public List<SupplyDTO> getSupplyDTOFromOrder(OrderDTO order) {
+        // we need to get the experation date for each product from the supplier
+        // products
+        if (order == null || order.getItems() == null || order.getItems().isEmpty()) {
+            LOGGER.warn("Order or items are null or empty, returning empty supply list");
+            return Collections.emptyList();
+        }
+        List<SupplyDTO> supplyList = new ArrayList<>();
+        for (OrderItemLineDTO item : order.getItems()) {
+            if (item.getProductId() <= 0 || item.getQuantity() <= 0) {
+                LOGGER.warn("Invalid product ID or quantity in order item: {}", item);
+                continue;
+            }
+            Integer expiresInDayNum = supplierFacade.getProductExperationInDays(item.getProductId(),
+                    order.getSupplierId());
+            SupplyDTO supply = new SupplyDTO(item.getProductId(), item.getQuantity(),
+                    order.getDeliveryDate().plusDays(expiresInDayNum));
+            supplyList.add(supply);
+        }
+        LOGGER.info("Facade: getSupplyDTOFromOrder created {} supply items from order ID: {}", supplyList.size(),
+                order.getOrderId());
+        return supplyList;
+    }
+
+    public List<OrderDTO> getOrdersInDeliveredStatus() {
+        LOGGER.info("Facade: getOrdersInDeliveredStatus called");
+        List<OrderDTO> deliveredOrders = orderHandler.getOrdersInDeliveredStatus();
+        int size = deliveredOrders == null ? 0 : deliveredOrders.size();
+        LOGGER.info("Facade: getOrdersInDeliveredStatus returned {} entries", size);
+        return size == 0 ? Collections.emptyList() : deliveredOrders;
+    }
+
+    public void advanceOrderStatus(int orderId, OrderStatus status) {
+        LOGGER.info("Facade: advanceOrderStatus called for order ID: {} with status: {}", orderId, status);
+        if (orderId <= 0 || status == null) {
+            throw new IllegalArgumentException("Invalid order ID or status");
+        }
+        OrderDTO order = orderHandler.getOrderById(orderId);
+        if (order == null) {
+            LOGGER.warn("No order found with ID: {}", orderId);
+            return;
+        }
+        order.setStatus(status);
+        orderHandler.updateOrderInfo(order);
+        LOGGER.info("Facade: advanceOrderStatus updated order ID: {} to status: {}", orderId, status);
     }
 }

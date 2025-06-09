@@ -100,7 +100,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       created.setContacts(createdContacts);
       suppliersCache.put(created.getId(), new Supplier(created));
-      LOGGER.info("Supplier created and cached: {}", created);
+      LOGGER.debug("Supplier created and cached: {}", created);
       return created;
    }
 
@@ -188,7 +188,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.info("No changes detected in contacts for supplier with ID: {}", supplier.getId());
       }
       suppliersCache.put(supplier.getId(), new Supplier(supplier));
-      LOGGER.info("Supplier updated and cached: {}", supplier);
+      LOGGER.debug("Supplier updated and cached: {}", supplier);
       return true;
    }
 
@@ -416,7 +416,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             }
             if (billofQuantitiesItemDAO.updateBillofQuantitiesItem(item)) {
                updatedItems.add(item);
-               LOGGER.info("Updated Bill of Quantities item: {}", item);
+               LOGGER.debug("Updated Bill of Quantities item: {}", item);
             } else {
                LOGGER.error("Failed to update Bill of Quantities item: {}", item);
                throw new RuntimeException("Failed to update Bill of Quantities item");
@@ -537,7 +537,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          }
          supplierIdsToSpecifications.computeIfAbsent(newProduct.getSupplierId(), k -> new ArrayList<>())
                .add(new SupplierProduct(newProduct));
-         LOGGER.info("Supplier product created and cached successfully: {}", newProduct);
+         LOGGER.debug("Supplier product created and cached successfully: {}", newProduct);
          return newProduct;
       } else {
          LOGGER.info("Updating existing supplier product with IDs: {}, {}", supplierProductToSave.getSupplierId(),
@@ -549,7 +549,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          products.removeIf(p -> p.getProductId() == supplierProductToSave.getProductId());
          products.add(new SupplierProduct(supplierProductToSave));
          // dont need to update catalogProductsCache here, as info in it is not changed
-         LOGGER.info("Supplier product updated successfully: {}", supplierProductToSave);
+         LOGGER.debug("Supplier product updated successfully: {}", supplierProductToSave);
          return supplierProductToSave;
       }
 

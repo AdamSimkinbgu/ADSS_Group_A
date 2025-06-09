@@ -1,8 +1,10 @@
 package Inventory.DTO;
 
 import Inventory.Domain.SupplyDomain;
+import Suppliers.DTOs.OrderItemLineDTO;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class SupplyDTO {
     int sId;
@@ -83,6 +85,15 @@ public class SupplyDTO {
         quantityS = other.getQuantityStore();
         quantityWH = other.getQuantityWarehouse();
         expireDate = other.getExpierDate();
+    }
+
+    public SupplyDTO(OrderItemLineDTO item) {
+        this.sId = item.getOrderID();
+        this.productID = item.getProductId();
+        this.quantityWH = item.getQuantity();
+        this.quantityS = 0;
+        this.quantityB = 0;
+        this.expireDate = null;
     }
 
 }

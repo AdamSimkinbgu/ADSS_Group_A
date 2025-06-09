@@ -18,6 +18,10 @@ public class OrderPackageDTO {
       this.supplies = supplies;
    }
 
+   public OrderPackageDTO(int orderId2, LocalDate deliveryDate2, SupplyDTO supplyDTO) {
+      // TODO Auto-generated constructor stub
+   }
+
    public int getOrderId() {
       return orderId;
    }

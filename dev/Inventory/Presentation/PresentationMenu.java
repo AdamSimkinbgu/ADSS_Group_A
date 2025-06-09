@@ -134,20 +134,37 @@ public class PresentationMenu {
             System.out.println("Error reading product list: " + e.getMessage());
             return;
         }
-
+        if (ls.isEmpty()) {
+            System.out.println("No products in catalog");
+            return;
+        }
+        System.out.println("=====Product List=====");
+        System.out.println("------------------------------------------------");
+        System.out.printf("| %-25s | %-8s | %-7s |%n", "Product Name", "ID", "Manufacturer");
+        System.out.println("------------------------------------------------");
+        for (ProductDTO p : ls) {
+            System.out.printf("| %-25s | %-8d | %-7s |%n",
+                    p.getproductName(),
+                    p.getproductId(),
+                    p.getmanufacturerName());
+        }
+        System.out.println("------------------------------------------------");
         // chose product
         System.out.println("Enter product id:");
-        int pid = scanner.nextInt();
+        int pid;
         boolean flag = true;
         do {
+            pid = scanner.nextInt();
             for (ProductDTO p : ls) {
-                if (p.getproductId() == pid)
+                if (p.getproductId() == pid) {
                     flag = false;
-                name = p.getproductName();
-                manName = p.getmanufacturerName();
+                    name = p.getproductName();
+                    manName = p.getmanufacturerName();
+                }
             }
             if (flag) {
                 System.out.println("Invalid ID");
+                flag = false;
             }
         } while (flag);
 

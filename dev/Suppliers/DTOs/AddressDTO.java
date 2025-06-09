@@ -17,6 +17,14 @@ public class AddressDTO {
       this.buildingNumber = address.getBuildingNumber();
    }
 
+   public AddressDTO() {
+      // make it funny and nerdy
+      this.street = "1234 Elm Street";
+      this.city = "Springfield";
+      this.buildingNumber = "#1234";
+
+   }
+
    public String getBuildingNumber() {
       return buildingNumber;
    }

@@ -54,7 +54,7 @@ public class IntegrationService {
 
     public ServiceResponse<?> createRegularOrder(HashMap<Integer, Integer> pOrder) {
 
-        return orderService.createOrder(new OrderInfoDTO(LocalDate.now(), pOrder));
+        return orderService.createOrder(new OrderInfoDTO(LocalDate.now().plusDays(7), pOrder));
     }
 
     public ServiceResponse<?> createPeriodicOrder(HashMap<Integer, Integer> pOrder, DayOfWeek day) {
@@ -73,7 +73,7 @@ public class IntegrationService {
     }
 
     public ServiceResponse<?> createShortageOrder(Map<Integer, Integer> pOrder) {
-        return orderService.createOrderByShortage(new OrderInfoDTO(LocalDate.now(), new HashMap<>(pOrder)));
+        return orderService.createOrderByShortage(new OrderInfoDTO(LocalDate.now().plusDays(7), new HashMap<>(pOrder)));
     }
 
     public ServiceResponse<?> viewPeriodicOrders() {

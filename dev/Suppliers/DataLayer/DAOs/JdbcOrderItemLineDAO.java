@@ -68,17 +68,17 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          throw new IllegalArgumentException("Order ID and line ID must be greater than 0");
       }
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
-            "SELECT * FROM order_item_lines WHERE order_id = ? AND order_item_line_id = ?")) {
+            "SELECT * FROM order_item_lines WHERE order_id = ? AND line_number = ?")) {
          preparedStatement.setInt(1, orderId);
          preparedStatement.setInt(2, lineId);
          try (ResultSet resultSet = preparedStatement.executeQuery()) {
             if (resultSet.next()) {
                OrderItemLineDTO orderItemLine = new OrderItemLineDTO();
-               orderItemLine.setOrderItemLineID(resultSet.getInt("order_item_line_id"));
+               orderItemLine.setOrderItemLineID(resultSet.getInt("line_number"));
                orderItemLine.setOrderID(resultSet.getInt("order_id"));
                orderItemLine.setProductId(resultSet.getInt("product_id"));
                orderItemLine.setQuantity(resultSet.getInt("quantity"));
-               orderItemLine.setUnitPrice(resultSet.getBigDecimal("price"));
+               orderItemLine.setUnitPrice(resultSet.getBigDecimal("unit_price"));
                orderItemLine.setDiscount(resultSet.getBigDecimal("discount_pct"));
                orderItemLine.setSupplierProductCatalogNumber(resultSet.getString("supplier_product_catalog_number"));
                orderItemLine.setProductName(resultSet.getString("product_name"));
@@ -113,11 +113,12 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
             List<OrderItemLineDTO> orderItemLines = new ArrayList<>();
             while (resultSet.next()) {
                OrderItemLineDTO orderItemLine = new OrderItemLineDTO();
-               orderItemLine.setOrderItemLineID(resultSet.getInt("order_item_line_id"));
+               orderItemLine.setOrderItemLineID(resultSet.getInt("line_number"));
                orderItemLine.setOrderID(resultSet.getInt("order_id"));
                orderItemLine.setProductId(resultSet.getInt("product_id"));
                orderItemLine.setQuantity(resultSet.getInt("quantity"));
-               orderItemLine.setUnitPrice(resultSet.getBigDecimal("price"));
+               orderItemLine.setUnitPrice(resultSet.getBigDecimal("unit_price"));
+               orderItemLine.setDiscount(BigDecimal.ONE.subtract(resultSet.getBigDecimal("discount_pct")));
                orderItemLines.add(orderItemLine);
             }
             LOGGER.debug("Listed {} order item lines", orderItemLines.size());
@@ -138,7 +139,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          throw new IllegalArgumentException("Order item line ID must be greater than 0");
       }
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
-            "DELETE FROM order_item_lines WHERE order_item_line_id = ?")) {
+            "DELETE FROM order_item_lines WHERE line_number = ?")) {
          preparedStatement.setInt(1, id);
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected == 0) {
@@ -162,7 +163,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          throw new IllegalArgumentException("Order item line cannot be null and must have a valid ID");
       }
       try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
-            "UPDATE order_item_lines SET product_id = ?, quantity = ?, price = ? WHERE order_id = ? AND order_item_line_id = ?")) {
+            "UPDATE order_item_lines SET product_id = ?, quantity = ?, unit_price = ? WHERE order_id = ? AND line_number = ?")) {
          preparedStatement.setInt(1, orderItemLine.getProductId());
          preparedStatement.setInt(2, orderItemLine.getQuantity());
          preparedStatement.setBigDecimal(3, orderItemLine.getUnitPrice());
@@ -195,11 +196,11 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          List<OrderItemLineDTO> orderItemLines = new ArrayList<>();
          while (resultSet.next()) {
             OrderItemLineDTO orderItemLine = new OrderItemLineDTO();
-            orderItemLine.setOrderItemLineID(resultSet.getInt("order_item_line_id"));
+            orderItemLine.setOrderItemLineID(resultSet.getInt("line_number"));
             orderItemLine.setOrderID(resultSet.getInt("order_id"));
             orderItemLine.setProductId(resultSet.getInt("product_id"));
             orderItemLine.setQuantity(resultSet.getInt("quantity"));
-            orderItemLine.setUnitPrice(resultSet.getBigDecimal("price"));
+            orderItemLine.setUnitPrice(resultSet.getBigDecimal("unit_price"));
             orderItemLines.add(orderItemLine);
          }
          LOGGER.debug("Retrieved {} order item lines for order ID: {}", orderItemLines.size(), orderId);

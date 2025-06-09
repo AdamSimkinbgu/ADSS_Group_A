@@ -26,6 +26,10 @@ public class OrderCLI {
         orderCommands.put("RemovePeriodicOrderCMD", commands.get("RemovePeriodicOrderCMD"));
         orderCommands.put("ViewAllPeriodicOrdersCMD", commands.get("ViewAllPeriodicOrdersCMD"));
         orderCommands.put("ViewAllPeriodicOrdersForTodayCMD", commands.get("ViewAllPeriodicOrdersForTodayCMD"));
+
+        // Additional command for delivering orders to inventory
+        orderCommands.put("DeliverOrderToInventoryCMD", commands.get("DeliverOrderToInventoryCMD"));
+        orderCommands.put("AdvanceOrderStatusCMD", commands.get("AdvanceOrderStatusCMD"));
     }
 
     public void start() {
@@ -40,6 +44,8 @@ public class OrderCLI {
             view.showMessage("7. Remove Periodic Order");
             view.showMessage("8. List Periodic Orders");
             view.showMessage("9. View All Periodic Orders for Today");
+            view.showMessage("10. Deliver Order to Inventory");
+            view.showMessage("11. Advance Order Status");
             view.showMessage("Type 'back' or '0' to go back.");
 
             String choice = view.readLine("Choose an option: ").toLowerCase();
@@ -75,6 +81,12 @@ public class OrderCLI {
                     break;
                 case "9":
                     runCommand("ViewAllPeriodicOrdersForTodayCMD");
+                    break;
+                case "10":
+                    runCommand("DeliverOrderToInventoryCMD");
+                    break;
+                case "11":
+                    runCommand("AdvanceOrderStatusCMD");
                     break;
                 default:
                     view.showError("Invalid option. Please try again.");

@@ -91,6 +91,8 @@ public class AppCLI implements View {
       commands.put("RemovePeriodicOrderCMD", new RemovePeriodicOrderCMD(this, orderService));
       commands.put("ViewAllPeriodicOrdersCMD", new ViewAllPeriodicOrdersCMD(this, orderService));
       commands.put("ViewAllPeriodicOrdersForTodayCMD", new ViewAllPeriodicOrdersForTodayCMD(this, orderService));
+      commands.put("DeliverOrderToInventoryCMD", new DeliverOrderToInventoryCMD(this, orderService));
+      commands.put("AdvanceOrderStatusCMD", new AdvanceOrderStatusCMD(this, orderService));
       return commands;
    }
 

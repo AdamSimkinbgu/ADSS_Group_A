@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import Suppliers.DTOs.OrderDTO;
+import Suppliers.DTOs.Enums.OrderStatus;
 
 public interface OrderDAOInterface {
    /**
@@ -43,5 +44,7 @@ public interface OrderDAOInterface {
     *                        details.
     */
    boolean updateOrder(OrderDTO updatedOrderDTO);
+
+   List<OrderDTO> getOrdersByStatus(OrderStatus delivered);
 
 }

@@ -26,7 +26,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          throw new IllegalArgumentException("Order cannot be null");
       }
       String sql = "INSERT INTO orders (supplier_id, order_date, creation_date, status) VALUES (?, ?, ?, ?)";
-      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(sql,
+            PreparedStatement.RETURN_GENERATED_KEYS)) {
          preparedStatement.setInt(1, orderDTO.getSupplierId());
          preparedStatement.setString(2, orderDTO.getOrderDate().toString());
          preparedStatement.setString(3, LocalDate.now().toString());
@@ -97,7 +98,8 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             OrderDTO orderDTO = new OrderDTO();
             orderDTO.setOrderId(resultSet.getInt("order_id"));
             orderDTO.setSupplierId(resultSet.getInt("supplier_id"));
-            orderDTO.setOrderDate(resultSet.getDate("order_date").toLocalDate());
+            orderDTO.setOrderDate(LocalDate.parse(resultSet.getString("order_date")));
+            orderDTO.setCreationDate(LocalDate.parse(resultSet.getString("creation_date")));
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
             orders.add(orderDTO);
          }
@@ -179,6 +181,37 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          handleSQLException(e);
       }
       return null;
+   }
+
+   @Override
+   public List<OrderDTO> getOrdersByStatus(OrderStatus delivered) {
+      if (delivered == null) {
+         LOGGER.error("OrderStatus cannot be null");
+         throw new IllegalArgumentException("OrderStatus cannot be null");
+      }
+      String sql = "SELECT * FROM orders WHERE status = ?";
+      try (PreparedStatement preparedStatement = Database.getConnection()
+            .prepareStatement(sql)) {
+         preparedStatement.setString(1, delivered.name());
+         ResultSet resultSet = preparedStatement.executeQuery();
+         List<OrderDTO> orders = new ArrayList<>();
+         while (resultSet.next()) {
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setOrderId(resultSet.getInt("order_id"));
+            orderDTO.setSupplierId(resultSet.getInt("supplier_id"));
+            orderDTO.setOrderDate(LocalDate.parse(resultSet.getString("order_date")));
+            orderDTO.setCreationDate(LocalDate.parse(resultSet.getString("creation_date")));
+            orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
+            orderDTO.setSupplierName(getSupplierName(orderDTO.getSupplierId()));
+            orders.add(orderDTO);
+         }
+         LOGGER.info("Retrieved {} orders with status: {}", orders.size(), delivered);
+         return orders;
+      } catch (SQLException e) {
+         LOGGER.error("Error handling SQL exception: {}", e.getMessage());
+         handleSQLException(e);
+      }
+      return new ArrayList<>();
    }
 
 }

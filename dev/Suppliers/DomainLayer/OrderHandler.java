@@ -470,15 +470,72 @@ public class OrderHandler {
    }
 
    public OrderDTO getOrderById(int orderID) {
-      return null; // TODO
+      if (orderID <= 0) {
+         throw new IllegalArgumentException("Order ID must be greater than 0");
+      }
+      OrderDTO order = ordersRepository.getRegularOrderById(orderID);
+      if (order == null) {
+         LOGGER.warn("Order not found for ID: {}", orderID);
+         return null;
+      }
+
+      // Set product names and categories for order items
+      List<OrderItemLineDTO> itemLines = supplierFacade
+            .setProductNameAndCategoryForOrderItems(order.getItems(), order.getSupplierId());
+      order.setItems(itemLines);
+
+      // Set supplier details
+      SupplierDTO supplierDTO = supplierFacade.getSupplierDTO(order.getSupplierId());
+      order.setSupplierName(
+            supplierDTO != null ? supplierDTO.getName() : "Unknown Supplier");
+      order.setContactPhoneNumber(
+            supplierFacade.getSupplierContactPhoneNumber(order.getSupplierId()));
+      order.setAddress(supplierDTO != null ? supplierDTO.getAddress() : new AddressDTO());
+
+      LOGGER.info("Retrieved order with ID: {}", orderID);
+      return order;
    }
 
    public List<OrderDTO> getAllOrders() {
-      return null; // TODO
+      List<OrderDTO> orders = ordersRepository.getAllRegularOrders();
+      if (orders == null || orders.isEmpty()) {
+         LOGGER.info("No orders found");
+         return Collections.emptyList();
+      }
+      for (OrderDTO order : orders) {
+         List<OrderItemLineDTO> itemLines = supplierFacade
+               .setProductNameAndCategoryForOrderItems(order.getItems(), order.getSupplierId());
+         order.setItems(itemLines);
+         SupplierDTO supplierDTO = supplierFacade.getSupplierDTO(order.getSupplierId());
+         order.setSupplierName(
+               supplierDTO != null ? supplierDTO.getName() : "Unknown Supplier");
+         order.setContactPhoneNumber(
+               supplierFacade.getSupplierContactPhoneNumber(order.getSupplierId()));
+         order.setAddress(supplierDTO != null ? supplierDTO.getAddress() : new AddressDTO());
+      }
+      LOGGER.info("Retrieved {} orders", orders.size());
+      return orders;
    }
 
-   public OrderDTO updateOrderInfo(OrderDTO updatedOrder) {
-      return null; // TODO
+   public boolean updateOrderInfo(OrderDTO updatedOrder) {
+      if (updatedOrder == null || updatedOrder.getOrderId() <= 0) {
+         throw new IllegalArgumentException("Invalid OrderDTO provided for update");
+      }
+      OrderDTO existingOrder = ordersRepository.getRegularOrderById(updatedOrder.getOrderId());
+      if (existingOrder == null) {
+         throw new RuntimeException("Order not found for ID: " + updatedOrder.getOrderId());
+      }
+
+      // Update order details
+      existingOrder.setSupplierId(updatedOrder.getSupplierId());
+      existingOrder.setSupplierName(updatedOrder.getSupplierName());
+      existingOrder.setContactPhoneNumber(updatedOrder.getContactPhoneNumber());
+      existingOrder.setAddress(updatedOrder.getAddress());
+      existingOrder.setItems(updatedOrder.getItems());
+      existingOrder.setStatus(updatedOrder.getStatus());
+
+      // Save updated order
+      return ordersRepository.updateRegularOrder(existingOrder);
    }
 
    public OrderDTO updateProductsInOrder(int orderID, HashMap<Integer, Integer> productsToAdd) {
@@ -493,8 +550,27 @@ public class OrderHandler {
       return null; // TODO
    }
 
-   public OrderDTO markOrderAsCollected(int orderID) {
-      return null; // TODO
+   public boolean markOrderAsCompleted(int orderID) {
+      if (orderID <= 0) {
+         throw new IllegalArgumentException("Order ID must be greater than 0");
+      }
+      OrderDTO order = ordersRepository.getRegularOrderById(orderID);
+      if (order == null) {
+         LOGGER.warn("Order not found for ID: {}", orderID);
+         return false;
+      }
+      if (order.getStatus() != OrderStatus.DELIVERED) {
+         LOGGER.warn("Order ID {} is not in DELIVERED status, cannot mark as COMPLETED", orderID);
+         return false;
+      }
+      order.setStatus(OrderStatus.COMPLETED);
+      boolean updated = ordersRepository.updateRegularOrder(order);
+      if (updated) {
+         LOGGER.info("Order ID {} marked as collected successfully", orderID);
+      } else {
+         LOGGER.error("Failed to mark order ID {} as collected", orderID);
+      }
+      return updated;
    }
 
    public OrderDTO removeProductsFromOrder(int orderID, ArrayList<Integer> productsToRemove) {
@@ -633,6 +709,27 @@ public class OrderHandler {
          LOGGER.warn("Handler: deleteOrder failed for ID: {}", orderId);
       }
       return deleted;
+   }
+
+   public List<OrderDTO> getOrdersInDeliveredStatus() {
+      List<OrderDTO> orders = ordersRepository.getOrdersByStatus(OrderStatus.DELIVERED);
+      if (orders == null || orders.isEmpty()) {
+         LOGGER.info("No delivered orders found");
+         return Collections.emptyList();
+      }
+      for (OrderDTO order : orders) {
+         List<OrderItemLineDTO> itemLines = supplierFacade
+               .setProductNameAndCategoryForOrderItems(order.getItems(), order.getSupplierId());
+         order.setItems(itemLines);
+         SupplierDTO supplierDTO = supplierFacade.getSupplierDTO(order.getSupplierId());
+         order.setSupplierName(
+               supplierDTO != null ? supplierDTO.getName() : "Unknown Supplier");
+         order.setContactPhoneNumber(
+               supplierFacade.getSupplierContactPhoneNumber(order.getSupplierId()));
+         order.setAddress(supplierDTO != null ? supplierDTO.getAddress() : new AddressDTO());
+      }
+      LOGGER.info("Retrieved {} delivered orders", orders.size());
+      return orders;
    }
 }
 

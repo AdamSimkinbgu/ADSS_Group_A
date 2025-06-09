@@ -796,6 +796,11 @@ public final class Database {
                             supplier_id, phone, name, email
                         ) VALUES
                             (1,'054-000-0001','Danny','danny@example.com'),
+                            (1,'054-000-0002','Eli','eli@example.com'),
+                            (2,'054-000-0003','Maya','maya@example.com'),
+                            (3,'055-000-0001','John Doe','johnd@example.com'),
+                            (3,'055-000-0002','Jane Smith','janesmite@example.com'),
+                            (4,'055-000-0003','Charlie Brown','charlieb@example.com'),
                             (4,'055-000-0004','Alice Green','alice.green@example.com'),
                             (5,'055-000-0005','Bob Silver','bob.silver@example.com'),
                             (5,'055-000-0006','Carol Gold','carol.gold@example.com')

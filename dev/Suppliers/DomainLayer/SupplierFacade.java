@@ -419,4 +419,30 @@ public class SupplierFacade {
       return product.get().getProductName();
    }
 
+   public String getSupplierContactPhoneNumber(int supplierId) {
+      Optional<SupplierDTO> supplier = suppliersAgreementsRepo.getSupplierById(supplierId);
+      if (supplier.isEmpty()) {
+         LOGGER.warn("No supplier found with ID: {}", supplierId);
+         return "Unknown Contact";
+      }
+      return supplier.get().getContactsInfoList().get(0).getPhone();
+
+   }
+
+   public Integer getProductExperationInDays(int productId, int supplierId) {
+      Optional<SupplierProductDTO> supplierProduct = suppliersAgreementsRepo.getSupplierProductById(supplierId,
+            productId);
+      if (supplierProduct.isEmpty()) {
+         LOGGER.warn("No supplier product found for product ID: {} and supplier ID: {}", productId, supplierId);
+         return null; // or throw an exception based on your design choice
+      }
+      Optional<SupplierProductDTO> product = suppliersAgreementsRepo.getSupplierProductById(supplierId, productId);
+      if (product.isEmpty()) {
+         LOGGER.warn("No product found with ID: {} for supplier ID: {}", productId, supplierId);
+         return null; // or throw an exception based on your design choice
+      }
+      return product.get().getExpiresInDays();
+
+   }
+
 }
