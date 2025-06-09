@@ -24,7 +24,6 @@ target/
 *.war
 *.ear
 *.zip
-release/
 
 # Database files
 *.db
