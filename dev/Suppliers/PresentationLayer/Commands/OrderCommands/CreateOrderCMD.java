@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import Suppliers.DTOs.CatalogProductDTO;
-import Suppliers.DTOs.OrderInfoDTO;
 import Suppliers.PresentationLayer.CommandInterface;
 import Suppliers.PresentationLayer.Forms.OrderForm;
 import Suppliers.PresentationLayer.View;

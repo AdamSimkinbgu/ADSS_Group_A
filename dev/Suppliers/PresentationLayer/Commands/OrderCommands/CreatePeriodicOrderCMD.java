@@ -1,12 +1,9 @@
 package Suppliers.PresentationLayer.Commands.OrderCommands;
 
-import java.time.DayOfWeek;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import Suppliers.DTOs.CatalogProductDTO;
-import Suppliers.DTOs.PeriodicOrderDTO;
 import Suppliers.PresentationLayer.CommandInterface;
 import Suppliers.PresentationLayer.Forms.PeriodicOrderForm;
 import Suppliers.PresentationLayer.View;

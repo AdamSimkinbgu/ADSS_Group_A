@@ -315,4 +315,14 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
       return new ArrayList<>();
    }
 
+   public Optional<SupplierProductDTO> getProduct(int productId) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getProduct'");
+   }
+
+   public List<SupplierProductDTO> getProductsBySupplierId(int i) {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'getProductsBySupplierId'");
+   }
+
 }
