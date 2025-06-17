@@ -13,16 +13,14 @@ import ServiceLayer.*;
 import ServiceLayer.EmployeeSubModule.EmployeeService;
 import ServiceLayer.EmployeeSubModule.ShiftService;
 import ServiceLayer.TransportServices.*;
-import PresentationLayer.EmployeeSubModule.HR_MainCLI;
+import PresentationLayer.EmployeeSubModule.CLI.HR_MainCLI;
 import PresentationLayer.TransportPresentation.MainTranSysCLI;
-import PresentationLayer.TransportPresentation.TranManCLI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 /**
  * Factory class for creating and initializing system components.

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.EmployeeSubModule.controllers.ShiftCalendarController"
+      spacing="10" styleClass="content-container">
+
+    <!-- Main Calendar Section (Left Side) -->
+    <VBox spacing="20" HBox.hgrow="ALWAYS">
+        <padding>
+            <Insets top="20" right="10" bottom="20" left="20"/>
+        </padding>
+
+        <!-- Header with actions -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Shift Calendar" styleClass="section-title"/>
+            <Pane HBox.hgrow="ALWAYS" />
+            <DatePicker fx:id="calendarDatePicker" promptText="Jump to date"/>
+            <ComboBox fx:id="branchFilterComboBox" promptText="Select Branch"/>
+            <Button text="Create Shift" onAction="#showCreateShiftDialog" styleClass="primary-button"/>
+        </HBox>
+
+        <!-- Calendar Navigation -->
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="&lt; Previous Week" onAction="#showPreviousWeek" styleClass="secondary-button"/>
+            <Label fx:id="currentWeekLabel" text="Week of May 1, 2023" styleClass="week-label"/>
+            <Button text="Next Week &gt;" onAction="#showNextWeek" styleClass="secondary-button"/>
+            <Button text="Today" onAction="#showCurrentWeek" styleClass="secondary-button"/>
+        </HBox>
+
+        <!-- Calendar Grid - Made larger -->
+        <GridPane fx:id="calendarGrid" vgap="2" hgap="2" styleClass="calendar-grid" VBox.vgrow="ALWAYS">
+            <!-- Column headers (days of week) will be added programmatically -->
+            <!-- Row headers (shift types) will be added programmatically -->
+            <!-- Calendar cells will be added programmatically -->
+        </GridPane>
+    </VBox>
+
+    <!-- Shift Details Side Panel (Right Side) -->
+    <VBox spacing="15" prefWidth="450" styleClass="shift-details-panel">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="10"/>
+        </padding>
+
+        <!-- Shift Details Header -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Shift Details" styleClass="section-title"/>
+            <Pane HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <!-- Selected Shift Info -->
+        <VBox spacing="10" styleClass="shift-info-container">
+            <Label fx:id="selectedShiftLabel" text="No shift selected" styleClass="shift-title"/>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="editShiftButton" text="Edit Shift" onAction="#editSelectedShift" 
+                        styleClass="secondary-button" disable="true"/>
+                <Button fx:id="deleteShiftButton" text="Delete Shift" onAction="#deleteSelectedShift" 
+                        styleClass="secondary-button" disable="true"/>
+            </HBox>
+
+            <Separator />
+
+            <!-- Shift Details -->
+            <GridPane vgap="10" hgap="20">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="100" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+
+                <!-- Row 0 -->
+                <Label text="Date:" styleClass="detail-label" 
+                       GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <Label fx:id="shiftDateLabel" text="-" styleClass="detail-value" 
+                       GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                <!-- Row 1 -->
+                <Label text="Type:" styleClass="detail-label" 
+                       GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <Label fx:id="shiftTypeLabel" text="-" styleClass="detail-value" 
+                       GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+                <!-- Row 2 -->
+                <Label text="Time:" styleClass="detail-label" 
+                       GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <Label fx:id="shiftTimeLabel" text="-" styleClass="detail-value" 
+                       GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+                <!-- Row 3 -->
+                <Label text="Branch:" styleClass="detail-label" 
+                       GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <Label fx:id="shiftBranchLabel" text="-" styleClass="detail-value" 
+                       GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+                <!-- Row 4 -->
+                <Label text="Status:" styleClass="detail-label" 
+                       GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                <Label fx:id="shiftStatusLabel" text="-" styleClass="detail-value" 
+                       GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+                <!-- Row 5 - New field for roles status -->
+                <Label text="Roles Status:" styleClass="detail-label" 
+                       GridPane.rowIndex="5" GridPane.columnIndex="0" />
+                <Label fx:id="shiftRolesStatusLabel" text="-" styleClass="detail-value" 
+                       GridPane.rowIndex="5" GridPane.columnIndex="1" />
+            </GridPane>
+
+            <Separator />
+
+            <!-- Roles Required Section -->
+            <Label text="Required Roles" styleClass="section-subtitle"/>
+            <TableView fx:id="rolesRequiredTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="roleNameColumn" text="Role" prefWidth="200"/>
+                    <TableColumn fx:id="roleCountColumn" text="Required" prefWidth="100"/>
+                    <TableColumn fx:id="roleAssignedColumn" text="Assigned" prefWidth="100"/>
+                </columns>
+                <placeholder>
+                    <Label text="No roles required for this shift" />
+                </placeholder>
+            </TableView>
+
+            <Separator />
+
+            <!-- Assigned Employees Section -->
+            <Label text="Assigned Employees" styleClass="section-subtitle"/>
+            <TableView fx:id="assignedEmployeesTable" prefHeight="250">
+                <columns>
+                    <TableColumn fx:id="employeeIdColumn" text="ID" prefWidth="80"/>
+                    <TableColumn fx:id="employeeNameColumn" text="Name" prefWidth="150"/>
+                    <TableColumn fx:id="employeeRoleColumn" text="Role" prefWidth="120"/>
+                    <TableColumn fx:id="employeeActionsColumn" text="Actions" prefWidth="60"/>
+                </columns>
+                <placeholder>
+                    <Label text="No employees assigned to this shift" />
+                </placeholder>
+            </TableView>
+
+            <Button text="Assign Employees" onAction="#showAssignEmployeesDialog" styleClass="secondary-button"/>
+        </VBox>
+    </VBox>
+</HBox>

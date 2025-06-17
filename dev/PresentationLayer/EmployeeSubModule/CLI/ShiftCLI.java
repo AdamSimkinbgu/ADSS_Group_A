@@ -1,4 +1,4 @@
-package PresentationLayer.EmployeeSubModule;
+package PresentationLayer.EmployeeSubModule.CLI;
 
 import DomainLayer.enums.ShiftType;
 import DTOs.EmployeeDTO;

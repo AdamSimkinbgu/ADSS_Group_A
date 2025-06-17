@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.EmployeeSubModule.controllers.MainViewController"
+            prefHeight="768.0" prefWidth="1024.0"
+            >
+
+    <top>
+        <HBox styleClass="header-bar">
+            <padding>
+                <Insets top="10" right="15" bottom="10" left="15"/>
+            </padding>
+            <Label text="Employee Management System" styleClass="header-title"/>
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label fx:id="userLabel" text="Logged in as: Admin" />
+        </HBox>
+    </top>
+
+    <left>
+        <VBox styleClass="sidebar">
+            <Button text="Dashboard" onAction="#showDashboard" styleClass="nav-button"/>
+            <Button text="Employees" onAction="#showEmployees" styleClass="nav-button"/>
+            <Button text="Shifts" onAction="#showShifts" styleClass="nav-button"/>
+            <Button text="Availability" onAction="#showAvailability" styleClass="nav-button"/>
+            <Button text="Roles" onAction="#showRoles" styleClass="nav-button"/>
+            <Button text="Reports" onAction="#showReports" styleClass="nav-button"/>
+            <Pane VBox.vgrow="ALWAYS" />
+            <Button text="Logout" onAction="#logout" styleClass="nav-button, logout-button"/>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea">
+            <!-- Content will be loaded here dynamically -->
+            <VBox alignment="CENTER" spacing="20">
+                <padding>
+                    <Insets top="50" right="50" bottom="50" left="50"/>
+                </padding>
+                <Label text="Welcome to Employee Management System" styleClass="welcome-text"/>
+                <Label text="Select an option from the sidebar to get started" styleClass="welcome-subtext"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <HBox styleClass="footer-bar">
+            <padding>
+                <Insets top="5" right="15" bottom="5" left="15"/>
+            </padding>
+            <Label text="© 2023 SuperLee" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label text="Version 1.0" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

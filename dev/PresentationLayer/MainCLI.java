@@ -1,11 +1,10 @@
 package PresentationLayer;
 
 import DomainLayer.SystemFactory;
-import PresentationLayer.EmployeeSubModule.HR_MainCLI;
+import PresentationLayer.EmployeeSubModule.CLI.HR_MainCLI;
 import PresentationLayer.TransportPresentation.MainTranSysCLI;
 import Util.CliUtil;
 import Util.Database;
-import Util.config;
 
 import java.io.IOException;
 import java.sql.SQLException;

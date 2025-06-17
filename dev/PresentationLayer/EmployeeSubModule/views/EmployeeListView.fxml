@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.EmployeeSubModule.controllers.EmployeeListController"
+      spacing="10" styleClass="content-container">
+    
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="toolbar">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+        <TextField fx:id="searchField" promptText="Search employees..." HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="filterComboBox" promptText="Filter by..."/>
+        <Button text="Add Employee" onAction="#showAddEmployeeDialog" styleClass="primary-button"/>
+    </HBox>
+    
+    <TableView fx:id="employeeTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="100"/>
+            <TableColumn fx:id="firstNameColumn" text="First Name" prefWidth="120"/>
+            <TableColumn fx:id="lastNameColumn" text="Last Name" prefWidth="120"/>
+            <TableColumn fx:id="rolesColumn" text="Roles" prefWidth="200"/>
+            <TableColumn fx:id="branchIdColumn" text="Branch ID" prefWidth="100"/>
+            <TableColumn fx:id="statusColumn" text="Status" prefWidth="80"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150"/>
+        </columns>
+        <placeholder>
+            <Label text="No employees found" />
+        </placeholder>
+    </TableView>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+        <Button text="Export" onAction="#exportEmployeeData" styleClass="secondary-button"/>
+        <Button text="Refresh" onAction="#refreshEmployeeList" styleClass="secondary-button"/>
+    </HBox>
+    
+</VBox>

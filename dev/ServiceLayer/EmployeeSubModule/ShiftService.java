@@ -352,6 +352,13 @@ public class ShiftService {
         );
     }
 
+    /**
+     * Retrieves all shifts associated with the given user identifier.
+     *
+     * @param doneBy the ID representing the user requesting the shifts
+     * @return a string containing the details of the retrieved shifts
+     * @throws RuntimeException if an error occurs during the retrieval process
+     */
     public String getAllShifts(long doneBy) {
         try {
             String domainShifts = shiftController.getAllShifts(doneBy);

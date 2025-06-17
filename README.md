@@ -37,6 +37,11 @@ To build the application as a JAR file, follow these steps:
 ```Bash
 mvn clean package
 ```
+
+```Bash
+mvn clean javafx:run
+```
+
 3. After the build is successful, the JAR file will be located in the `target` directory with the name `adss2025_v02.jar`.
 
 ## Running the Application as a JAR
