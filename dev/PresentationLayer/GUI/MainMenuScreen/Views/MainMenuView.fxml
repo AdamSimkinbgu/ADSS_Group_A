@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="PresentationLayer.GUI.MainMenuScreen.Controllers.MainMenuController"
+            styleClass="root" prefWidth="400" prefHeight="320">
+
+  <top>
+    <HBox styleClass="header-bar">
+      <Label text="🏠 Main Menu" styleClass="header-title"/>
+      <Pane HBox.hgrow="ALWAYS"/>
+      <Label fx:id="welcomeLabel" styleClass="welcome-label"/>
+    </HBox>
+  </top>
+
+  <center>
+    <VBox styleClass="center-pane" spacing="12" alignment="CENTER">
+      <Button fx:id="suppliersBtn" text="Suppliers Module" styleClass="button"/>
+      <Button fx:id="inventoryBtn"  text="Inventory Module" styleClass="button"/>
+      <Button fx:id="hrBtn"         text="HR Module"        styleClass="button"/>
+      <Button fx:id="shipmentsBtn"  text="Shipments Module" styleClass="button"/>
+      <Button fx:id="logoutBtn"     text="Log Out"          styleClass="button"/>
+    </VBox>
+  </center>
+</BorderPane>

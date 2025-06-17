@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.EmployeeScreen.Controllers.DashboardController"
+      spacing="20" styleClass="content-container">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <!-- Dashboard Header -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Dashboard" styleClass="section-title"/>
+        <Pane HBox.hgrow="ALWAYS" />
+        <ComboBox fx:id="periodSelector" promptText="Time Period"/>
+        <Button text="Refresh" onAction="#refreshDashboard" styleClass="secondary-button"/>
+    </HBox>
+    
+    <!-- Quick Stats Cards -->
+    <HBox spacing="20" alignment="CENTER">
+        <!-- Total Employees Card -->
+        <VBox styleClass="stat-card">
+            <Label text="Total Employees" styleClass="stat-title"/>
+            <Label fx:id="totalEmployeesLabel" text="0" styleClass="stat-value"/>
+            <Label fx:id="employeeTrendLabel" text="+0% from last month" styleClass="stat-trend"/>
+        </VBox>
+        
+        <!-- Active Shifts Card -->
+        <VBox styleClass="stat-card">
+            <Label text="Active Shifts" styleClass="stat-title"/>
+            <Label fx:id="activeShiftsLabel" text="0" styleClass="stat-value"/>
+            <Label fx:id="shiftTrendLabel" text="+0% from last month" styleClass="stat-trend"/>
+        </VBox>
+        
+        <!-- Branches Card -->
+        <VBox styleClass="stat-card">
+            <Label text="Branches" styleClass="stat-title"/>
+            <Label fx:id="branchesLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        
+        <!-- Roles Card -->
+        <VBox styleClass="stat-card">
+            <Label text="Roles" styleClass="stat-title"/>
+            <Label fx:id="rolesLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+    </HBox>
+    
+    <!-- Charts Section -->
+    <TabPane styleClass="dashboard-tabs">
+        <Tab text="Employee Distribution" closable="false">
+            <VBox spacing="10">
+                <Label text="Employee Distribution by Branch" styleClass="chart-title"/>
+                <PieChart fx:id="employeeDistributionChart" />
+            </VBox>
+        </Tab>
+        <Tab text="Shift Coverage" closable="false">
+            <VBox spacing="10">
+                <Label text="Shift Coverage by Day" styleClass="chart-title"/>
+                <BarChart fx:id="shiftCoverageChart">
+                    <xAxis>
+                        <CategoryAxis label="Day of Week" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Number of Employees" />
+                    </yAxis>
+                </BarChart>
+            </VBox>
+        </Tab>
+    </TabPane>
+    
+    <!-- Recent Activity Section -->
+    <VBox spacing="10">
+        <Label text="Recent Activity" styleClass="section-title"/>
+        <TableView fx:id="recentActivityTable" VBox.vgrow="ALWAYS" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="activityDateColumn" text="Date" prefWidth="150"/>
+                <TableColumn fx:id="activityTypeColumn" text="Type" prefWidth="100"/>
+                <TableColumn fx:id="activityDescriptionColumn" text="Description" prefWidth="400"/>
+                <TableColumn fx:id="activityUserColumn" text="User" prefWidth="150"/>
+            </columns>
+            <placeholder>
+                <Label text="No recent activity" />
+            </placeholder>
+        </TableView>
+    </VBox>
+    
+    <!-- Quick Actions Section -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Add Employee" onAction="#showAddEmployeeDialog" styleClass="action-button"/>
+        <Button text="Create Shift" onAction="#showCreateShiftDialog" styleClass="action-button"/>
+        <Button text="Manage Roles" onAction="#showManageRolesDialog" styleClass="action-button"/>
+        <Button text="Generate Reports" onAction="#showReportsDialog" styleClass="action-button"/>
+    </HBox>
+    
+</VBox>

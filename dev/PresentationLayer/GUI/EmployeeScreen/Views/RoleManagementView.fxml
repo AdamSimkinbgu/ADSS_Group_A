@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.EmployeeScreen.Controllers.RoleManagementController"
+      spacing="20" styleClass="content-container">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header with actions -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Role Management" styleClass="section-title"/>
+        <Pane HBox.hgrow="ALWAYS" />
+        <TextField fx:id="searchField" promptText="Search roles..." prefWidth="250"/>
+        <Button text="Create Role" onAction="#showCreateRoleDialog" styleClass="primary-button"/>
+    </HBox>
+
+    <!-- Main content with roles list and details -->
+    <SplitPane dividerPositions="0.3" VBox.vgrow="ALWAYS">
+        <!-- Roles List -->
+        <VBox spacing="10">
+            <ListView fx:id="rolesListView" VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- Role Details -->
+        <VBox spacing="20">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="roleNameLabel" text="Select a role" styleClass="role-name"/>
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button fx:id="editRoleButton" text="Edit" onAction="#editSelectedRole" styleClass="secondary-button" disable="true"/>
+                <Button fx:id="deleteRoleButton" text="Delete" onAction="#deleteSelectedRole" styleClass="secondary-button" disable="true"/>
+            </HBox>
+
+            <!-- Role Description -->
+            <VBox spacing="5">
+                <Label text="Description" styleClass="section-subtitle"/>
+                <TextArea fx:id="roleDescriptionArea" editable="false" wrapText="true" prefHeight="80"/>
+            </VBox>
+
+            <!-- Permissions -->
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+                <Label text="Permissions" styleClass="section-subtitle"/>
+
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <TableView fx:id="employeePermissionsTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="empPermissionNameColumn" text="Permission" prefWidth="250"/>
+                            <TableColumn fx:id="empPermissionDescriptionColumn" text="Description" prefWidth="300"/>
+                            <TableColumn fx:id="empPermissionStatusColumn" text="Status" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </VBox>
+        </VBox>
+    </SplitPane>
+
+    <!-- Employees with this role section -->
+    <TitledPane text="Employees with this Role" expanded="false">
+        <VBox spacing="10">
+            <TableView fx:id="employeesWithRoleTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="employeeIdColumn" text="ID" prefWidth="100"/>
+                    <TableColumn fx:id="employeeNameColumn" text="Name" prefWidth="200"/>
+                    <TableColumn fx:id="employeeBranchColumn" text="Branch" prefWidth="150"/>
+                    <TableColumn fx:id="employeeStatusColumn" text="Status" prefWidth="100"/>
+                </columns>
+                <placeholder>
+                    <Label text="No employees have this role" />
+                </placeholder>
+            </TableView>
+        </VBox>
+    </TitledPane>
+</VBox>
