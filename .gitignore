@@ -21,3 +21,42 @@ ADSS_Group_A.iml
 ADSS_Group_A.imlv
 /.idea/
 /.junie/
+
+# Build artifacts and compiled files
+target/
+bin/
+lib/
+release/
+*.jar
+!src/main/resources/*.jar
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.vscode/
+.project
+.classpath
+.settings/
+
+# Maven specific
+dependency-reduced-pom.xml
+pom.xml.backup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Logs
+*.log
+logs/
