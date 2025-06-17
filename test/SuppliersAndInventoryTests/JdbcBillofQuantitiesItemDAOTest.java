@@ -1,12 +1,12 @@
-package Tests;
+package SuppliersAndInventoryTests;
 
 import org.junit.jupiter.api.*;
 
 import DTOs.SuppliersModuleDTOs.BillofQuantitiesItemDTO;
-import Suppliers.DataLayer.DAOs.DataAccessException;
-import Suppliers.DataLayer.DAOs.JdbcBillofQuantitiesItemsDAO;
-import Suppliers.DataLayer.Interfaces.BillofQuantitiesItemDAOInterface;
-import Suppliers.DataLayer.util.Database;
+import DataAccessLayer.SuppliersDAL.DAOs.DataAccessException;
+import DataAccessLayer.SuppliersDAL.DAOs.JdbcBillofQuantitiesItemsDAO;
+import DataAccessLayer.SuppliersDAL.Interfaces.BillofQuantitiesItemDAOInterface;
+import DataAccessLayer.SuppliersDAL.util.Database;
 
 import java.sql.SQLException;
 import java.util.List;

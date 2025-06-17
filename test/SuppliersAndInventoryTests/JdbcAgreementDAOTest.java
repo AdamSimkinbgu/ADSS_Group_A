@@ -1,11 +1,11 @@
-package Tests;
+package SuppliersAndInventoryTests;
 
 import org.junit.jupiter.api.*;
 
 import DTOs.SuppliersModuleDTOs.AgreementDTO;
-import Suppliers.DataLayer.DAOs.JdbcAgreementDAO;
-import Suppliers.DataLayer.DAOs.JdbcSupplierDAO;
-import Suppliers.DataLayer.util.Database;
+import DataAccessLayer.SuppliersDAL.DAOs.JdbcAgreementDAO;
+import DataAccessLayer.SuppliersDAL.DAOs.JdbcSupplierDAO;
+import DataAccessLayer.SuppliersDAL.util.Database;
 
 import java.sql.SQLException;
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package Tests;
+package SuppliersAndInventoryTests;
 
 import org.junit.jupiter.api.*;
 
@@ -12,10 +12,6 @@ import DTOs.SuppliersModuleDTOs.PaymentDetailsDTO;
 import DTOs.SuppliersModuleDTOs.SupplierDTO;
 import DTOs.SuppliersModuleDTOs.SupplierProductDTO;
 import DomainLayer.SuppliersDomainSubModule.SupplierFacade;
-import Suppliers.DTOs.*;
-import Suppliers.DTOs.Enums.*;
-import Suppliers.DataLayer.util.Database;
-
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
 import java.time.DayOfWeek;

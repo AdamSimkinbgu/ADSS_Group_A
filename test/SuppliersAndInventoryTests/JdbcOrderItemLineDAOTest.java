@@ -1,4 +1,4 @@
-package Tests;
+package SuppliersAndInventoryTests;
 
 import Suppliers.DataLayer.DAOs.DataAccessException;
 import Suppliers.DataLayer.DAOs.JdbcOrderItemLineDAO;

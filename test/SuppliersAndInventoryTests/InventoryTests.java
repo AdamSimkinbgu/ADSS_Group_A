@@ -1,15 +1,17 @@
-package Tests;
-
-import Inventory.Domain.MainDomain;
-import Inventory.Domain.ProductDomain;
-import Inventory.DTO.*;
-import Inventory.type.Position;
-import Suppliers.DTOs.Enums.InitializeState;
+package SuppliersAndInventoryTests;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import DTOs.InventoryModuleDTOs.DiscountDTO;
+import DTOs.InventoryModuleDTOs.Position;
+import DTOs.InventoryModuleDTOs.ProductDTO;
+import DTOs.InventoryModuleDTOs.SaleDTO;
+import DTOs.InventoryModuleDTOs.SupplyDTO;
 import DTOs.SuppliersModuleDTOs.OrderPackageDTO;
+import DTOs.SuppliersModuleDTOs.Enums.InitializeState;
+import DomainLayer.InventoryDomainSubModule.MainDomain;
+import DomainLayer.InventoryDomainSubModule.ProductDomain;
 
 import java.time.LocalDate;
 import java.util.*;

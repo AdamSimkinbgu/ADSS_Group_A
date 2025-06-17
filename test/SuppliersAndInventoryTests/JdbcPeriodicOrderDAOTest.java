@@ -1,4 +1,4 @@
-package Tests;
+package SuppliersAndInventoryTests;
 
 import Suppliers.DataLayer.DAOs.JdbcPeriodicOrderDAO;
 import Suppliers.DataLayer.util.Database;

@@ -1,4 +1,4 @@
-package Tests;
+package SuppliersAndInventoryTests;
 
 import org.junit.jupiter.api.*;
 
