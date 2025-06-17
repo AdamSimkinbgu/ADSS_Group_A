@@ -1,0 +1,301 @@
+package Suppliers.DTOs;
+
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import Suppliers.DTOs.Enums.PaymentMethod;
+import Suppliers.DTOs.Enums.PaymentTerm;
+import Suppliers.DomainLayer.Classes.ContactInfo;
+import Suppliers.DomainLayer.Classes.PaymentDetails;
+import Suppliers.DomainLayer.Classes.Supplier;
+
+public class SupplierDTO {
+      private int id;
+      private String name;
+      private String taxNumber;
+      private AddressDTO address;
+      private boolean selfSupply;
+      private EnumSet<DayOfWeek> supplyDays;
+      private int leadSupplyDays;
+      private PaymentDetailsDTO paymentDetails;
+      private List<ContactInfoDTO> contacts;
+
+      public SupplierDTO(
+                  int id,
+                  String name,
+                  String taxNumber,
+                  AddressDTO address,
+                  boolean selfSupply,
+                  EnumSet<DayOfWeek> supplyDays,
+                  int leadSupplyDays,
+                  PaymentDetailsDTO paymentDetails,
+                  List<ContactInfoDTO> contacts) {
+            this.id = id;
+            this.name = name;
+            this.taxNumber = taxNumber;
+            this.address = address;
+            this.selfSupply = selfSupply;
+            this.supplyDays = supplyDays;
+            this.leadSupplyDays = leadSupplyDays;
+            this.paymentDetails = paymentDetails;
+            this.contacts = contacts;
+
+      }
+
+      public SupplierDTO(
+                  String name,
+                  String taxNumber,
+                  AddressDTO address,
+                  boolean selfSupply,
+                  EnumSet<DayOfWeek> supplyDays,
+                  int leadSupplyDays,
+                  PaymentDetailsDTO paymentDetails,
+                  List<ContactInfoDTO> contacts) {
+            this.id = -1; // Default value for new suppliers
+            this.name = name;
+            this.taxNumber = taxNumber;
+            this.address = address;
+            this.selfSupply = selfSupply;
+            this.supplyDays = supplyDays;
+            this.leadSupplyDays = leadSupplyDays;
+            this.paymentDetails = paymentDetails;
+            this.contacts = contacts;
+
+      }
+
+      public SupplierDTO(Supplier supplier) {
+            this.id = supplier.getSupplierId();
+            this.name = supplier.getName();
+            this.taxNumber = supplier.getTaxNumber();
+            this.address = AddressDTO.fromAddress(supplier.getAddress());
+            this.selfSupply = supplier.getSelfSupply();
+            this.supplyDays = supplier.getSupplyDays();
+            this.leadSupplyDays = supplier.getLeadSupplyDays();
+            this.paymentDetails = PaymentDetailsDTO.fromPaymentDetails(supplier.getPaymentDetails());
+            this.contacts = ContactInfoDTO.fromContactInfoList(supplier.getContacts());
+            // to add the products we need to add them after the creation of the supplier
+      }
+
+      public SupplierDTO(int id, String name, String taxNumber,
+                  String street, String city, String buildingNumber,
+                  boolean selfSupply, String supplyDaysMask, int leadSupplyDays,
+                  String bankAccountNumber, String paymentMethod, String paymentTerm) {
+            this.id = id;
+            this.name = name;
+            this.taxNumber = taxNumber;
+            this.address = new AddressDTO(street, city, buildingNumber);
+            this.selfSupply = selfSupply;
+            this.supplyDays = EnumSet.noneOf(DayOfWeek.class);
+            if (supplyDaysMask != null && supplyDaysMask.length() == 7) {
+                  for (int i = 0; i < supplyDaysMask.length(); i++) {
+                        if (supplyDaysMask.charAt(i) == '1') {
+                              DayOfWeek day = DayOfWeek.of((i + 1) % 7 + 1); // shift to make Sunday the first day
+                              this.supplyDays.add(day);
+                        }
+                  }
+            }
+            this.leadSupplyDays = leadSupplyDays;
+            this.paymentDetails = new PaymentDetailsDTO(bankAccountNumber, PaymentMethod.valueOf(paymentMethod),
+                        PaymentTerm.valueOf(paymentTerm));
+            this.contacts = new ArrayList<>();
+      }
+
+      public SupplierDTO(SupplierDTO other) {
+            this.id = other.id;
+            this.name = other.name;
+            this.taxNumber = other.taxNumber;
+            this.address = new AddressDTO(other.address);
+            this.selfSupply = other.selfSupply;
+            this.supplyDays = EnumSet.copyOf(other.supplyDays);
+            this.leadSupplyDays = other.leadSupplyDays;
+            this.paymentDetails = other.getPaymentDetailsDTO();
+            this.contacts = other.getContactsInfoDTOList();
+      }
+
+      public int getId() {
+            return id;
+      }
+
+      public void setId(int id) {
+            this.id = id;
+      }
+
+      public String getName() {
+            return name;
+      }
+
+      public void setName(String name) {
+            this.name = name;
+      }
+
+      public String getTaxNumber() {
+            return taxNumber;
+      }
+
+      public void setTaxNumber(String taxNumber) {
+            this.taxNumber = taxNumber;
+      }
+
+      public AddressDTO getAddressDTO() {
+            return address;
+      }
+
+      public AddressDTO getAddress() {
+            return new AddressDTO(address);
+      }
+
+      public void setAddress(AddressDTO address) {
+            this.address = address;
+      }
+
+      public PaymentDetailsDTO getPaymentDetailsDTO() {
+            return paymentDetails;
+      }
+
+      public PaymentDetails getPaymentDetails() {
+            return new PaymentDetails(paymentDetails);
+      }
+
+      public void setPaymentDetails(PaymentDetailsDTO paymentDetails) {
+            this.paymentDetails = paymentDetails;
+      }
+
+      public List<ContactInfoDTO> getContactsInfoDTOList() {
+            return contacts;
+      }
+
+      public List<ContactInfo> getContactsInfoList() {
+            return ContactInfoDTO.toContactInfoList(contacts);
+      }
+
+      public void setContacts(List<ContactInfoDTO> contacts) {
+            this.contacts = contacts;
+      }
+
+      @Override
+      public String toString() {
+            String nm = (name != null) ? name : "[no name]";
+            String tax = (taxNumber != null) ? taxNumber : "[no tax#]";
+            String addr = (address != null) ? address.toString() : "[no address]";
+            String ps = selfSupply ? "Yes" : "No";
+
+            // Convert supplyDays enum set to comma‐separated string
+            String days = (supplyDays == null || supplyDays.isEmpty())
+                        ? "[none]"
+                        : supplyDays.stream()
+                                    .map(Enum::name)
+                                    .collect(Collectors.joining(","));
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format(
+                        "Supplier [%4d]  Name: %-15s  Tax#: %-12s%n",
+                        id, nm, tax));
+            sb.append(String.format(
+                        "  Address:       %s%n", addr));
+            sb.append(String.format(
+                        "  SelfSupply: %s   SupplyDays: %s   LeadDays: %d%n",
+                        ps, days, leadSupplyDays));
+            sb.append(String.format(
+                        "  %s%n",
+                        paymentDetails != null
+                                    ? paymentDetails.toString()
+                                    : "[no payment details]"));
+            sb.append("  ───────────────────────────────────────────\n");
+
+            if (contacts == null || contacts.isEmpty()) {
+                  sb.append("  [No contacts for this supplier]\n");
+            } else {
+                  sb.append("  Contacts:\n");
+                  for (ContactInfoDTO c : contacts) {
+                        sb.append("    ").append(c.toString()).append("\n");
+                  }
+                  sb.append(String.format(
+                              "  (%d contact%s total)%n",
+                              contacts.size(),
+                              contacts.size() == 1 ? "" : "s"));
+            }
+            sb.append("===================================================\n");
+            return sb.toString();
+      }
+
+      @Override
+      public boolean equals(Object o) {
+            if (this == o)
+                  return true;
+            if (!(o instanceof SupplierDTO))
+                  return false;
+
+            SupplierDTO that = (SupplierDTO) o;
+
+            if (selfSupply != that.selfSupply)
+                  return false;
+            if (leadSupplyDays != that.leadSupplyDays)
+                  return false;
+            if (!name.equals(that.name))
+                  return false;
+            if (!taxNumber.equals(that.taxNumber))
+                  return false;
+            if (!address.equals(that.address))
+                  return false;
+            if (!paymentDetails.equals(that.paymentDetails))
+                  return false;
+            if (!contacts.equals(that.contacts))
+                  return false;
+            if (!supplyDays.equals(that.supplyDays))
+                  return false;
+            return true;
+      }
+
+      @Override
+      public int hashCode() {
+            int result = name.hashCode();
+            result = 31 * result + taxNumber.hashCode();
+            result = 31 * result + address.hashCode();
+            result = 31 * result + paymentDetails.hashCode();
+            result = 31 * result + contacts.hashCode();
+            result = 31 * result + (selfSupply ? 1 : 0);
+            result = 31 * result + supplyDays.hashCode();
+            result = 31 * result + leadSupplyDays;
+            result = 31 * result + id;
+            return result;
+      }
+
+      public boolean getSelfSupply() {
+            return selfSupply;
+      }
+
+      public EnumSet<DayOfWeek> getSupplyDays() {
+            return supplyDays;
+      }
+
+      public void setSelfSupply(boolean selfSupply) {
+            this.selfSupply = selfSupply;
+      }
+
+      public void setSupplyDays(EnumSet<DayOfWeek> supplyDays) {
+            this.supplyDays = supplyDays;
+      }
+
+      public int getLeadSupplyDays() {
+            return leadSupplyDays;
+      }
+
+      public void setLeadSupplyDays(int leadSupplyDays) {
+            this.leadSupplyDays = leadSupplyDays;
+      }
+
+      public String getSupplyDaysMask() {
+            // convert EnumSet<DayOfWeek> to a string mask
+            // 1 is monday but we need it to be sunday
+            StringBuilder mask = new StringBuilder("0000000");
+            for (DayOfWeek day : supplyDays) {
+                  int index = (day.ordinal() + 1) % 7; // shift to make Sunday the first day
+                  mask.setCharAt(index, '1');
+            }
+            return mask.toString();
+      }
+
+}

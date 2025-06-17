@@ -26,9 +26,13 @@ ADSS_Group_A.imlv
 target/
 bin/
 lib/
-release/
 *.jar
 !src/main/resources/*.jar
+!release/*.jar
+*.class
+*.war
+*.ear
+*.zip
 
 # Database files
 *.db
@@ -43,6 +47,8 @@ release/
 .Trashes
 ehthumbs.db
 Thumbs.db
+*/.DS_Store
+**/.DS_Store
 
 # IDE specific files
 .vscode/
