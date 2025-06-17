@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 import DTOs.SuppliersModuleDTOs.Enums.InitializeState;
 import DataAccessLayer.SuppliersDAL.util.Database;
+import PresentationLayer.GUI.AppLauncher;
 import PresentationLayer.InventoryPresentationSubModule.PresentationMenu;
 import PresentationLayer.SuppliersPresentationSubModule.CLI.AppCLI;
 
@@ -9,6 +10,35 @@ public class Main {
    private static Scanner scanner = new Scanner(System.in);
 
    public static void main(String[] args) {
+      if (args.length == 0) {
+         System.out.println("No arguments provided. Testing GUI mode.");
+         new AppLauncher().run(new String[] {}); // start GUI mode by default
+         return;
+      } else if (args.length > 1) {
+         System.out.println(
+               "Too many arguments provided. Usage: java -jar target/superLee-1.0.0-jar-with-dependencies.jar <gui|cli>");
+         return;
+      }
+      String mode = args[0].toLowerCase();
+      if (!mode.equals("gui") && !mode.equals("cli")) {
+         System.out
+               .println("Invalid argument. Usage: java -jar target/superLee-1.0.0-jar-with-dependencies.jar <gui|cli>");
+         return;
+      }
+      switch (mode) {
+         case "gui":
+            new AppLauncher().run(new String[] {}); // currently, no arguments are needed
+            break;
+         case "cli":
+            startCLI();
+            break;
+         default:
+            System.out.println("Invalid mode. Please use 'gui' or 'cli'.");
+            break;
+      }
+   }
+
+   private static void startCLI() {
       System.out.println("Welcome to the Supplier-Inventory Management System!");
       InitializeState startupState = requestStartupStateFromUser();
       AppCLI appCLI = new AppCLI(startupState);
