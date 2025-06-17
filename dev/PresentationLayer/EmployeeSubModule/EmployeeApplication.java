@@ -32,14 +32,16 @@ public class EmployeeApplication extends Application {
             // Try loading directly from file system
             String filePath = "dev/PresentationLayer/EmployeeSubModule/views/MainView.fxml";
             File file = new File(filePath);
-            System.out.println("Trying to load FXML from file: " + file.getAbsolutePath());
+            System.out.println("Trying to load FXML from file: " +
+                    file.getAbsolutePath());
 
             FXMLLoader loader = new FXMLLoader();
             Parent root = loader.load(new FileInputStream(file));
 
             // Get the controller and set the services
             MainViewController controller = loader.getController();
-            controller.setServices(serviceFacade.getEmployeeService(), serviceFacade.getShiftService());
+            controller.setServices(serviceFacade.getEmployeeService(),
+                    serviceFacade.getShiftService());
 
             // Load CSS file
             String cssPath = "dev/PresentationLayer/EmployeeSubModule/styles/main.css";
@@ -67,7 +69,7 @@ public class EmployeeApplication extends Application {
      * 
      * @param args Command line arguments
      */
-    public static void main(String[] args) {
+    public void main(String[] args) {
         launch(args);
     }
 }
