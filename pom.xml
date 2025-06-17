@@ -100,6 +100,29 @@
 
     <build>
         <sourceDirectory>dev</sourceDirectory>
+        <!-- <testSourceDirectory>test</testSourceDirectory> -->
+        <resources>
+            <!-- 1) If you still have any src/main/resources, keep it: -->
+            <resource>
+            <directory>src/main/resources</directory>
+            <filtering>false</filtering>
+            </resource>
+
+            <!-- 2) Treat everything under dev/PresentationLayer as classpath resources -->
+            <resource>
+            <directory>${project.basedir}/dev/PresentationLayer</directory>
+            <targetPath>.</targetPath>
+            <filtering>false</filtering>
+            <includes>
+                <!-- pick up all your FXML, CSS, images… -->
+                <include>**/*.fxml</include>
+                <include>**/*.css</include>
+                <include>**/*.png</include>
+                <include>**/*.jpg</include>
+                <include>**/*.properties</include>
+            </includes>
+            </resource>
+        </resources>
         <plugins>
             <!-- Compiler -->
             <plugin>
@@ -151,7 +174,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>PresentationLayer.EmployeeSubModule.EmployeeApplication</mainClass>
+                    <mainClass>PresentationLayer.GUI.AppLauncher</mainClass>
                 </configuration>
             </plugin>
         </plugins>
