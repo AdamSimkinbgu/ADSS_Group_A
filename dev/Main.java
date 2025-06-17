@@ -1,14 +1,9 @@
 import java.util.Scanner;
 
-import Inventory.Presentation.PresentationMenu;
-import Suppliers.DTOs.Enums.InitializeState;
-import Suppliers.DataLayer.util.Database;
-import Suppliers.PresentationLayer.AppCLI;
-
-import PresentationLayer.EmployeeSubModule.EmployeeApplication;
-import PresentationLayer.MainCLI;
-
-import java.io.IOException;
+import DTOs.SuppliersModuleDTOs.Enums.InitializeState;
+import DataAccessLayer.SuppliersDAL.util.Database;
+import PresentationLayer.InventoryPresentationSubModule.PresentationMenu;
+import PresentationLayer.SuppliersPresentationSubModule.CLI.AppCLI;
 
 public class Main {
    private static Scanner scanner = new Scanner(System.in);
