@@ -2,6 +2,7 @@ package PresentationLayer.GUI.LoginScreen.ViewModels;
 
 import java.io.IOException;
 
+import DTOs.EmployeeDTO;
 import DomainLayer.SystemFactory;
 import PresentationLayer.EmployeeSubModule.utils.ServiceFacade;
 import ServiceLayer.EmployeeIntegrationService;
@@ -26,7 +27,6 @@ public class LoginViewModel {
 
    public LoginViewModel() {
       try {
-
          this.employeeService = systemFactory.createEmployeeModule(false).getEmployeeService();
          this.shiftService = ServiceFacade.getInstance().getShiftService();
       } catch (IOException e) {
@@ -47,17 +47,21 @@ public class LoginViewModel {
       return loginSuccess;
    }
 
-   public int getLoggedInUser() {
-      if (loginSuccess.get()) {
-         try {
-            loggedInUserId = Integer.parseInt(userId.get());
-         } catch (NumberFormatException e) {
-            throw new IllegalStateException("Cannot retrieve logged-in user ID, invalid format: " + userId.get());
-         }
-         return loggedInUserId;
-      } else {
+   public String getLoggedInUser() {
+      if (!loginSuccess.get()) {
          throw new IllegalStateException("No user is currently logged in.");
       }
+      int id;
+      try {
+         id = Integer.parseInt(userId.get());
+      } catch (NumberFormatException e) {
+         throw new IllegalStateException("Cannot retrieve logged-in user ID, invalid format: " + userId.get(), e);
+      }
+      EmployeeDTO userDTO = employeeService.getEmployeeByIdAsDTO(id);
+      // supply the two arguments right here:
+      return String.format("%s (ID: %s)",
+            userDTO.getFullName(),
+            userDTO.getIsraeliId());
    }
 
    public void reset() {

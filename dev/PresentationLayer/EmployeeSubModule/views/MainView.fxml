@@ -17,7 +17,6 @@
             </padding>
             <Label text="Employee Management System" styleClass="header-title"/>
             <Pane HBox.hgrow="ALWAYS" />
-            <Label fx:id="userLabel" text="Logged in as: Admin" />
         </HBox>
     </top>
 
@@ -30,7 +29,6 @@
             <Button text="Roles" onAction="#showRoles" styleClass="nav-button"/>
             <Button text="Reports" onAction="#showReports" styleClass="nav-button"/>
             <Pane VBox.vgrow="ALWAYS" />
-            <Button text="Logout" onAction="#logout" styleClass="nav-button, logout-button"/>
         </VBox>
     </left>
 

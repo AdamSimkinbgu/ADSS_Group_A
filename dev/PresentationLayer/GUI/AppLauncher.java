@@ -37,7 +37,9 @@ public class AppLauncher extends Application {
             }
          });
       });
-
+      // set icon for the application that will be shown in the taskbar
+      primaryStage.getIcons()
+            .add(new javafx.scene.image.Image(getClass().getResourceAsStream("/GUI/Common/Images/icon.png")));
       primaryStage.setTitle("My Application");
       primaryStage.show();
    }

@@ -379,3 +379,30 @@
     -fx-text-fill: #3f51b5;
     -fx-font-weight: bold;
 }
+
+/* Sidebar-collapse toggle */
+.sidebar.collapsed {
+    -fx-pref-width: 60px;       /* just show icons/text clipped */
+}
+.sidebar-toggle {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-padding: 0 10;
+}
+
+/* When collapsed, hide text on nav-buttons */
+.sidebar.collapsed .nav-button {
+    -fx-text-fill: transparent;
+}
+.sidebar.collapsed .nav-button:hover {
+    -fx-background-color: rgba(255,255,255,0.15);
+}
+
+/* Highlight active module */
+.nav-button:selected,
+.nav-button:focused {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-border-color: white;
+    -fx-border-width: 0 0 0 3px;
+}

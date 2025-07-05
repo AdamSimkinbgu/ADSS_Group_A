@@ -21,9 +21,6 @@ public class MainViewController {
     @FXML
     private StackPane contentArea;
 
-    @FXML
-    private Label userLabel;
-
     private EmployeeService employeeService;
     private ShiftService shiftService;
 
@@ -32,23 +29,12 @@ public class MainViewController {
      * This method should be called after the controller is initialized.
      * 
      * @param employeeService The EmployeeService to use
-     * @param shiftService The ShiftService to use
+     * @param shiftService    The ShiftService to use
      */
     public void setServices(EmployeeService employeeService, ShiftService shiftService) {
         this.employeeService = employeeService;
         this.shiftService = shiftService;
         System.out.println("Services set in MainViewController");
-    }
-
-    /**
-     * Initializes the controller.
-     * This method is automatically called after the FXML file has been loaded.
-     */
-    @FXML
-    public void initialize() {
-        // Set default user ID (can be updated when login is implemented)
-        long currentUserId = 123456789; // Example user ID
-        userLabel.setText("Logged in as: " + currentUserId);
     }
 
     /**
@@ -72,7 +58,8 @@ public class MainViewController {
     @FXML
     public void showEmployees() {
         System.out.println("Employees view requested");
-        EmployeeListController controller = loadView("/PresentationLayer/EmployeeSubModule/views/EmployeeListView.fxml");
+        EmployeeListController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/EmployeeListView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             if (employeeService != null) {
@@ -87,7 +74,8 @@ public class MainViewController {
     @FXML
     public void showShifts() {
         System.out.println("Shifts view requested");
-        ShiftCalendarController controller = loadView("/PresentationLayer/EmployeeSubModule/views/ShiftCalendarView.fxml");
+        ShiftCalendarController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/ShiftCalendarView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             if (shiftService != null) {
@@ -102,7 +90,8 @@ public class MainViewController {
     @FXML
     public void showRoles() {
         System.out.println("Roles view requested");
-        RoleManagementController controller = loadView("/PresentationLayer/EmployeeSubModule/views/RoleManagementView.fxml");
+        RoleManagementController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/RoleManagementView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             if (employeeService != null) {
@@ -170,7 +159,8 @@ public class MainViewController {
      */
     public void showEmployeeDetails(EmployeeUIModel employee) {
         System.out.println("Employee details view requested for: " + employee.getIsraeliId());
-        EmployeeDetailsController controller = loadView("/PresentationLayer/EmployeeSubModule/views/EmployeeDetailsView.fxml");
+        EmployeeDetailsController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/EmployeeDetailsView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             controller.setEmployee(employee);
@@ -184,7 +174,8 @@ public class MainViewController {
      */
     public void showEditEmployeeForm(EmployeeUIModel employee) {
         System.out.println("Edit employee form requested for: " + employee.getIsraeliId());
-        EmployeeFormController controller = loadView("/PresentationLayer/EmployeeSubModule/views/EmployeeFormView.fxml");
+        EmployeeFormController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/EmployeeFormView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             controller.setEmployee(employee);
@@ -196,7 +187,8 @@ public class MainViewController {
      */
     public void showAddEmployeeForm() {
         System.out.println("Add employee form requested");
-        EmployeeFormController controller = loadView("/PresentationLayer/EmployeeSubModule/views/EmployeeFormView.fxml");
+        EmployeeFormController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/EmployeeFormView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             controller.setEmployee(null); // null for create mode
@@ -209,7 +201,8 @@ public class MainViewController {
     @FXML
     public void showAvailability() {
         System.out.println("Availability view requested");
-        AvailabilityController controller = loadView("/PresentationLayer/EmployeeSubModule/views/AvailabilityView.fxml");
+        AvailabilityController controller = loadView(
+                "/PresentationLayer/EmployeeSubModule/views/AvailabilityView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             if (employeeService != null) {

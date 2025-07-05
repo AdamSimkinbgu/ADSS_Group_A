@@ -1,20 +1,21 @@
 package PresentationLayer.GUI.MainMenuScreen.ViewModels;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class MainMenuViewModel {
-    private final IntegerProperty userId = new SimpleIntegerProperty();
+    private final StringProperty userDetails = new SimpleStringProperty();
 
-    public MainMenuViewModel(int userId) {
-        this.userId.set(userId);
+    public MainMenuViewModel(String info) {
+        this.userDetails.set(info);
     }
 
-    public int getUserId() {
-        return userId.get();
+    public String getUserName() {
+        return userDetails.get();
     }
 
-    public IntegerProperty userIdProperty() {
-        return userId;
+    public StringProperty userDetailsProperty() {
+        return userDetails;
     }
+
 }
