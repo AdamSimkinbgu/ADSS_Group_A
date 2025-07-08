@@ -1,9 +1,17 @@
 package PresentationLayer.GUI;
 
+import java.awt.Taskbar;
+import java.awt.image.BufferedImage;
+
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+
 import PresentationLayer.GUI.Common.Navigation.ScreenNavigator;
 import PresentationLayer.GUI.Common.Navigation.ScreensEnum;
 import PresentationLayer.GUI.LoginScreen.Controllers.LoginViewController;
 import PresentationLayer.GUI.LoginScreen.ViewModels.LoginViewModel;
+import PresentationLayer.GUI.MainMenuScreen.Controllers.MainMenuController;
+import PresentationLayer.GUI.MainMenuScreen.ViewModels.MainMenuViewModel;
 import Util.Database;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -18,18 +26,18 @@ public class AppLauncher extends Application {
       System.out.println("CSS file loaded successfully: " + css);
 
       ScreenNavigator navigator = ScreenNavigator.getInstance();
-      primaryStage.setTitle("Super Lee - Fully Integrated Management System");
       navigator.init(primaryStage, css);
 
-      // 2) show the LOGIN screen only
-      navigator.navigateTo(ScreensEnum.LOGIN, loader -> {
-         LoginViewModel vm = new LoginViewModel();
-         // when FXMLLoader needs a LoginViewController, we give it one with our VM
+      // 2) show the MAIN MENU screen only
+      navigator.navigateTo(ScreensEnum.MENU, loader -> {
+         // create & inject your MainMenuViewModel
+         MainMenuViewModel vm = new MainMenuViewModel();
+
+         // tell FXMLLoader how to build MainMenuController
          loader.setControllerFactory(type -> {
-            if (type == LoginViewController.class) {
-               return new LoginViewController(vm);
+            if (type == MainMenuController.class) {
+               return new MainMenuController(vm);
             }
-            // fallback for anything else (if you have other controllers in that FXML)
             try {
                return type.getDeclaredConstructor().newInstance();
             } catch (Exception ex) {
@@ -37,10 +45,15 @@ public class AppLauncher extends Application {
             }
          });
       });
-      // set icon for the application that will be shown in the taskbar
-      primaryStage.getIcons()
-            .add(new javafx.scene.image.Image(getClass().getResourceAsStream("/GUI/Common/Images/icon.png")));
-      primaryStage.setTitle("My Application");
+
+      // 3) application icon & show stage
+      Image fxIcon = new Image(getClass().getResourceAsStream("/icon/SuperLee128Icon.png"));
+      if (Taskbar.isTaskbarSupported()) {
+         Taskbar.getTaskbar().setIconImage(
+               SwingFXUtils.fromFXImage(fxIcon, null));
+      }
+
+      primaryStage.setTitle("Super Lee - Fully Integrated Management System");
       primaryStage.show();
    }
 
