@@ -89,6 +89,11 @@
             <artifactId>javafx-graphics</artifactId>
             <version>21</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>21</version>  <!-- or whatever JavaFX version you’re using -->
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -106,6 +111,16 @@
             <resource>
             <directory>src/main/resources</directory>
             <filtering>false</filtering>
+            </resource>
+
+            <resource>
+            <directory>${project.basedir}/dev/PresentationLayer/GUI/icon</directory>
+            <targetPath>icon</targetPath>
+            <filtering>false</filtering>
+            <includes>
+                <include>**/*.png</include>
+                <include>**/*.jpg</include>
+            </includes>
             </resource>
 
             <!-- 2) Treat everything under dev/PresentationLayer as classpath resources -->

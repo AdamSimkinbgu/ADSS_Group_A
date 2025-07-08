@@ -47,20 +47,20 @@ public class MainCLI {
     }
 
     private static ExitAction loginAndRoute() throws IOException, SQLException {
-        CliUtil.printSectionHeader("Login", false, "" );
+        CliUtil.printSectionHeader("Login", false, "");
         CliUtil.printTip("Enter 0 to exit the program.");
         long userId = CliUtil.getLongInput("Please enter your ID: ", scanner);
         if (userId == 0) {
             return ExitAction.EXIT_PROGRAM; // User chose to exit
         }
         SystemFactory factory = new SystemFactory();
-//        boolean minimalMode = config.LOAD_DATA_FROM_DB;
+        // boolean minimalMode = config.LOAD_DATA_FROM_DB;
         boolean canAccessTransportModule = false;
 
         // System Factory creates the Modules components
         SystemFactory.EmployeeModuleComponents employeeComponents = factory.createEmployeeModule(minimalMode);
-        SystemFactory.TransportModuleComponents transportComponents = factory.createTransportModule(employeeComponents, minimalMode);
-
+        SystemFactory.TransportModuleComponents transportComponents = factory.createTransportModule(employeeComponents,
+                minimalMode);
 
         if (!employeeComponents.getEmployeeService().isEmployeeActive(userId)) {
             CliUtil.printError("User ID cannot access the system.");
@@ -73,8 +73,7 @@ public class MainCLI {
             HR_MainCLI mainCLI = factory.createEmployeeCLI(
                     employeeComponents.getEmployeeService(),
                     employeeComponents.getShiftService(),
-                    userId
-            );
+                    userId);
             mainCLI.start();
             // After finishing HR_MainCLI, just return LOGOUT (i.e., return to login screen)
             return ExitAction.LOGOUT;
@@ -83,7 +82,9 @@ public class MainCLI {
         }
     }
 
-    private static ExitAction mainMenuLoop(SystemFactory factory, SystemFactory.EmployeeModuleComponents employeeComponents, SystemFactory.TransportModuleComponents transportComponents, long userId) throws IOException {
+    private static ExitAction mainMenuLoop(SystemFactory factory,
+            SystemFactory.EmployeeModuleComponents employeeComponents,
+            SystemFactory.TransportModuleComponents transportComponents, long userId) throws IOException {
         while (true) {
             CliUtil.printSectionHeader("Main Menu", true, "SuperLee System");
             // List of options for the main menu
@@ -94,15 +95,15 @@ public class MainCLI {
             // Print the options with numbering
             CliUtil.printNumberedList(options, 1);
 
-            int choice = CliUtil.getMenuChoice("Enter your choice (1-" + options.size() + "): ", 1, options.size(), scanner);
+            int choice = CliUtil.getMenuChoice("Enter your choice (1-" + options.size() + "): ", 1, options.size(),
+                    scanner);
             switch (choice) {
                 case 1:
                     CliUtil.printInfo("Starting Employee Module...");
                     HR_MainCLI employeeCLI = factory.createEmployeeCLI(
                             employeeComponents.getEmployeeService(),
                             employeeComponents.getShiftService(),
-                            userId
-                    );
+                            userId);
                     employeeCLI.start();
                     break;
                 case 2:
@@ -113,8 +114,7 @@ public class MainCLI {
                             transportComponents.getSiteService(),
                             transportComponents.getStartUpService(),
                             transportComponents.getEmployeeIntegrationService(),
-                            transportComponents.getoM()
-                    );
+                            transportComponents.getoM());
                     mainTranSysCLI.transportModuleStartup(userId);
                     break;
                 case 3:
