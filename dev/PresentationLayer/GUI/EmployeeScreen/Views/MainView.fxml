@@ -17,7 +17,6 @@
             </padding>
             <Label text="Employee Management System" styleClass="header-title"/>
             <Pane HBox.hgrow="ALWAYS" />
-            <Label fx:id="userLabel" text="Logged in as: Admin" />
         </HBox>
     </top>
 
@@ -29,8 +28,6 @@
             <Button text="Availability" onAction="#showAvailability" styleClass="nav-button"/>
             <Button text="Roles" onAction="#showRoles" styleClass="nav-button"/>
             <Button text="Reports" onAction="#showReports" styleClass="nav-button"/>
-            <Pane VBox.vgrow="ALWAYS" />
-            <Button text="Logout" onAction="#logout" styleClass="nav-button, logout-button"/>
         </VBox>
     </left>
 
@@ -46,16 +43,10 @@
             </VBox>
         </StackPane>
     </center>
-
     <bottom>
-        <HBox styleClass="footer-bar">
-            <padding>
-                <Insets top="5" right="15" bottom="5" left="15"/>
-            </padding>
-            <Label text="© 2023 SuperLee" />
-            <Pane HBox.hgrow="ALWAYS" />
-            <Label text="Version 1.0" />
-        </HBox>
-    </bottom>
-
+    <HBox styleClass="footer-bar" spacing="10" alignment="CENTER">
+      <Label text="HR Module by Gabriel Rozental &amp; Rotem Guetta" />
+      <Pane HBox.hgrow="ALWAYS" />
+    </HBox>
+  </bottom>
 </BorderPane>

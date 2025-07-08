@@ -10,7 +10,6 @@ import ServiceLayer.EmployeeSubModule.ShiftService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,9 +23,6 @@ public class MainViewController {
 
     @FXML
     private StackPane contentArea;
-
-    @FXML
-    private Label userLabel;
 
     private EmployeeService employeeService;
     private ShiftService shiftService;
@@ -51,8 +47,8 @@ public class MainViewController {
     @FXML
     public void initialize() {
         // Set default user ID (can be updated when login is implemented)
-        long currentUserId = 123456789; // Example user ID
-        userLabel.setText("Logged in as: " + currentUserId);
+        // long currentUserId = 123456789; // Example user ID
+        // userLabel.setText("Logged in as: " + currentUserId);
     }
 
     /**
@@ -145,7 +141,7 @@ public class MainViewController {
                 loader -> {
                     // re‐wire the login controller/VM exactly the same way you did in AppLauncher:
                     LoginViewModel vm = new LoginViewModel();
-                    loader.setControllerFactory(type -> new LoginViewController(vm));
+                    loader.setControllerFactory(_ -> new LoginViewController(vm));
                 });
     }
 

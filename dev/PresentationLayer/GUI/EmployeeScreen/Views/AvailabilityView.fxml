@@ -6,7 +6,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="PresentationLayer.GUI.EmployeeScreen.Controllers.AvailabilityViewController"
+      fx:controller="PresentationLayer.GUI.EmployeeScreen.Controllers.AvailabilityController"
       spacing="10" styleClass="content-container">
 
     <padding>

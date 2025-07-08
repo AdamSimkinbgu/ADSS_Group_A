@@ -10,6 +10,11 @@ public class MainMenuViewModel {
         this.userDetails.set(info);
     }
 
+    public MainMenuViewModel() {
+        // Default constructor for cases where user details are set later
+        this.userDetails.set("Please log in");
+    }
+
     public String getUserName() {
         return userDetails.get();
     }

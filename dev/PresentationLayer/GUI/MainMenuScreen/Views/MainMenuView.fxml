@@ -12,7 +12,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="PresentationLayer.GUI.MainMenuScreen.Controllers.MainMenuController"
-            prefWidth="1400" prefHeight="800"
+            prefWidth="1600" prefHeight="900"
             styleClass="root">
 
   <!-- Top header -->
@@ -48,10 +48,9 @@
 
       <!-- spacer to push logout to bottom -->
       <Pane VBox.vgrow="ALWAYS"/>
-
       <Button fx:id="logoutBtn"
               text="Logout"
-              styleClass="nav-button logout-button"/>
+              styleClass="nav-button, logout-button"/>
     </VBox>
   </left>
 
@@ -63,9 +62,20 @@
                 <padding>
                     <Insets top="50" right="50" bottom="50" left="50"/>
                 </padding>
-                <Label text="Welcome to Employee Management System" styleClass="welcome-text"/>
+                <Label text="Welcome to Super-Lee Management System" styleClass="welcome-text"/>
                 <Label text="Select an option from the sidebar to get started" styleClass="welcome-subtext"/>
             </VBox>
         </StackPane>
     </center>
+
+  <!-- Bottom footer -->
+  <bottom>
+    <HBox styleClass="footer-bar" spacing="10" alignment="CENTER">
+      <Label text="© 2025 SuperLee - Group A" />
+      <Pane HBox.hgrow="ALWAYS" />
+      <Label text="Version 1.0" />
+      <Label text="All rights reserved." styleClass="rights-label"/>
+    </HBox>
+  </bottom>
+  
 </BorderPane>

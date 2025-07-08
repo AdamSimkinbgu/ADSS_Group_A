@@ -1,25 +1,30 @@
 package PresentationLayer.GUI.MainMenuScreen.Controllers;
 
-import PresentationLayer.EmployeeSubModule.controllers.MainViewController;
-import PresentationLayer.EmployeeSubModule.utils.ServiceFacade;
 import PresentationLayer.GUI.Common.Navigation.ScreensEnum;
+import PresentationLayer.GUI.EmployeeScreen.Controllers.MainViewController;
+import PresentationLayer.GUI.EmployeeScreen.utils.ServiceFacade;
 import PresentationLayer.GUI.LoginScreen.Controllers.LoginViewController;
 import PresentationLayer.GUI.LoginScreen.ViewModels.LoginViewModel;
 import PresentationLayer.GUI.MainMenuScreen.ViewModels.MainMenuViewModel;
+import PresentationLayer.GUI.SupplierScreen.Controllers.SuppliersDashboardController;
 import ServiceLayer.EmployeeSubModule.EmployeeService;
 import ServiceLayer.EmployeeSubModule.ShiftService;
+import ServiceLayer.SuppliersServiceSubModule.SupplierService;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+
+import DomainLayer.SystemFactory;
+import DomainLayer.SystemFactory.SupplierModuleComponents;
 
 public class MainMenuController {
    @FXML
@@ -38,6 +43,8 @@ public class MainMenuController {
    private StackPane contentArea;
 
    private final MainMenuViewModel vm;
+
+   private static boolean isInitialized = false;
 
    public MainMenuController(MainMenuViewModel vm) {
       this.vm = vm;
@@ -74,17 +81,57 @@ public class MainMenuController {
             });
          });
       });
+      if (!isInitialized) {
+         // only set the content area once
+         isInitialized = true;
+         // load the default module login
+         loadModule(ScreensEnum.LOGIN.getFxmlPath(), loader -> {
+            // inject your LoginViewController with VM
+            LoginViewModel loginVm = new LoginViewModel();
+            loader.setControllerFactory(type -> {
+               if (type == LoginViewController.class) {
+                  welcomeLabel.textProperty().bind(
+                        Bindings.concat("Welcome, Please log in!"));
+                  return new LoginViewController(loginVm);
+               }
+               try {
+                  return type.getDeclaredConstructor().newInstance();
+               } catch (Exception ex) {
+                  throw new RuntimeException(ex);
+               }
+            });
+         });
+      }
    }
 
    private void onSuppliers() {
       loadModule(ScreensEnum.SUPPLIERS.getFxmlPath(), loader -> {
-         // if you need to inject a SuppliersController / VM, do it here:
-         // loader.setControllerFactory(...);
+         SupplierModuleComponents components = new SystemFactory().getSupplierModule();
+         // if you have a SuppliersDashboardController that needs wiring:
+         loader.setControllerFactory(type -> {
+            if (type == SuppliersDashboardController.class) {
+               SuppliersDashboardController controller = new SuppliersDashboardController();
+               controller.setSupplierService(components.getSupplierService());
+               controller.setOrderService(components.getOrderService());
+               return controller;
+            }
+            try {
+               return type.getDeclaredConstructor().newInstance();
+            } catch (Exception ex) {
+               throw new RuntimeException(ex);
+            }
+         });
       });
    }
 
    private void onInventory() {
-      loadModule(ScreensEnum.INVENTORY.getFxmlPath(), null);
+      // currently not implemented, show an alert
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("Not Implemented");
+      alert.setHeaderText("Inventory Module");
+      alert.setContentText("The Inventory module is not yet implemented.");
+      alert.showAndWait();
+      // loadModule(ScreensEnum.INVENTORY.getFxmlPath(), null);
    }
 
    private void onHR() {
@@ -112,7 +159,13 @@ public class MainMenuController {
    }
 
    private void onShipments() {
-      loadModule(ScreensEnum.SHIPMENTS.getFxmlPath(), null);
+      // currently not implemented, show an alert
+      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      alert.setTitle("Not Implemented");
+      alert.setHeaderText("Shipments Module");
+      alert.setContentText("The Shipments module is not yet implemented.");
+      alert.showAndWait();
+      // loadModule(ScreensEnum.SHIPMENTS.getFxmlPath(), null);
    }
 
    /**
@@ -125,20 +178,28 @@ public class MainMenuController {
     */
    private void loadModule(String fxmlPath, Consumer<FXMLLoader> preloader) {
       try {
-         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+         var url = getClass().getResource(fxmlPath);
+         if (url == null) {
+            throw new IllegalArgumentException("Cannot find FXML: " + fxmlPath);
+         }
+
+         FXMLLoader loader = new FXMLLoader(url);
+
+         // ← NEW: allow the caller to configure the FXMLLoader (e.g. set
+         // controllerFactory)
          if (preloader != null) {
             preloader.accept(loader);
          }
-         Node moduleRoot = loader.load();
 
-         // replace whatever is in the center with the new module
-         contentArea.getChildren().setAll(moduleRoot);
+         // (Optionally) you could still add a fallback factory here if you like,
+         // but be mindful of overriding the caller’s factory!
+         // loader.setControllerFactory(...);
 
-      } catch (IOException e) {
-         e.printStackTrace();
-         // TODO: show user-friendly error dialog
-         Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to load module: " + e.getMessage());
-         alert.showAndWait();
+         Parent view = loader.load();
+         contentArea.getChildren().setAll(view);
+
+      } catch (IOException ex) {
+         ex.printStackTrace();
       }
    }
 }

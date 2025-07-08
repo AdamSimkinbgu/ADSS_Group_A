@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import DTOs.EmployeeDTO;
 import DomainLayer.SystemFactory;
-import PresentationLayer.EmployeeSubModule.utils.ServiceFacade;
+import PresentationLayer.GUI.EmployeeScreen.utils.ServiceFacade;
 import ServiceLayer.EmployeeIntegrationService;
 import ServiceLayer.EmployeeSubModule.EmployeeService;
 import ServiceLayer.EmployeeSubModule.ShiftService;
