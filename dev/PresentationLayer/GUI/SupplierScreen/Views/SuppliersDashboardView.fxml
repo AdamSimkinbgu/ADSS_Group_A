@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SuppliersDashboardController"
+      spacing="20"
+      styleClass="content-container">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Section Title -->
+    <Label text="Overview" styleClass="section-title"/>
+
+    <!-- Stat Cards -->
+    <HBox spacing="15">
+        <VBox styleClass="stat-card" alignment="CENTER">
+            <Label text="Suppliers" styleClass="stat-title"/>
+            <Label fx:id="suppliersCountLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card" alignment="CENTER">
+            <Label text="Products" styleClass="stat-title"/>
+            <Label fx:id="productsCountLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card" alignment="CENTER">
+            <Label text="Orders" styleClass="stat-title"/>
+            <Label fx:id="ordersCountLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card" alignment="CENTER">
+            <Label text="Agreements" styleClass="stat-title"/>
+            <Label fx:id="agreementsCountLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+    </HBox>
+
+    <!-- Quick-search Product Catalog -->
+    <VBox spacing="10">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Product Catalog" styleClass="section-title"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField"
+                       promptText="Search…"
+                       styleClass="modern-field"/>
+        </HBox>
+        <TableView fx:id="catalogTable"
+                   styleClass="table-view"
+                   prefHeight="300">
+            <columns>
+                <TableColumn fx:id="idColumn"           text="ID"            prefWidth="100"/>
+                <TableColumn fx:id="manufacturerColumn" text="Manufacturer" prefWidth="200"/>
+                <TableColumn fx:id="nameColumn"         text="Name"         prefWidth="300"/>
+            </columns>
+        </TableView>
+    </VBox>
+</VBox>

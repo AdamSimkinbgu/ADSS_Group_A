@@ -1,0 +1,95 @@
+package PresentationLayer.GUI.SupplierScreen.Controllers;
+
+import PresentationLayer.GUI.Common.Navigation.ScreenNavigator;
+import PresentationLayer.GUI.Common.Navigation.ScreensEnum;
+import PresentationLayer.GUI.LoginScreen.Controllers.LoginViewController;
+import PresentationLayer.GUI.LoginScreen.ViewModels.LoginViewModel;
+import ServiceLayer.SuppliersServiceSubModule.OrderService;
+import ServiceLayer.SuppliersServiceSubModule.SupplierService;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import DomainLayer.SystemFactory;
+import DomainLayer.SystemFactory.SupplierModuleComponents;
+
+public class SuppliersMainController {
+
+   @FXML
+   private StackPane contentArea;
+   @FXML
+   private Button dashboardBtn;
+   @FXML
+   private Button suppliersBtn;
+   @FXML
+   private Button ordersBtn;
+   @FXML
+   private Button productsBtn;
+   @FXML
+   private Button backBtn;
+
+   @FXML
+   public void initialize() {
+      // show current user
+      dashboardBtn.setOnAction(
+            _ -> loadSection("Dashboard",
+                  ScreensEnum.SUPPLIERS_DASHBOARD.getFxmlPath()));
+      suppliersBtn.setOnAction(_ -> loadSection(
+            "Suppliers List",
+            ScreensEnum.SUPPLIERS_LIST.getFxmlPath()));
+   }
+
+   private void loadSection(String title, String fxmlPath) {
+      try {
+         // 1) Grab the URL of the FXML on the classpath
+         var url = getClass().getResource(fxmlPath);
+         if (url == null) {
+            throw new IllegalArgumentException("Cannot find FXML: " + fxmlPath);
+         }
+         SupplierModuleComponents components = new SystemFactory().getSupplierModule();
+         // 2) Create the loader with that URL (this both sets location & source)
+         FXMLLoader loader = new FXMLLoader(url);
+
+         // 3) Tell FXMLLoader how to build your SuppliersDashboardController
+         loader.setControllerFactory(type -> {
+            if (type == SuppliersDashboardController.class) {
+               // Instantiate with your real services
+               SuppliersDashboardController controller = new SuppliersDashboardController();
+               controller.setSupplierService(components.getSupplierService());
+               controller.setOrderService(components.getOrderService());
+               controller.setAgreementService(components.getAgreementService());
+               return controller;
+            }
+            if (type == SuppliersListController.class) {
+               SuppliersListController ctrl = new SuppliersListController();
+               ctrl.setSupplierService(components.getSupplierService());
+               ctrl.setAgreementService(components.getAgreementService());
+               return ctrl;
+            }
+            // Fallback for any other controller in this FXML
+            try {
+               return type.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+               throw new RuntimeException(e);
+            }
+         });
+
+         // 4) Now load: controller is constructed, @FXML fields injected, then
+         // initialize() runs
+         Parent view = loader.load();
+
+         // 5) Swap into your content area
+         contentArea.getChildren().setAll(view);
+
+      } catch (IOException ex) {
+         ex.printStackTrace();
+      }
+   }
+}
