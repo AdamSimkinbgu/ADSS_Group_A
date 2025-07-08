@@ -6,18 +6,25 @@ import DomainLayer.EmployeeSubModule.Repository.interfaces.AuthorisationReposito
 import DomainLayer.EmployeeSubModule.Repository.interfaces.BranchRepository;
 import DomainLayer.EmployeeSubModule.Repository.interfaces.EmployeeRepository;
 import DomainLayer.EmployeeSubModule.Repository.interfaces.ShiftReposetory;
+import DomainLayer.SuppliersDomainSubModule.OrderFacade;
+import DomainLayer.SuppliersDomainSubModule.SupplierFacade;
 import DomainLayer.TransportDomain.SiteSubModule.SiteFacade;
 import DomainLayer.TransportDomain.TransportSubModule.TransportController;
 import DomainLayer.TransportDomain.TruckSubModule.TruckFacade;
 import ServiceLayer.*;
 import ServiceLayer.EmployeeSubModule.EmployeeService;
 import ServiceLayer.EmployeeSubModule.ShiftService;
+import ServiceLayer.SuppliersServiceSubModule.AgreementService;
+import ServiceLayer.SuppliersServiceSubModule.OrderService;
+import ServiceLayer.SuppliersServiceSubModule.SupplierService;
 import ServiceLayer.TransportServices.*;
 import PresentationLayer.EmployeeSubModule.CLI.HR_MainCLI;
 import PresentationLayer.TransportPresentation.MainTranSysCLI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import DTOs.SuppliersModuleDTOs.Enums.InitializeState;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,6 +40,7 @@ public class SystemFactory {
 
     /**
      * Creates and initializes the Employee Module components.
+     * 
      * @param minimalMode If true, initializes with minimal data (admin only).
      * @return EmployeeModuleComponents containing all initialized components.
      * @throws IOException If there's an error loading data.
@@ -45,91 +53,103 @@ public class SystemFactory {
 
         // Initialize controllers with repositories
         AuthorisationController authController = new AuthorisationController(
-            authorisationRepository
-        );
+                authorisationRepository);
 
         EmployeeController employeeController = new EmployeeController(
-            employeeRepository,
-            branchRepository,
-            authorisationRepository,
-            authController
-        );
+                employeeRepository,
+                branchRepository,
+                authorisationRepository,
+                authController);
 
         ShiftReposetory shiftReposetory = new ShiftRepositoryImpl();
-        // Initialize ShiftController with the AuthorisationController and EmployeeController
+        // Initialize ShiftController with the AuthorisationController and
+        // EmployeeController
         // The ShiftController will create its own ShiftRepository internally
         ShiftController shiftController = new ShiftController(employeeController, shiftReposetory);
 
-        AssignmentController assignmentController = new AssignmentController(employeeController, shiftController,shiftReposetory);
-        AvailabilityController availabilityController = new AvailabilityController(employeeController, shiftController, shiftReposetory);
+        AssignmentController assignmentController = new AssignmentController(employeeController, shiftController,
+                shiftReposetory);
+        AvailabilityController availabilityController = new AvailabilityController(employeeController, shiftController,
+                shiftReposetory);
 
         EmployeeService employeeService = new EmployeeService(employeeController, authController);
         ShiftService shiftService = new ShiftService(shiftController, assignmentController, availabilityController);
 
         return new EmployeeModuleComponents(
-            authController, 
-            employeeController, 
-            shiftController, 
-            assignmentController, 
-            availabilityController, 
-            employeeService, 
-            shiftService
-        );
+                authController,
+                employeeController,
+                shiftController,
+                assignmentController,
+                availabilityController,
+                employeeService,
+                shiftService);
     }
 
     /**
      * Creates and initializes the Transport Module components.
-     * @param employeeComponents The EmployeeModuleComponents to use for integration.
+     * 
+     * @param employeeComponents The EmployeeModuleComponents to use for
+     *                           integration.
      * @return TransportModuleComponents containing all initialized components.
      */
-    public TransportModuleComponents createTransportModule(EmployeeModuleComponents employeeComponents, boolean minimalMode) throws SQLException {
+    public TransportModuleComponents createTransportModule(EmployeeModuleComponents employeeComponents,
+            boolean minimalMode) throws SQLException {
         // Initialize facades
-        TruckFacade truckFacade = new TruckFacade();   // repository initialized inside here
-        SiteFacade siteFacade = new SiteFacade();   // repository initialized inside here
+        TruckFacade truckFacade = new TruckFacade(); // repository initialized inside here
+        SiteFacade siteFacade = new SiteFacade(); // repository initialized inside here
 
         ObjectMapper objMapper = new ObjectMapper();
-        // Set up the ObjectMapper with JavaTimeModule to handle LocalDate and other Java 8 date types.
+        // Set up the ObjectMapper with JavaTimeModule to handle LocalDate and other
+        // Java 8 date types.
         objMapper.registerModule(new JavaTimeModule());
-        // Optional: Configure SerializationFeature to avoid exceptions when serializing dates to JSON
+        // Optional: Configure SerializationFeature to avoid exceptions when serializing
+        // dates to JSON
         objMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-//        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);   //  if needed for LocalDateTime serialization
+        // mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // if needed
+        // for LocalDateTime serialization
 
         // Initialize controllers
-        TransportController transportController = new TransportController(siteFacade, truckFacade, objMapper);   // repositories initialized inside here
+        TransportController transportController = new TransportController(siteFacade, truckFacade, objMapper); // repositories
+                                                                                                               // initialized
+                                                                                                               // inside
+                                                                                                               // here
 
         // Create EmployeeIntegrationService
         EmployeeIntegrationService employeeIntegrationService = new EmployeeIntegrationService(
-            employeeComponents.getEmployeeService(),
-            employeeComponents.getShiftService()
-        );
-
+                employeeComponents.getEmployeeService(),
+                employeeComponents.getShiftService());
 
         // Initialize services
         TruckService truckService = new TruckService(truckFacade, employeeIntegrationService);
         SiteService siteService = new SiteService(siteFacade, employeeIntegrationService);
-        TransportService transportService = new TransportService(transportController, employeeIntegrationService, objMapper);
+        TransportService transportService = new TransportService(transportController, employeeIntegrationService,
+                objMapper);
 
         // Initialize startup service
-        StartUpStateService startUpService = new StartUpStateService(transportService, truckService, siteService);  // if this specific one needed
+        StartUpStateService startUpService = new StartUpStateService(transportService, truckService, siteService); // if
+                                                                                                                   // this
+                                                                                                                   // specific
+                                                                                                                   // one
+                                                                                                                   // needed
 
         return new TransportModuleComponents(
-            truckFacade,
-            siteFacade,
-            transportController,
-            truckService,
-            transportService,
-            siteService,
-            startUpService,
-            employeeIntegrationService,
-            objMapper
-        );
+                truckFacade,
+                siteFacade,
+                transportController,
+                truckService,
+                transportService,
+                siteService,
+                startUpService,
+                employeeIntegrationService,
+                objMapper);
     }
 
     /**
      * Creates a MainCLI for the Employee Module.
+     * 
      * @param employeeService The EmployeeService to use.
-     * @param shiftService The ShiftService to use.
-     * @param loginId The ID of the logged-in employee.
+     * @param shiftService    The ShiftService to use.
+     * @param loginId         The ID of the logged-in employee.
      * @return A MainCLI instance.
      */
     public HR_MainCLI createEmployeeCLI(EmployeeService employeeService, ShiftService shiftService, long loginId) {
@@ -138,14 +158,16 @@ public class SystemFactory {
 
     /**
      * Creates a MainTranSysCLI for the Transport Module.
-     * @param ts The TruckService to use.
-     * @param trs The TransportService to use.
-     * @param sis The SiteService to use.
+     * 
+     * @param ts              The TruckService to use.
+     * @param trs             The TransportService to use.
+     * @param sis             The SiteService to use.
      * @param starUpStService The StartupService to use.
-     * @param es The EmployeeIntegrationService to use.
+     * @param es              The EmployeeIntegrationService to use.
      * @return A TranManCLI instance.
      */
-    public MainTranSysCLI createTransportCLI(TruckService ts, TransportService trs, SiteService sis, StartUpStateService starUpStService, EmployeeIntegrationService es, ObjectMapper oM) {
+    public MainTranSysCLI createTransportCLI(TruckService ts, TransportService trs, SiteService sis,
+            StartUpStateService starUpStService, EmployeeIntegrationService es, ObjectMapper oM) {
         // Create & return MainTranSysCLI
         return new MainTranSysCLI(ts, trs, sis, starUpStService, es, oM);
     }
@@ -255,7 +277,9 @@ public class SystemFactory {
             return transportController;
         }
 
-        public TruckService getTruckService() {return truckService;}
+        public TruckService getTruckService() {
+            return truckService;
+        }
 
         public TransportService getTransportService() {
             return transportService;
@@ -265,12 +289,81 @@ public class SystemFactory {
             return siteService;
         }
 
-        public StartUpStateService getStartUpService() {return startUpService;}
+        public StartUpStateService getStartUpService() {
+            return startUpService;
+        }
 
         public EmployeeIntegrationService getEmployeeIntegrationService() {
             return employeeIntegrationService;
         }
 
-        public ObjectMapper getoM() {return oM;}
+        public ObjectMapper getoM() {
+            return oM;
+        }
+    }
+
+    private SupplierModuleComponents supplierModuleComponents;
+
+    /**
+     * Container class for Supplier Module components.
+     */
+    public static class SupplierModuleComponents {
+        private static SupplierModuleComponents supplierModuleComponents;
+        private final SupplierService supplierService;
+        private final OrderService orderService;
+        private final AgreementService agreementService;
+
+        public static void setSupplierModuleComponents(SupplierService supplierService,
+                OrderService orderService, AgreementService agreementService) {
+            if (supplierModuleComponents == null) {
+                supplierModuleComponents = new SupplierModuleComponents(supplierService, orderService,
+                        agreementService);
+            }
+        }
+
+        private SupplierModuleComponents(SupplierService supplierService, OrderService orderService,
+                AgreementService agreementService) {
+            this.supplierService = supplierService;
+            this.orderService = orderService;
+            this.agreementService = agreementService;
+        }
+
+        public static SupplierModuleComponents getSupplierModuleComponents() {
+            return supplierModuleComponents;
+        }
+
+        public SupplierService getSupplierService() {
+            return supplierService;
+        }
+
+        public OrderService getOrderService() {
+            return orderService;
+        }
+
+        public AgreementService getAgreementService() {
+            return agreementService;
+        }
+    }
+
+    /**
+     * Creates and initializes the Supplier Module components.
+     * 
+     * @return SupplierModuleComponents containing all initialized components.
+     */
+    private SupplierModuleComponents createSupplierModule() {
+        SupplierFacade supplierFacade = new SupplierFacade(InitializeState.CURRENT_STATE);
+        OrderFacade orderFacade = new OrderFacade(InitializeState.CURRENT_STATE, supplierFacade);
+        SupplierService supplierService = new SupplierService(supplierFacade);
+        OrderService orderService = new OrderService(orderFacade);
+        AgreementService agreementService = new AgreementService(supplierFacade);
+        SupplierModuleComponents.setSupplierModuleComponents(supplierService, orderService, agreementService);
+        return SupplierModuleComponents.getSupplierModuleComponents();
+    }
+
+    public SupplierModuleComponents getSupplierModule() {
+        if (supplierModuleComponents == null) {
+            supplierModuleComponents = createSupplierModule();
+        }
+        return supplierModuleComponents;
     }
 }

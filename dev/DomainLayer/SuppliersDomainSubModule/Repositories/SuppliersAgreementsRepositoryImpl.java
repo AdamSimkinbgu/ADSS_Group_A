@@ -388,6 +388,19 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.info("Found agreement: {}", agreement.get());
          List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO
                .getAllBillofQantitiesItemsForAgreementId(agreementId);
+         for (BillofQuantitiesItemDTO item : boqItems) {
+            if (item.getProductId() < 0) {
+               LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+               continue; // Skip items with negative product IDs
+            }
+            Optional<SupplierProductDTO> product = supplierProductDAO
+                  .getSupplierProductById(agreement.get().getSupplierId(), item.getProductId());
+            if (product.isPresent()) {
+               item.setProductName(product.get().getName());
+            } else {
+               LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
+            }
+         }
          if (boqItems.isEmpty()) {
             LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreementId);
          } else {
@@ -484,6 +497,20 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO
                   .getAllBillofQantitiesItemsForAgreementId(agreement.getAgreementId());
             if (!boqItems.isEmpty()) {
+               for (BillofQuantitiesItemDTO item : boqItems) {
+                  if (item.getProductId() < 0) {
+                     LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+                     continue; // Skip items with negative product IDs
+                  }
+                  Optional<SupplierProductDTO> product = supplierProductDAO
+                        .getSupplierProductById(supplierId, item.getProductId());
+                  if (product.isPresent()) {
+                     item.setProductName(product.get().getName());
+                  } else {
+                     LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping",
+                           item.getProductId());
+                  }
+               }
                LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(),
                      agreement.getAgreementId());
             } else {
@@ -766,6 +793,20 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       if (boqItems.isEmpty()) {
          LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreementId);
       } else {
+         for (BillofQuantitiesItemDTO item : boqItems) {
+            if (item.getProductId() < 0) {
+               LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+               continue; // Skip items with negative product IDs
+            }
+            Optional<SupplierProductDTO> product = supplierProductDAO
+                  .getSupplierProductById(agreementId, item.getProductId());
+            if (product.isPresent()) {
+               item.setProductName(product.get().getName());
+            } else {
+               LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
+            }
+         }
+         LOGGER.debug("Bill of Quantities items details: {}", boqItems);
          LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
       }
       return boqItems;
@@ -793,6 +834,16 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       if (boqItems.isEmpty()) {
          LOGGER.warn("No Bill of Quantities items found for product with ID: {}", productId);
       } else {
+         for (BillofQuantitiesItemDTO item : boqItems) {
+            Optional<CatalogProductDTO> product = supplierProductDAO.getCatalogProducts().stream()
+                  .filter(p -> p.getProductId() == item.getProductId()).findFirst();
+            if (product.isPresent()) {
+               item.setProductName(product.get().getProductName());
+            } else {
+               LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
+            }
+         }
+         LOGGER.debug("Bill of Quantities items details: {}", boqItems);
          LOGGER.info("Found {} Bill of Quantities items for product with ID: {}", boqItems.size(), productId);
       }
       return boqItems;
