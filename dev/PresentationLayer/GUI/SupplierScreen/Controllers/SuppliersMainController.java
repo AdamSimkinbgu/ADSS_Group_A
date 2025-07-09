@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
@@ -44,6 +45,21 @@ public class SuppliersMainController {
       suppliersBtn.setOnAction(_ -> loadSection(
             "Suppliers List",
             ScreensEnum.SUPPLIERS_LIST.getFxmlPath()));
+      // next buttons are not implemented yet, show an alert
+      ordersBtn.setOnAction(_ -> {
+         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+         alert.setTitle("Not Implemented");
+         alert.setHeaderText("Orders Tab");
+         alert.setContentText("The Orders module is not implemented yet.");
+         alert.showAndWait();
+      });
+      productsBtn.setOnAction(_ -> {
+         Alert alert = new Alert(Alert.AlertType.INFORMATION);
+         alert.setTitle("Not Implemented");
+         alert.setHeaderText("Products Tab");
+         alert.setContentText("The Products module is not implemented yet.");
+         alert.showAndWait();
+      });
    }
 
    private void loadSection(String title, String fxmlPath) {
