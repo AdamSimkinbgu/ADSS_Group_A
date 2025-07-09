@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 public class EmployeeService {
     private final EmployeeController employeeController;
     private final AuthorisationController authorisationController;
 
-
-    public EmployeeService(EmployeeController employeeController , AuthorisationController authorisationController) {
+    public EmployeeService(EmployeeController employeeController, AuthorisationController authorisationController) {
         this.employeeController = employeeController;
         this.authorisationController = authorisationController;
     }
@@ -46,33 +44,31 @@ public class EmployeeService {
         if (employee.getBankAccount() != null) {
             DomainLayer.EmployeeSubModule.BankAccount bankAccount = employee.getBankAccount();
             bankAccountDTO = new DTOs.BankAccountDTO(
-                employee.getIsraeliId(),
-                bankAccount.getBankNumber(),
-                bankAccount.getBankBranchNumber(),
-                bankAccount.getBankAccountNumber()
-            );
+                    employee.getIsraeliId(),
+                    bankAccount.getBankNumber(),
+                    bankAccount.getBankBranchNumber(),
+                    bankAccount.getBankAccountNumber());
         }
 
         return new EmployeeDTO(
-            employee.getIsraeliId(),
-            employee.getFirstName(),
-            employee.getLastName(),
-            employee.getSalary(),
-            employee.getTermsOfEmployment(),
-            employee.getRoles(),
-            employee.getStartOfEmployment(),
-            employee.isActive(),
-            employee.getCreationDate(),
-            employee.getUpdateDate(),
-            employee.getBranchId(),
-            bankAccountDTO
-        );
+                employee.getIsraeliId(),
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getSalary(),
+                employee.getTermsOfEmployment(),
+                employee.getRoles(),
+                employee.getStartOfEmployment(),
+                employee.isActive(),
+                employee.getCreationDate(),
+                employee.getUpdateDate(),
+                employee.getBranchId(),
+                bankAccountDTO);
     }
 
     /**
      * Converts a role name and permissions to a RoleDTO
      * 
-     * @param roleName The name of the role
+     * @param roleName    The name of the role
      * @param permissions The set of permissions for the role
      * @return The corresponding RoleDTO object
      */
@@ -127,7 +123,7 @@ public class EmployeeService {
     /**
      * Checks if an employee is authorized to perform an action.
      *
-     * @param israeliId - The Israeli ID of the employee to check
+     * @param israeliId  - The Israeli ID of the employee to check
      * @param permission - The permission to check for
      * @return True if the employee is authorized, false otherwise
      * @throws ServiceException if an error occurs during authorization check
@@ -268,7 +264,7 @@ public class EmployeeService {
      * @param roleName The name of the role to get details for
      * @return A serialized RoleDTO object
      * @throws ValidationException if the role name is invalid
-     * @throws ServiceException if an error occurs while retrieving role details
+     * @throws ServiceException    if an error occurs while retrieving role details
      */
     public String getRoleDetails(String roleName) {
         try {
@@ -302,7 +298,7 @@ public class EmployeeService {
      * @param roleName The name of the role to get details for
      * @return A RoleDTO object
      * @throws ValidationException if the role name is invalid
-     * @throws ServiceException if an error occurs while retrieving role details
+     * @throws ServiceException    if an error occurs while retrieving role details
      */
     public RoleDTO getRoleDetailsAsDTO(String roleName) {
         try {
@@ -324,6 +320,7 @@ public class EmployeeService {
             throw new ServiceException("Error retrieving role details: " + e.getMessage(), e);
         }
     }
+
     public RoleDTO getRoleDTO(String roleName) {
         try {
             // Validate input
@@ -406,8 +403,10 @@ public class EmployeeService {
      *
      * @param israeliId The Israeli ID of the employee to retrieve
      * @return A serialized EmployeeDTO object
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws ServiceException if an error occurs while retrieving the employee
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws ServiceException          if an error occurs while retrieving the
+     *                                   employee
      */
     public String getEmployeeById(long israeliId) {
         try {
@@ -435,8 +434,10 @@ public class EmployeeService {
      *
      * @param israeliId The Israeli ID of the employee to retrieve
      * @return An EmployeeDTO object
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws ServiceException if an error occurs while retrieving the employee
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws ServiceException          if an error occurs while retrieving the
+     *                                   employee
      */
     public EmployeeDTO getEmployeeByIdAsDTO(long israeliId) {
         try {
@@ -460,24 +461,29 @@ public class EmployeeService {
 
     /**
      * Creates a new employee.
-     * NOTE: CreateEmployee with NO roles or permissions need to be added to the employee in another action!
+     * NOTE: CreateEmployee with NO roles or permissions need to be added to the
+     * employee in another action!
      *
-     * @param doneBy         The ID of the user who is creating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param firstName      The first name of the employee.
-     * @param lastName       The last name of the employee.
-     * @param salary         The salary of the employee.
+     * @param doneBy            The ID of the user who is creating the employee.
+     * @param israeliId         The Israeli ID of the employee.
+     * @param firstName         The first name of the employee.
+     * @param lastName          The last name of the employee.
+     * @param salary            The salary of the employee.
      * @param termsOfEmployment The terms of employment for the employee.
      * @param startOfEmployment The start date of employment for the employee.
-     * @param branchId         The branch that the employee is assigned to.
-     * @return A message indicating whether the employee was created successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws AuthorizationException if the user doesn't have permission to create employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param branchId          The branch that the employee is assigned to.
+     * @return A message indicating whether the employee was created successfully or
+     *         not.
+     * @throws ValidationException    if any input parameters are invalid
+     * @throws AuthorizationException if the user doesn't have permission to create
+     *                                employees
+     * @throws ServiceException       if an unexpected error occurs
      */
-    public String createEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, LocalDate startOfEmployment, Long branchId) {
+    public String createEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary,
+            Map<String, Object> termsOfEmployment, LocalDate startOfEmployment, Long branchId) {
         try {
-            boolean result = employeeController.createEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, null, startOfEmployment, branchId);
+            boolean result = employeeController.createEmployee(doneBy, israeliId, firstName, lastName, salary,
+                    termsOfEmployment, null, startOfEmployment, branchId);
 
             if (result) {
                 return "Employee created successfully"; // Employee created successfully
@@ -497,34 +503,39 @@ public class EmployeeService {
 
     /**
      * Creates a new employee with bank account information.
-     * NOTE: CreateEmployee with NO roles or permissions need to be added to the employee in another action!
+     * NOTE: CreateEmployee with NO roles or permissions need to be added to the
+     * employee in another action!
      *
-     * @param doneBy         The ID of the user who is creating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param firstName      The first name of the employee.
-     * @param lastName       The last name of the employee.
-     * @param salary         The salary of the employee.
+     * @param doneBy            The ID of the user who is creating the employee.
+     * @param israeliId         The Israeli ID of the employee.
+     * @param firstName         The first name of the employee.
+     * @param lastName          The last name of the employee.
+     * @param salary            The salary of the employee.
      * @param termsOfEmployment The terms of employment for the employee.
      * @param startOfEmployment The start date of employment for the employee.
-     * @param branchId         The branch that the employee is assigned to.
-     * @param bankNumber       The bank number for the employee's bank account.
-     * @param bankBranchNumber The bank branch number for the employee's bank account.
-     * @param bankAccountNumber The bank account number for the employee's bank account.
-     * @return A message indicating whether the employee was created successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws AuthorizationException if the user doesn't have permission to create employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param branchId          The branch that the employee is assigned to.
+     * @param bankNumber        The bank number for the employee's bank account.
+     * @param bankBranchNumber  The bank branch number for the employee's bank
+     *                          account.
+     * @param bankAccountNumber The bank account number for the employee's bank
+     *                          account.
+     * @return A message indicating whether the employee was created successfully or
+     *         not.
+     * @throws ValidationException    if any input parameters are invalid
+     * @throws AuthorizationException if the user doesn't have permission to create
+     *                                employees
+     * @throws ServiceException       if an unexpected error occurs
      */
-    public String createEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, 
-                                Map<String, Object> termsOfEmployment, LocalDate startOfEmployment, Long branchId,
-                                long bankNumber, long bankBranchNumber, long bankAccountNumber) {
+    public String createEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary,
+            Map<String, Object> termsOfEmployment, LocalDate startOfEmployment, Long branchId,
+            long bankNumber, long bankBranchNumber, long bankAccountNumber) {
         try {
             // Create bank account object
-            DomainLayer.EmployeeSubModule.BankAccount bankAccount = 
-                new DomainLayer.EmployeeSubModule.BankAccount(israeliId, bankNumber, bankBranchNumber, bankAccountNumber);
+            DomainLayer.EmployeeSubModule.BankAccount bankAccount = new DomainLayer.EmployeeSubModule.BankAccount(
+                    israeliId, bankNumber, bankBranchNumber, bankAccountNumber);
 
-            boolean result = employeeController.createEmployee(doneBy, israeliId, firstName, lastName, salary, 
-                                                              termsOfEmployment, null, startOfEmployment, branchId, bankAccount);
+            boolean result = employeeController.createEmployee(doneBy, israeliId, firstName, lastName, salary,
+                    termsOfEmployment, null, startOfEmployment, branchId, bankAccount);
 
             if (result) {
                 return "Employee created successfully with bank account information"; // Employee created successfully
@@ -545,21 +556,25 @@ public class EmployeeService {
     /**
      * Updates an existing employee.
      *
-     * @param doneBy         The ID of the user who is updating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param firstName      The new first name of the employee.
-     * @param lastName       The new last name of the employee.
-     * @param salary         The new salary of the employee.
+     * @param doneBy            The ID of the user who is updating the employee.
+     * @param israeliId         The Israeli ID of the employee.
+     * @param firstName         The new first name of the employee.
+     * @param lastName          The new last name of the employee.
+     * @param salary            The new salary of the employee.
      * @param termsOfEmployment The new terms of employment for the employee.
-     * @param active         Whether the employee is active or not.
-     * @param branch         The new branch that the employee is assigned to.
-     * @return A message indicating whether the employee was updated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to update employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param active            Whether the employee is active or not.
+     * @param branch            The new branch that the employee is assigned to.
+     * @return A message indicating whether the employee was updated successfully or
+     *         not.
+     * @throws ValidationException       if any input parameters are invalid
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws AuthorizationException    if the user doesn't have permission to
+     *                                   update employees
+     * @throws ServiceException          if an unexpected error occurs
      */
-    public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, boolean active, String branch) {
+    public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary,
+            Map<String, Object> termsOfEmployment, boolean active, String branch) {
         try {
 
             // Check if employee exists
@@ -568,7 +583,8 @@ public class EmployeeService {
                 throw new EmployeeNotFoundException(israeliId);
             }
 
-            boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, active);
+            boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary,
+                    termsOfEmployment, active);
             if (result) {
                 return "Employee updated successfully";
             } else {
@@ -588,22 +604,27 @@ public class EmployeeService {
     /**
      * Updates an existing employee without changing the branch.
      *
-     * @param doneBy         The ID of the user who is updating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param firstName      The new first name of the employee.
-     * @param lastName       The new last name of the employee.
-     * @param salary         The new salary of the employee.
+     * @param doneBy            The ID of the user who is updating the employee.
+     * @param israeliId         The Israeli ID of the employee.
+     * @param firstName         The new first name of the employee.
+     * @param lastName          The new last name of the employee.
+     * @param salary            The new salary of the employee.
      * @param termsOfEmployment The new terms of employment for the employee.
-     * @param active         Whether the employee is active or not.
-     * @return A message indicating whether the employee was updated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to update employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param active            Whether the employee is active or not.
+     * @return A message indicating whether the employee was updated successfully or
+     *         not.
+     * @throws ValidationException       if any input parameters are invalid
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws AuthorizationException    if the user doesn't have permission to
+     *                                   update employees
+     * @throws ServiceException          if an unexpected error occurs
      */
-    public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, Map<String, Object> termsOfEmployment, boolean active) {
+    public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary,
+            Map<String, Object> termsOfEmployment, boolean active) {
         try {
-            boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary, termsOfEmployment, active);
+            boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary,
+                    termsOfEmployment, active);
             return result ? "Employee updated successfully" : "Failed to update employee";
 
         } catch (ValidationException | EmployeeNotFoundException | AuthorizationException e) {
@@ -616,32 +637,37 @@ public class EmployeeService {
     /**
      * Updates an existing employee with bank account information.
      *
-     * @param doneBy         The ID of the user who is updating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param firstName      The new first name of the employee.
-     * @param lastName       The new last name of the employee.
-     * @param salary         The new salary of the employee.
+     * @param doneBy            The ID of the user who is updating the employee.
+     * @param israeliId         The Israeli ID of the employee.
+     * @param firstName         The new first name of the employee.
+     * @param lastName          The new last name of the employee.
+     * @param salary            The new salary of the employee.
      * @param termsOfEmployment The new terms of employment for the employee.
-     * @param active         Whether the employee is active or not.
-     * @param bankNumber     The bank number for the employee's bank account.
-     * @param bankBranchNumber The bank branch number for the employee's bank account.
-     * @param bankAccountNumber The bank account number for the employee's bank account.
-     * @return A message indicating whether the employee was updated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to update employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param active            Whether the employee is active or not.
+     * @param bankNumber        The bank number for the employee's bank account.
+     * @param bankBranchNumber  The bank branch number for the employee's bank
+     *                          account.
+     * @param bankAccountNumber The bank account number for the employee's bank
+     *                          account.
+     * @return A message indicating whether the employee was updated successfully or
+     *         not.
+     * @throws ValidationException       if any input parameters are invalid
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws AuthorizationException    if the user doesn't have permission to
+     *                                   update employees
+     * @throws ServiceException          if an unexpected error occurs
      */
-    public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary, 
-                                Map<String, Object> termsOfEmployment, boolean active,
-                                long bankNumber, long bankBranchNumber, long bankAccountNumber) {
+    public String updateEmployee(long doneBy, long israeliId, String firstName, String lastName, long salary,
+            Map<String, Object> termsOfEmployment, boolean active,
+            long bankNumber, long bankBranchNumber, long bankAccountNumber) {
         try {
             // Create bank account object
-            DomainLayer.EmployeeSubModule.BankAccount bankAccount = 
-                new DomainLayer.EmployeeSubModule.BankAccount(israeliId, bankNumber, bankBranchNumber, bankAccountNumber);
+            DomainLayer.EmployeeSubModule.BankAccount bankAccount = new DomainLayer.EmployeeSubModule.BankAccount(
+                    israeliId, bankNumber, bankBranchNumber, bankAccountNumber);
 
-            boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary, 
-                                                              termsOfEmployment, active, bankAccount);
+            boolean result = employeeController.updateEmployee(doneBy, israeliId, firstName, lastName, salary,
+                    termsOfEmployment, active, bankAccount);
 
             return result ? "Employee updated successfully with bank account information" : "Failed to update employee";
 
@@ -657,11 +683,14 @@ public class EmployeeService {
      *
      * @param doneBy    The ID of the user who is deactivating the employee.
      * @param israeliId The Israeli ID of the employee to deactivate.
-     * @return A message indicating whether the employee was deactivated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to deactivate employees
-     * @throws ServiceException if an unexpected error occurs
+     * @return A message indicating whether the employee was deactivated
+     *         successfully or not.
+     * @throws ValidationException       if any input parameters are invalid
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws AuthorizationException    if the user doesn't have permission to
+     *                                   deactivate employees
+     * @throws ServiceException          if an unexpected error occurs
      */
     public String deactivateEmployee(long doneBy, long israeliId) {
         try {
@@ -681,16 +710,21 @@ public class EmployeeService {
             throw new ServiceException("Error deactivating employee: " + e.getMessage(), e);
         }
     }
+
     /**
      * Reactivates an employee in the system identified by their Israeli ID.
      *
-     * @param doneBy The ID of the user performing the reactivation action.
+     * @param doneBy    The ID of the user performing the reactivation action.
      * @param israeliId The unique Israeli ID of the employee to be reactivated.
      * @return A message indicating either successful reactivation or failure.
-     * @throws AuthorizationException If the user does not have the required permissions to perform the reactivation.
-     * @throws ValidationException If the input data is invalid or if there are validation errors.
-     * @throws EmployeeNotFoundException If the employee with the given Israeli ID is not found.
-     * @throws ServiceException If an unexpected error occurs during the process.
+     * @throws AuthorizationException    If the user does not have the required
+     *                                   permissions to perform the reactivation.
+     * @throws ValidationException       If the input data is invalid or if there
+     *                                   are validation errors.
+     * @throws EmployeeNotFoundException If the employee with the given Israeli ID
+     *                                   is not found.
+     * @throws ServiceException          If an unexpected error occurs during the
+     *                                   process.
      */
     public String reactivateEmployee(long doneBy, long israeliId) {
         try {
@@ -738,9 +772,10 @@ public class EmployeeService {
     /**
      * Creates a new role.
      *
-     * @param doneBy         The ID of the user who is creating the role.
-     * @param roleName       The name of the role to be created.
-     * @return A message indicating whether the role was created successfully or not.
+     * @param doneBy   The ID of the user who is creating the role.
+     * @param roleName The name of the role to be created.
+     * @return A message indicating whether the role was created successfully or
+     *         not.
      */
     public String createRole(long doneBy, String roleName) {
         try {
@@ -797,12 +832,13 @@ public class EmployeeService {
             return "Unexpected error: " + e.getMessage();
         }
     }
+
     /**
      * Adds a role to an employee.
      *
-     * @param doneBy         The ID of the user who is adding the role.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param roleName       The name of the role to be added.
+     * @param doneBy    The ID of the user who is adding the role.
+     * @param israeliId The Israeli ID of the employee.
+     * @param roleName  The name of the role to be added.
      * @return A message indicating whether the role was added successfully or not.
      */
     public String addRoleToEmployee(long doneBy, long israeliId, String roleName) {
@@ -826,10 +862,11 @@ public class EmployeeService {
     /**
      * Removes a role from an employee.
      *
-     * @param doneBy         The ID of the user who is removing the role.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param roleName       The name of the role to be removed.
-     * @return A message indicating whether the role was removed successfully or not.
+     * @param doneBy    The ID of the user who is removing the role.
+     * @param israeliId The Israeli ID of the employee.
+     * @param roleName  The name of the role to be removed.
+     * @return A message indicating whether the role was removed successfully or
+     *         not.
      */
     public String removeRoleFromEmployee(long doneBy, long israeliId, String roleName) {
         try {
@@ -857,9 +894,11 @@ public class EmployeeService {
      * Adds a permission to a role.
      *
      * @param doneBy         The ID of the user who is adding the permission.
-     * @param roleName       The name of the role to which the permission will be added.
-     * @param permissionName  The name of the permission to be added.
-     * @return A message indicating whether the permission was added successfully or not.
+     * @param roleName       The name of the role to which the permission will be
+     *                       added.
+     * @param permissionName The name of the permission to be added.
+     * @return A message indicating whether the permission was added successfully or
+     *         not.
      */
     public String addPermissionToRole(long doneBy, String roleName, String permissionName) {
         String PERMISSION_REQUIRED = "ADD_PERMISSION_TO_ROLE";
@@ -889,9 +928,11 @@ public class EmployeeService {
      * Removes a permission from a role.
      *
      * @param doneBy         The ID of the user who is removing the permission.
-     * @param roleName       The name of the role from which the permission will be removed.
-     * @param permissionName  The name of the permission to be removed.
-     * @return A message indicating whether the permission was removed successfully or not.
+     * @param roleName       The name of the role from which the permission will be
+     *                       removed.
+     * @param permissionName The name of the permission to be removed.
+     * @return A message indicating whether the permission was removed successfully
+     *         or not.
      */
     public String removePermissionFromRole(long doneBy, String roleName, String permissionName) {
         String PERMISSION_REQUIRED = "REMOVE_PERMISSION_FROM_ROLE";
@@ -953,9 +994,9 @@ public class EmployeeService {
     /**
      * Clones an existing role to create a new role with the same permissions.
      *
-     * @param doneBy          The ID of the user who is cloning the role
+     * @param doneBy           The ID of the user who is cloning the role
      * @param existingRoleName The name of the role to clone
-     * @param newRoleName     The name of the new role to create
+     * @param newRoleName      The name of the new role to create
      * @return A message indicating whether the role was cloned successfully
      */
     public String cloneRole(long doneBy, String existingRoleName, String newRoleName) {
@@ -976,7 +1017,8 @@ public class EmployeeService {
             HashSet<String> permissions = roleDetails.get(existingRoleName);
 
             // Create new role with same permissions
-            // Validation of the new role name and permissions is handled in the domain layer
+            // Validation of the new role name and permissions is handled in the domain
+            // layer
             boolean success = authorisationController.createRole(doneBy, newRoleName, permissions);
 
             if (success) {
@@ -992,6 +1034,7 @@ public class EmployeeService {
             return "Unexpected error: " + e.getMessage();
         }
     }
+
     public String updateEmployeeBranch(long israeliId, long branchId) {
         try {
             boolean result = employeeController.updateEmployeeBranch(israeliId, branchId);
@@ -1006,6 +1049,7 @@ public class EmployeeService {
             throw new ServiceException("Error updating employee branch: " + e.getMessage(), e);
         }
     }
+
     public String getEmployeeBranchName(long israeliId) {
         try {
             return employeeController.getEmployeeBranchName(israeliId);
@@ -1019,13 +1063,15 @@ public class EmployeeService {
     // ===========================
 
     /**
-     * Checks if the employee with the given Israeli ID has the specified permission.
+     * Checks if the employee with the given Israeli ID has the specified
+     * permission.
      *
-     * @param israeliId The unique identifier of the employee.
+     * @param israeliId  The unique identifier of the employee.
      * @param permission The permission to check for the specified employee.
      * @return true if the employee has the given permission, false otherwise.
      * @throws AuthorizationException If there is an issue with authorization.
-     * @throws ServiceException If a general error occurs while checking permissions.
+     * @throws ServiceException       If a general error occurs while checking
+     *                                permissions.
      */
     public boolean hasPermission(long israeliId, String permission) {
         try {
@@ -1042,25 +1088,27 @@ public class EmployeeService {
      *
      * @param employeeId The unique identifier of the employee to be checked.
      * @return true if the employee is active; false otherwise.
-     * @throws ServiceException if there is an error while checking the employee's status.
+     * @throws ServiceException if there is an error while checking the employee's
+     *                          status.
      */
     public boolean isEmployeeActive(long employeeId) {
-        try{
+        try {
             return employeeController.isEmployeeActive(employeeId);
         } catch (Exception e) {
             throw new ServiceException("Error checking employee status: " + e.getMessage(), e);
         }
     }
+
     /**
      * Checks if an employee, identified by their Israeli ID, has a specified role.
      *
      * @param israeliId the unique Israeli ID of the employee
-     * @param roleName the name of the role to check for the employee
+     * @param roleName  the name of the role to check for the employee
      * @return true if the employee has the specified role, otherwise false
      * @throws ServiceException if an error occurs during the check
      */
     public boolean isEmployeeHaveRole(long israeliId, String roleName) {
-        try{
+        try {
             return employeeController.isEmployeeHaveRole(israeliId, roleName);
         } catch (Exception e) {
             throw new ServiceException("Error checking employee role: " + e.getMessage(), e);
@@ -1090,14 +1138,16 @@ public class EmployeeService {
     }
 
     /**
-     * Determines if a user has the required permissions to access the Transport Module.
+     * Determines if a user has the required permissions to access the Transport
+     * Module.
      *
-     * @param userId the unique identifier of the user whose access is being verified
+     * @param userId the unique identifier of the user whose access is being
+     *               verified
      * @return true if the user has access to the Transport Module, false otherwise
      * @throws ServiceException if an error occurs while checking access permissions
      */
     public boolean canAccessTransportModule(long userId) {
-    try {
+        try {
             // Check if the user has the required permission to access the Transport Module
             return employeeController.canAccessTransportModule(userId);
         } catch (Exception e) {
@@ -1138,27 +1188,33 @@ public class EmployeeService {
     /**
      * Updates only the bank account information for an employee.
      *
-     * @param doneBy         The ID of the user who is updating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @param bankNumber     The bank number for the employee's bank account.
-     * @param bankBranchNumber The bank branch number for the employee's bank account.
-     * @param bankAccountNumber The bank account number for the employee's bank account.
-     * @return A message indicating whether the bank account was updated successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to update employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param doneBy            The ID of the user who is updating the employee.
+     * @param israeliId         The Israeli ID of the employee.
+     * @param bankNumber        The bank number for the employee's bank account.
+     * @param bankBranchNumber  The bank branch number for the employee's bank
+     *                          account.
+     * @param bankAccountNumber The bank account number for the employee's bank
+     *                          account.
+     * @return A message indicating whether the bank account was updated
+     *         successfully or not.
+     * @throws ValidationException       if any input parameters are invalid
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws AuthorizationException    if the user doesn't have permission to
+     *                                   update employees
+     * @throws ServiceException          if an unexpected error occurs
      */
-    public String updateEmployeeBankAccount(long doneBy, long israeliId, 
-                                          long bankNumber, long bankBranchNumber, long bankAccountNumber) {
+    public String updateEmployeeBankAccount(long doneBy, long israeliId,
+            long bankNumber, long bankBranchNumber, long bankAccountNumber) {
         try {
             // Create bank account object
-            DomainLayer.EmployeeSubModule.BankAccount bankAccount = 
-                new DomainLayer.EmployeeSubModule.BankAccount(israeliId, bankNumber, bankBranchNumber, bankAccountNumber);
+            DomainLayer.EmployeeSubModule.BankAccount bankAccount = new DomainLayer.EmployeeSubModule.BankAccount(
+                    israeliId, bankNumber, bankBranchNumber, bankAccountNumber);
 
             boolean result = employeeController.updateEmployeeBankAccount(doneBy, israeliId, bankAccount);
 
-            return result ? "Bank account information updated successfully" : "Failed to update bank account information";
+            return result ? "Bank account information updated successfully"
+                    : "Failed to update bank account information";
 
         } catch (UnauthorizedPermissionException e) {
             throw new AuthorizationException(doneBy, "UPDATE_EMPLOYEE");
@@ -1174,19 +1230,23 @@ public class EmployeeService {
     /**
      * Removes the bank account information for an employee.
      *
-     * @param doneBy         The ID of the user who is updating the employee.
-     * @param israeliId      The Israeli ID of the employee.
-     * @return A message indicating whether the bank account was removed successfully or not.
-     * @throws ValidationException if any input parameters are invalid
-     * @throws EmployeeNotFoundException if the employee with the given ID doesn't exist
-     * @throws AuthorizationException if the user doesn't have permission to update employees
-     * @throws ServiceException if an unexpected error occurs
+     * @param doneBy    The ID of the user who is updating the employee.
+     * @param israeliId The Israeli ID of the employee.
+     * @return A message indicating whether the bank account was removed
+     *         successfully or not.
+     * @throws ValidationException       if any input parameters are invalid
+     * @throws EmployeeNotFoundException if the employee with the given ID doesn't
+     *                                   exist
+     * @throws AuthorizationException    if the user doesn't have permission to
+     *                                   update employees
+     * @throws ServiceException          if an unexpected error occurs
      */
     public String removeEmployeeBankAccount(long doneBy, long israeliId) {
         try {
             boolean result = employeeController.removeEmployeeBankAccount(doneBy, israeliId);
 
-            return result ? "Bank account information removed successfully" : "Failed to remove bank account information";
+            return result ? "Bank account information removed successfully"
+                    : "Failed to remove bank account information";
 
         } catch (UnauthorizedPermissionException e) {
             throw new AuthorizationException(doneBy, "UPDATE_EMPLOYEE");
@@ -1202,7 +1262,7 @@ public class EmployeeService {
     /**
      * Deletes a role from the system.
      *
-     * @param doneBy The ID of the user who is deleting the role
+     * @param doneBy   The ID of the user who is deleting the role
      * @param roleName The name of the role to delete
      * @return A message indicating whether the role was deleted successfully or not
      */
@@ -1222,6 +1282,48 @@ public class EmployeeService {
             return "Error deleting role: " + e.getMessage();
         } catch (RuntimeException e) {
             return "Unexpected error: " + e.getMessage();
+        }
+    }
+
+    public void canAccessSuppliersModule(long israeliId) {
+        try {
+            // Check if the employee has permission to access
+            boolean hasPermission = employeeController.canAccessSuppliersModule(israeliId);
+            if (!hasPermission) {
+                throw new AuthorizationException(israeliId, "ACCESS_SUPPLIERS_MODULE");
+            }
+        } catch (UnauthorizedPermissionException e) {
+            throw new AuthorizationException(israeliId, "ACCESS_SUPPLIERS_MODULE");
+        } catch (Exception e) {
+            throw new ServiceException("Error checking access to Suppliers Module: " + e.getMessage(), e);
+        }
+    }
+
+    public void canAccessInventoryModule(long israeliId) {
+        try {
+            // Check if the employee has permission to access
+            boolean hasPermission = employeeController.canAccessInventoryModule(israeliId);
+            if (!hasPermission) {
+                throw new AuthorizationException(israeliId, "ACCESS_INVENTORY_MODULE");
+            }
+        } catch (UnauthorizedPermissionException e) {
+            throw new AuthorizationException(israeliId, "ACCESS_INVENTORY_MODULE");
+        } catch (Exception e) {
+            throw new ServiceException("Error checking access to Inventory Module: " + e.getMessage(), e);
+        }
+    }
+
+    public void canAccessHRModule(long israeliId) {
+        try {
+            // Check if the employee has permission to access
+            boolean hasPermission = employeeController.canAccessHRModule(israeliId);
+            if (!hasPermission) {
+                throw new AuthorizationException(israeliId, "ACCESS_HR_MODULE");
+            }
+        } catch (UnauthorizedPermissionException e) {
+            throw new AuthorizationException(israeliId, "ACCESS_HR_MODULE");
+        } catch (Exception e) {
+            throw new ServiceException("Error checking access to HR Module: " + e.getMessage(), e);
         }
     }
 }
