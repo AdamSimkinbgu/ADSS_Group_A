@@ -17,13 +17,12 @@ public class LoginViewModel {
    private final StringProperty userId = new SimpleStringProperty("");
    private final StringProperty errorMessage = new SimpleStringProperty("");
    private final BooleanProperty loginSuccess = new SimpleBooleanProperty(false);
-
+   private EmployeeDTO loggedInUser;
    // get the factory
    private final SystemFactory systemFactory = new SystemFactory();
    private final EmployeeService employeeService;
    private final ShiftService shiftService;
    private final EmployeeIntegrationService authService;
-   public int loggedInUserId;
 
    public LoginViewModel() {
       try {
@@ -45,6 +44,13 @@ public class LoginViewModel {
 
    public BooleanProperty loginSuccessProperty() {
       return loginSuccess;
+   }
+
+   public EmployeeDTO getLoggedInUserDTO() {
+      if (!loginSuccess.get()) {
+         throw new IllegalStateException("No user is currently logged in.");
+      }
+      return loggedInUser;
    }
 
    public String getLoggedInUser() {
@@ -91,6 +97,7 @@ public class LoginViewModel {
       // check via your integration service
       if (authService.isActive(id)) {
          loginSuccess.set(true);
+         loggedInUser = employeeService.getEmployeeByIdAsDTO(id);
          return true;
       } else {
          errorMessage.set("Invalid user ID");

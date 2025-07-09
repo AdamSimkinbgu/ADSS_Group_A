@@ -36,7 +36,7 @@ public class LoginViewController {
             MainMenuViewModel mvm = new MainMenuViewModel(viewModel.getLoggedInUser());
             loader.setControllerFactory(type -> {
                if (type == MainMenuController.class) {
-                  return new MainMenuController(mvm);
+                  return new MainMenuController(mvm, viewModel.getLoggedInUserDTO());
                }
                try {
                   return type.getDeclaredConstructor().newInstance();

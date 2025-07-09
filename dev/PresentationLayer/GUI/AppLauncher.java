@@ -36,7 +36,8 @@ public class AppLauncher extends Application {
          // tell FXMLLoader how to build MainMenuController
          loader.setControllerFactory(type -> {
             if (type == MainMenuController.class) {
-               return new MainMenuController(vm);
+               return new MainMenuController(vm,
+                     null);
             }
             try {
                return type.getDeclaredConstructor().newInstance();
