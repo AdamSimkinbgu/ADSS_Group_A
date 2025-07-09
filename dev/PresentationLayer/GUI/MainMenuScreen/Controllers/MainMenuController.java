@@ -10,6 +10,7 @@ import PresentationLayer.GUI.SupplierScreen.Controllers.SuppliersDashboardContro
 import ServiceLayer.EmployeeSubModule.EmployeeService;
 import ServiceLayer.EmployeeSubModule.ShiftService;
 import ServiceLayer.SuppliersServiceSubModule.SupplierService;
+import ServiceLayer.exception.ServiceException;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,12 +18,14 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Labeled;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import DTOs.EmployeeDTO;
 import DomainLayer.SystemFactory;
 import DomainLayer.SystemFactory.SupplierModuleComponents;
 
@@ -46,8 +49,11 @@ public class MainMenuController {
 
    private static boolean isInitialized = false;
 
-   public MainMenuController(MainMenuViewModel vm) {
+   private EmployeeDTO employeeDTO;
+
+   public MainMenuController(MainMenuViewModel vm, EmployeeDTO employeeDTO) {
       this.vm = vm;
+      this.employeeDTO = employeeDTO;
    }
 
    @FXML
@@ -71,6 +77,7 @@ public class MainMenuController {
                if (type == LoginViewController.class) {
                   welcomeLabel.textProperty().bind(
                         Bindings.concat("Welcome, Please log in!"));
+                  employeeDTO = null; // reset employeeDTO on logout
                   return new LoginViewController(loginVm);
                }
                try {
@@ -84,6 +91,7 @@ public class MainMenuController {
       if (!isInitialized) {
          // only set the content area once
          isInitialized = true;
+
          // load the default module login
          loadModule(ScreensEnum.LOGIN.getFxmlPath(), loader -> {
             // inject your LoginViewController with VM
@@ -105,15 +113,19 @@ public class MainMenuController {
    }
 
    private void onSuppliers() {
+      if (!userHasAccessToSuppliers()) {
+         // userHasAccess already showed an alert
+         return;
+      }
+
       loadModule(ScreensEnum.SUPPLIERS.getFxmlPath(), loader -> {
          SupplierModuleComponents components = new SystemFactory().getSupplierModule();
-         // if you have a SuppliersDashboardController that needs wiring:
          loader.setControllerFactory(type -> {
             if (type == SuppliersDashboardController.class) {
-               SuppliersDashboardController controller = new SuppliersDashboardController();
-               controller.setSupplierService(components.getSupplierService());
-               controller.setOrderService(components.getOrderService());
-               return controller;
+               var ctrl = new SuppliersDashboardController();
+               ctrl.setSupplierService(components.getSupplierService());
+               ctrl.setOrderService(components.getOrderService());
+               return ctrl;
             }
             try {
                return type.getDeclaredConstructor().newInstance();
@@ -124,8 +136,40 @@ public class MainMenuController {
       });
    }
 
+   private boolean userHasAccessToSuppliers() {
+      if (!checkIfAnyUserIsConnected()) {
+         return false;
+      }
+
+      try {
+         EmployeeService empSvc = ServiceFacade.getInstance().getEmployeeService();
+         empSvc.canAccessSuppliersModule(employeeDTO.getIsraeliId());
+         return true;
+      } catch (ServiceException se) {
+         // Explicitly catch the authorization failure
+         Alert a = new Alert(Alert.AlertType.ERROR,
+               "You do not have permission to access the Suppliers module.",
+               ButtonType.OK);
+         a.setHeaderText("Access Denied");
+         a.showAndWait();
+         return false;
+      } catch (IOException ioe) {
+         // Something went wrong talking to the service
+         Alert a = new Alert(Alert.AlertType.ERROR,
+               ioe.getMessage(),
+               ButtonType.OK);
+         a.setHeaderText("Error Checking Permissions");
+         a.showAndWait();
+         return false;
+      }
+   }
+
    private void onInventory() {
       // currently not implemented, show an alert
+      if (!userHasAccessToInventory()) {
+         // userHasAccess already showed an alert
+         return;
+      }
       Alert alert = new Alert(Alert.AlertType.INFORMATION);
       alert.setTitle("Not Implemented");
       alert.setHeaderText("Inventory Module");
@@ -134,7 +178,40 @@ public class MainMenuController {
       // loadModule(ScreensEnum.INVENTORY.getFxmlPath(), null);
    }
 
+   private boolean userHasAccessToInventory() {
+      if (!checkIfAnyUserIsConnected()) {
+         return false;
+      }
+
+      try {
+         EmployeeService empSvc = ServiceFacade.getInstance().getEmployeeService();
+         empSvc.canAccessInventoryModule(employeeDTO.getIsraeliId());
+         return true;
+      } catch (ServiceException se) {
+         // Explicitly catch the authorization failure
+         Alert a = new Alert(Alert.AlertType.ERROR,
+               "You do not have permission to access the Inventory module.",
+               ButtonType.OK);
+         a.setHeaderText("Access Denied");
+         a.showAndWait();
+         return false;
+      } catch (IOException ioe) {
+         // Something went wrong talking to the service
+         Alert a = new Alert(Alert.AlertType.ERROR,
+               ioe.getMessage(),
+               ButtonType.OK);
+         a.setHeaderText("Error Checking Permissions");
+         a.showAndWait();
+         return false;
+      }
+   }
+
    private void onHR() {
+      if (!userHasAccessToHR()) {
+         // userHasAccess already showed an alert
+         return;
+      }
+
       loadModule(ScreensEnum.EMPLOYEE.getFxmlPath(), loader -> {
          // ServiceFacade provides employee & shift services
          try {
@@ -158,8 +235,54 @@ public class MainMenuController {
       });
    }
 
+   private boolean userHasAccessToHR() {
+      if (!checkIfAnyUserIsConnected()) {
+         return false;
+      }
+
+      try {
+         EmployeeService empSvc = ServiceFacade.getInstance().getEmployeeService();
+         empSvc.canAccessHRModule(employeeDTO.getIsraeliId());
+         return true;
+      } catch (ServiceException se) {
+         // Explicitly catch the authorization failure
+         Alert a = new Alert(Alert.AlertType.ERROR,
+               "You do not have permission to access the HR module.",
+               ButtonType.OK);
+         a.setHeaderText("Access Denied");
+         a.showAndWait();
+         return false;
+      } catch (IOException ioe) {
+         // Something went wrong talking to the service
+         Alert a = new Alert(Alert.AlertType.ERROR,
+               ioe.getMessage(),
+               ButtonType.OK);
+         a.setHeaderText("Error Checking Permissions");
+         a.showAndWait();
+         return false;
+      }
+   }
+
+   private boolean checkIfAnyUserIsConnected() {
+      // This method can be used to check if any user is connected
+      // For now, we assume that if the employeeDTO is not null, a user is connected
+      if (employeeDTO == null) {
+         Alert a = new Alert(Alert.AlertType.WARNING,
+               "You must log in before accessing the Inventory module.",
+               ButtonType.OK);
+         a.setHeaderText("Access Denied");
+         a.showAndWait();
+         return false;
+      }
+      return true;
+   }
+
    private void onShipments() {
       // currently not implemented, show an alert
+      if (!userHasAccessToInventory()) {
+         // userHasAccess already showed an alert
+         return;
+      }
       Alert alert = new Alert(Alert.AlertType.INFORMATION);
       alert.setTitle("Not Implemented");
       alert.setHeaderText("Shipments Module");
