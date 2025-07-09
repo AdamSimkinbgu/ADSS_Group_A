@@ -20,8 +20,10 @@ public class config {
     public static final LocalTime END_HOUR_EVENING = initTimeValue("END_HOUR_EVENING", "20:00");
 
     // Default block availability values
-    public static final LocalTime BLOCK_AVAILABILITY_START_HOUR = initTimeValue("BLOCK_AVAILABILITY_START_HOUR", "16:00");
-    public static final DayOfWeek BLOCK_AVAILABILITY_START_DAY = DayOfWeek.valueOf(initStringValue("BLOCK_AVAILABILITY_START_DAY", "THURSDAY").toUpperCase());
+    public static final LocalTime BLOCK_AVAILABILITY_START_HOUR = initTimeValue("BLOCK_AVAILABILITY_START_HOUR",
+            "16:00");
+    public static final DayOfWeek BLOCK_AVAILABILITY_START_DAY = DayOfWeek
+            .valueOf(initStringValue("BLOCK_AVAILABILITY_START_DAY", "THURSDAY").toUpperCase());
 
     // Default roles
     public static final String ROLE_ADMIN = initStringValue("ROLE_ADMIN", "Admin");
@@ -37,16 +39,20 @@ public class config {
     public static final String ROLE_DRIVER_C = initStringValue("ROLE_DRIVER_C", "DriverC");
     public static final String ROLE_DRIVER_D = initStringValue("ROLE_DRIVER_D", "DriverD");
     public static final String ROLE_DRIVER_E = initStringValue("ROLE_DRIVER_E", "DriverE");
+    public static final String ROLE_SUPPLIERS_MANAGER = initStringValue("ROLE_SUPPLIERS_MANAGER", "Suppliers Manager");
+    public static final String ROLE_INVENTORY_MANAGER = initStringValue("ROLE_INVENTORY_MANAGER", "Inventory Manager");
 
     // Database configuration
-//    public static final String DB_URL = initStringValue("DB_URL", "jdbc:sqlite:superLee.db");
-//    public static final boolean LOAD_DATA_FROM_DB = Boolean.parseBoolean(initStringValue("LOAD_DATA_FROM_DB", "true"));
+    // public static final String DB_URL = initStringValue("DB_URL",
+    // "jdbc:sqlite:superLee.db");
+    // public static final boolean LOAD_DATA_FROM_DB =
+    // Boolean.parseBoolean(initStringValue("LOAD_DATA_FROM_DB", "true"));
 
     static {
         // Load properties from file
         try (InputStream input = new FileInputStream(CONFIG_FILE)) {
             properties.load(input);
-            //System.out.println("Configuration loaded successfully from " + CONFIG_FILE);
+            // System.out.println("Configuration loaded successfully from " + CONFIG_FILE);
         } catch (IOException e) {
             System.err.println("Warning: Could not load configuration file. Using default values.");
         }
@@ -54,7 +60,8 @@ public class config {
 
     /**
      * Get a property value from the configuration file
-     * @param key The property key
+     * 
+     * @param key          The property key
      * @param defaultValue The default value to return if the property is not found
      * @return The property value or the default value if not found
      */
@@ -64,6 +71,7 @@ public class config {
 
     /**
      * Get a property value from the configuration file
+     * 
      * @param key The property key
      * @return The property value or null if not found
      */
@@ -73,7 +81,8 @@ public class config {
 
     /**
      * Initialize a LocalTime value from the properties file
-     * @param key The property key
+     * 
+     * @param key          The property key
      * @param defaultValue The default value to use if the property is not found
      * @return The initialized LocalTime value
      */
@@ -87,10 +96,10 @@ public class config {
         }
     }
 
-
     /**
      * Initialize a String value from the properties file
-     * @param key The property key
+     * 
+     * @param key          The property key
      * @param defaultValue The default value to use if the property is not found
      * @return The initialized String value
      */
