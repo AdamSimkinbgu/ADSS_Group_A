@@ -59,7 +59,7 @@ public class SupplierAddController {
       termCombo.getItems().setAll("N30", "N60", "N90", "PREPAID", "POSTPAID");
       // Populate contacts list
       contactsList.setItems(contacts);
-      addContactBtn.setOnAction(e -> {
+      addContactBtn.setOnAction(_ -> {
          String txt = newContactField.getText();
          if (txt != null && !txt.isBlank()) {
             contacts.add(txt.trim());
@@ -70,7 +70,7 @@ public class SupplierAddController {
       // Supply days checkboxes
       for (DayOfWeek day : DayOfWeek.values()) {
          CheckBox cb = new CheckBox(day.name());
-         cb.selectedProperty().addListener((obs, old, nw) -> {
+         cb.selectedProperty().addListener((_, _, nw) -> {
             if (nw)
                selectedDays.add(day);
             else
@@ -79,10 +79,10 @@ public class SupplierAddController {
          daysPane.getChildren().add(cb);
       }
       daysPane.setVisible(false);
-      selfSupplyCheck.selectedProperty().addListener((obs, old, nw) -> daysPane.setVisible(nw));
+      selfSupplyCheck.selectedProperty().addListener((_, _, nw) -> daysPane.setVisible(nw));
 
-      cancelBtn.setOnAction(e -> close());
-      saveBtn.setOnAction(e -> onSave());
+      cancelBtn.setOnAction(_ -> close());
+      saveBtn.setOnAction(_ -> onSave());
    }
 
    private void onSave() {

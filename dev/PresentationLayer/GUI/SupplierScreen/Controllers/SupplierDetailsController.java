@@ -59,7 +59,6 @@ public class SupplierDetailsController {
    private Button closeBtn;
 
    private SupplierDTO supplier;
-   private SupplierService supplierService;
    private AgreementService agreementService;
    private final DateTimeFormatter df = DateTimeFormatter.ISO_LOCAL_DATE;
 
@@ -68,7 +67,6 @@ public class SupplierDetailsController {
    }
 
    public void setServices(SupplierService s, AgreementService a) {
-      this.supplierService = s;
       this.agreementService = a;
    }
 
@@ -100,7 +98,7 @@ public class SupplierDetailsController {
                   .setScale(1, RoundingMode.HALF_UP).toPlainString() + "%"));
 
       // react to agreement selection
-      agreementsTable.getSelectionModel().selectedItemProperty().addListener((obs, old, sel) -> {
+      agreementsTable.getSelectionModel().selectedItemProperty().addListener((_, _, sel) -> {
          if (sel != null) {
             ObservableList<BillofQuantitiesItemDTO> items = FXCollections
                   .observableArrayList(sel.getBillOfQuantitiesItems());
@@ -110,7 +108,7 @@ public class SupplierDetailsController {
          }
       });
 
-      closeBtn.setOnAction(e -> ((Stage) closeBtn.getScene().getWindow()).close());
+      closeBtn.setOnAction(_ -> ((Stage) closeBtn.getScene().getWindow()).close());
    }
 
    public void populate() {

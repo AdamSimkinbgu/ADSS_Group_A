@@ -126,7 +126,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       if (supplier.isPresent()) {
          List<ContactInfoDTO> contacts = contactInfoDAO.getContactInfosBySupplierId(id);
          if (contacts.isEmpty()) {
-            LOGGER.warn("No contact info found for supplier with ID: {}", id);
+            LOGGER.debug("No contact info found for supplier with ID: {}", id);
          } else {
             LOGGER.debug("Found {} contact(s) for supplier with ID: {}", contacts.size(), id);
             supplier.get().setContacts(contacts);
@@ -135,7 +135,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.debug("Supplier retrieved and cached: {}", supplier.get());
          return supplier;
       } else {
-         LOGGER.warn("No supplier found with ID: {}", id);
+         LOGGER.debug("No supplier found with ID: {}", id);
          return Optional.empty();
       }
    }
@@ -207,14 +207,14 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       LOGGER.debug("Deleting supplier with ID: {}", id);
       if (!supplierDAO.supplierExists(id)) {
-         LOGGER.warn("Supplier with ID {} does not exist", id);
+         LOGGER.debug("Supplier with ID {} does not exist", id);
          return false;
       } else {
          SupplierDTO supplier = supplierDAO.getSupplier(id).orElseThrow(
                () -> new RuntimeException("Supplier not found for ID: " + id));
          for (ContactInfoDTO contact : supplier.getContactsInfoDTOList()) {
             if (contact.getSupplierId() < 0) {
-               LOGGER.warn("Contact ID cannot be negative in contact info: {}, skipping", contact);
+               LOGGER.debug("Contact ID cannot be negative in contact info: {}, skipping", contact);
                continue; // Skip items with negative supplier IDs
             }
             // Remove from cache
@@ -274,7 +274,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.debug("Retrieving all suppliers");
       List<SupplierDTO> suppliers = supplierDAO.getAllSuppliers();
       if (suppliers.isEmpty()) {
-         LOGGER.warn("No suppliers found in DB");
+         LOGGER.debug("No suppliers found in DB");
       } else {
          for (SupplierDTO supplier : suppliers) {
             List<ContactInfoDTO> contacts = contactInfoDAO.getContactInfosBySupplierId(supplier.getId());
@@ -282,7 +282,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                LOGGER.debug("Found {} contact(s) for supplier with ID: {}", contacts.size(), supplier.getId());
                supplier.setContacts(contacts);
             } else {
-               LOGGER.warn("No contact info found for supplier with ID: {}", supplier.getId());
+               LOGGER.debug("No contact info found for supplier with ID: {}", supplier.getId());
             }
             suppliersCache.put(supplier.getId(), new Supplier(supplier));
          }
@@ -323,7 +323,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                         .anyMatch(existingItem -> existingItem.getProductId() == item.getProductId()
                               && existingItem.getQuantity() == item.getQuantity()
                               && existingItem.getDiscountPercent().compareTo(item.getDiscountPercent()) == 0)) {
-                     LOGGER.warn(
+                     LOGGER.debug(
                            "Duplicate item found in bill of quantities for product ID {}. Skipping duplicate item.",
                            item.getProductId());
                      continue; // Skip duplicate items
@@ -331,7 +331,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                   item.setProductName(product.get().getName());
                   billOfQuantitiesItems.add(item);
                } else {
-                  LOGGER.warn("Product with ID {} not found for supplier ID {}", item.getProductId(),
+                  LOGGER.debug("Product with ID {} not found for supplier ID {}", item.getProductId(),
                         agreementToSave.getSupplierId(), " skipping to the next item");
                }
             }
@@ -345,7 +345,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          List<BillofQuantitiesItemDTO> billOfQuantitiesItems = new ArrayList<>();
          for (BillofQuantitiesItemDTO item : savedAgreement.getBillOfQuantitiesItems()) {
             if (item.getProductId() < 0) {
-               LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+               LOGGER.debug("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
             }
             item.setAgreementId(savedAgreement.getAgreementId());
             BillofQuantitiesItemDTO createdBOQitem = billofQuantitiesItemDAO.createBillofQuantitiesItem(item);
@@ -390,7 +390,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                .getAllBillofQantitiesItemsForAgreementId(agreementId);
          for (BillofQuantitiesItemDTO item : boqItems) {
             if (item.getProductId() < 0) {
-               LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+               LOGGER.debug("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
                continue; // Skip items with negative product IDs
             }
             Optional<SupplierProductDTO> product = supplierProductDAO
@@ -398,11 +398,11 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             if (product.isPresent()) {
                item.setProductName(product.get().getName());
             } else {
-               LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
+               LOGGER.debug("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
             }
          }
          if (boqItems.isEmpty()) {
-            LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreementId);
+            LOGGER.debug("No Bill of Quantities items found for agreement with ID: {}", agreementId);
          } else {
             LOGGER.debug("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
             agreement.get().setBillOfQuantitiesItems(boqItems);
@@ -415,7 +415,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.debug("Agreement retrieved and cached: {}", agreement.get().getAgreementId());
          return agreement;
       } else {
-         LOGGER.warn("No agreement found with ID: {}", agreementId);
+         LOGGER.debug("No agreement found with ID: {}", agreementId);
          return Optional.empty();
       }
    }
@@ -431,7 +431,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          List<BillofQuantitiesItemDTO> updatedItems = new ArrayList<>();
          for (BillofQuantitiesItemDTO item : agreement.getBillOfQuantitiesItems()) {
             if (item.getProductId() < 0) {
-               LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+               LOGGER.debug("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
                continue; // Skip items with negative product IDs
             }
             if (billofQuantitiesItemDAO.updateBillofQuantitiesItem(item)) {
@@ -491,7 +491,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.debug("Retrieving all agreements for supplier with ID: {}", supplierId);
       List<AgreementDTO> agreements = agreementDAO.getAllAgreementsForSupplier(supplierId);
       if (agreements.isEmpty()) {
-         LOGGER.warn("No agreements found for supplier with ID: {}", supplierId);
+         LOGGER.debug("No agreements found for supplier with ID: {}", supplierId);
       } else {
          for (AgreementDTO agreement : agreements) {
             List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO
@@ -499,7 +499,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             if (!boqItems.isEmpty()) {
                for (BillofQuantitiesItemDTO item : boqItems) {
                   if (item.getProductId() < 0) {
-                     LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+                     LOGGER.debug("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
                      continue; // Skip items with negative product IDs
                   }
                   Optional<SupplierProductDTO> product = supplierProductDAO
@@ -507,14 +507,14 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                   if (product.isPresent()) {
                      item.setProductName(product.get().getName());
                   } else {
-                     LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping",
+                     LOGGER.debug("Product with ID {} not found for Bill of Quantities item, skipping",
                            item.getProductId());
                   }
                }
                LOGGER.debug("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(),
                      agreement.getAgreementId());
             } else {
-               LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreement.getAgreementId());
+               LOGGER.debug("No Bill of Quantities items found for agreement with ID: {}", agreement.getAgreementId());
             }
             agreement.setBillOfQuantitiesItems(boqItems);
          }
@@ -532,7 +532,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.debug("Retrieving all agreements");
       List<AgreementDTO> agreements = agreementDAO.getAllAgreements();
       if (agreements.isEmpty()) {
-         LOGGER.warn("No agreements found in DB");
+         LOGGER.debug("No agreements found in DB");
       } else {
          LOGGER.debug("Found {} agreements in DB", agreements.size());
       }
@@ -611,7 +611,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                LOGGER.debug("Found and cached supplier product: {}", productInDB.get());
                return productInDB;
             } else {
-               LOGGER.warn("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
+               LOGGER.debug("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
                return Optional.empty();
             }
          }
@@ -623,7 +623,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             LOGGER.debug("Found and cached supplier product: {}", productInDB.get());
             return productInDB;
          } else {
-            LOGGER.warn("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
+            LOGGER.debug("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
             return Optional.empty();
          }
       }
@@ -686,7 +686,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                productId);
          return true;
       } else {
-         LOGGER.warn("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
+         LOGGER.debug("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
          return false;
       }
    }
@@ -701,7 +701,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
 
       List<SupplierProductDTO> supplierProducts = supplierProductDAO.getAllSupplierProductsForSupplier(supplierId);
       if (supplierProducts.isEmpty()) {
-         LOGGER.warn("No supplier products found for supplier with ID: {}", supplierId);
+         LOGGER.debug("No supplier products found for supplier with ID: {}", supplierId);
       } else {
          LOGGER.debug("Found {} supplier products for supplier with ID: {}", supplierProducts.size(), supplierId);
       }
@@ -728,7 +728,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
 
       List<SupplierProductDTO> allSupplierProducts = supplierProductDAO.getAllSupplierProducts();
       if (allSupplierProducts.isEmpty()) {
-         LOGGER.warn("No supplier products found in DB");
+         LOGGER.debug("No supplier products found in DB");
       } else {
          LOGGER.debug("Found {} supplier products in DB", allSupplierProducts.size());
       }
@@ -745,7 +745,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
 
       List<Integer> supplierIds = supplierProductDAO.getAllSupplierIdsForProductId(productId);
       if (supplierIds.isEmpty()) {
-         LOGGER.warn("No suppliers found for product with ID: {}", productId);
+         LOGGER.debug("No suppliers found for product with ID: {}", productId);
       } else {
          LOGGER.debug("Found {} suppliers for product with ID: {}", supplierIds.size(), productId);
       }
@@ -762,7 +762,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
 
       List<Integer> productIds = supplierProductDAO.getAllProductIdsForSupplierId(supplierId);
       if (productIds.isEmpty()) {
-         LOGGER.warn("No products found for supplier with ID: {}", supplierId);
+         LOGGER.debug("No products found for supplier with ID: {}", supplierId);
       } else {
          LOGGER.debug("Found {} products for supplier with ID: {}", productIds.size(), supplierId);
       }
@@ -774,7 +774,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.debug("Retrieving catalog products");
       List<CatalogProductDTO> catalogProducts = supplierProductDAO.getCatalogProducts();
       if (catalogProducts.isEmpty()) {
-         LOGGER.warn("No catalog products found");
+         LOGGER.debug("No catalog products found");
       } else {
          LOGGER.debug("Found {} catalog products", catalogProducts.size());
       }
@@ -791,11 +791,11 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO
             .getAllBillofQantitiesItemsForAgreementId(agreementId);
       if (boqItems.isEmpty()) {
-         LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreementId);
+         LOGGER.debug("No Bill of Quantities items found for agreement with ID: {}", agreementId);
       } else {
          for (BillofQuantitiesItemDTO item : boqItems) {
             if (item.getProductId() < 0) {
-               LOGGER.warn("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
+               LOGGER.debug("Product ID cannot be negative in Bill of Quantities item: {}, skipping", item);
                continue; // Skip items with negative product IDs
             }
             Optional<SupplierProductDTO> product = supplierProductDAO
@@ -803,7 +803,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             if (product.isPresent()) {
                item.setProductName(product.get().getName());
             } else {
-               LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
+               LOGGER.debug("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
             }
          }
          LOGGER.debug("Bill of Quantities items details: {}", boqItems);
@@ -832,7 +832,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.debug("Retrieving Bill of Quantities items for product with ID: {}", productId);
       List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO.getBillofQuantitiesItemsById(productId);
       if (boqItems.isEmpty()) {
-         LOGGER.warn("No Bill of Quantities items found for product with ID: {}", productId);
+         LOGGER.debug("No Bill of Quantities items found for product with ID: {}", productId);
       } else {
          for (BillofQuantitiesItemDTO item : boqItems) {
             Optional<CatalogProductDTO> product = supplierProductDAO.getCatalogProducts().stream()
@@ -840,7 +840,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             if (product.isPresent()) {
                item.setProductName(product.get().getProductName());
             } else {
-               LOGGER.warn("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
+               LOGGER.debug("Product with ID {} not found for Bill of Quantities item, skipping", item.getProductId());
             }
          }
          LOGGER.debug("Bill of Quantities items details: {}", boqItems);
@@ -871,7 +871,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             .filter(product -> product.getProductId() == pid)
             .findFirst();
       if (catalogProduct.isEmpty()) {
-         LOGGER.warn("No catalog product found with ID: {}", pid);
+         LOGGER.debug("No catalog product found with ID: {}", pid);
          return Optional.empty();
       }
       LOGGER.debug("Catalog product details: {}", catalogProduct.get());

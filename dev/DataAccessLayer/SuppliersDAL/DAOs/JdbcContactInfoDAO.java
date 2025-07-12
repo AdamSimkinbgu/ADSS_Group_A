@@ -39,7 +39,8 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             LOGGER.debug("Contact info created successfully for supplier ID: {}", contactInfo.getSupplierId());
             return contactInfo;
          } else {
-            LOGGER.warn("No rows affected when creating contact info for supplier ID: {}", contactInfo.getSupplierId());
+            LOGGER.debug("No rows affected when creating contact info for supplier ID: {}",
+                  contactInfo.getSupplierId());
             throw new SQLException("Failed to create contact info, no rows affected");
          }
       } catch (SQLException e) {
@@ -73,7 +74,8 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             LOGGER.debug("Contact info updated successfully for supplier ID: {}", contactInfo.getSupplierId());
             return true;
          } else {
-            LOGGER.warn("No rows affected when updating contact info for supplier ID: {}", contactInfo.getSupplierId());
+            LOGGER.debug("No rows affected when updating contact info for supplier ID: {}",
+                  contactInfo.getSupplierId());
             return false;
          }
       } catch (SQLException e) {
@@ -101,7 +103,7 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             LOGGER.debug("Contact info deleted successfully for supplier ID: {}", supplierId);
             return true;
          } else {
-            LOGGER.warn("No rows affected when deleting contact info for supplier ID: {}", supplierId);
+            LOGGER.debug("No rows affected when deleting contact info for supplier ID: {}", supplierId);
             return false;
          }
       } catch (SQLException e) {
@@ -138,7 +140,7 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
          handleSQLException(e);
       }
-      LOGGER.warn("No contact info found for supplier ID: {}", supplierId);
+      LOGGER.debug("No contact info found for supplier ID: {}", supplierId);
       return new ArrayList<>();
    }
 

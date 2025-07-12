@@ -218,13 +218,13 @@ public class ShiftCalendarController {
         // Add column headers (days of week)
         // Start with Sunday (7) and then Monday (1) through Saturday (6)
         DayOfWeek[] daysOfWeek = {
-            DayOfWeek.SUNDAY,
-            DayOfWeek.MONDAY,
-            DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY,
-            DayOfWeek.THURSDAY,
-            DayOfWeek.FRIDAY,
-            DayOfWeek.SATURDAY
+                DayOfWeek.SUNDAY,
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY
         };
 
         for (int col = 1; col <= 7; col++) {
@@ -235,11 +235,12 @@ public class ShiftCalendarController {
             calendarGrid.add(dayLabel, col, 0);
         }
 
-        // Add row headers (shift types)
+        // Add row headers (shift types) - rotated 90 degrees counter-clockwise
         String[] shiftTypes = { "Morning", "Evening" };
         for (int row = 1; row <= shiftTypes.length; row++) {
             Label typeLabel = new Label(shiftTypes[row - 1]);
             typeLabel.getStyleClass().add("calendar-header");
+            typeLabel.setRotate(-90); // Rotate 90 degrees counter-clockwise for bottom-to-top text
             calendarGrid.add(typeLabel, 0, row);
         }
 
@@ -404,13 +405,13 @@ public class ShiftCalendarController {
         // Add column headers (days of week)
         // Start with Sunday (7) and then Monday (1) through Saturday (6)
         DayOfWeek[] daysOfWeek = {
-            DayOfWeek.SUNDAY,
-            DayOfWeek.MONDAY,
-            DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY,
-            DayOfWeek.THURSDAY,
-            DayOfWeek.FRIDAY,
-            DayOfWeek.SATURDAY
+                DayOfWeek.SUNDAY,
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY
         };
 
         for (int col = 1; col <= 7; col++) {
@@ -426,6 +427,8 @@ public class ShiftCalendarController {
         for (int row = 1; row <= shiftTypes.length; row++) {
             Label typeLabel = new Label(shiftTypes[row - 1]);
             typeLabel.getStyleClass().add("calendar-header");
+            typeLabel.setRotate(-90); // Rotate 90 degrees counter-clockwise for bottom-to-top text
+
             calendarGrid.add(typeLabel, 0, row);
         }
 
@@ -1078,7 +1081,8 @@ public class ShiftCalendarController {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         // Date picker for start date of the week
-        DatePicker startDatePicker = new DatePicker(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)));
+        DatePicker startDatePicker = new DatePicker(
+                LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)));
         Label startDateLabel = new Label("Week Starting:");
 
         // Create a VBox for roles
@@ -1108,7 +1112,8 @@ public class ShiftCalendarController {
                         }
                     }
                 } catch (Exception e) {
-                    System.err.println("Error getting roles as DTOs, falling back to serialized roles: " + e.getMessage());
+                    System.err.println(
+                            "Error getting roles as DTOs, falling back to serialized roles: " + e.getMessage());
                     log.error("Error getting roles as DTOs, falling back to serialized roles: " + e.getMessage());
                     e.printStackTrace();
 
@@ -1198,7 +1203,7 @@ public class ShiftCalendarController {
                     CheckBox checkBox = (CheckBox) rolesVBox.getChildren().stream()
                             .filter(node -> node instanceof HBox)
                             .map(node -> (HBox) node)
-                            .filter(hbox -> hbox.getChildren().get(0) instanceof CheckBox && 
+                            .filter(hbox -> hbox.getChildren().get(0) instanceof CheckBox &&
                                     ((CheckBox) hbox.getChildren().get(0)).getText().equals(role))
                             .findFirst()
                             .map(hbox -> hbox.getChildren().get(0))
@@ -1229,14 +1234,12 @@ public class ShiftCalendarController {
                     @SuppressWarnings("unchecked")
                     Map<String, Integer> rolesRequired = (Map<String, Integer>) weeklyShiftData.get("roles");
 
-
                     long doneBy = 123456789;
 
                     String createResult = shiftService.createWeeklyShifts(
                             doneBy,
                             startDate,
-                            rolesRequired
-                    );
+                            rolesRequired);
 
                     log.info("Weekly shifts creation result: " + createResult);
 

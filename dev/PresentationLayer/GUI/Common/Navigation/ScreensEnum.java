@@ -12,7 +12,9 @@ public enum ScreensEnum {
    SUPPLIER_DETAILS("/GUI/SupplierScreen/Views/SupplierDetailsView.fxml"),
    SUPPLIER_EDIT("/GUI/SupplierScreen/Views/SupplierEditView.fxml"),
    SUPPLIER_ADD("/GUI/SupplierScreen/Views/SupplierAddView.fxml"),
-   SUPPLIER_REMOVE("/GUI/SupplierScreen/Views/SupplierRemoveView.fxml");
+   SUPPLIER_REMOVE("/GUI/SupplierScreen/Views/SupplierRemoveView.fxml"),
+   SUPPLIERS_ORDERS("/GUI/SupplierScreen/Views/OrdersView.fxml"),
+   SUPPLIERS_PRODUCTS("/GUI/SupplierScreen/Views/ProductsView.fxml"),;
 
    private final String fxmlPath;
 

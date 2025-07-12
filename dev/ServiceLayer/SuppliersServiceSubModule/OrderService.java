@@ -150,7 +150,7 @@ public class OrderService extends BaseService {
       try {
          List<OrderDTO> orders = orderFacade.getAllOrders();
          if (orders == null || orders.isEmpty()) {
-            return ServiceResponse.fail(List.of());
+            return ServiceResponse.fail(List.of("No orders found."));
          }
          return ServiceResponse.ok(orders);
       } catch (DataAccessException e) {

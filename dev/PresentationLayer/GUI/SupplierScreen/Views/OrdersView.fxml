@@ -1,45 +1,53 @@
-<!-- OrdersView.fxml -->
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="PresentationLayer.GUI.SuppliersScreen.Controllers.OrdersController"
-            styleClass="content-container"
-            prefWidth="800" prefHeight="600">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.OrdersController"
+      spacing="20"
+      styleClass="content-container">
 
-  <!-- Header -->
-  <top>
-    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="header-bar">
-      <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
-      <Label text="📦 Orders" styleClass="section-title"/>
-      <Pane HBox.hgrow="ALWAYS"/>
-      <Button text="＋ New Order" onAction="#onNewOrder" styleClass="primary-button"/>
-      <Button text="⟳ Refresh"   onAction="#onRefresh"  styleClass="secondary-button"/>
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Section Title and toolbar -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="📦 Orders" styleClass="section-title"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="newOrderBtn"
+                text="New Order"
+                styleClass="primary-button"
+                onAction="#onNewOrder"/>
+        <Button fx:id="refreshBtn"
+                text="Refresh"
+                styleClass="secondary-button"
+                onAction="#onRefresh"/>
     </HBox>
-  </top>
 
-  <!-- Content: Table of orders -->
-  <center>
-    <TableView fx:id="ordersTable" styleClass="table-view" VBox.vgrow="ALWAYS">
-      <columns>
-        <TableColumn fx:id="colId"        text="Order #"/>
-        <TableColumn fx:id="colSupplier"  text="Supplier"/>
-        <TableColumn fx:id="colDate"      text="Date"/>
-        <TableColumn fx:id="colStatus"    text="Status"/>
-        <TableColumn fx:id="colItemCount" text="Items"/>
-      </columns>
+    <!-- Search bar -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Search:"/>
+        <TextField fx:id="searchField"
+                   promptText="Search orders…"
+                   styleClass="modern-field"
+                   onKeyReleased="#onSearch"/>
+    </HBox>
+
+    <!-- Orders Table -->
+    <TableView fx:id="ordersTable"
+               styleClass="table-view"
+               prefHeight="600">
+        <columns>
+            <TableColumn fx:id="orderIdCol"     text="Order ID"      prefWidth="100"/>
+            <TableColumn fx:id="supplierIdCol"  text="Supplier ID"   prefWidth="100"/>
+            <TableColumn fx:id="dateCol"        text="Date"          prefWidth="150"/>
+            <TableColumn fx:id="statusCol"      text="Status"        prefWidth="120"/>
+            <TableColumn fx:id="totalCol"       text="Total Items"   prefWidth="100"/>
+            <TableColumn fx:id="actionsCol"     text="Actions"       prefWidth="200"/>
+        </columns>
     </TableView>
-  </center>
 
-  <!-- Footer with edit/delete -->
-  <bottom>
-    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="footer-bar">
-      <padding><Insets top="5" right="15" bottom="5" left="15"/></padding>
-      <Button text="✎ Edit"   onAction="#onEditOrder"   styleClass="action-button"/>
-      <Button text="🗑 Delete" onAction="#onDeleteOrder" styleClass="action-button"/>
-    </HBox>
-  </bottom>
-</BorderPane>
+</VBox>

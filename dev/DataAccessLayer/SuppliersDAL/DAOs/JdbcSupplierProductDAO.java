@@ -83,7 +83,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
                      rs.getString("manufacturer_name"));
                return Optional.of(supplierProduct);
             } else {
-               LOGGER.warn("No supplier product found for supplierId={} and productId={}", supplierId, productId);
+               LOGGER.debug("No supplier product found for supplierId={} and productId={}", supplierId, productId);
                return Optional.empty();
             }
          } catch (SQLException e) {
@@ -142,7 +142,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
          pstmt.setInt(2, productId);
          int affectedRows = pstmt.executeUpdate();
          if (affectedRows == 0) {
-            LOGGER.warn("No supplier product found for supplierId={} and productId={}", supplierId, productId);
+            LOGGER.debug("No supplier product found for supplierId={} and productId={}", supplierId, productId);
             return false;
          } else {
             LOGGER.debug("Deleted supplier product with ID: {} for supplier: {}", productId, supplierId);

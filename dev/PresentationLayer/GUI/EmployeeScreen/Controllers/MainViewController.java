@@ -138,21 +138,6 @@ public class MainViewController {
     }
 
     /**
-     * Handles the logout action.
-     */
-    @FXML
-    public void logout() {
-        logger.info("Logout requested");
-        ScreenNavigator.getInstance().navigateTo(
-                ScreensEnum.LOGIN,
-                loader -> {
-                    // re‐wire the login controller/VM exactly the same way you did in AppLauncher:
-                    LoginViewModel vm = new LoginViewModel();
-                    loader.setControllerFactory(_ -> new LoginViewController(vm));
-                });
-    }
-
-    /**
      * Loads a view into the content area.
      * 
      * @param fxmlPath The path to the FXML file to load

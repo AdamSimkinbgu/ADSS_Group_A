@@ -72,8 +72,8 @@ public class SuppliersDashboardController {
       nameColumn.setCellValueFactory(c -> c.getValue().nameProperty());
 
       // 2) searchable
-      FilteredList<ProductUIModel> filtered = new FilteredList<>(masterData, p -> true);
-      searchField.textProperty().addListener((obs, old, nw) -> {
+      FilteredList<ProductUIModel> filtered = new FilteredList<>(masterData, _ -> true);
+      searchField.textProperty().addListener((_, _, nw) -> {
          String term = (nw == null ? "" : nw).toLowerCase();
          filtered.setPredicate(prod -> prod.getId().toLowerCase().contains(term) ||
                prod.getManufacturer().toLowerCase().contains(term) ||

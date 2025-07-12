@@ -1,123 +1,143 @@
-// OrdersController.java
-
 package PresentationLayer.GUI.SupplierScreen.Controllers;
 
 import DTOs.SuppliersModuleDTOs.OrderDTO;
-import DomainLayer.SystemFactory;
-import DomainLayer.SystemFactory.SupplierModuleComponents;
 import ServiceLayer.SuppliersServiceSubModule.OrderService;
 import ServiceLayer.SuppliersServiceSubModule.Interfaces_and_Abstracts.ServiceResponse;
-import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Window;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public class OrdersController {
-
    @FXML
    private TableView<OrderDTO> ordersTable;
    @FXML
-   private TableColumn<OrderDTO, Integer> colId;
+   private TableColumn<OrderDTO, Integer> orderIdCol;
    @FXML
-   private TableColumn<OrderDTO, String> colSupplier;
+   private TableColumn<OrderDTO, Integer> supplierIdCol;
    @FXML
-   private TableColumn<OrderDTO, String> colDate;
+   private TableColumn<OrderDTO, String> dateCol;
    @FXML
-   private TableColumn<OrderDTO, String> colStatus;
+   private TableColumn<OrderDTO, String> statusCol;
    @FXML
-   private TableColumn<OrderDTO, Integer> colItemCount;
+   private TableColumn<OrderDTO, Void> actionsCol;
+   @FXML
+   private Button newOrderBtn;
+   @FXML
+   private Button refreshBtn;
+   @FXML
+   private TextField searchField;
 
-   private final SystemFactory factory = new SystemFactory();
-   private final SupplierModuleComponents supplierComponents = factory.getSupplierModule();
-   private final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+   private ObservableList<OrderDTO> allOrders = FXCollections.observableArrayList();
+   private OrderService orderService;
+   private final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+   public void setOrderService(OrderService service) {
+      this.orderService = service;
+   }
 
    @FXML
    public void initialize() {
-      // colId.setCellValueFactory(p -> new
-      // IntegerProperty(p.getValue().getOrderId()).as);
-      // colSupplier.setCellValueFactory(p -> p.getValue().supplierNameProperty());
-      // colDate.setCellValueFactory(p -> p.getValue().orderDateProperty().map(d ->
-      // d.format(DATE_FMT)));
-      // colStatus.setCellValueFactory(p -> p.getValue().statusProperty().asString());
-      // colItemCount.setCellValueFactory(p ->
-      // p.getValue().totalItemsProperty().asObject());
+      // column value factories
+      orderIdCol.setCellValueFactory(new PropertyValueFactory<>("orderId"));
+      supplierIdCol.setCellValueFactory(new PropertyValueFactory<>("supplierId"));
+      dateCol.setCellValueFactory(o -> new SimpleStringProperty(o.getValue().getOrderDate().format(df)));
+      statusCol.setCellValueFactory(o -> new SimpleStringProperty(o.getValue().getStatus().name()));
 
-      // loadOrders();
+      // action buttons
+      actionsCol.setCellFactory(_ -> new TableCell<>() {
+         private final Button viewBtn = new Button("View");
+         private final Button editBtn = new Button("Edit");
+         private final Button deleteBtn = new Button("Delete");
+         {
+            viewBtn.setOnAction(_ -> onView(getIndex()));
+            editBtn.setOnAction(_ -> onEdit(getIndex()));
+            deleteBtn.setOnAction(_ -> onDelete(getIndex()));
+            viewBtn.getStyleClass().add("action-button");
+            editBtn.getStyleClass().add("secondary-button");
+            deleteBtn.getStyleClass().add("secondary-button");
+         }
+
+         @Override
+         protected void updateItem(Void v, boolean empty) {
+            super.updateItem(v, empty);
+            if (empty) {
+               setGraphic(null);
+            } else {
+               HBox container = new HBox(5, viewBtn, editBtn, deleteBtn);
+               setGraphic(container);
+            }
+         }
+      });
+
+      loadOrders();
    }
 
-   // private void loadOrders() {
-   // ServiceResponse<List<OrderDTO>> resp = orderService.getAllOrders();
-   // if (resp.isSuccess()) {
-   // ObservableList<OrderDTO> list =
-   // FXCollections.observableArrayList(resp.getData());
-   // ordersTable.setItems(list);
-   // } else {
-   // showAlert(Alert.AlertType.ERROR, "Load Failed", String.join("\n",
-   // resp.getErrors()));
-   // }
-   // }
+   private void loadOrders() {
+      ServiceResponse<List<OrderDTO>> resp = orderService.getAllOrders();
+      if (resp.isSuccess()) {
+         allOrders.setAll(resp.getValue());
+         ordersTable.setItems(allOrders);
+      } else {
+         new Alert(Alert.AlertType.ERROR, String.join("\n", resp.getErrors()))
+               .showAndWait();
+      }
+   }
 
-   // @FXML
-   // private void onRefresh() {
-   // loadOrders();
-   // }
+   @FXML
+   private void onNewOrder() {
+      // TODO: open NewOrder dialog / screen
+      // TODO: allow periodic orders
+      System.out.println("New order dialog requested");
+   }
 
-   // @FXML
-   // private void onNewOrder() {
-   // // TODO: open a dialog or new pane to collect OrderInfoDTO, then:
-   // // ServiceResponse<?> r = orderService.createOrder(infoDTO);
-   // // if success reload; else showAlert(...)
-   // showAlert(Alert.AlertType.INFORMATION, "Not implemented", "Create-order flow
-   // here");
-   // }
+   private void onView(int index) {
+      OrderDTO order = ordersTable.getItems().get(index);
+      // TODO: open OrderDetailsController with order
+      System.out.println("View order: " + order.getOrderId());
+   }
 
-   // @FXML
-   // private void onEditOrder() {
-   // OrderDTO sel = ordersTable.getSelectionModel().getSelectedItem();
-   // if (sel == null) {
-   // showAlert(Alert.AlertType.WARNING, "No selection", "Please select an order
-   // first.");
-   // return;
-   // }
-   // // TODO: open edit dialog prefilled with sel; then call
-   // // orderService.updateOrder(...)
-   // showAlert(Alert.AlertType.INFORMATION, "Not implemented", "Edit-order flow
-   // here");
-   // }
+   private void onEdit(int index) {
+      OrderDTO order = ordersTable.getItems().get(index);
+      // TODO: open EditOrder dialog / screen
+      System.out.println("Edit order: " + order.getOrderId());
+   }
 
-   // @FXML
-   // private void onDeleteOrder() {
-   // OrderDTO sel = ordersTable.getSelectionModel().getSelectedItem();
-   // if (sel == null) {
-   // showAlert(Alert.AlertType.WARNING, "No selection", "Please select an order
-   // first.");
-   // return;
-   // }
-   // Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-   // "Are you sure you want to delete order #" + sel.getOrderId() + "?",
-   // ButtonType.YES, ButtonType.NO);
-   // Optional<ButtonType> choice = confirm.showAndWait();
-   // if (choice.orElse(ButtonType.NO) == ButtonType.YES) {
-   // ServiceResponse<Boolean> resp = orderService.removeOrder(sel.getOrderId());
-   // if (resp.isSuccess() && resp.getValue()) {
-   // loadOrders();
-   // } else {
-   // showAlert(Alert.AlertType.ERROR, "Delete failed", String.join("\n",
-   // resp.getErrors()));
-   // }
-   // }
-   // }
+   @FXML
+   private void onRefresh() {
+      loadOrders();
+   }
 
-   private void showAlert(Alert.AlertType type, String title, String msg) {
-      Alert a = new Alert(type, msg, ButtonType.OK);
-      a.initOwner(ordersTable.getScene().getWindow());
-      a.setHeaderText(title);
-      a.showAndWait();
+   @FXML
+   private void onSearch(KeyEvent event) {
+      String filter = searchField.getText().toLowerCase().trim();
+      // assume you loaded all orders into an ObservableList<OrderDTO> allOrders
+      ordersTable.setItems(
+            allOrders.filtered(o -> Integer.toString(o.getOrderId()).contains(filter)
+                  || o.getSupplierName().toLowerCase().contains(filter)));
+   }
+
+   private void onDelete(int index) {
+      OrderDTO order = ordersTable.getItems().get(index);
+      Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+            "Delete order #" + order.getOrderId() + "?", ButtonType.YES, ButtonType.NO);
+      confirm.showAndWait().ifPresent(bt -> {
+         if (bt == ButtonType.YES) {
+            ServiceResponse<?> resp = orderService.removeOrder(order.getOrderId());
+            if (resp.isSuccess()) {
+               loadOrders();
+            } else {
+               new Alert(Alert.AlertType.ERROR, String.join("\n", resp.getErrors()))
+                     .showAndWait();
+            }
+         }
+      });
    }
 }

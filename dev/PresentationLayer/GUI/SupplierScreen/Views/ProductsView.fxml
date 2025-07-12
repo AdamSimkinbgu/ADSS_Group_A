@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SupplierProductsController"
+      spacing="10">
+  
+  <padding>
+    <Insets top="15" right="15" bottom="15" left="15"/>
+  </padding>
+
+   <HBox spacing="10" alignment="CENTER_LEFT">
+    <Label text="Suppliers" styleClass="section-title"/>
+    <Pane HBox.hgrow="ALWAYS"/>
+    <Button fx:id="refreshBtn"
+            text="Refresh"
+            styleClass="secondary-button"
+            onAction="#onRefresh"/>
+  </HBox>
+
+  <TableView fx:id="suppliersTable" prefHeight="500">
+    <columns>
+      <TableColumn fx:id="colId"      text="ID"   prefWidth="80"/>
+      <TableColumn fx:id="colName"    text="Name" prefWidth="200"/>
+      <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
+    </columns>
+  </TableView>
+
+  <HBox spacing="10" alignment="CENTER_LEFT">
+    <Label text="Products" styleClass="section-title"/>
+    <Pane HBox.hgrow="ALWAYS"/>
+    <Button fx:id="refreshBtn"
+            text="Refresh"
+            onAction="#onRefresh"/>
+    <Button fx:id="addBtn"
+            text="Add Product"
+            styleClass="primary-button"
+            onAction="#onAdd"/>
+  </HBox>
+
+  <TableView fx:id="productsTable" prefHeight="360">
+    <columns>
+      <TableColumn fx:id="colProductId"      text="Prod ID"       prefWidth="60"/>
+      <TableColumn fx:id="colCatalogNumber"  text="Catalog #"     prefWidth="100"/>
+      <TableColumn fx:id="colName"           text="Name"          prefWidth="180"/>
+      <TableColumn fx:id="colPrice"          text="Price"         prefWidth="80"/>
+      <TableColumn fx:id="colWeight"         text="Weight"        prefWidth="80"/>
+      <TableColumn fx:id="colExpires"        text="Expires (days)" prefWidth="90"/>
+      <TableColumn fx:id="colManufacturer"   text="Manufacturer"  prefWidth="150"/>
+      <TableColumn fx:id="colActions"        text="Actions"       prefWidth="160"/>
+    </columns>
+  </TableView>
+</VBox>

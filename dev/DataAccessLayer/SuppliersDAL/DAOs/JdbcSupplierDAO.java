@@ -91,7 +91,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 LOGGER.debug("Supplier retrieved successfully: {}", supplier.getId());
                 return Optional.of(supplier);
             } else {
-                LOGGER.warn("No supplier found with ID: {}", id);
+                LOGGER.debug("No supplier found with ID: {}", id);
                 return Optional.empty();
             }
         } catch (SQLException e) {
@@ -129,7 +129,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 LOGGER.debug("Supplier updated successfully: {}", supplier.getId());
                 return true;
             } else {
-                LOGGER.warn("No rows affected when updating supplier: {}", supplier.getId());
+                LOGGER.debug("No rows affected when updating supplier: {}", supplier.getId());
             }
         } catch (SQLException e) {
             LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -154,7 +154,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 LOGGER.debug("Supplier deleted successfully with ID: {}", id);
                 return true;
             } else {
-                LOGGER.warn("No supplier found with ID: {}", id);
+                LOGGER.debug("No supplier found with ID: {}", id);
             }
         } catch (SQLException e) {
             LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -235,7 +235,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 LOGGER.debug("Supplier exists: {}", exists);
                 return exists;
             } else {
-                LOGGER.warn("No result found when checking supplier existence for ID: {}", id);
+                LOGGER.debug("No result found when checking supplier existence for ID: {}", id);
                 return false;
             }
         } catch (SQLException e) {

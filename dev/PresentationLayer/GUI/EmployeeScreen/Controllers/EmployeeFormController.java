@@ -131,7 +131,8 @@ public class EmployeeFormController {
         // In a real implementation, this would get roles from the service layer
         // For now, use mock data
         String[] availableRoles = {
-                "Manager", "Cashier", "Stocker", "Security", "Cleaner", "Shift Manager", "HR", "Accountant"
+                "Manager", "Cashier", "Stocker", "Security", "Cleaner", "Shift Manager", "HR", "Accountant",
+                "Supplier Manager", "Inventory Manager"
         };
 
         rolesContainer.getChildren().clear();

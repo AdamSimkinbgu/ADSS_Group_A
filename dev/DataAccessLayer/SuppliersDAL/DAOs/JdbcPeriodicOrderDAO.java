@@ -73,7 +73,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             LOGGER.debug("Periodic order updated successfully.");
             return true;
          } else {
-            LOGGER.warn("No periodic order found with ID: {}", periodicOrder.getPeriodicOrderID());
+            LOGGER.debug("No periodic order found with ID: {}", periodicOrder.getPeriodicOrderID());
             return false;
          }
       } catch (SQLException e) {
@@ -102,7 +102,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             LOGGER.debug("Periodic order deleted successfully.");
             return true;
          } else {
-            LOGGER.warn("No periodic order found with ID: {}", id);
+            LOGGER.debug("No periodic order found with ID: {}", id);
             return false;
          }
       } catch (SQLException e) {
@@ -135,7 +135,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             LOGGER.debug("Retrieved periodic order: {}", periodicOrder);
             return periodicOrder;
          } else {
-            LOGGER.warn("No periodic order found with ID: {}", id);
+            LOGGER.debug("No periodic order found with ID: {}", id);
             return null;
          }
       } catch (SQLException e) {

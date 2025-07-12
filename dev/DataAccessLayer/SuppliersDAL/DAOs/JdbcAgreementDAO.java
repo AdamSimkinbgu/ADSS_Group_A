@@ -120,7 +120,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          pstmt.setInt(1, id);
          int affectedRows = pstmt.executeUpdate();
          if (affectedRows == 0) {
-            LOGGER.warn("No agreement found with ID: {}", id);
+            LOGGER.debug("No agreement found with ID: {}", id);
             return false;
          } else {
             LOGGER.debug("Deleted agreement with ID: {}", id);

@@ -25,23 +25,34 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
       </padding>
 
-      <Label text="User ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+      <!-- login row -->
+      <Label text="User ID:"            GridPane.rowIndex="0" GridPane.columnIndex="0"/>
       <TextField fx:id="userIdField"
                  promptText="Enter user ID"
                  styleClass="text-field"
                  GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
+      <!-- login button -->
       <Button text="Login"
               onAction="#onLoginClicked"
               styleClass="button"
               defaultButton="true"
               GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
+      <!-- error message -->
       <Label fx:id="errorLabel"
              styleClass="error-label"
-             
              GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+      <!-- tester info row -->
+      <Label text="Tester IDs:" 
+             GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+      <Button fx:id="testerInfoBtn"
+              text="Show Test IDs"
+              onAction="#onShowTesterInfo"
+              styleClass="secondary-button"
+              GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
     </GridPane>
   </center>
-
 </BorderPane>

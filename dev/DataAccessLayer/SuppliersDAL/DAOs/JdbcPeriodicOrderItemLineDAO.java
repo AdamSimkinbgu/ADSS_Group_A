@@ -73,7 +73,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
             periodicOrderItemLine.setQuantity(resultSet.getInt("quantity"));
             return periodicOrderItemLine;
          } else {
-            LOGGER.warn("Periodic order item line with ID {} not found.", id);
+            LOGGER.debug("Periodic order item line with ID {} not found.", id);
             return null;
          }
       } catch (SQLException e) {
@@ -123,7 +123,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
          preparedStatement.setInt(1, id);
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
-            LOGGER.warn("No periodic order item line found with ID: {}", id);
+            LOGGER.debug("No periodic order item line found with ID: {}", id);
             return false;
          } else {
             LOGGER.debug("Periodic order item line with ID {} deleted successfully.", id);
@@ -155,7 +155,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
             LOGGER.debug("Periodic order item line updated successfully.");
             return true;
          } else {
-            LOGGER.warn("No periodic order item line found with ID: {}",
+            LOGGER.debug("No periodic order item line found with ID: {}",
                   periodicOrderItemLine.getPeriodicOrderItemLineId());
             return false;
          }

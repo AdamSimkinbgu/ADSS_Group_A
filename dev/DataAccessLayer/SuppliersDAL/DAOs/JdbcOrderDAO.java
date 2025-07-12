@@ -80,7 +80,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             LOGGER.debug("Order retrieved: {}", orderDTO);
             return Optional.of(orderDTO);
          } else {
-            LOGGER.warn("No order found with ID: {}", orderID);
+            LOGGER.debug("No order found with ID: {}", orderID);
             return Optional.empty();
          }
       } catch (SQLException e) {
@@ -126,7 +126,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          preparedStatement.setInt(1, orderID);
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
-            LOGGER.warn("No order found with ID: {}", orderID);
+            LOGGER.debug("No order found with ID: {}", orderID);
             return false;
          }
          LOGGER.debug("Order with ID {} deleted successfully", orderID);
@@ -163,7 +163,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
 
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
-            LOGGER.warn("No order found with ID: {}", updatedOrderDTO.getOrderId());
+            LOGGER.debug("No order found with ID: {}", updatedOrderDTO.getOrderId());
             return false;
          }
          LOGGER.debug("Order with ID {} updated successfully", updatedOrderDTO.getOrderId());

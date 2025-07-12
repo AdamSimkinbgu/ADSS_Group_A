@@ -17,7 +17,6 @@
             </padding>
             <Label text="Employee Management System" styleClass="header-title"/>
             <Pane HBox.hgrow="ALWAYS" />
-            <Button text="Logout" onAction="#logout" styleClass="logout-button"/>
         </HBox>
     </top>
 
@@ -46,9 +45,8 @@
     </center>
     <bottom>
     <HBox styleClass="footer-bar" spacing="10" alignment="CENTER">
-      <Label text="Employee Management System - SuperLee Ltd." />
+      <Label text="HR Module by Gabriel Rozental" styleClass="footer-text"/>
       <Pane HBox.hgrow="ALWAYS" />
-      <Label text="© 2023 All Rights Reserved" />
     </HBox>
   </bottom>
 </BorderPane>

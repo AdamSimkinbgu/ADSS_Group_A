@@ -12,7 +12,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="PresentationLayer.GUI.MainMenuScreen.Controllers.MainMenuController"
-            prefWidth="1600" prefHeight="1000"
+            prefWidth="1640" prefHeight="1000"
             styleClass="root">
 
   <!-- Top header -->

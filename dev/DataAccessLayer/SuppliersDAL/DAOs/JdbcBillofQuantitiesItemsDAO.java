@@ -178,7 +178,7 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
          preparedStatement.setInt(1, agreementId);
          int affectedRows = preparedStatement.executeUpdate();
          if (affectedRows == 0) {
-            LOGGER.warn("No Bill of Quantities Items found for Agreement ID: {}", agreementId);
+            LOGGER.debug("No Bill of Quantities Items found for Agreement ID: {}", agreementId);
             return false;
          } else {
             LOGGER.debug("Deleted all Bill of Quantities Items for Agreement ID: {}", agreementId);

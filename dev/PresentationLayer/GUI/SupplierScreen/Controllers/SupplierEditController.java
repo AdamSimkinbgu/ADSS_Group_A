@@ -44,7 +44,6 @@ public class SupplierEditController {
 
    // --- injected services & DTO ---
    private SupplierService supplierService;
-   private AgreementService agreementService;
    private SupplierDTO supplier;
 
    // --- local state ---
@@ -54,7 +53,6 @@ public class SupplierEditController {
    /** Called by parent before showing the dialog */
    public void setServices(SupplierService s, AgreementService a) {
       this.supplierService = s;
-      this.agreementService = a;
    }
 
    /** Called by parent before showing the dialog */
@@ -75,7 +73,7 @@ public class SupplierEditController {
 
       // contacts list
       contactsList.setItems(contacts);
-      addContactBtn.setOnAction(e -> {
+      addContactBtn.setOnAction(_ -> {
          String txt = newContactField.getText();
          if (txt != null && !txt.isBlank()) {
             contacts.add(txt.trim());
@@ -86,7 +84,7 @@ public class SupplierEditController {
       // day-of-week checkboxes
       for (DayOfWeek day : DayOfWeek.values()) {
          CheckBox cb = new CheckBox(day.name());
-         cb.selectedProperty().addListener((obs, oldV, newV) -> {
+         cb.selectedProperty().addListener((_, _, newV) -> {
             if (newV)
                selectedDays.add(day);
             else
@@ -95,11 +93,11 @@ public class SupplierEditController {
          daysPane.getChildren().add(cb);
       }
       daysPane.setVisible(false);
-      selfSupplyCheck.selectedProperty().addListener((obs, oldV, newV) -> daysPane.setVisible(newV));
+      selfSupplyCheck.selectedProperty().addListener((_, _, newV) -> daysPane.setVisible(newV));
 
       // cancel & save
-      cancelBtn.setOnAction(e -> closeWindow());
-      saveBtn.setOnAction(e -> onSave());
+      cancelBtn.setOnAction(_ -> closeWindow());
+      saveBtn.setOnAction(_ -> onSave());
    }
 
    /** Must be called _after_ setSupplier(...) */

@@ -18,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -79,8 +78,8 @@ public class SuppliersListController {
       addActionButtons();
 
       // Searchable list
-      FilteredList<SupplierDTO> filtered = new FilteredList<>(masterData, s -> true);
-      searchField.textProperty().addListener((obs, old, nw) -> {
+      FilteredList<SupplierDTO> filtered = new FilteredList<>(masterData, _ -> true);
+      searchField.textProperty().addListener((_, _, nw) -> {
          String term = (nw == null ? "" : nw).toLowerCase();
          filtered.setPredicate(dto -> dto.getName().toLowerCase().contains(term)
                || String.valueOf(dto.getId()).contains(term));
@@ -88,23 +87,23 @@ public class SuppliersListController {
       suppliersTable.setItems(filtered);
 
       // Toolbar actions
-      addBtn.setOnAction(e -> onAddSupplier());
-      refreshBtn.setOnAction(e -> loadSuppliers());
+      addBtn.setOnAction(_ -> onAddSupplier());
+      refreshBtn.setOnAction(_ -> loadSuppliers());
 
       // Initial data load
       loadSuppliers();
    }
 
    private void addActionButtons() {
-      Callback<TableColumn<SupplierDTO, Void>, TableCell<SupplierDTO, Void>> factory = col -> new TableCell<>() {
+      Callback<TableColumn<SupplierDTO, Void>, TableCell<SupplierDTO, Void>> factory = _ -> new TableCell<>() {
          private final Button viewBtn = new Button("View");
          private final Button editBtn = new Button("Edit");
          private final Button removeBtn = new Button("Remove");
 
          {
-            viewBtn.setOnAction(e -> onView(getTableView().getItems().get(getIndex())));
-            editBtn.setOnAction(e -> onEdit(getTableView().getItems().get(getIndex())));
-            removeBtn.setOnAction(e -> onRemove(getTableView().getItems().get(getIndex())));
+            viewBtn.setOnAction(_ -> onView(getTableView().getItems().get(getIndex())));
+            editBtn.setOnAction(_ -> onEdit(getTableView().getItems().get(getIndex())));
+            removeBtn.setOnAction(_ -> onRemove(getTableView().getItems().get(getIndex())));
          }
 
          @Override
@@ -177,7 +176,7 @@ public class SuppliersListController {
          if (response.isSuccess()) {
             loadSuppliers(); // refresh list
          } else {
-            // handle error (e.g. show error message)
+            // handle error (_.g. show error message)
             System.err.println("Failed to remove supplier: " + response.getErrors().toString());
          }
       }

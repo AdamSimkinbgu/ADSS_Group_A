@@ -1,21 +1,13 @@
 package PresentationLayer.GUI.SupplierScreen.Controllers;
 
-import PresentationLayer.GUI.Common.Navigation.ScreenNavigator;
 import PresentationLayer.GUI.Common.Navigation.ScreensEnum;
-import PresentationLayer.GUI.LoginScreen.Controllers.LoginViewController;
-import PresentationLayer.GUI.LoginScreen.ViewModels.LoginViewModel;
-import ServiceLayer.SuppliersServiceSubModule.OrderService;
-import ServiceLayer.SuppliersServiceSubModule.SupplierService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import DomainLayer.SystemFactory;
@@ -45,7 +37,6 @@ public class SuppliersMainController {
       suppliersBtn.setOnAction(_ -> loadSection(
             "Suppliers List",
             ScreensEnum.SUPPLIERS_LIST.getFxmlPath()));
-      // next buttons are not implemented yet, show an alert
       ordersBtn.setOnAction(_ -> {
          Alert alert = new Alert(Alert.AlertType.INFORMATION);
          alert.setTitle("Not Implemented");
@@ -53,13 +44,12 @@ public class SuppliersMainController {
          alert.setContentText("The Orders module is not implemented yet.");
          alert.showAndWait();
       });
-      productsBtn.setOnAction(_ -> {
-         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-         alert.setTitle("Not Implemented");
-         alert.setHeaderText("Products Tab");
-         alert.setContentText("The Products module is not implemented yet.");
-         alert.showAndWait();
-      });
+
+      // next buttons are not implemented yet, show an alert
+      productsBtn.setOnAction(_ -> loadSection(
+            "Products List",
+            ScreensEnum.SUPPLIERS_PRODUCTS.getFxmlPath()));
+
    }
 
    private void loadSection(String title, String fxmlPath) {
@@ -89,7 +79,18 @@ public class SuppliersMainController {
                ctrl.setAgreementService(components.getAgreementService());
                return ctrl;
             }
-            // Fallback for any other controller in this FXML
+
+            if (type == OrdersController.class) {
+               OrdersController ctrl = new OrdersController();
+               ctrl.setOrderService(components.getOrderService());
+               return ctrl;
+            }
+
+            if (type == SupplierProductsController.class) {
+               SupplierProductsController ctrl = new SupplierProductsController();
+               ctrl.init(components.getSupplierService());
+               return ctrl;
+            }
             try {
                return type.getDeclaredConstructor().newInstance();
             } catch (Exception e) {

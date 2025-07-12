@@ -85,7 +85,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
                LOGGER.debug("Retrieved order item line: {}", orderItemLine);
                return orderItemLine;
             } else {
-               LOGGER.warn("No order item line found with orderId: {} and lineId: {}", orderId, lineId);
+               LOGGER.debug("No order item line found with orderId: {} and lineId: {}", orderId, lineId);
                return null;
             }
          }
@@ -143,7 +143,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          preparedStatement.setInt(1, id);
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected == 0) {
-            LOGGER.warn("No order item line found with ID: {}", id);
+            LOGGER.debug("No order item line found with ID: {}", id);
             return false;
          } else {
             LOGGER.debug("Deleted order item line with ID: {}", id);
@@ -174,7 +174,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
             LOGGER.debug("Order item line updated successfully: {}", orderItemLine);
             return true;
          } else {
-            LOGGER.warn("No order item line found with ID: {}", orderItemLine.getOrderItemLineID());
+            LOGGER.debug("No order item line found with ID: {}", orderItemLine.getOrderItemLineID());
             return false;
          }
       } catch (SQLException e) {
