@@ -24,7 +24,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
         }
-        LOGGER.info("Creating supplier: {}", supplier.getName());
+        LOGGER.debug("Creating supplier: {}", supplier.getName());
         String sql = "INSERT INTO suppliers (name, tax_number, self_supply, supply_days_mask, lead_supply_days, street, city, building_number,  bank_account_number, payment_method, payment_term) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = Database.getConnection().prepareStatement(
                 sql,
@@ -49,7 +49,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 if (generatedKeys.next()) {
                     int id = generatedKeys.getInt(1);
                     supplier.setId(id);
-                    LOGGER.info("Supplier created successfully with ID: {}", id);
+                    LOGGER.debug("Supplier created successfully with ID: {}", id);
                 } else {
                     LOGGER.error("Creating supplier failed, no ID obtained.");
                     throw new SQLException("Creating supplier failed, no ID obtained.");
@@ -68,7 +68,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier ID: {}", id);
             throw new IllegalArgumentException("Supplier ID must be positive");
         }
-        LOGGER.info("Retrieving supplier with ID: {}", id);
+        LOGGER.debug("Retrieving supplier with ID: {}", id);
         String sql = "SELECT * FROM suppliers WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection()
                 .prepareStatement(sql)) {
@@ -88,7 +88,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                         resultSet.getString("bank_account_number"),
                         resultSet.getString("payment_method"),
                         resultSet.getString("payment_term"));
-                LOGGER.info("Supplier retrieved successfully: {}", supplier.getId());
+                LOGGER.debug("Supplier retrieved successfully: {}", supplier.getId());
                 return Optional.of(supplier);
             } else {
                 LOGGER.warn("No supplier found with ID: {}", id);
@@ -107,7 +107,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier data: {}", supplier);
             throw new IllegalArgumentException("Supplier cannot be null and must have a valid ID");
         }
-        LOGGER.info("Updating supplier: {}", supplier.getId());
+        LOGGER.debug("Updating supplier: {}", supplier.getId());
         String sql = "UPDATE suppliers SET supplier_id = ?, name = ?, tax_number = ?, self_supply = ?, supply_days_mask = ?, lead_supply_days = ?, street = ?, city = ?, building_number = ?, bank_account_number = ?, payment_method = ?, payment_term = ? WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection()
                 .prepareStatement(sql)) {
@@ -126,7 +126,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             preparedStatement.setInt(13, supplier.getId());
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
-                LOGGER.info("Supplier updated successfully: {}", supplier.getId());
+                LOGGER.debug("Supplier updated successfully: {}", supplier.getId());
                 return true;
             } else {
                 LOGGER.warn("No rows affected when updating supplier: {}", supplier.getId());
@@ -144,14 +144,14 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier ID: {}", id);
             throw new IllegalArgumentException("Supplier ID must be positive");
         }
-        LOGGER.info("Deleting supplier with ID: {}", id);
+        LOGGER.debug("Deleting supplier with ID: {}", id);
         String sql = "DELETE FROM suppliers WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection()
                 .prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
-                LOGGER.info("Supplier deleted successfully with ID: {}", id);
+                LOGGER.debug("Supplier deleted successfully with ID: {}", id);
                 return true;
             } else {
                 LOGGER.warn("No supplier found with ID: {}", id);
@@ -165,7 +165,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
 
     @Override
     public List<SupplierDTO> getAllSuppliers() {
-        LOGGER.info("Retrieving all suppliers");
+        LOGGER.debug("Retrieving all suppliers");
         List<SupplierDTO> suppliers = new ArrayList<>();
         String sql = "SELECT * FROM suppliers";
         List<ContactInfoDTO> contactsForSupplier = new ArrayList<>();
@@ -209,7 +209,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
                 suppliers.add(supplier);
                 contactsForSupplier = new ArrayList<>();
             }
-            LOGGER.info("Retrieved {} suppliers", suppliers.size());
+            LOGGER.debug("Retrieved {} suppliers", suppliers.size());
         } catch (SQLException e) {
             LOGGER.error("Error handling SQL exception: {}", e.getMessage());
             handleSQLException(e);
@@ -224,7 +224,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             LOGGER.error("Invalid supplier ID: {}", id);
             throw new IllegalArgumentException("Supplier ID must be positive");
         }
-        LOGGER.info("Checking if supplier exists with ID: {}", id);
+        LOGGER.debug("Checking if supplier exists with ID: {}", id);
         String sql = "SELECT COUNT(*) FROM suppliers WHERE supplier_id = ?";
         try (PreparedStatement preparedStatement = Database.getConnection()
                 .prepareStatement(sql)) {
@@ -232,7 +232,7 @@ public class JdbcSupplierDAO extends BaseDAO implements SupplierDAOInterface {
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 boolean exists = resultSet.getInt(1) > 0;
-                LOGGER.info("Supplier exists: {}", exists);
+                LOGGER.debug("Supplier exists: {}", exists);
                 return exists;
             } else {
                 LOGGER.warn("No result found when checking supplier existence for ID: {}", id);

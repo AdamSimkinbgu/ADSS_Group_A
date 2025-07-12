@@ -954,7 +954,8 @@ public class EmployeeController {
 
         // Check if the employee has the required role for accessing the HR module
         Set<String> roles = employeeDTO.getRoles();
-        return roles.contains(config.ROLE_HR_MANAGER) || roles.contains(config.ROLE_ADMIN);
+        return roles.contains(config.ROLE_HR_MANAGER) || roles.contains(config.ROLE_SHIFT_MANAGER)
+                || roles.contains(config.ROLE_ADMIN);
     }
 
     public List<String>  getAllBranches() {

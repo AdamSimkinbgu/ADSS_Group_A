@@ -766,7 +766,7 @@ public final class Database {
                     """);
 
             LOGGER.debug("Inserted default BOQ items");
-            LOGGER.warn("Orders and periodic orders are not seeded by default");
+            LOGGER.debug("Orders and periodic orders are not seeded by default");
         } catch (SQLException e) {
             LOGGER.error("Failed to seed default data", e);
         }

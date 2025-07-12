@@ -1,7 +1,9 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 import DTOs.SuppliersModuleDTOs.Enums.InitializeState;
 import DataAccessLayer.SuppliersDAL.util.Database;
+import PresentationLayer.MainCLI;
 import PresentationLayer.GUI.AppLauncher;
 import PresentationLayer.InventoryPresentationSubModule.PresentationMenu;
 import PresentationLayer.SuppliersPresentationSubModule.CLI.AppCLI;
@@ -48,34 +50,11 @@ public class Main {
    }
 
    private static void startCLI() {
-      System.out.println("Welcome to the Supplier-Inventory Management System!");
-      InitializeState startupState = requestStartupStateFromUser();
-      AppCLI appCLI = new AppCLI(startupState);
-      PresentationMenu presentationMenu = new PresentationMenu();
-      presentationMenu.Initialize(startupState);
-      integrateModules(presentationMenu, appCLI);
-      boolean showedStatistics = false;
-      while (true) {
-         System.out.println("\nMain Menu:");
-         System.out.println("1. Supplier Management");
-         System.out.println("2. Inventory Management");
-         System.out.println("3. Exit");
-         String choice = appCLI.readLine("Choose an option: ");
-         switch (choice) {
-            case "1":
-               // showedStatistics = askShowStatisticsOnce(showedStatistics);
-               appCLI.start();
-               break;
-            case "2":
-               // askShowStatisticsOnce(showedStatistics);
-               presentationMenu.Menu();
-               break;
-            case "3":
-               System.out.println("Exiting the application.");
-               return;
-            default:
-               System.out.println("Invalid option, please try again.");
-         }
+      try {
+         MainCLI.start();
+      } catch (IOException e) {
+         System.err.println("Failed to start CLI: " + e.getMessage());
+         e.printStackTrace();
       }
    }
 

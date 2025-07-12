@@ -55,7 +55,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
          handleSQLException(e);
       }
-      LOGGER.info("Created agreement with ID: {}", agreement.getAgreementId());
+      LOGGER.debug("Created agreement with ID: {}", agreement.getAgreementId());
       return agreement;
    }
 
@@ -77,7 +77,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                agreement.setAgreementEndDate(LocalDate.parse(rs.getString("agreement_end_date")));
                agreement.setValid(rs.getBoolean("valid"));
 
-               LOGGER.info("Retrieved agreement with ID: {}", id);
+               LOGGER.debug("Retrieved agreement with ID: {}", id);
                return Optional.of(agreement);
             }
          }
@@ -123,7 +123,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             LOGGER.warn("No agreement found with ID: {}", id);
             return false;
          } else {
-            LOGGER.info("Deleted agreement with ID: {}", id);
+            LOGGER.debug("Deleted agreement with ID: {}", id);
             return true;
          }
       } catch (SQLException e) {
@@ -147,7 +147,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
             Optional<AgreementDTO> agreementOpt = getAgreementById(agreementId);
             agreementOpt.ifPresent(agreements::add);
          }
-         LOGGER.info("Retrieved {} agreements", agreements.size());
+         LOGGER.debug("Retrieved {} agreements", agreements.size());
          return agreements;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -172,7 +172,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
                Optional<AgreementDTO> agreementOpt = getAgreementById(agreementId);
                agreementOpt.ifPresent(agreements::add);
             }
-            LOGGER.info("Retrieved {} agreements for supplier ID: {}", agreements.size(), supplierId);
+            LOGGER.debug("Retrieved {} agreements for supplier ID: {}", agreements.size(), supplierId);
             return agreements;
          }
       } catch (SQLException e) {
@@ -193,7 +193,7 @@ public class JdbcAgreementDAO extends BaseDAO implements AgreementDAOInterface {
          pstmt.setInt(1, agreementId);
          try (ResultSet rs = pstmt.executeQuery()) {
             boolean exists = rs.next();
-            LOGGER.info("Agreement with ID: {} exists: {}", agreementId, exists);
+            LOGGER.debug("Agreement with ID: {} exists: {}", agreementId, exists);
             return exists;
          }
       } catch (SQLException e) {

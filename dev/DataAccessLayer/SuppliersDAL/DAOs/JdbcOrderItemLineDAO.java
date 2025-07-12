@@ -171,7 +171,7 @@ public class JdbcOrderItemLineDAO extends BaseDAO implements OrderItemLineDAOInt
          preparedStatement.setInt(5, orderItemLine.getOrderItemLineID());
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Order item line updated successfully: {}", orderItemLine);
+            LOGGER.debug("Order item line updated successfully: {}", orderItemLine);
             return true;
          } else {
             LOGGER.warn("No order item line found with ID: {}", orderItemLine.getOrderItemLineID());

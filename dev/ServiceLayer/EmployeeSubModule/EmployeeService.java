@@ -1285,13 +1285,10 @@ public class EmployeeService {
         }
     }
 
-    public void canAccessSuppliersModule(long israeliId) {
+    public boolean canAccessSuppliersModule(long israeliId) {
         try {
-            // Check if the employee has permission to access
-            boolean hasPermission = employeeController.canAccessSuppliersModule(israeliId);
-            if (!hasPermission) {
-                throw new AuthorizationException(israeliId, "ACCESS_SUPPLIERS_MODULE");
-            }
+            // Check if the employee has permission to access the Suppliers Module
+            return employeeController.canAccessSuppliersModule(israeliId);
         } catch (UnauthorizedPermissionException e) {
             throw new AuthorizationException(israeliId, "ACCESS_SUPPLIERS_MODULE");
         } catch (Exception e) {
@@ -1299,13 +1296,10 @@ public class EmployeeService {
         }
     }
 
-    public void canAccessInventoryModule(long israeliId) {
+    public boolean canAccessInventoryModule(long israeliId) {
         try {
-            // Check if the employee has permission to access
-            boolean hasPermission = employeeController.canAccessInventoryModule(israeliId);
-            if (!hasPermission) {
-                throw new AuthorizationException(israeliId, "ACCESS_INVENTORY_MODULE");
-            }
+            // Check if the employee has permission to access the Inventory Module
+            return employeeController.canAccessInventoryModule(israeliId);
         } catch (UnauthorizedPermissionException e) {
             throw new AuthorizationException(israeliId, "ACCESS_INVENTORY_MODULE");
         } catch (Exception e) {
@@ -1313,13 +1307,10 @@ public class EmployeeService {
         }
     }
 
-    public void canAccessHRModule(long israeliId) {
+    public boolean canAccessHRModule(long israeliId) {
         try {
-            // Check if the employee has permission to access
-            boolean hasPermission = employeeController.canAccessHRModule(israeliId);
-            if (!hasPermission) {
-                throw new AuthorizationException(israeliId, "ACCESS_HR_MODULE");
-            }
+            // Check if the employee has permission to access the HR Module
+            return employeeController.canAccessHRModule(israeliId);
         } catch (UnauthorizedPermissionException e) {
             throw new AuthorizationException(israeliId, "ACCESS_HR_MODULE");
         } catch (Exception e) {

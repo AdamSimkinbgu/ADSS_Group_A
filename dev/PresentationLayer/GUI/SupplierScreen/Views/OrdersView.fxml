@@ -1,0 +1,45 @@
+<!-- OrdersView.fxml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.GUI.SuppliersScreen.Controllers.OrdersController"
+            styleClass="content-container"
+            prefWidth="800" prefHeight="600">
+
+  <!-- Header -->
+  <top>
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="header-bar">
+      <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
+      <Label text="📦 Orders" styleClass="section-title"/>
+      <Pane HBox.hgrow="ALWAYS"/>
+      <Button text="＋ New Order" onAction="#onNewOrder" styleClass="primary-button"/>
+      <Button text="⟳ Refresh"   onAction="#onRefresh"  styleClass="secondary-button"/>
+    </HBox>
+  </top>
+
+  <!-- Content: Table of orders -->
+  <center>
+    <TableView fx:id="ordersTable" styleClass="table-view" VBox.vgrow="ALWAYS">
+      <columns>
+        <TableColumn fx:id="colId"        text="Order #"/>
+        <TableColumn fx:id="colSupplier"  text="Supplier"/>
+        <TableColumn fx:id="colDate"      text="Date"/>
+        <TableColumn fx:id="colStatus"    text="Status"/>
+        <TableColumn fx:id="colItemCount" text="Items"/>
+      </columns>
+    </TableView>
+  </center>
+
+  <!-- Footer with edit/delete -->
+  <bottom>
+    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="footer-bar">
+      <padding><Insets top="5" right="15" bottom="5" left="15"/></padding>
+      <Button text="✎ Edit"   onAction="#onEditOrder"   styleClass="action-button"/>
+      <Button text="🗑 Delete" onAction="#onDeleteOrder" styleClass="action-button"/>
+    </HBox>
+  </bottom>
+</BorderPane>

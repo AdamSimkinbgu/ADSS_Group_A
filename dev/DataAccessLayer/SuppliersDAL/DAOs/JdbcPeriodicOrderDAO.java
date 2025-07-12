@@ -38,7 +38,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
          try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                periodicOrder.setPeriodicOrderID(generatedKeys.getInt(1));
-               LOGGER.info("Periodic order created with ID: {}", periodicOrder.getPeriodicOrderID());
+               LOGGER.debug("Periodic order created with ID: {}", periodicOrder.getPeriodicOrderID());
                return periodicOrder;
             } else {
                LOGGER.error("Creating periodic order failed, no ID obtained.");
@@ -70,7 +70,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
 
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Periodic order updated successfully.");
+            LOGGER.debug("Periodic order updated successfully.");
             return true;
          } else {
             LOGGER.warn("No periodic order found with ID: {}", periodicOrder.getPeriodicOrderID());
@@ -99,7 +99,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
 
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Periodic order deleted successfully.");
+            LOGGER.debug("Periodic order deleted successfully.");
             return true;
          } else {
             LOGGER.warn("No periodic order found with ID: {}", id);
@@ -132,7 +132,7 @@ public class JdbcPeriodicOrderDAO extends BaseDAO implements PeriodicOrderDAOInt
             periodicOrder.setPeriodicOrderID(resultSet.getInt("periodic_order_id"));
             periodicOrder.setDeliveryDay(DayOfWeek.valueOf(resultSet.getString("delivery_day").toUpperCase()));
             periodicOrder.setActive(resultSet.getBoolean("is_active"));
-            LOGGER.info("Retrieved periodic order: {}", periodicOrder);
+            LOGGER.debug("Retrieved periodic order: {}", periodicOrder);
             return periodicOrder;
          } else {
             LOGGER.warn("No periodic order found with ID: {}", id);

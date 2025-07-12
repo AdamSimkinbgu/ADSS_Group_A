@@ -43,7 +43,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
          itemLines.add(createdItemLine);
       }
       createdOrder.setItems(itemLines);
-      LOGGER.info("Regular order created with ID: and items: {}", createdOrder.getOrderId(), itemLines);
+      LOGGER.debug("Regular order created with ID: and items: {}", createdOrder.getOrderId(), itemLines);
       return createdOrder;
    }
 
@@ -54,7 +54,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
       }
       boolean updated = ordersRepository.updateOrder(order);
       if (updated) {
-         LOGGER.info("Regular order with ID: {} updated successfully", order.getOrderId());
+         LOGGER.debug("Regular order with ID: {} updated successfully", order.getOrderId());
       } else {
          LOGGER.error("Failed to update regular order with ID: {}", order.getOrderId());
       }
@@ -68,7 +68,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
       }
       boolean deleted = ordersRepository.deleteOrder(orderId);
       if (deleted) {
-         LOGGER.info("Regular order with ID: {} deleted successfully", orderId);
+         LOGGER.debug("Regular order with ID: {} deleted successfully", orderId);
       } else {
          LOGGER.error("Failed to delete regular order with ID: {}", orderId);
       }
@@ -96,7 +96,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
       } else {
          LOGGER.warn("No item lines found for order ID: {}", orderId);
       }
-      LOGGER.info("Retrieved regular order with ID: {}", orderId);
+      LOGGER.debug("Retrieved regular order with ID: {}", orderId);
       return order;
    }
 
@@ -115,7 +115,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
             LOGGER.warn("No item lines found for order ID: {}", order.getOrderId());
          }
       }
-      LOGGER.info("Retrieved {} regular orders from the repository", orders.size());
+      LOGGER.debug("Retrieved {} regular orders from the repository", orders.size());
       return orders;
    }
 
@@ -173,7 +173,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
             LOGGER.warn("No item lines found for order ID: {}", order.getOrderId());
          }
       }
-      LOGGER.info("Retrieved {} orders with status: {}", orders.size(), delivered);
+      LOGGER.debug("Retrieved {} orders with status: {}", orders.size(), delivered);
       return orders;
    }
 }

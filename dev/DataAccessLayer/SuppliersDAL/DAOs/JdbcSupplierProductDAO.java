@@ -47,7 +47,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
          try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                supplierProduct.setProductId(generatedKeys.getInt(1));
-               LOGGER.info("Created supplier product with ID: {}", supplierProduct.getProductId());
+               LOGGER.debug("Created supplier product with ID: {}", supplierProduct.getProductId());
             } else {
                LOGGER.error("Creating supplier product failed, no ID obtained.");
                throw new SQLException("Creating supplier product failed, no ID obtained.");
@@ -121,7 +121,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             LOGGER.error("Updating supplier product failed, no rows affected.");
             return false;
          }
-         LOGGER.info("Updated supplier product with ID: {}", supplierProduct.getProductId());
+         LOGGER.debug("Updated supplier product with ID: {}", supplierProduct.getProductId());
          return true;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -145,7 +145,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             LOGGER.warn("No supplier product found for supplierId={} and productId={}", supplierId, productId);
             return false;
          } else {
-            LOGGER.info("Deleted supplier product with ID: {} for supplier: {}", productId, supplierId);
+            LOGGER.debug("Deleted supplier product with ID: {} for supplier: {}", productId, supplierId);
             return true;
          }
       } catch (SQLException e) {
@@ -230,7 +230,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
                   rs.getString("manufacturer_name"));
             catalogProducts.add(catalogProduct);
          }
-         LOGGER.info("Retrieved {} catalog products", catalogProducts.size());
+         LOGGER.debug("Retrieved {} catalog products", catalogProducts.size());
          return catalogProducts;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -251,7 +251,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
          pstmt.setInt(2, productId);
          try (ResultSet rs = pstmt.executeQuery()) {
             boolean exists = rs.next();
-            LOGGER.info("Supplier product exists: {}", exists);
+            LOGGER.debug("Supplier product exists: {}", exists);
             return exists;
          }
       } catch (SQLException e) {
@@ -275,7 +275,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             while (rs.next()) {
                supplierIds.add(rs.getInt("supplier_id"));
             }
-            LOGGER.info("Retrieved {} supplier IDs for product ID: {}", supplierIds.size(), productId);
+            LOGGER.debug("Retrieved {} supplier IDs for product ID: {}", supplierIds.size(), productId);
             return supplierIds;
          } catch (SQLException e) {
             LOGGER.error("Error retrieving supplier IDs for product ID {}: {}", productId, e.getMessage());
@@ -302,7 +302,7 @@ public class JdbcSupplierProductDAO extends BaseDAO implements SupplierProductDA
             while (rs.next()) {
                productIds.add(rs.getInt("product_id"));
             }
-            LOGGER.info("Retrieved {} product IDs for supplier ID: {}", productIds.size(), supplierId);
+            LOGGER.debug("Retrieved {} product IDs for supplier ID: {}", productIds.size(), supplierId);
             return productIds;
          } catch (SQLException e) {
             LOGGER.error("Error retrieving product IDs for supplier ID {}: {}", supplierId, e.getMessage());

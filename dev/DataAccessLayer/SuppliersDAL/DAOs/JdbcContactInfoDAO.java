@@ -70,7 +70,7 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
          preparedStatement.setInt(4, contactInfo.getSupplierId());
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Contact info updated successfully for supplier ID: {}", contactInfo.getSupplierId());
+            LOGGER.debug("Contact info updated successfully for supplier ID: {}", contactInfo.getSupplierId());
             return true;
          } else {
             LOGGER.warn("No rows affected when updating contact info for supplier ID: {}", contactInfo.getSupplierId());
@@ -132,7 +132,7 @@ public class JdbcContactInfoDAO extends BaseDAO implements ContactInfoDAOInterfa
             contactInfo.setPhone(resultSet.getString("phone"));
             contactInfos.add(contactInfo);
          }
-         LOGGER.info("Retrieved {} contact info entries for supplier ID: {}", contactInfos.size(), supplierId);
+         LOGGER.debug("Retrieved {} contact info entries for supplier ID: {}", contactInfos.size(), supplierId);
          return contactInfos;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());

@@ -43,7 +43,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                orderDTO.setOrderId(generatedKeys.getInt(1));
-               LOGGER.info("Order created with ID: {}", orderDTO.getOrderId());
+               LOGGER.debug("Order created with ID: {}", orderDTO.getOrderId());
                return orderDTO;
             } else {
                LOGGER.error("Creating order failed, no ID obtained.");
@@ -77,7 +77,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             // orderDTO.setContactPhoneNumber(resultSet.getString("contact_phone_number"));
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
             orderDTO.setOrderCatagory(OrderCatagory.valueOf(resultSet.getString("order_catagory")));
-            LOGGER.info("Order retrieved: {}", orderDTO);
+            LOGGER.debug("Order retrieved: {}", orderDTO);
             return Optional.of(orderDTO);
          } else {
             LOGGER.warn("No order found with ID: {}", orderID);
@@ -105,7 +105,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
             orders.add(orderDTO);
          }
-         LOGGER.info("Retrieved {} orders", orders.size());
+         LOGGER.debug("Retrieved {} orders", orders.size());
          return orders;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -129,7 +129,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             LOGGER.warn("No order found with ID: {}", orderID);
             return false;
          }
-         LOGGER.info("Order with ID {} deleted successfully", orderID);
+         LOGGER.debug("Order with ID {} deleted successfully", orderID);
          return true;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -151,7 +151,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
          preparedStatement.setString(2, updatedOrderDTO.getOrderDate().toString());
          preparedStatement.setString(3, updatedOrderDTO.getStatus().name());
          if (updatedOrderDTO.getStatus() == OrderStatus.DELIVERED && updatedOrderDTO.getDeliveryDate() == null) {
-            LOGGER.info("Order changed to DELIVERED, setting delivery date to current date");
+            LOGGER.debug("Order changed to DELIVERED, setting delivery date to current date");
             updatedOrderDTO.setDeliveryDate();
          }
          if (updatedOrderDTO.getDeliveryDate() == null) {
@@ -166,7 +166,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             LOGGER.warn("No order found with ID: {}", updatedOrderDTO.getOrderId());
             return false;
          }
-         LOGGER.info("Order with ID {} updated successfully", updatedOrderDTO.getOrderId());
+         LOGGER.debug("Order with ID {} updated successfully", updatedOrderDTO.getOrderId());
          return true;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());
@@ -196,7 +196,7 @@ public class JdbcOrderDAO extends BaseDAO implements OrderDAOInterface {
             orderDTO.setStatus(OrderStatus.valueOf(resultSet.getString("status")));
             orders.add(orderDTO);
          }
-         LOGGER.info("Retrieved {} orders with status: {}", orders.size(), delivered);
+         LOGGER.debug("Retrieved {} orders with status: {}", orders.size(), delivered);
          return orders;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());

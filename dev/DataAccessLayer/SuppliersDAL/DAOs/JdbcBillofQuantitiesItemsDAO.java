@@ -70,7 +70,7 @@ public class JdbcBillofQuantitiesItemsDAO extends BaseDAO implements BillofQuant
             LOGGER.error("Updating Bill of Quantities Item failed, no rows affected.");
             return false;
          }
-         LOGGER.info("Updated Bill of Quantities Item with ID: {}", item.getLineInBillID());
+         LOGGER.debug("Updated Bill of Quantities Item with ID: {}", item.getLineInBillID());
          return true;
       } catch (SQLException e) {
          LOGGER.error("Error handling SQL exception: {}", e.getMessage());

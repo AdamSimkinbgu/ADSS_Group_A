@@ -25,10 +25,10 @@ public class SupplierFacade {
    // Map of supplier IDs to their products and prices
 
    public SupplierFacade(InitializeState initState) {
-      LOGGER.info("Initializing SupplierFacade with state: {}", initState);
+      LOGGER.debug("Initializing SupplierFacade with state: {}", initState);
       this.suppliersAgreementsRepo = SuppliersAgreementsRepositoryImpl.getInstance();
       suppliersAgreementsRepo.initialize(initState);
-      LOGGER.info("Database initialized in state: {}", initState);
+      LOGGER.debug("Database initialized in state: {}", initState);
 
    }
 
@@ -44,7 +44,7 @@ public class SupplierFacade {
    public boolean removeSupplier(int supplierID) {
 
       if (suppliersAgreementsRepo.deleteSupplier(supplierID)) {
-         LOGGER.info("Supplier with ID {} removed successfully", supplierID);
+         LOGGER.debug("Supplier with ID {} removed successfully", supplierID);
          return true;
       } else {
          LOGGER.warn("No supplier found with ID: {}", supplierID);
@@ -63,11 +63,11 @@ public class SupplierFacade {
       }
       // check if there is nothing to update
       if (supplier.get().equals(supplierDTO)) {
-         LOGGER.info("No changes detected for supplier ID: {}", supplierID);
+         LOGGER.debug("No changes detected for supplier ID: {}", supplierID);
          return true; // No changes to update
       }
       if (suppliersAgreementsRepo.updateSupplier(supplierDTO)) {
-         LOGGER.info("Supplier with ID {} updated successfully", supplierID);
+         LOGGER.debug("Supplier with ID {} updated successfully", supplierID);
          return true;
       } else {
          LOGGER.warn("No changes made to supplier with ID: {}", supplierID);
@@ -110,7 +110,7 @@ public class SupplierFacade {
 
       product.setSupplierId(supplierID);
       SupplierProductDTO createdSupplierProduct = suppliersAgreementsRepo.createSupplierProduct(product);
-      LOGGER.info("Product added to supplier in memory: {}", createdSupplierProduct);
+      LOGGER.debug("Product added to supplier in memory: {}", createdSupplierProduct);
 
    }
 
@@ -212,7 +212,7 @@ public class SupplierFacade {
       if (existingAgreement.isEmpty()) {
          throw new IllegalArgumentException("Agreement not found for ID: " + agreementId);
       } else if (updatedAgreement.equals(existingAgreement.get())) {
-         LOGGER.info("No changes detected for agreement ID: {}", agreementId);
+         LOGGER.debug("No changes detected for agreement ID: {}", agreementId);
          return; // No changes to update
       }
       suppliersAgreementsRepo.updateAgreement(updatedAgreement);
@@ -284,7 +284,7 @@ public class SupplierFacade {
          List<AgreementDTO> agreements = suppliersAgreementsRepo
                .getAllAgreementsForSupplier(supplierId);
          if (agreements == null || agreements.isEmpty()) {
-            LOGGER.info("No agreements found for supplier ID: {} - using default price and no discount",
+            LOGGER.debug("No agreements found for supplier ID: {} - using default price and no discount",
                   supplierId);
             item.setUnitPrice(supplierProduct.getPrice());
             item.setDiscount(BigDecimal.ZERO);
@@ -295,7 +295,7 @@ public class SupplierFacade {
             if (done) {
                bestPriceAccumulate = bestPriceAccumulate.add(
                      supplierProduct.getPrice().multiply(BigDecimal.valueOf(copyToWorkOn.getQuantity())));
-               LOGGER.info("No way to improve price for product ID: {}, adding remaining quantity at default price",
+               LOGGER.debug("No way to improve price for product ID: {}, adding remaining quantity at default price",
                      item.getProductId());
             }
             int currentBestQuantity = 0;
@@ -328,7 +328,7 @@ public class SupplierFacade {
             // if we havent found any better price, we break the loop
             if (currentBestPrice.doubleValue() == Double.MAX_VALUE && copyToWorkOn.getQuantity() > 0) {
                // we add the remaining quantity at the default price
-               LOGGER.info("No better price found for product ID: {}, using default price", item.getProductId());
+               LOGGER.debug("No better price found for product ID: {}, using default price", item.getProductId());
                currentBestPrice = supplierProduct.getPrice().multiply(BigDecimal.valueOf(copyToWorkOn.getQuantity()));
                copyToWorkOn.setQuantity(0);
                done = true;
@@ -353,7 +353,7 @@ public class SupplierFacade {
       if (updatedItems.isEmpty()) {
          LOGGER.warn("No valid items found after setting prices and discounts for supplier ID: {}", supplierId);
       } else {
-         LOGGER.info("Successfully set prices and discounts for {} items for supplier ID: {}", updatedItems.size(),
+         LOGGER.debug("Successfully set prices and discounts for {} items for supplier ID: {}", updatedItems.size(),
                supplierId);
       }
       return updatedItems;

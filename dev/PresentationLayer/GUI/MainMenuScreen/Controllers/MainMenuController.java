@@ -143,7 +143,15 @@ public class MainMenuController {
 
       try {
          EmployeeService empSvc = ServiceFacade.getInstance().getEmployeeService();
-         empSvc.canAccessSuppliersModule(employeeDTO.getIsraeliId());
+         if (!empSvc.canAccessSuppliersModule(employeeDTO.getIsraeliId())) {
+            // Explicitly catch the authorization failure
+            Alert a = new Alert(Alert.AlertType.ERROR,
+                  "You do not have permission to access the Suppliers module.",
+                  ButtonType.OK);
+            a.setHeaderText("Access Denied");
+            a.showAndWait();
+            return false;
+         }
          return true;
       } catch (ServiceException se) {
          // Explicitly catch the authorization failure
@@ -185,7 +193,15 @@ public class MainMenuController {
 
       try {
          EmployeeService empSvc = ServiceFacade.getInstance().getEmployeeService();
-         empSvc.canAccessInventoryModule(employeeDTO.getIsraeliId());
+         if (!empSvc.canAccessInventoryModule(employeeDTO.getIsraeliId())) {
+            // Explicitly catch the authorization failure
+            Alert a = new Alert(Alert.AlertType.ERROR,
+                  "You do not have permission to access the Inventory module.",
+                  ButtonType.OK);
+            a.setHeaderText("Access Denied");
+            a.showAndWait();
+            return false;
+         }
          return true;
       } catch (ServiceException se) {
          // Explicitly catch the authorization failure
@@ -242,7 +258,15 @@ public class MainMenuController {
 
       try {
          EmployeeService empSvc = ServiceFacade.getInstance().getEmployeeService();
-         empSvc.canAccessHRModule(employeeDTO.getIsraeliId());
+         if (!empSvc.canAccessHRModule(employeeDTO.getIsraeliId())) {
+            // Explicitly catch the authorization failure
+            Alert a = new Alert(Alert.AlertType.ERROR,
+                  "You do not have permission to access the HR module.",
+                  ButtonType.OK);
+            a.setHeaderText("Access Denied");
+            a.showAndWait();
+            return false;
+         }
          return true;
       } catch (ServiceException se) {
          // Explicitly catch the authorization failure

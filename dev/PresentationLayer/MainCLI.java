@@ -2,6 +2,8 @@ package PresentationLayer;
 
 import DomainLayer.SystemFactory;
 import PresentationLayer.EmployeeSubModule.CLI.HR_MainCLI;
+import PresentationLayer.InventoryPresentationSubModule.PresentationMenu;
+import PresentationLayer.SuppliersPresentationSubModule.CLI.AppCLI;
 import PresentationLayer.TransportPresentation.MainTranSysCLI;
 import Util.CliUtil;
 import Util.Database;
@@ -13,17 +15,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import DTOs.SuppliersModuleDTOs.Enums.InitializeState;
+
 public class MainCLI {
 
     private static final Scanner scanner = new Scanner(System.in);
 
     private static boolean minimalMode = false;
 
+    private static AppCLI appCLI;
+    private static PresentationMenu presentationMenu;
+
     public static void start() throws IOException {
         try {
+            // Initialization of suppliers and inventory modules
+            InitializeState startupState = requestStartupStateFromUser();
+            appCLI = new AppCLI(startupState);
+            presentationMenu = new PresentationMenu();
+            presentationMenu.Initialize(startupState);
+            integrateModules(presentationMenu, appCLI);
+
+            // Initialization of hr and transport modules
             minimalMode = CliUtil.confirm("Do you want to start with minimal data?", scanner);
             Database.init(minimalMode);
 
+            // starting point for the CLI
             CliUtil.printWelcomeBanner("Welcome to SuperLee System Assignment 2", LocalDate.now().toString(),
                     "Not Logged In");
 
@@ -55,7 +71,6 @@ public class MainCLI {
         }
         SystemFactory factory = new SystemFactory();
         // boolean minimalMode = config.LOAD_DATA_FROM_DB;
-        boolean canAccessTransportModule = false;
 
         // System Factory creates the Modules components
         SystemFactory.EmployeeModuleComponents employeeComponents = factory.createEmployeeModule(minimalMode);
@@ -66,6 +81,9 @@ public class MainCLI {
             CliUtil.printError("User ID cannot access the system.");
             return ExitAction.LOGOUT;
         }
+
+        boolean canAccessTransportModule = false;
+
         if (employeeComponents.getEmployeeService().canAccessTransportModule(userId))
             canAccessTransportModule = true;
 
@@ -77,7 +95,9 @@ public class MainCLI {
             mainCLI.start();
             // After finishing HR_MainCLI, just return LOGOUT (i.e., return to login screen)
             return ExitAction.LOGOUT;
-        } else {
+        }
+
+        else {
             return mainMenuLoop(factory, employeeComponents, transportComponents, userId);
         }
     }
@@ -91,6 +111,8 @@ public class MainCLI {
             List<String> options = new ArrayList<>();
             options.add("Employee Module");
             options.add("Transport Module");
+            options.add("Supplier Module");
+            options.add("Inventory Module");
             options.add("Exit");
             // Print the options with numbering
             CliUtil.printNumberedList(options, 1);
@@ -118,6 +140,26 @@ public class MainCLI {
                     mainTranSysCLI.transportModuleStartup(userId);
                     break;
                 case 3:
+                    CliUtil.printInfo("Starting Supplier Module...");
+                    boolean canAccessSuppliers = employeeComponents.getEmployeeService()
+                            .canAccessSuppliersModule(userId);
+                    if (!canAccessSuppliers) {
+                        CliUtil.printError("You do not have permission to access the Supplier Module.");
+                        break;
+                    }
+                    appCLI.start();
+                    break;
+                case 4:
+                    CliUtil.printInfo("Starting Inventory Module...");
+                    boolean canAccessInventory = employeeComponents.getEmployeeService()
+                            .canAccessInventoryModule(userId);
+                    if (!canAccessInventory) {
+                        CliUtil.printError("You do not have permission to access the Inventory Module.");
+                        break;
+                    }
+                    presentationMenu.Menu();
+                    break;
+                case 5:
                     if (logoutOrExitPrompt()) {
                         // true: user wants to exit program
                         return ExitAction.EXIT_PROGRAM;
@@ -127,9 +169,9 @@ public class MainCLI {
                     }
                 default:
                     CliUtil.printError("Invalid choice. Please try again.");
-                    break;
             }
         }
+
     }
 
     // Ask the user: Do you want to log out, or exit program?
@@ -138,5 +180,39 @@ public class MainCLI {
         CliUtil.printBold("Do you want to log out or exit the program? ");
         int subChoice = CliUtil.getMenuChoice("type 1 to log out, or 2 to exit the program: ", 1, 2, scanner);
         return subChoice == 2;
+    }
+
+    public static void integrateModules(PresentationMenu pm, AppCLI app) {
+        app.integration();
+        pm.Integration();
+    }
+
+    public static InitializeState requestStartupStateFromUser() {
+        System.out.println("Please select the startup state for Suppliers/Inventory modules:");
+        System.out.println("1. Current state - Load existing data from the database 'as is'.");
+        System.out
+                .println("2. Default state - Clear the datebase and start with default data (as in the instructions).");
+        System.out.println("3. No data state - Clear the database and start with no data.");
+        System.out.println("4. Exit the application.");
+        System.out.print("Enter your choice (1-4): ");
+        String choice = scanner.nextLine().trim();
+        while (true) {
+            switch (choice) {
+                case "1":
+                    return InitializeState.CURRENT_STATE;
+                case "2":
+                    return InitializeState.DEFAULT_STATE;
+                case "3":
+                    return InitializeState.NO_DATA_STATE;
+                case "4":
+                    System.out.println("Exiting the application.");
+                    System.exit(0);
+                    return null; // This line will never be reached, but is needed to satisfy the compiler.
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+                    System.out.print("Enter your choice (1-4): ");
+                    choice = scanner.nextLine().trim();
+            }
+        }
     }
 }

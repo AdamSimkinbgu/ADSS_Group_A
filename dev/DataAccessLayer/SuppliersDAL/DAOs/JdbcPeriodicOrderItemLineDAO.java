@@ -152,7 +152,7 @@ public class JdbcPeriodicOrderItemLineDAO extends BaseDAO implements PeriodicOrd
 
          int rowsAffected = preparedStatement.executeUpdate();
          if (rowsAffected > 0) {
-            LOGGER.info("Periodic order item line updated successfully.");
+            LOGGER.debug("Periodic order item line updated successfully.");
             return true;
          } else {
             LOGGER.warn("No periodic order item line found with ID: {}",

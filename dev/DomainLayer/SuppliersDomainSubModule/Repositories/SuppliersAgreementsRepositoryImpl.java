@@ -47,9 +47,9 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
    public static SuppliersAgreementsRepositoryImpl getInstance() {
       if (instance == null) {
          instance = new SuppliersAgreementsRepositoryImpl();
-         LOGGER.info("Created new instance of SupplierRepositoryImpl");
+         LOGGER.debug("Created new instance of SupplierRepositoryImpl");
       } else {
-         LOGGER.info("Using existing instance of SupplierRepositoryImpl");
+         LOGGER.debug("Using existing instance of SupplierRepositoryImpl");
       }
       return instance;
    }
@@ -63,18 +63,18 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
    }
 
    public void initialize(InitializeState state) {
-      LOGGER.info("Initiating SuppliersAgreementsRepositoryImpl with state: {}", state);
+      LOGGER.debug("Initiating SuppliersAgreementsRepositoryImpl with state: {}", state);
       switch (state) {
          case CURRENT_STATE -> {
-            LOGGER.info("Loading current state from database");
+            LOGGER.debug("Loading current state from database");
             loadCurrentStateFromDatabase();
          }
          case DEFAULT_STATE -> {
-            LOGGER.info("Loading default state from database");
+            LOGGER.debug("Loading default state from database");
             Database.seedDefaultData();
          }
          case NO_DATA_STATE -> {
-            LOGGER.info("Loading empty state");
+            LOGGER.debug("Loading empty state");
             loadEmptyState();
          }
          default -> {
@@ -117,7 +117,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get supplier with negative ID: {}", id);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Retrieving supplier with ID: {}", id);
+      LOGGER.debug("Retrieving supplier with ID: {}", id);
       if (suppliersCache.containsKey(id)) {
          LOGGER.debug("Supplier found in cache: {}", suppliersCache.get(id));
          return Optional.of(new SupplierDTO(suppliersCache.get(id)));
@@ -128,11 +128,11 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          if (contacts.isEmpty()) {
             LOGGER.warn("No contact info found for supplier with ID: {}", id);
          } else {
-            LOGGER.info("Found {} contact(s) for supplier with ID: {}", contacts.size(), id);
+            LOGGER.debug("Found {} contact(s) for supplier with ID: {}", contacts.size(), id);
             supplier.get().setContacts(contacts);
          }
          suppliersCache.put(id, new Supplier(supplier.get()));
-         LOGGER.info("Supplier retrieved and cached: {}", supplier.get());
+         LOGGER.debug("Supplier retrieved and cached: {}", supplier.get());
          return supplier;
       } else {
          LOGGER.warn("No supplier found with ID: {}", id);
@@ -150,13 +150,13 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to update supplier with negative ID: {}", supplier.getId());
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Updating supplier: {}", supplier);
+      LOGGER.debug("Updating supplier: {}", supplier);
       Optional<SupplierDTO> existingSup = supplierDAO.getSupplier(supplier.getId());
       if (!existingSup.equals(Optional.of(supplier))) {
          supplierDAO.updateSupplier(supplier);
-         LOGGER.info("Supplier data has changed, proceeding with update");
+         LOGGER.debug("Supplier data has changed, proceeding with update");
       } else {
-         LOGGER.info("No changes detected in supplier data, skipping update");
+         LOGGER.debug("No changes detected in supplier data, skipping update");
          return false;
       }
       List<ContactInfoDTO> supplierDTOcontacts = supplier.getContactsInfoDTOList();
@@ -167,12 +167,12 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       int contactsChanged = 0;
       for (ContactInfoDTO contact : supplierDTOcontacts) {
          if (contact.getSupplierId() < 0) {
-            LOGGER.info("Creating new contact: {}", contact.getName());
+            LOGGER.debug("Creating new contact: {}", contact.getName());
             contact.setSupplierId(supplier.getId());
             contactInfoDAO.createContactInfo(contact);
             contactsChanged++;
          } else if (contact.getSupplierId() == 0) {
-            LOGGER.info("Removing contact: {}", contact.getName());
+            LOGGER.debug("Removing contact: {}", contact.getName());
             contactInfoDAO.deleteContactInfo(supplier.getId(), contact.getName());
             contactsChanged++;
          } else {
@@ -180,19 +180,19 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                   .filter(c -> c.getName() == contact.getName()).findFirst();
             if (existingContact.isPresent()) {
                if (!existingContact.get().equals(contact)) {
-                  LOGGER.info("Updating existing contact: {}", contact.getName());
+                  LOGGER.debug("Updating existing contact: {}", contact.getName());
                   contactInfoDAO.updateContactInfo(contact);
                   contactsChanged++;
                } else {
-                  LOGGER.info("No changes detected in contact: {}", contact.getName());
+                  LOGGER.debug("No changes detected in contact: {}", contact.getName());
                }
             }
          }
       }
       if (contactsChanged > 0) {
-         LOGGER.info("Updated {} contact(s) for supplier with ID: {}", contactsChanged, supplier.getId());
+         LOGGER.debug("Updated {} contact(s) for supplier with ID: {}", contactsChanged, supplier.getId());
       } else {
-         LOGGER.info("No changes detected in contacts for supplier with ID: {}", supplier.getId());
+         LOGGER.debug("No changes detected in contacts for supplier with ID: {}", supplier.getId());
       }
       suppliersCache.put(supplier.getId(), new Supplier(supplier));
       LOGGER.debug("Supplier updated and cached: {}", supplier);
@@ -205,7 +205,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to delete supplier with negative ID: {}", id);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Deleting supplier with ID: {}", id);
+      LOGGER.debug("Deleting supplier with ID: {}", id);
       if (!supplierDAO.supplierExists(id)) {
          LOGGER.warn("Supplier with ID {} does not exist", id);
          return false;
@@ -253,7 +253,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Failed to delete supplier with ID: {}", id);
          throw new RuntimeException("Failed to delete supplier");
       }
-      LOGGER.info("Supplier with ID {} deleted successfully from DB", id);
+      LOGGER.debug("Supplier with ID {} deleted successfully from DB", id);
       return true;
    }
 
@@ -263,15 +263,15 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to check existence of supplier with negative ID: {}", id);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Checking if supplier with ID {} exists", id);
+      LOGGER.debug("Checking if supplier with ID {} exists", id);
       boolean exists = suppliersCache.containsKey(id) || supplierDAO.supplierExists(id);
-      LOGGER.info("Supplier with ID {} exists: {}", id, exists);
+      LOGGER.debug("Supplier with ID {} exists: {}", id, exists);
       return exists;
    }
 
    @Override
    public List<SupplierDTO> getAllSuppliers() {
-      LOGGER.info("Retrieving all suppliers");
+      LOGGER.debug("Retrieving all suppliers");
       List<SupplierDTO> suppliers = supplierDAO.getAllSuppliers();
       if (suppliers.isEmpty()) {
          LOGGER.warn("No suppliers found in DB");
@@ -279,14 +279,14 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          for (SupplierDTO supplier : suppliers) {
             List<ContactInfoDTO> contacts = contactInfoDAO.getContactInfosBySupplierId(supplier.getId());
             if (!contacts.isEmpty()) {
-               LOGGER.info("Found {} contact(s) for supplier with ID: {}", contacts.size(), supplier.getId());
+               LOGGER.debug("Found {} contact(s) for supplier with ID: {}", contacts.size(), supplier.getId());
                supplier.setContacts(contacts);
             } else {
                LOGGER.warn("No contact info found for supplier with ID: {}", supplier.getId());
             }
             suppliersCache.put(supplier.getId(), new Supplier(supplier));
          }
-         LOGGER.info("Found {} suppliers in DB", suppliers.size());
+         LOGGER.debug("Found {} suppliers in DB", suppliers.size());
       }
       return suppliers;
    }
@@ -301,7 +301,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to add agreement to supplier with negative ID: {}", supplierId);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Adding agreement for supplier with ID: {}", supplierId);
+      LOGGER.debug("Adding agreement for supplier with ID: {}", supplierId);
       AgreementDTO createdAgreementDTO = saveAgreementInMemoryDB(agreement);
       return createdAgreementDTO;
    }
@@ -357,7 +357,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          }
          savedAgreement.setBillOfQuantitiesItems(billOfQuantitiesItems);
          agreementsCache.computeIfAbsent(supplier.getId(), k -> new ArrayList<>()).add(new Agreement(savedAgreement));
-         LOGGER.info("Agreement saved and cached successfully: {}", savedAgreement.getAgreementId());
+         LOGGER.debug("Agreement saved and cached successfully: {}", savedAgreement.getAgreementId());
          return savedAgreement;
       } else {
          LOGGER.error("Supplier with ID {} not found for agreement: {}", agreementToSave.getSupplierId(),
@@ -372,11 +372,11 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get agreement with negative ID: {}", agreementId);
          throw new IllegalArgumentException("Agreement ID cannot be negative");
       }
-      LOGGER.info("Retrieving agreement with ID: {}", agreementId);
+      LOGGER.debug("Retrieving agreement with ID: {}", agreementId);
       if (agreementsCache.values().stream()
             .flatMap(List::stream)
             .anyMatch(a -> a.getAgreementId() == agreementId)) {
-         LOGGER.info("Agreement found in cache with ID: {}", agreementId);
+         LOGGER.debug("Agreement found in cache with ID: {}", agreementId);
          return agreementsCache.values().stream()
                .flatMap(List::stream)
                .filter(a -> a.getAgreementId() == agreementId)
@@ -385,7 +385,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       Optional<AgreementDTO> agreement = agreementDAO.getAgreementById(agreementId);
       if (agreement.isPresent()) {
-         LOGGER.info("Found agreement: {}", agreement.get());
+         LOGGER.debug("Found agreement: {}", agreement.get());
          List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO
                .getAllBillofQantitiesItemsForAgreementId(agreementId);
          for (BillofQuantitiesItemDTO item : boqItems) {
@@ -404,7 +404,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          if (boqItems.isEmpty()) {
             LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreementId);
          } else {
-            LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
+            LOGGER.debug("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
             agreement.get().setBillOfQuantitiesItems(boqItems);
             String supplierName = getSupplierById(agreement.get().getSupplierId())
                   .map(SupplierDTO::getName).orElse("Unknown Supplier");
@@ -412,7 +412,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          }
          agreementsCache.computeIfAbsent(agreement.get().getSupplierId(), k -> new ArrayList<>())
                .add(new Agreement(agreement.get()));
-         LOGGER.info("Agreement retrieved and cached: {}", agreement.get().getAgreementId());
+         LOGGER.debug("Agreement retrieved and cached: {}", agreement.get().getAgreementId());
          return agreement;
       } else {
          LOGGER.warn("No agreement found with ID: {}", agreementId);
@@ -426,7 +426,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to update a null agreement");
          throw new IllegalArgumentException("Agreement cannot be null");
       }
-      LOGGER.info("Updating agreement: {}", agreement.getAgreementId());
+      LOGGER.debug("Updating agreement: {}", agreement.getAgreementId());
       if (agreementDAO.updateAgreement(agreement)) {
          List<BillofQuantitiesItemDTO> updatedItems = new ArrayList<>();
          for (BillofQuantitiesItemDTO item : agreement.getBillOfQuantitiesItems()) {
@@ -446,7 +446,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          agreementsCache.computeIfAbsent(agreement.getSupplierId(), k -> new ArrayList<>())
                .removeIf(a -> a.getAgreementId() == agreement.getAgreementId());
          agreementsCache.get(agreement.getSupplierId()).add(new Agreement(agreement));
-         LOGGER.info("Agreement updated and cached successfully: {}", agreement.getAgreementId());
+         LOGGER.debug("Agreement updated and cached successfully: {}", agreement.getAgreementId());
          return true;
       } else {
          LOGGER.error("Failed to update agreement: {}", agreement.getAgreementId());
@@ -464,7 +464,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to remove agreement from supplier with negative ID: {}", supplierId);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Removing agreement with ID {} from supplier with ID {}", agreementId, supplierId);
+      LOGGER.debug("Removing agreement with ID {} from supplier with ID {}", agreementId, supplierId);
       if (agreementDAO.deleteAgreement(agreementId)) {
          // Remove from cache
          if (agreementsCache.containsKey(supplierId)) {
@@ -474,7 +474,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                agreementsCache.remove(supplierId);
             }
          }
-         LOGGER.info("Agreement with ID {} removed successfully from supplier with ID {}", agreementId, supplierId);
+         LOGGER.debug("Agreement with ID {} removed successfully from supplier with ID {}", agreementId, supplierId);
          return true;
       } else {
          LOGGER.error("Failed to remove agreement with ID {} from supplier with ID {}", agreementId, supplierId);
@@ -488,7 +488,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get agreements for supplier with negative ID: {}", supplierId);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Retrieving all agreements for supplier with ID: {}", supplierId);
+      LOGGER.debug("Retrieving all agreements for supplier with ID: {}", supplierId);
       List<AgreementDTO> agreements = agreementDAO.getAllAgreementsForSupplier(supplierId);
       if (agreements.isEmpty()) {
          LOGGER.warn("No agreements found for supplier with ID: {}", supplierId);
@@ -511,7 +511,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                            item.getProductId());
                   }
                }
-               LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(),
+               LOGGER.debug("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(),
                      agreement.getAgreementId());
             } else {
                LOGGER.warn("No Bill of Quantities items found for agreement with ID: {}", agreement.getAgreementId());
@@ -523,18 +523,18 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          agreementsCache.computeIfAbsent(supplierId, k -> new ArrayList<>());
          agreementsCache.get(supplierId).add(new Agreement(agreement));
       }
-      LOGGER.info("Found {} agreements for supplier with ID: {}", agreements.size(), supplierId);
+      LOGGER.debug("Found {} agreements for supplier with ID: {}", agreements.size(), supplierId);
       return agreements;
    }
 
    @Override
    public List<AgreementDTO> getAllAgreements() {
-      LOGGER.info("Retrieving all agreements");
+      LOGGER.debug("Retrieving all agreements");
       List<AgreementDTO> agreements = agreementDAO.getAllAgreements();
       if (agreements.isEmpty()) {
          LOGGER.warn("No agreements found in DB");
       } else {
-         LOGGER.info("Found {} agreements in DB", agreements.size());
+         LOGGER.debug("Found {} agreements in DB", agreements.size());
       }
       return agreements;
    }
@@ -563,7 +563,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       LOGGER.debug("Attempting to save the supplier product in memory and in DB: {}", supplierProductToSave.getName() +
             " with supplierId: " + supplierProductToSave.getSupplierId());
       if (supplierProductToSave.getProductId() < 0) {
-         LOGGER.info("Creating new supplier product.");
+         LOGGER.debug("Creating new supplier product.");
          SupplierProductDTO newProduct = supplierProductDAO.createSupplierProduct(supplierProductToSave);
          if (newProduct == null) {
             LOGGER.error("Failed to create supplier product: {}", supplierProductToSave);
@@ -574,7 +574,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.debug("Supplier product created and cached successfully: {}", newProduct);
          return newProduct;
       } else {
-         LOGGER.info("Updating existing supplier product with IDs: {}, {}", supplierProductToSave.getSupplierId(),
+         LOGGER.debug("Updating existing supplier product with IDs: {}, {}", supplierProductToSave.getSupplierId(),
                supplierProductToSave.getProductId());
          supplierProductDAO.updateSupplierProduct(supplierProductToSave);
          // Update the cache
@@ -596,19 +596,19 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                productId);
          throw new IllegalArgumentException("Supplier ID and Product ID cannot be negative");
       }
-      LOGGER.info("Retrieving supplier product with supplierId: {} and productId: {}", supplierId, productId);
+      LOGGER.debug("Retrieving supplier product with supplierId: {} and productId: {}", supplierId, productId);
       if (supplierIdsToSpecifications.containsKey(supplierId)) {
          List<SupplierProduct> products = supplierIdsToSpecifications.get(supplierId);
          Optional<SupplierProduct> product = products.stream()
                .filter(p -> p.getProductId() == productId).findFirst();
          if (product.isPresent()) {
-            LOGGER.info("Found supplier product in cache: {}", product.get());
+            LOGGER.debug("Found supplier product in cache: {}", product.get());
             return Optional.of(new SupplierProductDTO(product.get()));
          } else {
             Optional<SupplierProductDTO> productInDB = supplierProductDAO.getSupplierProductById(supplierId, productId);
             if (productInDB.isPresent()) {
                supplierIdsToSpecifications.get(supplierId).add(new SupplierProduct(productInDB.get()));
-               LOGGER.info("Found and cached supplier product: {}", productInDB.get());
+               LOGGER.debug("Found and cached supplier product: {}", productInDB.get());
                return productInDB;
             } else {
                LOGGER.warn("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
@@ -620,7 +620,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          if (productInDB.isPresent()) {
             supplierIdsToSpecifications.putIfAbsent(supplierId, new ArrayList<>());
             supplierIdsToSpecifications.get(supplierId).add(new SupplierProduct(productInDB.get()));
-            LOGGER.info("Found and cached supplier product: {}", productInDB.get());
+            LOGGER.debug("Found and cached supplier product: {}", productInDB.get());
             return productInDB;
          } else {
             LOGGER.warn("No supplier product found with supplierId: {} and productId: {}", supplierId, productId);
@@ -643,7 +643,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
       }
       SupplierProductDTO updatedProduct = saveSupplierProductInMemoryDB(supplierProduct);
       if (updatedProduct != null) {
-         LOGGER.info("Supplier product updated successfully: {}", updatedProduct.getProductId());
+         LOGGER.debug("Supplier product updated successfully: {}", updatedProduct.getProductId());
          return true;
       } else {
          LOGGER.error("Failed to update supplier product: {}", supplierProduct.getProductId());
@@ -658,9 +658,9 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                productId);
          throw new IllegalArgumentException("Supplier ID and Product ID cannot be negative");
       }
-      LOGGER.info("Deleting supplier product with supplierId: {} and productId: {}", supplierId, productId);
+      LOGGER.debug("Deleting supplier product with supplierId: {} and productId: {}", supplierId, productId);
       if (deleteSupplierProductFromMemoryDB(supplierId, productId)) {
-         LOGGER.info("Supplier product with supplierId: {} and productId: {} deleted successfully", supplierId,
+         LOGGER.debug("Supplier product with supplierId: {} and productId: {} deleted successfully", supplierId,
                productId);
          return true;
       } else {
@@ -670,7 +670,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
    }
 
    public boolean deleteSupplierProductFromMemoryDB(int supplierId, int productId) {
-      LOGGER.info("Deleting supplier product with supplierId: {} and productId: {} from DB", supplierId,
+      LOGGER.debug("Deleting supplier product with supplierId: {} and productId: {} from DB", supplierId,
             productId);
 
       if (supplierProductDAO.deleteSupplierProduct(supplierId, productId)) {
@@ -682,7 +682,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                supplierIdsToSpecifications.remove(supplierId);
             }
          }
-         LOGGER.info("Supplier product with supplierId: {} and productId: {} deleted from DB", supplierId,
+         LOGGER.debug("Supplier product with supplierId: {} and productId: {} deleted from DB", supplierId,
                productId);
          return true;
       } else {
@@ -697,13 +697,13 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get all supplier products for supplier with negative ID: {}", supplierId);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Retrieving all supplier products for supplier with ID: {}", supplierId);
+      LOGGER.debug("Retrieving all supplier products for supplier with ID: {}", supplierId);
 
       List<SupplierProductDTO> supplierProducts = supplierProductDAO.getAllSupplierProductsForSupplier(supplierId);
       if (supplierProducts.isEmpty()) {
          LOGGER.warn("No supplier products found for supplier with ID: {}", supplierId);
       } else {
-         LOGGER.info("Found {} supplier products for supplier with ID: {}", supplierProducts.size(), supplierId);
+         LOGGER.debug("Found {} supplier products for supplier with ID: {}", supplierProducts.size(), supplierId);
       }
       return supplierProducts;
    }
@@ -715,22 +715,22 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
                supplierId, productId);
          throw new IllegalArgumentException("Supplier ID and Product ID cannot be negative");
       }
-      LOGGER.info("Checking if supplier product exists for supplierId: {} and productId: {}", supplierId, productId);
+      LOGGER.debug("Checking if supplier product exists for supplierId: {} and productId: {}", supplierId, productId);
 
       boolean exists = supplierProductDAO.supplierProductExists(supplierId, productId);
-      LOGGER.info("Supplier product with supplierId: {} and productId: {} exists: {}", supplierId, productId, exists);
+      LOGGER.debug("Supplier product with supplierId: {} and productId: {} exists: {}", supplierId, productId, exists);
       return exists;
    }
 
    @Override
    public List<SupplierProductDTO> getAllSupplierProducts() {
-      LOGGER.info("Retrieving all supplier products");
+      LOGGER.debug("Retrieving all supplier products");
 
       List<SupplierProductDTO> allSupplierProducts = supplierProductDAO.getAllSupplierProducts();
       if (allSupplierProducts.isEmpty()) {
          LOGGER.warn("No supplier products found in DB");
       } else {
-         LOGGER.info("Found {} supplier products in DB", allSupplierProducts.size());
+         LOGGER.debug("Found {} supplier products in DB", allSupplierProducts.size());
       }
       return allSupplierProducts;
    }
@@ -741,13 +741,13 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get all suppliers for product with negative ID: {}", productId);
          throw new IllegalArgumentException("Product ID cannot be negative");
       }
-      LOGGER.info("Retrieving all suppliers for product with ID: {}", productId);
+      LOGGER.debug("Retrieving all suppliers for product with ID: {}", productId);
 
       List<Integer> supplierIds = supplierProductDAO.getAllSupplierIdsForProductId(productId);
       if (supplierIds.isEmpty()) {
          LOGGER.warn("No suppliers found for product with ID: {}", productId);
       } else {
-         LOGGER.info("Found {} suppliers for product with ID: {}", supplierIds.size(), productId);
+         LOGGER.debug("Found {} suppliers for product with ID: {}", supplierIds.size(), productId);
       }
       return supplierIds;
    }
@@ -758,25 +758,25 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get all products for supplier with negative ID: {}", supplierId);
          throw new IllegalArgumentException("Supplier ID cannot be negative");
       }
-      LOGGER.info("Retrieving all products for supplier with ID: {}", supplierId);
+      LOGGER.debug("Retrieving all products for supplier with ID: {}", supplierId);
 
       List<Integer> productIds = supplierProductDAO.getAllProductIdsForSupplierId(supplierId);
       if (productIds.isEmpty()) {
          LOGGER.warn("No products found for supplier with ID: {}", supplierId);
       } else {
-         LOGGER.info("Found {} products for supplier with ID: {}", productIds.size(), supplierId);
+         LOGGER.debug("Found {} products for supplier with ID: {}", productIds.size(), supplierId);
       }
       return productIds;
    }
 
    @Override
    public List<CatalogProductDTO> getCatalogProducts() {
-      LOGGER.info("Retrieving catalog products");
+      LOGGER.debug("Retrieving catalog products");
       List<CatalogProductDTO> catalogProducts = supplierProductDAO.getCatalogProducts();
       if (catalogProducts.isEmpty()) {
          LOGGER.warn("No catalog products found");
       } else {
-         LOGGER.info("Found {} catalog products", catalogProducts.size());
+         LOGGER.debug("Found {} catalog products", catalogProducts.size());
       }
       return catalogProducts;
    }
@@ -787,7 +787,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get Bill of Quantities items for agreement with negative ID: {}", agreementId);
          throw new IllegalArgumentException("Agreement ID cannot be negative");
       }
-      LOGGER.info("Retrieving Bill of Quantities items for agreement with ID: {}", agreementId);
+      LOGGER.debug("Retrieving Bill of Quantities items for agreement with ID: {}", agreementId);
       List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO
             .getAllBillofQantitiesItemsForAgreementId(agreementId);
       if (boqItems.isEmpty()) {
@@ -807,7 +807,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             }
          }
          LOGGER.debug("Bill of Quantities items details: {}", boqItems);
-         LOGGER.info("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
+         LOGGER.debug("Found {} Bill of Quantities items for agreement with ID: {}", boqItems.size(), agreementId);
       }
       return boqItems;
    }
@@ -818,9 +818,9 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to check existence of agreement with negative ID: {}", agreementId);
          throw new IllegalArgumentException("Agreement ID cannot be negative");
       }
-      LOGGER.info("Checking if agreement with ID {} exists", agreementId);
+      LOGGER.debug("Checking if agreement with ID {} exists", agreementId);
       boolean exists = agreementDAO.agreementExists(agreementId);
-      LOGGER.info("Agreement with ID {} exists: {}", agreementId, exists);
+      LOGGER.debug("Agreement with ID {} exists: {}", agreementId, exists);
       return exists;
    }
 
@@ -829,7 +829,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get Bill of Quantities items for product with negative ID: {}", productId);
          throw new IllegalArgumentException("Product ID cannot be negative");
       }
-      LOGGER.info("Retrieving Bill of Quantities items for product with ID: {}", productId);
+      LOGGER.debug("Retrieving Bill of Quantities items for product with ID: {}", productId);
       List<BillofQuantitiesItemDTO> boqItems = billofQuantitiesItemDAO.getBillofQuantitiesItemsById(productId);
       if (boqItems.isEmpty()) {
          LOGGER.warn("No Bill of Quantities items found for product with ID: {}", productId);
@@ -844,21 +844,21 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
             }
          }
          LOGGER.debug("Bill of Quantities items details: {}", boqItems);
-         LOGGER.info("Found {} Bill of Quantities items for product with ID: {}", boqItems.size(), productId);
+         LOGGER.debug("Found {} Bill of Quantities items for product with ID: {}", boqItems.size(), productId);
       }
       return boqItems;
    }
 
    private void loadCurrentStateFromDatabase() {
-      LOGGER.info("Loading current suppliers from database");
+      LOGGER.debug("Loading current suppliers from database");
       // actually doing nothing here, just logging for the effect :)
-      LOGGER.info("Loaded suppliers data from DB!");
+      LOGGER.debug("Loaded suppliers data from DB!");
    }
 
    private void loadEmptyState() {
-      LOGGER.info("Clearing data base for empty state...");
+      LOGGER.debug("Clearing data base for empty state...");
       Database.deleteAllData();
-      LOGGER.info("Empty state loaded into DB!");
+      LOGGER.debug("Empty state loaded into DB!");
    }
 
    public Optional<CatalogProductDTO> getCatalogProductById(int pid) {
@@ -866,7 +866,7 @@ public class SuppliersAgreementsRepositoryImpl implements SuppliersAgreementsRep
          LOGGER.error("Attempted to get catalog product with negative ID: {}", pid);
          throw new IllegalArgumentException("Product ID cannot be negative");
       }
-      LOGGER.info("Retrieving catalog product with ID: {}", pid);
+      LOGGER.debug("Retrieving catalog product with ID: {}", pid);
       Optional<CatalogProductDTO> catalogProduct = supplierProductDAO.getCatalogProducts().stream()
             .filter(product -> product.getProductId() == pid)
             .findFirst();
