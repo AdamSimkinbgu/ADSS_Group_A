@@ -112,11 +112,11 @@
             <Separator />
 
             <!-- Roles Required Section -->
-            <Label text="Required Roles" styleClass="section-subtitle"/>
+            <Label text="Roles Required" styleClass="section-subtitle"/>
             <TableView fx:id="rolesRequiredTable" prefHeight="200">
                 <columns>
-                    <TableColumn fx:id="roleNameColumn" text="Role" prefWidth="200"/>
-                    <TableColumn fx:id="roleCountColumn" text="Required" prefWidth="100"/>
+                    <TableColumn fx:id="roleNameColumn"   text="Role"     prefWidth="150"/>
+                    <TableColumn fx:id="roleCountColumn"  text="Required" prefWidth="100"/>
                     <TableColumn fx:id="roleAssignedColumn" text="Assigned" prefWidth="100"/>
                 </columns>
                 <placeholder>

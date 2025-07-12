@@ -34,10 +34,12 @@
       <Button text="Login"
               onAction="#onLoginClicked"
               styleClass="button"
+              defaultButton="true"
               GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
       <Label fx:id="errorLabel"
              styleClass="error-label"
+             
              GridPane.rowIndex="2" GridPane.columnIndex="1"/>
     </GridPane>
   </center>

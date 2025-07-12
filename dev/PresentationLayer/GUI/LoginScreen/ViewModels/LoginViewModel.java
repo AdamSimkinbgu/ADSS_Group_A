@@ -15,7 +15,8 @@ import javafx.beans.property.StringProperty;
 
 public class LoginViewModel {
    private final StringProperty userId = new SimpleStringProperty("");
-   private final StringProperty errorMessage = new SimpleStringProperty("");
+   private final StringProperty errorMessage = new SimpleStringProperty(
+         "Enter your user ID.\nThen, press 'login'/Enter key.");
    private final BooleanProperty loginSuccess = new SimpleBooleanProperty(false);
    private EmployeeDTO loggedInUser;
    // get the factory

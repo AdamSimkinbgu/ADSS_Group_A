@@ -1,15 +1,11 @@
 package PresentationLayer.GUI;
 
 import java.awt.Taskbar;
-import java.awt.image.BufferedImage;
-
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 import PresentationLayer.GUI.Common.Navigation.ScreenNavigator;
 import PresentationLayer.GUI.Common.Navigation.ScreensEnum;
-import PresentationLayer.GUI.LoginScreen.Controllers.LoginViewController;
-import PresentationLayer.GUI.LoginScreen.ViewModels.LoginViewModel;
 import PresentationLayer.GUI.MainMenuScreen.Controllers.MainMenuController;
 import PresentationLayer.GUI.MainMenuScreen.ViewModels.MainMenuViewModel;
 import Util.Database;
@@ -24,10 +20,14 @@ public class AppLauncher extends Application {
       Database.init(false);
       String css = getClass().getResource("/GUI/Common/Styles/main.css").toExternalForm();
       System.out.println("CSS file loaded successfully: " + css);
-
+      Parameters params = getParameters();
+      if (params.getRaw().size() > 0) {
+         System.out.println("Command line arguments: " + params.getRaw());
+      } else {
+         System.out.println("No command line arguments provided.");
+      }
       ScreenNavigator navigator = ScreenNavigator.getInstance();
       navigator.init(primaryStage, css);
-
       // 2) show the MAIN MENU screen only
       navigator.navigateTo(ScreensEnum.MENU, loader -> {
          // create & inject your MainMenuViewModel

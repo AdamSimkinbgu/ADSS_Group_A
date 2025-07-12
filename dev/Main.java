@@ -12,7 +12,7 @@ public class Main {
    public static void main(String[] args) {
       if (args.length == 0) {
          System.out.println("No arguments provided. Testing GUI mode.");
-         new AppLauncher().run(new String[] {}); // start GUI mode by default
+         startGUI(new String[] {});
          return;
       } else if (args.length > 1) {
          System.out.println(
@@ -27,7 +27,7 @@ public class Main {
       }
       switch (mode) {
          case "gui":
-            new AppLauncher().run(new String[] {}); // currently, no arguments are needed
+            startGUI(args);
             break;
          case "cli":
             startCLI();
@@ -35,6 +35,15 @@ public class Main {
          default:
             System.out.println("Invalid mode. Please use 'gui' or 'cli'.");
             break;
+      }
+   }
+
+   private static void startGUI(String[] args) {
+      try {
+         new AppLauncher().run(args);
+      } catch (Exception e) {
+         System.err.println("Failed to start GUI: " + e.getMessage());
+         e.printStackTrace();
       }
    }
 
