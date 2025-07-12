@@ -956,4 +956,17 @@ public class EmployeeController {
         Set<String> roles = employeeDTO.getRoles();
         return roles.contains(config.ROLE_HR_MANAGER) || roles.contains(config.ROLE_ADMIN);
     }
+
+    public List<String>  getAllBranches() {
+        // Get all branches from the branch repository
+        List<BranchDTO> branchDTOs = branchRepository.getAll();
+
+        // Convert BranchDTOs to string representations
+        List<String> branches = new ArrayList<>();
+        for (BranchDTO b : branchDTOs) {
+            branches.add(b.getBranchId() + " - " + b.getBranchName());
+        }
+        // Return
+        return branches;
+    }
 }

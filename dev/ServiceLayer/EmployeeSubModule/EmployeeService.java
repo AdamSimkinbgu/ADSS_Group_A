@@ -1326,4 +1326,5 @@ public class EmployeeService {
             throw new ServiceException("Error checking access to HR Module: " + e.getMessage(), e);
         }
     }
+
 }

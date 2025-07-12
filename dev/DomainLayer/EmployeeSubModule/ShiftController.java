@@ -1109,4 +1109,9 @@ public class ShiftController {
                 .orElseThrow(() -> new ShiftNotFoundException("No current shift found for today in branch: " + branchId));
     }
 
+    public List<String> getAvailableBranches() {
+
+        // Get all branches from the employee controller
+        return empCon.getAllBranches();
+    }
 }

@@ -731,4 +731,12 @@ public class ShiftService {
             throw new RuntimeException("Error retrieving current shift: " + e.getMessage(), e);
         }
     }
+
+    public List<String> getAvailableBranches() {
+        try {
+            return shiftController.getAvailableBranches();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error retrieving available branches: " + e.getMessage(), e);
+        }
+    }
 }

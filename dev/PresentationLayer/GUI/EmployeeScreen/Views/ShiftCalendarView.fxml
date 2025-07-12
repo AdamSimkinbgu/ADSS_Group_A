@@ -21,7 +21,10 @@
             <Pane HBox.hgrow="ALWAYS" />
             <DatePicker fx:id="calendarDatePicker" promptText="Jump to date"/>
             <ComboBox fx:id="branchFilterComboBox" promptText="Select Branch"/>
-            <Button text="Create Shift" onAction="#showCreateShiftDialog" styleClass="primary-button"/>
+            <HBox spacing="10">
+                <Button text="Create Shift" onAction="#showCreateShiftDialog" styleClass="primary-button"/>
+                <Button text="Create Weekly Shifts" onAction="#showCreateWeeklyShiftsDialog" styleClass="primary-button"/>
+            </HBox>
         </HBox>
 
         <!-- Calendar Navigation -->

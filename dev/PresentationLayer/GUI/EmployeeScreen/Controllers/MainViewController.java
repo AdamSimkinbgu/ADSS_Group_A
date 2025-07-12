@@ -10,16 +10,21 @@ import ServiceLayer.EmployeeSubModule.ShiftService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.StackPane;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Controller for the main view of the Employee Management System.
  * Handles navigation between different views and other UI interactions.
  */
 public class MainViewController {
+
+    private static final Logger logger = Logger.getLogger(MainViewController.class.getName());
 
     @FXML
     private StackPane contentArea;
@@ -37,7 +42,7 @@ public class MainViewController {
     public void setServices(EmployeeService employeeService, ShiftService shiftService) {
         this.employeeService = employeeService;
         this.shiftService = shiftService;
-        System.out.println("Services set in MainViewController");
+        logger.info("Services set in MainViewController");
     }
 
     /**
@@ -56,7 +61,7 @@ public class MainViewController {
      */
     @FXML
     public void showDashboard() {
-        System.out.println("Dashboard view requested");
+        logger.info("Dashboard view requested");
         DashboardController controller = loadView("/PresentationLayer/GUI/EmployeeScreen/Views/DashboardView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
@@ -71,7 +76,7 @@ public class MainViewController {
      */
     @FXML
     public void showEmployees() {
-        System.out.println("Employees view requested");
+        logger.info("Employees view requested");
         EmployeeListController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/EmployeeListView.fxml");
         if (controller != null) {
@@ -87,13 +92,16 @@ public class MainViewController {
      */
     @FXML
     public void showShifts() {
-        System.out.println("Shifts view requested");
+        logger.info("Shifts view requested");
         ShiftCalendarController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/ShiftCalendarView.fxml");
         if (controller != null) {
             controller.setMainViewController(this);
             if (shiftService != null) {
                 controller.setShiftService(shiftService);
+            }
+            if (employeeService != null) {
+                controller.setEmployeeService(employeeService);
             }
         }
     }
@@ -103,7 +111,7 @@ public class MainViewController {
      */
     @FXML
     public void showRoles() {
-        System.out.println("Roles view requested");
+        logger.info("Roles view requested");
         RoleManagementController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/RoleManagementView.fxml");
         if (controller != null) {
@@ -119,7 +127,7 @@ public class MainViewController {
      */
     @FXML
     public void showReports() {
-        System.out.println("Reports view requested");
+        logger.info("Reports view requested");
         // Load the dashboard view and show the reports dialog
         DashboardController controller = loadView("/PresentationLayer/GUI/EmployeeScreen/Views/DashboardView.fxml");
         if (controller != null) {
@@ -134,8 +142,7 @@ public class MainViewController {
      */
     @FXML
     public void logout() {
-        // For now, just show a message
-        System.out.println("Logout requested");
+        logger.info("Logout requested");
         ScreenNavigator.getInstance().navigateTo(
                 ScreensEnum.LOGIN,
                 loader -> {
@@ -153,11 +160,13 @@ public class MainViewController {
      */
     private <T> T loadView(String fxmlPath) {
         try {
-            // Remove the leading slash and use direct file path approach
-            String filePath = "dev" + fxmlPath;
-            File file = new File(filePath);
-            FXMLLoader loader = new FXMLLoader();
-            Parent view = loader.load(new FileInputStream(file));
+            // Convert path from /PresentationLayer/GUI/... to /GUI/...
+            String correctedPath = fxmlPath.replace("/PresentationLayer/GUI", "/GUI");
+            logger.info("Loading view from: " + correctedPath);
+
+            // Use proper resource loading with corrected path
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(correctedPath));
+            Parent view = loader.load();
 
             // Clear existing content and add new view
             contentArea.getChildren().clear();
@@ -165,9 +174,13 @@ public class MainViewController {
 
             return loader.getController();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error loading view", e);
             // Show error message to user
-            System.err.println("Error loading view: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Loading View");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to load view: " + e.getMessage());
+            alert.showAndWait();
             return null;
         }
     }
@@ -178,7 +191,7 @@ public class MainViewController {
      * @param employee The employee to show details for
      */
     public void showEmployeeDetails(EmployeeUIModel employee) {
-        System.out.println("Employee details view requested for: " + employee.getIsraeliId());
+        logger.info("Employee details view requested for: " + employee.getIsraeliId());
         EmployeeDetailsController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/EmployeeDetailsView.fxml");
         if (controller != null) {
@@ -193,7 +206,7 @@ public class MainViewController {
      * @param employee The employee to edit
      */
     public void showEditEmployeeForm(EmployeeUIModel employee) {
-        System.out.println("Edit employee form requested for: " + employee.getIsraeliId());
+        logger.info("Edit employee form requested for: " + employee.getIsraeliId());
         EmployeeFormController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/EmployeeFormView.fxml");
         if (controller != null) {
@@ -206,7 +219,7 @@ public class MainViewController {
      * Shows the employee form view for creating a new employee.
      */
     public void showAddEmployeeForm() {
-        System.out.println("Add employee form requested");
+        logger.info("Add employee form requested");
         EmployeeFormController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/EmployeeFormView.fxml");
         if (controller != null) {
@@ -220,7 +233,7 @@ public class MainViewController {
      */
     @FXML
     public void showAvailability() {
-        System.out.println("Availability view requested");
+        logger.info("Availability view requested");
         AvailabilityController controller = loadView(
                 "/PresentationLayer/GUI/EmployeeScreen/Views/AvailabilityView.fxml");
         if (controller != null) {

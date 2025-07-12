@@ -1,5 +1,6 @@
 package PresentationLayer.GUI.EmployeeScreen.Controllers;
 
+import DTOs.RoleDTO;
 import DTOs.ShiftDTO;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,10 +13,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,6 +31,7 @@ import java.util.*;
  * Controller for the shift calendar view.
  * Displays a weekly calendar of shifts and allows managing shifts.
  */
+@Slf4j
 public class ShiftCalendarController {
 
     @FXML
@@ -170,8 +175,8 @@ public class ShiftCalendarController {
         employeeRoleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
         setupEmployeeActionsColumn();
 
-        // Set current week to this week
-        currentWeekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        // Set current week to this week, starting from Sunday
+        currentWeekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         updateWeekLabel();
 
         // Create calendar grid
@@ -188,11 +193,7 @@ public class ShiftCalendarController {
             // In a real implementation, this would get branches from a service
             // For now, use some default branches
             availableBranches = new ArrayList<>();
-            availableBranches.add("Branch 1");
-            availableBranches.add("Branch 2");
-            availableBranches.add("Branch 3");
-            availableBranches.add("Branch 4");
-            availableBranches.add("Branch 5");
+            availableBranches = shiftService.getAvailableBranches();
 
             branchFilterComboBox.setItems(FXCollections.observableArrayList(availableBranches));
 
@@ -215,8 +216,19 @@ public class ShiftCalendarController {
         calendarGrid.getColumnConstraints().clear();
 
         // Add column headers (days of week)
+        // Start with Sunday (7) and then Monday (1) through Saturday (6)
+        DayOfWeek[] daysOfWeek = {
+            DayOfWeek.SUNDAY,
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY,
+            DayOfWeek.SATURDAY
+        };
+
         for (int col = 1; col <= 7; col++) {
-            DayOfWeek day = DayOfWeek.of(col);
+            DayOfWeek day = daysOfWeek[col - 1];
             Label dayLabel = new Label(day.toString());
             dayLabel.getStyleClass().add("calendar-header");
             dayLabel.setMaxWidth(Double.MAX_VALUE);
@@ -390,8 +402,19 @@ public class ShiftCalendarController {
 
         // Recreate the headers
         // Add column headers (days of week)
+        // Start with Sunday (7) and then Monday (1) through Saturday (6)
+        DayOfWeek[] daysOfWeek = {
+            DayOfWeek.SUNDAY,
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY,
+            DayOfWeek.SATURDAY
+        };
+
         for (int col = 1; col <= 7; col++) {
-            DayOfWeek day = DayOfWeek.of(col);
+            DayOfWeek day = daysOfWeek[col - 1];
             Label dayLabel = new Label(day.toString());
             dayLabel.getStyleClass().add("calendar-header");
             dayLabel.setMaxWidth(Double.MAX_VALUE);
@@ -416,7 +439,36 @@ public class ShiftCalendarController {
         // Add shifts to the grid
         for (ShiftData shift : shiftsMap.values()) {
             // Calculate column (day of week)
-            int dayOfWeek = shift.getDate().getDayOfWeek().getValue();
+            // Map day of week to column: Sunday=1, Monday=2, ..., Saturday=7
+            DayOfWeek dayOfWeek = shift.getDate().getDayOfWeek();
+            int column;
+
+            // Convert DayOfWeek to column index (1-based)
+            switch (dayOfWeek) {
+                case SUNDAY:
+                    column = 1;
+                    break;
+                case MONDAY:
+                    column = 2;
+                    break;
+                case TUESDAY:
+                    column = 3;
+                    break;
+                case WEDNESDAY:
+                    column = 4;
+                    break;
+                case THURSDAY:
+                    column = 5;
+                    break;
+                case FRIDAY:
+                    column = 6;
+                    break;
+                case SATURDAY:
+                    column = 7;
+                    break;
+                default:
+                    column = 1; // Default to Sunday
+            }
 
             // Calculate row (shift type)
             int row;
@@ -433,7 +485,7 @@ public class ShiftCalendarController {
 
             // Create shift cell
             StackPane cell = createShiftCell(shift);
-            calendarGrid.add(cell, dayOfWeek, row);
+            calendarGrid.add(cell, column, row);
         }
     }
 
@@ -832,7 +884,7 @@ public class ShiftCalendarController {
      */
     @FXML
     public void showCurrentWeek() {
-        currentWeekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        currentWeekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         updateWeekLabel();
         refreshCalendar();
     }
@@ -843,7 +895,7 @@ public class ShiftCalendarController {
     private void jumpToDate() {
         LocalDate selectedDate = calendarDatePicker.getValue();
         if (selectedDate != null) {
-            currentWeekStart = selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            currentWeekStart = selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
             updateWeekLabel();
             refreshCalendar();
         }
@@ -966,6 +1018,11 @@ public class ShiftCalendarController {
                     );
                     System.out.println("Shift created: " + createResult);
 
+                    // Update currentWeekStart to the week where the shift was created
+                    LocalDate shiftDate = (LocalDate) shiftData.get("date");
+                    currentWeekStart = shiftDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+                    updateWeekLabel();
+
                     // Refresh the calendar to show the new shift
                     refreshCalendar();
 
@@ -993,6 +1050,222 @@ public class ShiftCalendarController {
                 alert.setHeaderText(null);
                 alert.setContentText("Shift would be created with these details: " + shiftData);
                 alert.showAndWait();
+            }
+        });
+    }
+
+    /**
+     * Shows the dialog to create weekly shifts.
+     */
+    @FXML
+    public void showCreateWeeklyShiftsDialog() {
+        System.out.println("Create weekly shifts dialog requested");
+        System.out.println("EmployeeService is " + (employeeService != null ? "available" : "null"));
+
+        // Create a dialog
+        Dialog<Map<String, Object>> dialog = new Dialog<>();
+        dialog.setTitle("Create Weekly Shifts");
+        dialog.setHeaderText("Enter details for weekly shifts");
+
+        // Set the button types
+        ButtonType createButtonType = new ButtonType("Create", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
+
+        // Create the form grid
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        // Date picker for start date of the week
+        DatePicker startDatePicker = new DatePicker(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)));
+        Label startDateLabel = new Label("Week Starting:");
+
+        // Create a VBox for roles
+        VBox rolesVBox = new VBox(10);
+        rolesVBox.setPadding(new Insets(10));
+        rolesVBox.setStyle("-fx-border-color: #cccccc; -fx-border-radius: 5;");
+
+        Label rolesLabel = new Label("Roles Required:");
+        rolesVBox.getChildren().add(rolesLabel);
+
+        // Get all roles from the system
+        Map<String, Spinner<Integer>> roleSpinners = new HashMap<>();
+        List<String> allRoles = new ArrayList<>();
+
+        try {
+            if (employeeService != null) {
+                // Try to get roles directly as DTOs first
+                try {
+                    RoleDTO[] roleDTOs = employeeService.getAllRolesAsDTO();
+                    System.out.println("Retrieved " + (roleDTOs != null ? roleDTOs.length : 0) + " roles as DTOs");
+                    log.error("Retrieved " + (roleDTOs != null ? roleDTOs.length : 0) + " roles as DTOs");
+
+                    if (roleDTOs != null) {
+                        for (RoleDTO roleDTO : roleDTOs) {
+                            System.out.println("Role DTO: " + roleDTO.getName());
+                            allRoles.add(roleDTO.getName());
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error getting roles as DTOs, falling back to serialized roles: " + e.getMessage());
+                    log.error("Error getting roles as DTOs, falling back to serialized roles: " + e.getMessage());
+                    e.printStackTrace();
+
+                    // Fallback to serialized roles
+                    String[] roleData = employeeService.getAllRoles();
+                    System.out.println("Retrieved " + (roleData != null ? roleData.length : 0) + " serialized roles");
+
+                    if (roleData != null) {
+                        for (int i = 0; i < roleData.length; i++) {
+                            System.out.println("Role data " + i + ": " + roleData[i]);
+                        }
+                    }
+
+                    // Extract role names
+                    for (String roleInfo : roleData) {
+                        try {
+                            // Parse role name from the role data
+                            RoleDTO roleDTO = RoleDTO.deserialize(roleInfo);
+                            log.error("Deserialized role: " + roleDTO.getName());
+                            allRoles.add(roleDTO.getName());
+                        } catch (Exception ex) {
+                            System.err.println("Error parsing role: " + ex.getMessage());
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            } else {
+                log.error("EmployeeService is null, using default roles");
+
+            }
+        } catch (Exception e) {
+            log.error("Error getting roles: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        System.out.println("Final roles list size: " + allRoles.size());
+        for (String role : allRoles) {
+            System.out.println("Role in list: " + role);
+        }
+
+        // Sort roles alphabetically
+        Collections.sort(allRoles);
+
+        // Create UI elements for each role
+        for (String role : allRoles) {
+            HBox roleHBox = new HBox(10);
+            roleHBox.setAlignment(Pos.CENTER_LEFT);
+
+            CheckBox roleCheckBox = new CheckBox(role);
+            Spinner<Integer> quantitySpinner = new Spinner<>(0, 10, 1);
+            quantitySpinner.setEditable(true);
+            quantitySpinner.setPrefWidth(80);
+            quantitySpinner.setDisable(true);
+
+            roleCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                quantitySpinner.setDisable(!newVal);
+                if (!newVal) {
+                    quantitySpinner.getValueFactory().setValue(0);
+                } else {
+                    quantitySpinner.getValueFactory().setValue(1);
+                }
+            });
+
+            roleHBox.getChildren().addAll(roleCheckBox, new Label("Quantity:"), quantitySpinner);
+            rolesVBox.getChildren().add(roleHBox);
+
+            roleSpinners.put(role, quantitySpinner);
+        }
+
+        // Add fields to the grid
+        grid.add(startDateLabel, 0, 0);
+        grid.add(startDatePicker, 1, 0);
+        grid.add(new Label("Roles:"), 0, 1);
+        grid.add(rolesVBox, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convert the result to a map when the create button is clicked
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == createButtonType) {
+                Map<String, Object> result = new HashMap<>();
+                result.put("startDate", startDatePicker.getValue());
+
+                // Collect selected roles and quantities
+                Map<String, Integer> selectedRoles = new HashMap<>();
+                for (String role : roleSpinners.keySet()) {
+                    CheckBox checkBox = (CheckBox) rolesVBox.getChildren().stream()
+                            .filter(node -> node instanceof HBox)
+                            .map(node -> (HBox) node)
+                            .filter(hbox -> hbox.getChildren().get(0) instanceof CheckBox && 
+                                    ((CheckBox) hbox.getChildren().get(0)).getText().equals(role))
+                            .findFirst()
+                            .map(hbox -> hbox.getChildren().get(0))
+                            .orElse(null);
+
+                    if (checkBox != null && checkBox.isSelected()) {
+                        Spinner<Integer> spinner = roleSpinners.get(role);
+                        selectedRoles.put(role, spinner.getValue());
+                    }
+                }
+
+                result.put("roles", selectedRoles);
+                return result;
+            }
+            return null;
+        });
+
+        // Show the dialog and process the result
+        Optional<Map<String, Object>> result = dialog.showAndWait();
+
+        result.ifPresent(weeklyShiftData -> {
+            System.out.println("Creating weekly shifts: " + weeklyShiftData);
+
+            if (shiftService != null) {
+                try {
+                    // Get the start date and roles
+                    LocalDate startDate = (LocalDate) weeklyShiftData.get("startDate");
+                    @SuppressWarnings("unchecked")
+                    Map<String, Integer> rolesRequired = (Map<String, Integer>) weeklyShiftData.get("roles");
+
+
+                    long doneBy = 123456789;
+
+                    String createResult = shiftService.createWeeklyShifts(
+                            doneBy,
+                            startDate,
+                            rolesRequired
+                    );
+
+                    log.info("Weekly shifts creation result: " + createResult);
+
+                    // Show success msg
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Weekly Shifts Created");
+                    alert.setHeaderText(null);
+                    alert.setContentText(createResult);
+                    alert.showAndWait();
+
+                    // Update currentWeekStart
+                    currentWeekStart = startDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+                    updateWeekLabel();
+
+                    // Refresh the calendar to show the new shifts
+                    refreshCalendar();
+
+                } catch (Exception e) {
+                    System.err.println("Error creating weekly shifts: " + e.getMessage());
+                    e.printStackTrace();
+                    // Show error message
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error Creating Weekly Shifts");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Failed to create weekly shifts: " + e.getMessage());
+                    alert.showAndWait();
+                }
+            } else {
+                System.err.println("ShiftService is not set");
             }
         });
     }

@@ -36,11 +36,62 @@
         <!-- Calendar cells will be added programmatically -->
     </GridPane>
 
-    <!-- Save Button -->
-    <HBox alignment="CENTER_RIGHT" spacing="10">
-        <padding>
-            <Insets top="10" right="0" bottom="0" left="0"/>
-        </padding>
+    <!-- Shift Details Section -->
+    <TitledPane text="Shift Details" expanded="true" collapsible="true">
+        <VBox spacing="10">
+            <Label fx:id="selectedShiftLabel" text="No shift selected" styleClass="section-subtitle"/>
+
+            <GridPane hgap="10" vgap="5">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="100" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+
+                <Label text="Date:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <Label fx:id="shiftDateLabel" text="-" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                <Label text="Type:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <Label fx:id="shiftTypeLabel" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+                <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <Label fx:id="shiftTimeLabel" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+                <Label text="Branch:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <Label fx:id="shiftBranchLabel" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+                <Label text="Status:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                <Label fx:id="shiftStatusLabel" text="-" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+            </GridPane>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ToggleButton fx:id="availabilityToggle" text="Mark as Available" disable="true" />
+            </HBox>
+
+            <Label text="Required Roles:" styleClass="section-subtitle" />
+            <TableView fx:id="rolesRequiredTable" prefHeight="150">
+                <columns>
+                    <TableColumn fx:id="roleNameColumn" text="Role" prefWidth="150" />
+                    <TableColumn fx:id="roleCountColumn" text="Required" prefWidth="100" />
+                    <TableColumn fx:id="roleAssignedColumn" text="Assigned" prefWidth="100" />
+                </columns>
+                <placeholder>
+                    <Label text="No roles defined for this shift" />
+                </placeholder>
+            </TableView>
+        </VBox>
+    </TitledPane>
+
+    <!-- Availability Summary -->
+    <HBox spacing="20" alignment="CENTER_LEFT">
+        <Label text="Total Available Shifts:" />
+        <Label fx:id="totalAvailableShiftsLabel" text="0" styleClass="count-label" />
+
+        <Label text="Assigned Shifts:" />
+        <Label fx:id="assignedShiftsLabel" text="0" styleClass="count-label" />
+
+        <Pane HBox.hgrow="ALWAYS" />
+
+        <!-- Save Button -->
         <Button text="Save Availability" onAction="#saveAvailability" styleClass="primary-button"/>
     </HBox>
 </VBox>

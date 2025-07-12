@@ -96,4 +96,8 @@ public class BranchDTO {
                 ", managerID='" + managerID + '\'' +
                 '}';
     }
+
+    public String getAddress() {
+        return branchAddress;
+    }
 }

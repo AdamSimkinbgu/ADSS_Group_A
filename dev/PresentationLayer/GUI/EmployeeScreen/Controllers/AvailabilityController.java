@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
  * Allows employees to mark their availability for shifts.
  */
 public class AvailabilityController {
+
+    private static final Logger logger = Logger.getLogger(AvailabilityController.class.getName());
 
     @FXML
     private GridPane calendarGrid;
@@ -102,6 +105,9 @@ public class AvailabilityController {
     public void setShiftService(ShiftService shiftService) {
         this.shiftService = shiftService;
         if (calendarGrid != null) {
+            if (employeeService != null) {
+                loadBranches();
+            }
             refreshCalendar();
         }
     }
@@ -113,7 +119,7 @@ public class AvailabilityController {
      */
     public void setEmployeeService(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        if (calendarGrid != null) {
+        if (calendarGrid != null && shiftService != null) {
             loadBranches();
         }
     }
@@ -170,17 +176,28 @@ public class AvailabilityController {
      */
     private void loadBranches() {
         try {
-            // Add "All Branches" option
             ObservableList<String> branches = FXCollections.observableArrayList("All Branches");
 
-            // Add branches from service (this is a placeholder - actual implementation
-            // would get branches from service)
-            branches.addAll("Branch 1", "Branch 2", "Branch 3");
+            if (employeeService == null) {
+                logger.warning("EmployeeService not set in AvailabilityController");
+                return;
+            }
+            if (shiftService == null) {
+                logger.warning("ShiftService not set in AvailabilityController");
+                return;
+            }
+
+            List<String> availableBranches = shiftService.getAvailableBranches();
+            if (availableBranches != null && !availableBranches.isEmpty()) {
+                branches.addAll(availableBranches);
+            } else {
+                logger.warning("No branches available from ShiftService");
+            }
 
             branchFilterComboBox.setItems(branches);
             branchFilterComboBox.getSelectionModel().selectFirst();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe("Failed to load branches: " + e.getMessage());
             // Show error message
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to load branches: " + e.getMessage());
             alert.showAndWait();
@@ -267,7 +284,7 @@ public class AvailabilityController {
     private void refreshCalendar() {
         try {
             if (shiftService == null) {
-                System.out.println("ShiftService not set in AvailabilityController");
+                logger.info("ShiftService not set in AvailabilityController");
                 return;
             }
 
@@ -282,8 +299,6 @@ public class AvailabilityController {
             // For example: Set<ShiftDTO> shifts =
             // shiftService.getShiftsByWeek(currentEmployeeId, new Week(currentWeekStart));
 
-            // Create sample shifts for demonstration
-            createSampleShifts();
 
             // Filter shifts by branch
             filterShiftsByBranch(selectedBranch);
@@ -294,7 +309,7 @@ public class AvailabilityController {
             // Update availability summary
             updateAvailabilitySummary();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe("Failed to refresh calendar: " + e.getMessage());
             // Show error message
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to refresh calendar: " + e.getMessage());
             alert.showAndWait();
@@ -559,7 +574,7 @@ public class AvailabilityController {
                     }
                     successCount++;
                 } catch (Exception e) {
-                    System.err.println("Error updating availability for shift " + shiftId + ": " + e.getMessage());
+                    logger.severe("Error updating availability for shift " + shiftId + ": " + e.getMessage());
                     failCount++;
                 }
             }
@@ -696,12 +711,45 @@ public class AvailabilityController {
 
         ObservableList<RoleRequirement> roles = FXCollections.observableArrayList();
 
-        for (Map.Entry<String, Integer> entry : selectedShift.getRolesRequired().entrySet()) {
-            String role = entry.getKey();
-            int required = entry.getValue();
-            int assigned = selectedShift.getRoleAssignments().getOrDefault(role, 0);
+        try {
+            // Get all available roles from the service layer
+            if (employeeService != null) {
+                String[] serializedRoles = employeeService.getAllRoles();
 
-            roles.add(new RoleRequirement(role, required, assigned));
+                // Process each role
+                for (String serializedRole : serializedRoles) {
+                    // Extract role name from serialized role
+                    DTOs.RoleDTO roleDTO = DTOs.RoleDTO.deserialize(serializedRole);
+                    String roleName = roleDTO.getName();
+
+                    // Check if the role is required for this shift
+                    int required = selectedShift.getRolesRequired().getOrDefault(roleName, 0);
+                    int assigned = selectedShift.getRoleAssignments().getOrDefault(roleName, 0);
+
+                    // Add the role to the list, even if it's not required (count will be 0)
+                    roles.add(new RoleRequirement(roleName, required, assigned));
+                }
+            } else {
+                // Fallback to hardcoded roles if service is not available
+                logger.warning("EmployeeService not available, using default roles");
+                String[] defaultRoles = {"Cashier", "Security", "Stocker", "Manager"};
+
+                for (String role : defaultRoles) {
+                    int required = selectedShift.getRolesRequired().getOrDefault(role, 0);
+                    int assigned = selectedShift.getRoleAssignments().getOrDefault(role, 0);
+                    roles.add(new RoleRequirement(role, required, assigned));
+                }
+            }
+        } catch (Exception e) {
+            logger.severe("Error loading roles: " + e.getMessage());
+            // Fallback to hardcoded roles if there's an error
+            String[] defaultRoles = {"Cashier", "Security", "Stocker", "Manager"};
+
+            for (String role : defaultRoles) {
+                int required = selectedShift.getRolesRequired().getOrDefault(role, 0);
+                int assigned = selectedShift.getRoleAssignments().getOrDefault(role, 0);
+                roles.add(new RoleRequirement(role, required, assigned));
+            }
         }
 
         rolesRequiredTable.setItems(roles);
@@ -817,7 +865,7 @@ public class AvailabilityController {
             // Refresh calendar to show updated availability
             refreshCalendar();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.severe("Failed to update availability: " + e.getMessage());
             // Show error message
             Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to update availability: " + e.getMessage());
             alert.showAndWait();

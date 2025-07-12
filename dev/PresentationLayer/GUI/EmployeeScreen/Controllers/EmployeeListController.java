@@ -108,7 +108,12 @@ public class EmployeeListController {
 
         // Add search functionality
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterEmployees(newValue);
+            filterEmployees();
+        });
+
+        // Add filter functionality
+        filterComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            filterEmployees();
         });
     }
 
@@ -172,26 +177,8 @@ public class EmployeeListController {
                 try {
                     EmployeeDTO employeeDTO = EmployeeDTO.deserialize(employeeJson);
 
-                    // Extract ID
-                    long israeliId = employeeDTO.getIsraeliId();
-
-                    // Extract first name
-                    String firstName = employeeDTO.getFirstName();
-
-                    // Extract last name
-                    String lastName = employeeDTO.getLastName();
-
-                    // Extract roles
-                    String roles = employeeDTO.getRoles().toString();
-
-                    // Extract branch ID
-                    long branchId = employeeDTO.getBranchId();
-
-                    // Extract active status
-                    boolean active = employeeDTO.isActive();
-
-                    // Create EmployeeUIModel and add to list
-                    employeeList.add(new EmployeeUIModel(israeliId, firstName, lastName, roles, branchId, active));
+                    // Use the fromDTO method to create an EmployeeUIModel
+                    employeeList.add(EmployeeUIModel.fromDTO(employeeDTO));
 
                 } catch (Exception e) {
                     System.err.println("Error parsing employee data: " + e.getMessage());
@@ -210,28 +197,55 @@ public class EmployeeListController {
     }
 
     /**
-     * Filters the employee list based on the search text.
-     * 
-     * @param searchText The text to search for
+     * Filters the employee list based on the search text and selected filter.
      */
-    private void filterEmployees(String searchText) {
-        // Implement filtering logic based on search text and selected filter
-        if (searchText == null || searchText.isEmpty()) {
-            employeeTable.setItems(employeeList);
-        } else {
-            ObservableList<EmployeeUIModel> filteredList = FXCollections.observableArrayList();
-            String lowerCaseFilter = searchText.toLowerCase();
+    private void filterEmployees() {
+        String searchText = searchField.getText();
+        String filterOption = filterComboBox.getValue();
 
-            for (EmployeeUIModel employee : employeeList) {
-                if (employee.getFirstName().toLowerCase().contains(lowerCaseFilter) ||
-                        employee.getLastName().toLowerCase().contains(lowerCaseFilter) ||
-                        String.valueOf(employee.getIsraeliId()).contains(lowerCaseFilter) ||
-                        employee.getRoles().toLowerCase().contains(lowerCaseFilter)) {
-                    filteredList.add(employee);
-                }
-            }
-            employeeTable.setItems(filteredList);
+        if (employeeList == null) {
+            return;
         }
+
+        // Start with all employees
+        ObservableList<EmployeeUIModel> filteredList = FXCollections.observableArrayList(employeeList);
+
+        // Apply filter based on selected option
+        if (filterOption != null) {
+            switch (filterOption) {
+                case "Active Only":
+                    filteredList.removeIf(employee -> !employee.isActive());
+                    break;
+                case "Inactive Only":
+                    filteredList.removeIf(employee -> employee.isActive());
+                    break;
+                case "By Branch":
+                    // This would ideally open a dialog to select a branch
+                    // For now, we'll just keep all employees
+                    break;
+                case "By Role":
+                    // This would ideally open a dialog to select a role
+                    // For now, we'll just keep all employees
+                    break;
+                case "All Employees":
+                default:
+                    // Keep all employees
+                    break;
+            }
+        }
+
+        // Apply search text filter if not empty
+        if (searchText != null && !searchText.isEmpty()) {
+            String lowerCaseFilter = searchText.toLowerCase();
+            filteredList.removeIf(employee -> 
+                !(employee.getFirstName().toLowerCase().contains(lowerCaseFilter) ||
+                  employee.getLastName().toLowerCase().contains(lowerCaseFilter) ||
+                  String.valueOf(employee.getIsraeliId()).contains(lowerCaseFilter) ||
+                  employee.getRoles().toLowerCase().contains(lowerCaseFilter))
+            );
+        }
+
+        employeeTable.setItems(filteredList);
     }
 
     /**
