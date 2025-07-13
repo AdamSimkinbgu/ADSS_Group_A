@@ -22,7 +22,7 @@
     </HBox>
 
     <!-- Search bar -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
+    <HBox spacing="15" alignment="CENTER_LEFT">
         <Label text="Search:"/>
         <TextField fx:id="searchField"
                    promptText="Search suppliers…"
@@ -38,7 +38,7 @@
             <TableColumn fx:id="nameColumn"       text="Name"         prefWidth="200"/>
             <TableColumn fx:id="contactsColumn"   text="Contacts"     prefWidth="100"/>
             <TableColumn fx:id="agreementsColumn" text="Agreements"   prefWidth="100"/>
-            <TableColumn fx:id="actionsColumn"    text="Actions"      prefWidth="165"/>
+            <TableColumn fx:id="actionsColumn"    text="Actions"      prefWidth="215"/>
         </columns>
     </TableView>
 </VBox>

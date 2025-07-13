@@ -406,3 +406,18 @@
     -fx-border-color: white;
     -fx-border-width: 0 0 0 3px;
 }
+
+/* Target the SplitPane divider itself */
+.split-pane .split-pane-divider {
+  -fx-background-color: gray;     /* the line’s color */
+  -fx-padding: 0;                 /* no extra hit-area */
+  
+  /* if your SplitPane is vertical (left/right panes) */
+  -fx-pref-width: 1px;            /* 1px wide vertical line */
+  -fx-max-width: 1px;
+  
+  /* if horizontal (top/bottom panes) you’d use */
+  /* -fx-pref-height: 1px; -fx-max-height: 1px; */
+  
+  -fx-cursor: default;            /* don’t show the “resize” cursor */
+}

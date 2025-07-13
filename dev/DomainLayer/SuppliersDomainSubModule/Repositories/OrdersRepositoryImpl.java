@@ -82,19 +82,19 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
       }
       Optional<OrderDTO> orderopt = ordersRepository.getOrderByID(orderId);
       if (orderopt.isEmpty()) {
-         LOGGER.warn("No regular order found with ID: {}", orderId);
+         LOGGER.debug("No regular order found with ID: {}", orderId);
          return null;
       }
       OrderDTO order = orderopt.get();
       if (order == null) {
-         LOGGER.warn("No regular order found with ID: {}", orderId);
+         LOGGER.debug("No regular order found with ID: {}", orderId);
          return null;
       }
       List<OrderItemLineDTO> itemLines = orderItemLineDAO.listOrderItemLines(orderId);
       if (itemLines != null && !itemLines.isEmpty()) {
          order.setItems(itemLines);
       } else {
-         LOGGER.warn("No item lines found for order ID: {}", orderId);
+         LOGGER.debug("No item lines found for order ID: {}", orderId);
       }
       LOGGER.debug("Retrieved regular order with ID: {}", orderId);
       return order;
@@ -104,7 +104,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
    public List<OrderDTO> getAllRegularOrders() {
       List<OrderDTO> orders = ordersRepository.listOrders();
       if (orders == null || orders.isEmpty()) {
-         LOGGER.warn("No regular orders found in the repository");
+         LOGGER.debug("No regular orders found in the repository");
          return new ArrayList<>();
       }
       for (OrderDTO order : orders) {
@@ -112,7 +112,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
          if (itemLines != null && !itemLines.isEmpty()) {
             order.setItems(itemLines);
          } else {
-            LOGGER.warn("No item lines found for order ID: {}", order.getOrderId());
+            LOGGER.debug("No item lines found for order ID: {}", order.getOrderId());
          }
       }
       LOGGER.debug("Retrieved {} regular orders from the repository", orders.size());
@@ -162,7 +162,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
       }
       List<OrderDTO> orders = ordersRepository.getOrdersByStatus(delivered);
       if (orders == null || orders.isEmpty()) {
-         LOGGER.warn("No orders found with status: {}", delivered);
+         LOGGER.debug("No orders found with status: {}", delivered);
          return new ArrayList<>();
       }
       for (OrderDTO order : orders) {
@@ -170,7 +170,7 @@ public class OrdersRepositoryImpl implements OrdersRepositoryInterface {
          if (itemLines != null && !itemLines.isEmpty()) {
             order.setItems(itemLines);
          } else {
-            LOGGER.warn("No item lines found for order ID: {}", order.getOrderId());
+            LOGGER.debug("No item lines found for order ID: {}", order.getOrderId());
          }
       }
       LOGGER.debug("Retrieved {} orders with status: {}", orders.size(), delivered);

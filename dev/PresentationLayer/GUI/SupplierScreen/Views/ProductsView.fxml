@@ -6,51 +6,57 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SupplierProductsController"
-      spacing="10">
-  
+      styleClass="content-container"
+      spacing="15">
+
   <padding>
-    <Insets top="15" right="15" bottom="15" left="15"/>
+    <Insets top="20" right="20" bottom="20" left="20"/>
   </padding>
 
-   <HBox spacing="10" alignment="CENTER_LEFT">
+  <!-- Suppliers Section -->
+  <HBox spacing="10" alignment="CENTER_LEFT">
     <Label text="Suppliers" styleClass="section-title"/>
     <Pane HBox.hgrow="ALWAYS"/>
-    <Button fx:id="refreshBtn"
-            text="Refresh"
+    <Button fx:id="refreshSuppliersBtn"
+            text="Refresh/Deselect"
             styleClass="secondary-button"
-            onAction="#onRefresh"/>
+            onAction="#onRefreshSuppliers"/>
   </HBox>
 
-  <TableView fx:id="suppliersTable" prefHeight="500">
+  <TableView fx:id="suppliersTable" prefHeight="180">
     <columns>
-      <TableColumn fx:id="colId"      text="ID"   prefWidth="80"/>
-      <TableColumn fx:id="colName"    text="Name" prefWidth="200"/>
-      <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
+      <TableColumn fx:id="supColId"     text="ID"     prefWidth="80"/>
+      <TableColumn fx:id="supColName"   text="Name"   prefWidth="200"/>
+      <TableColumn fx:id="supColAction" text="Action" prefWidth="120"/>
     </columns>
   </TableView>
 
+  <!-- Products Section -->
   <HBox spacing="10" alignment="CENTER_LEFT">
-    <Label text="Products" styleClass="section-title"/>
+    <Label text="Products for Supplier:"/>
+    <Label fx:id="selectedSupplierLabel" text="(none)" styleClass="subtitle"/>
     <Pane HBox.hgrow="ALWAYS"/>
-    <Button fx:id="refreshBtn"
+    <Button fx:id="refreshProductsBtn"
             text="Refresh"
-            onAction="#onRefresh"/>
-    <Button fx:id="addBtn"
+            styleClass="secondary-button"
+            onAction="#onRefreshProducts"/>
+    <Button fx:id="addProductBtn"
             text="Add Product"
             styleClass="primary-button"
-            onAction="#onAdd"/>
+            onAction="#onAddProduct"/>
   </HBox>
 
-  <TableView fx:id="productsTable" prefHeight="360">
+  <TableView fx:id="productsTable" prefHeight="300">
     <columns>
       <TableColumn fx:id="colProductId"      text="Prod ID"       prefWidth="60"/>
       <TableColumn fx:id="colCatalogNumber"  text="Catalog #"     prefWidth="100"/>
       <TableColumn fx:id="colName"           text="Name"          prefWidth="180"/>
       <TableColumn fx:id="colPrice"          text="Price"         prefWidth="80"/>
       <TableColumn fx:id="colWeight"         text="Weight"        prefWidth="80"/>
-      <TableColumn fx:id="colExpires"        text="Expires (days)" prefWidth="90"/>
-      <TableColumn fx:id="colManufacturer"   text="Manufacturer"  prefWidth="150"/>
-      <TableColumn fx:id="colActions"        text="Actions"       prefWidth="160"/>
+      <TableColumn fx:id="colExpires"        text="Expires"       prefWidth="80"/>
+      <TableColumn fx:id="colManufacturer"   text="Manufacturer"  prefWidth="120"/>
+      <TableColumn fx:id="colProdActions"    text="Actions"       prefWidth="150"/>
     </columns>
   </TableView>
+
 </VBox>

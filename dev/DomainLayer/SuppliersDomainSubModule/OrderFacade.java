@@ -1,5 +1,6 @@
 package DomainLayer.SuppliersDomainSubModule;
 
+import java.time.DayOfWeek;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -32,42 +33,42 @@ public class OrderFacade extends BaseFacade {
     // Periodic Order
     // ##################################################################################################################
     public PeriodicOrderDTO createPeriodicOrder(PeriodicOrderDTO periodicOrderDTO) {
-        LOGGER.info("Facade: createPeriodicOrder called for day: {} with {} items",
+        LOGGER.debug("Facade: createPeriodicOrder called for day: {} with {} items",
                 periodicOrderDTO.getDeliveryDay(),
                 periodicOrderDTO.getProductsInOrder() != null ? periodicOrderDTO.getProductsInOrder().size() : 0);
 
         PeriodicOrderDTO result = periodicOrderHandler.createPeriodicOrder(periodicOrderDTO);
 
-        LOGGER.info("Facade: createPeriodicOrder result: {}", result);
+        LOGGER.debug("Facade: createPeriodicOrder result: {}", result);
         return result;
     }
 
     public boolean deletePeriodicOrder(int periodicOrderId) {
-        LOGGER.info("Facade: deletePeriodicOrder called for ID: {}", periodicOrderId);
+        LOGGER.debug("Facade: deletePeriodicOrder called for ID: {}", periodicOrderId);
         boolean deleted = periodicOrderHandler.deletePeriodicOrder(periodicOrderId);
-        LOGGER.info("Facade: deletePeriodicOrder result: {}", deleted);
+        LOGGER.debug("Facade: deletePeriodicOrder result: {}", deleted);
         return deleted;
     }
 
     public PeriodicOrderDTO getPeriodicOrder(int periodicOrderId) {
-        LOGGER.info("Facade: getPeriodicOrder called for ID: {}", periodicOrderId);
+        LOGGER.debug("Facade: getPeriodicOrder called for ID: {}", periodicOrderId);
         PeriodicOrderDTO dto = periodicOrderHandler.getPeriodicOrder(periodicOrderId);
-        LOGGER.info("Facade: getPeriodicOrder result: {}", dto);
+        LOGGER.debug("Facade: getPeriodicOrder result: {}", dto);
         return dto;
     }
 
     public List<PeriodicOrderDTO> getAllPeriodicOrders() {
-        LOGGER.info("Facade: getAllPeriodicOrders called");
+        LOGGER.debug("Facade: getAllPeriodicOrders called");
         List<PeriodicOrderDTO> list = periodicOrderHandler.getAllPeriodicOrders();
         int size = list == null ? 0 : list.size();
-        LOGGER.info("Facade: getAllPeriodicOrders returned {} entries", size);
+        LOGGER.debug("Facade: getAllPeriodicOrders returned {} entries", size);
         return size == 0 ? Collections.emptyList() : list;
     }
 
     public PeriodicOrderDTO updatePeriodicOrder(PeriodicOrderDTO dto) {
-        LOGGER.info("Facade: updatePeriodicOrder called with DTO: {}", dto);
+        LOGGER.debug("Facade: updatePeriodicOrder called with DTO: {}", dto);
         PeriodicOrderDTO updated = periodicOrderHandler.updatePeriodicOrder(dto);
-        LOGGER.info("Facade: updatePeriodicOrder result: {}", updated);
+        LOGGER.debug("Facade: updatePeriodicOrder result: {}", updated);
         return updated;
     }
     // #######################################################################################################################
@@ -75,23 +76,23 @@ public class OrderFacade extends BaseFacade {
     // #######################################################################################################################
 
     public OrderDTO addOrderManually(OrderDTO orderDTO) {
-        LOGGER.info("Facade: addOrderManually called with DTO: {}", orderDTO);
+        LOGGER.debug("Facade: addOrderManually called with DTO: {}", orderDTO);
         OrderDTO result = orderHandler.addOrderManually(orderDTO);
-        LOGGER.info("Facade: addOrderManually result: {}", result);
+        LOGGER.debug("Facade: addOrderManually result: {}", result);
         return result;
     }
 
     public OrderResultDTO createOrder(OrderInfoDTO infoDTO) {
-        LOGGER.info("Facade: createOrder called with InfoDTO: {}", infoDTO);
+        LOGGER.debug("Facade: createOrder called with InfoDTO: {}", infoDTO);
         OrderResultDTO result = orderHandler.createOrder(infoDTO);
-        LOGGER.info("Facade: createOrder result: {}", result);
+        LOGGER.debug("Facade: createOrder result: {}", result);
         return result;
     }
 
     public OrderResultDTO createOrderByShortage(OrderInfoDTO pOrder) {
-        LOGGER.info("Facade: createOrderByShortage called with InfoDTO: {}", pOrder);
+        LOGGER.debug("Facade: createOrderByShortage called with InfoDTO: {}", pOrder);
         OrderResultDTO result = orderHandler.createOrderByShortage(pOrder);
-        LOGGER.info("Facade: createOrderByShortage result: {}", result);
+        LOGGER.debug("Facade: createOrderByShortage result: {}", result);
         return result;
     }
 
@@ -126,12 +127,12 @@ public class OrderFacade extends BaseFacade {
 
     public void printOrder(int supplierID) {
         List<OrderDTO> orders = orderHandler.getOrdersBySupplier(supplierID);
-        orders.forEach(order -> LOGGER.info(order.toString()));
+        orders.forEach(order -> LOGGER.debug(order.toString()));
     }
 
     public void printOrders() {
         List<OrderDTO> orders = orderHandler.getAllOrders();
-        orders.forEach(order -> LOGGER.info(order.toString()));
+        orders.forEach(order -> LOGGER.debug(order.toString()));
     }
 
     public HashMap<Integer, OrderDTO> getAllOrderForToday() {
@@ -147,21 +148,21 @@ public class OrderFacade extends BaseFacade {
     }
 
     public boolean deleteOrder(int orderId) {
-        LOGGER.info("Facade: deleteOrder called for ID: {}", orderId);
+        LOGGER.debug("Facade: deleteOrder called for ID: {}", orderId);
         boolean deleted = orderHandler.deleteOrder(orderId);
         if (deleted) {
-            LOGGER.info("Facade: deleteOrder successful for ID: {}", orderId);
+            LOGGER.debug("Facade: deleteOrder successful for ID: {}", orderId);
         } else {
-            LOGGER.warn("Facade: deleteOrder failed for ID: {}", orderId);
+            LOGGER.debug("Facade: deleteOrder failed for ID: {}", orderId);
         }
         return deleted;
     }
 
     public List<OrderDTO> getAllOrders() {
-        LOGGER.info("Facade: getAllOrders called");
+        LOGGER.debug("Facade: getAllOrders called");
         List<OrderDTO> orders = orderHandler.getAllOrders();
         int size = orders == null ? 0 : orders.size();
-        LOGGER.info("Facade: getAllOrders returned {} entries", size);
+        LOGGER.debug("Facade: getAllOrders returned {} entries", size);
         return size == 0 ? Collections.emptyList() : orders;
     }
 
@@ -169,13 +170,13 @@ public class OrderFacade extends BaseFacade {
         // we need to get the experation date for each product from the supplier
         // products
         if (order == null || order.getItems() == null || order.getItems().isEmpty()) {
-            LOGGER.warn("Order or items are null or empty, returning empty supply list");
+            LOGGER.debug("Order or items are null or empty, returning empty supply list");
             return Collections.emptyList();
         }
         List<SupplyDTO> supplyList = new ArrayList<>();
         for (OrderItemLineDTO item : order.getItems()) {
             if (item.getProductId() <= 0 || item.getQuantity() <= 0) {
-                LOGGER.warn("Invalid product ID or quantity in order item: {}", item);
+                LOGGER.debug("Invalid product ID or quantity in order item: {}", item);
                 continue;
             }
             Integer expiresInDayNum = supplierFacade.getProductExperationInDays(item.getProductId(),
@@ -184,55 +185,49 @@ public class OrderFacade extends BaseFacade {
                     order.getDeliveryDate().plusDays(expiresInDayNum));
             supplyList.add(supply);
         }
-        LOGGER.info("Facade: getSupplyDTOFromOrder created {} supply items from order ID: {}", supplyList.size(),
+        LOGGER.debug("Facade: getSupplyDTOFromOrder created {} supply items from order ID: {}", supplyList.size(),
                 order.getOrderId());
         return supplyList;
     }
 
     public List<OrderDTO> getOrdersInDeliveredStatus() {
-        LOGGER.info("Facade: getOrdersInDeliveredStatus called");
+        LOGGER.debug("Facade: getOrdersInDeliveredStatus called");
         List<OrderDTO> deliveredOrders = orderHandler.getOrdersInDeliveredStatus();
         int size = deliveredOrders == null ? 0 : deliveredOrders.size();
-        LOGGER.info("Facade: getOrdersInDeliveredStatus returned {} entries", size);
+        LOGGER.debug("Facade: getOrdersInDeliveredStatus returned {} entries", size);
         return size == 0 ? Collections.emptyList() : deliveredOrders;
     }
 
     public void advanceOrderStatus(int orderId, OrderStatus status) {
-        LOGGER.info("Facade: advanceOrderStatus called for order ID: {} with status: {}", orderId, status);
+        LOGGER.debug("Facade: advanceOrderStatus called for order ID: {} with status: {}", orderId, status);
         if (orderId <= 0 || status == null) {
             throw new IllegalArgumentException("Invalid order ID or status");
         }
         OrderDTO order = orderHandler.getOrderById(orderId);
         if (order == null) {
-            LOGGER.warn("No order found with ID: {}", orderId);
+            LOGGER.debug("No order found with ID: {}", orderId);
             return;
         }
         order.setStatus(status);
         orderHandler.updateOrderInfo(order);
-        LOGGER.info("Facade: advanceOrderStatus updated order ID: {} to status: {}", orderId, status);
+        LOGGER.debug("Facade: advanceOrderStatus updated order ID: {} to status: {}", orderId, status);
     }
 
     public int executePeriodicOrdersForThisWeek() {
-        LOGGER.info("Facade: executePeriodicOrdersForThisWeek called");
-        List<PeriodicOrderDTO> periodicOrders = periodicOrderHandler.getAllActivePeriodicOrdersByDayForThisWeek();
+        LOGGER.debug("Facade: executePeriodicOrdersForThisWeek called");
+        List<PeriodicOrderDTO> periodicOrders = periodicOrderHandler.getAllPeriodicOrders();
         if (periodicOrders == null || periodicOrders.isEmpty()) {
-            LOGGER.info("No periodic orders found for this week");
+            LOGGER.debug("No periodic orders found for this week");
             return 0;
         }
         int executedCount = 0;
-        for (PeriodicOrderDTO periodicOrder : periodicOrders) {
-
-            List<OrderResultDTO> results = orderHandler.executePeriodicOrdersForDay(periodicOrder.getDeliveryDay(),
-                    Collections.singletonList(periodicOrder));
-            if (results != null && !results.isEmpty()) {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            List<OrderResultDTO> results = orderHandler.executePeriodicOrdersForDay(day,
+                    periodicOrders);
+            if (results != null && !results.isEmpty())
                 executedCount += results.size();
-                LOGGER.info("Executed {} orders for periodic order ID: {}", results.size(),
-                        periodicOrder.getPeriodicOrderID());
-            } else {
-                LOGGER.warn("No orders executed for periodic order ID: {}", periodicOrder.getPeriodicOrderID());
-            }
         }
-        LOGGER.info("Facade: executePeriodicOrdersForThisWeek executed {} orders", executedCount);
+        LOGGER.debug("Facade: executePeriodicOrdersForThisWeek executed {} orders", executedCount);
         return executedCount;
     }
 }

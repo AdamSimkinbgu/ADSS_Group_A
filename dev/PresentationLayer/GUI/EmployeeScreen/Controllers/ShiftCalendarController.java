@@ -18,7 +18,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -27,11 +26,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Controller for the shift calendar view.
  * Displays a weekly calendar of shifts and allows managing shifts.
  */
-@Slf4j
 public class ShiftCalendarController {
 
     @FXML
@@ -105,6 +106,7 @@ public class ShiftCalendarController {
     private ShiftData selectedShift;
     private Map<String, ShiftData> shiftsMap = new HashMap<>();
     private List<String> availableBranches = new ArrayList<>();
+    private static final Logger log = LoggerFactory.getLogger(ShiftCalendarController.class);
 
     // Services
     private ServiceLayer.EmployeeSubModule.ShiftService shiftService;

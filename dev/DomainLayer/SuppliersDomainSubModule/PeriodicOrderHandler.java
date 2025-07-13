@@ -155,19 +155,4 @@ public class PeriodicOrderHandler {
       }
       return periodicOrder;
    }
-
-   public List<PeriodicOrderDTO> getAllActivePeriodicOrdersByDayForThisWeek() {
-      getAllPeriodicOrders();
-      List<PeriodicOrderDTO> allActiveOrders = new ArrayList<>();
-      for (Map.Entry<DayOfWeek, List<PeriodicOrder>> entry : periodicOrdersByDay.entrySet()) {
-         List<PeriodicOrder> ordersForDay = entry.getValue();
-         for (PeriodicOrder order : ordersForDay) {
-            if (order.isActive()) {
-               allActiveOrders.add(new PeriodicOrderDTO(order));
-            }
-         }
-      }
-      return allActiveOrders;
-   }
-
 }

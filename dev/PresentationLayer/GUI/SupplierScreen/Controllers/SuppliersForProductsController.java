@@ -90,7 +90,6 @@ public class SuppliersForProductsController {
          SupplierProductsController ctrl = loader.getController();
          // inject service + supplierId, then refresh
          ctrl.init(supplierService);
-         ctrl.setSupplierIdAndLoadProducts(supplierId);
 
          Stage stage = new Stage();
          stage.initModality(Modality.APPLICATION_MODAL);

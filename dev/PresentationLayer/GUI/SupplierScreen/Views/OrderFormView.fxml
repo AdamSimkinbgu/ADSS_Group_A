@@ -5,36 +5,44 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.ProductFormController"
-      spacing="15">
-  <padding>
-    <Insets top="20" right="20" bottom="20" left="20"/>
-  </padding>
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.OrderFormController"
+      spacing="15" padding="20">
 
-  <Label fx:id="titleLabel" text="Product" styleClass="section-title"/>
+  <Label text="Order Details" styleClass="dialog-title"/>
 
   <GridPane hgap="10" vgap="10">
-    <Label text="Catalog #:"           GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-    <TextField fx:id="catalogField"    GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <columnConstraints>
+      <ColumnConstraints minWidth="100"/>
+      <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
 
-    <Label text="Name:"                GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-    <TextField fx:id="nameField"       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    <Label text="Order Date:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <DatePicker fx:id="orderDatePicker" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-    <Label text="Price:"               GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-    <TextField fx:id="priceField"      GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+    <!-- Dual-list product selector -->
+    <Label text="Available Products:" GridPane.rowIndex="1" GridPane.columnIndex="0" valignment="TOP"/>
+    <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="1">
+      <HBox spacing="10">
+        <ListView fx:id="availableList" prefHeight="120"/>
 
-    <Label text="Weight:"              GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-    <TextField fx:id="weightField"     GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <VBox spacing="5" alignment="CENTER">
+          <Button text="Add →" onAction="#onAddProduct"/>
+          <Button text="← Remove" onAction="#onRemoveProduct"/>
+        </VBox>
 
-    <Label text="Expires (days):"      GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-    <Spinner fx:id="expiresSpinner"    GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-    <Label text="Manufacturer:"        GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-    <TextField fx:id="manufacturerField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <TableView fx:id="selectedTable" prefHeight="120">
+          <columns>
+            <TableColumn fx:id="selProdIdCol"    text="ID"        prefWidth="50"/>
+            <TableColumn fx:id="selProdNameCol"  text="Name"      prefWidth="150"/>
+            <TableColumn fx:id="selQtyCol"       text="Quantity"  prefWidth="80"/>
+          </columns>
+        </TableView>
+      </HBox>
+    </VBox>
   </GridPane>
 
   <HBox spacing="10" alignment="CENTER_RIGHT">
-    <Button fx:id="saveBtn"   text="Save"   styleClass="primary-button"/>
-    <Button fx:id="cancelBtn" text="Cancel"/>
+    <Button text="Cancel" onAction="#onCancel" styleClass="secondary-button"/>
+    <Button text="Save"   onAction="#onSave"   styleClass="primary-button"/>
   </HBox>
 </VBox>

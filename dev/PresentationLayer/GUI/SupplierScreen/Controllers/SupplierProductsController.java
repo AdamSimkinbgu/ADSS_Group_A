@@ -4,6 +4,9 @@ import DTOs.SuppliersModuleDTOs.SupplierDTO;
 import DTOs.SuppliersModuleDTOs.SupplierProductDTO;
 import ServiceLayer.SuppliersServiceSubModule.SupplierService;
 import ServiceLayer.SuppliersServiceSubModule.Interfaces_and_Abstracts.ServiceResponse;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,57 +19,70 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-
 public class SupplierProductsController {
+   // — Suppliers UI
+   @FXML
+   private TableView<SupplierDTO> suppliersTable;
+   @FXML
+   private TableColumn<SupplierDTO, Integer> supColId;
+   @FXML
+   private TableColumn<SupplierDTO, String> supColName;
+   @FXML
+   private TableColumn<SupplierDTO, Void> supColAction;
+   @FXML
+   private Button refreshSuppliersBtn;
+
+   // — Products UI
+   @FXML
+   private Label selectedSupplierLabel;
    @FXML
    private TableView<SupplierProductDTO> productsTable;
    @FXML
    private TableColumn<SupplierProductDTO, Integer> colProductId;
    @FXML
-   private TableColumn<SupplierProductDTO, String> colCatalogNumber, colName, colManufacturer;
+   private TableColumn<SupplierProductDTO, String> colCatalogNumber;
    @FXML
-   private TableColumn<SupplierProductDTO, BigDecimal> colPrice, colWeight;
+   private TableColumn<SupplierProductDTO, String> colName;
+   @FXML
+   private TableColumn<SupplierProductDTO, java.math.BigDecimal> colPrice;
+   @FXML
+   private TableColumn<SupplierProductDTO, java.math.BigDecimal> colWeight;
    @FXML
    private TableColumn<SupplierProductDTO, Integer> colExpires;
    @FXML
-   private TableColumn<SupplierProductDTO, Void> colActions;
+   private TableColumn<SupplierProductDTO, String> colManufacturer;
    @FXML
-   private Button addBtn, refreshBtn;
-
+   private TableColumn<SupplierProductDTO, Void> colProdActions;
    @FXML
-   private TableView<SupplierDTO> suppliersTable;
+   private Button refreshProductsBtn;
    @FXML
-   private TableColumn<SupplierDTO, Integer> colId;
+   private Button addProductBtn;
 
    private SupplierService supplierService;
    private final ObservableList<SupplierDTO> suppliers = FXCollections.observableArrayList();
+   private final ObservableList<SupplierProductDTO> products = FXCollections.observableArrayList();
+   private int selectedSupplierId = -1;
 
-   /** Call this from wherever you load the grid to inject your service */
+   /** Must be called *after* FXMLLoader.load() to inject the service. */
    public void init(SupplierService svc) {
       this.supplierService = svc;
       loadSuppliers();
-      initialize();
    }
 
    @FXML
-   public void initialize() {
-      colId.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getId()).asObject());
-      colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
-
-      // Actions cell: “Manage Products”
-      colActions.setCellFactory(tv -> new TableCell<>() {
-         private final Button btn = new Button("Manage Products");
+   private void initialize() {
+      // --- suppliers table setup ---
+      supColId.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getId()).asObject());
+      supColName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
+      supColAction.setCellFactory(tv -> new TableCell<>() {
+         private final Button btn = new Button("Select");
          {
             btn.getStyleClass().add("primary-button");
             btn.setOnAction(e -> {
-               SupplierProductDTO dto = getTableView().getItems().get(getIndex());
-               openProducts(dto.getSupplierId());
+               SupplierDTO dto = getTableView().getItems().get(getIndex());
+               selectSupplier(dto);
             });
          }
 
@@ -76,44 +92,42 @@ public class SupplierProductsController {
             setGraphic(empty ? null : btn);
          }
       });
-
       suppliersTable.setItems(suppliers);
 
+      // --- products table setup ---
       colProductId.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getProductId()));
       colCatalogNumber.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSupplierCatalogNumber()));
       colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
       colPrice.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getPrice()));
       colWeight.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getWeight()));
       colExpires.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getExpiresInDays()));
-      colManufacturer.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getManufacturerName()));
+      colManufacturer.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getManufacturerName()));
 
-      // actions column
-      colActions.setCellFactory(_ -> new TableCell<>() {
-         private final Button editBtn = new Button("✎");
-         private final Button delBtn = new Button("🗑");
+      colProdActions.setCellFactory(tv -> new TableCell<>() {
+         private final Button editBtn = new Button("Edit");
+         private final Button delBtn = new Button("Delete");
          {
             editBtn.getStyleClass().add("secondary-button");
             delBtn.getStyleClass().add("secondary-button");
-            editBtn.setOnAction(_ -> openForm(getTableView().getItems().get(getIndex()), false));
-            delBtn.setOnAction(_ -> deleteProduct(getTableView().getItems().get(getIndex())));
+            editBtn.setOnAction(e -> openProductForm(getTableView().getItems().get(getIndex()), false));
+            delBtn.setOnAction(e -> deleteProduct(getTableView().getItems().get(getIndex())));
          }
 
          @Override
          protected void updateItem(Void v, boolean empty) {
             super.updateItem(v, empty);
-            if (empty) {
-               setGraphic(null);
-            } else {
-               setGraphic(new HBox(5, editBtn, delBtn));
-            }
+            setGraphic(empty ? null : new HBox(5, editBtn, delBtn));
          }
       });
-      productsTable.setItems(items);
+      productsTable.setItems(products);
    }
 
+   // ─── Suppliers ─────────────────────────────────────────────────
+
    @FXML
-   private void onRefresh() {
+   private void onRefreshSuppliers() {
       loadSuppliers();
+      clearProductsSection();
    }
 
    private void loadSuppliers() {
@@ -121,79 +135,36 @@ public class SupplierProductsController {
       if (resp.isSuccess()) {
          suppliers.setAll(resp.getValue());
       } else {
-         new Alert(Alert.AlertType.ERROR,
-               String.join("\n", resp.getErrors()))
+         new Alert(Alert.AlertType.ERROR, String.join("\n", resp.getErrors()))
                .showAndWait();
       }
    }
 
-   private void openProducts(int supplierId) {
-      try {
-         FXMLLoader loader = new FXMLLoader(
-               getClass().getResource("/GUI/SupplierScreen/Views/ProductsTab.fxml"));
-         Parent root = loader.load();
-
-         SupplierProductsController ctrl = loader.getController();
-         // inject service + supplierId, then refresh
-         ctrl.init(supplierService);
-         ctrl.setSupplierIdAndLoadProducts(supplierId);
-
-         Stage stage = new Stage();
-         stage.initModality(Modality.APPLICATION_MODAL);
-         stage.setTitle("Products for Supplier #" + supplierId);
-         stage.setScene(new Scene(root));
-         stage.showAndWait();
-      } catch (IOException ex) {
-         ex.printStackTrace();
-      }
+   private void selectSupplier(SupplierDTO dto) {
+      selectedSupplierId = dto.getId();
+      selectedSupplierLabel.setText(dto.getName() + " (#" + dto.getId() + ")");
+      loadProducts();
    }
 
-   private int supplierId = -1;
-   private final ObservableList<SupplierProductDTO> items = FXCollections.observableArrayList();
+   // ─── Products ──────────────────────────────────────────────────
 
    @FXML
-   public void initializea() {
-      colProductId.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getProductId()));
-      colCatalogNumber.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getSupplierCatalogNumber()));
-      colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getName()));
-      colPrice.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getPrice()));
-      colWeight.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getWeight()));
-      colExpires.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getExpiresInDays()));
-      colManufacturer.setCellValueFactory(c -> new SimpleObjectProperty<>(c.getValue().getManufacturerName()));
-
-      // actions column
-      colActions.setCellFactory(_ -> new TableCell<>() {
-         private final Button editBtn = new Button("✎");
-         private final Button delBtn = new Button("🗑");
-         {
-            editBtn.getStyleClass().add("secondary-button");
-            delBtn.getStyleClass().add("secondary-button");
-            editBtn.setOnAction(_ -> openForm(getTableView().getItems().get(getIndex()), false));
-            delBtn.setOnAction(_ -> deleteProduct(getTableView().getItems().get(getIndex())));
-         }
-
-         @Override
-         protected void updateItem(Void v, boolean empty) {
-            super.updateItem(v, empty);
-            if (empty) {
-               setGraphic(null);
-            } else {
-               setGraphic(new HBox(5, editBtn, delBtn));
-            }
-         }
-      });
-      productsTable.setItems(items);
+   private void onRefreshProducts() {
+      loadProducts();
    }
 
    @FXML
-   private void onAdd() {
-      openForm(null, true);
+   private void onAddProduct() {
+      openProductForm(null, true);
    }
 
    private void loadProducts() {
-      ServiceResponse<?> resp = supplierService.listProducts(supplierId);
+      if (selectedSupplierId < 0)
+         return;
+      ServiceResponse<?> resp = supplierService.listProducts(selectedSupplierId);
       if (resp.isSuccess()) {
-         items.setAll((List<SupplierProductDTO>) resp.getValue());
+         // noinspection unchecked
+         products.setAll((List<SupplierProductDTO>) resp.getValue());
       } else {
          new Alert(Alert.AlertType.ERROR, String.join("\n", resp.getErrors()))
                .showAndWait();
@@ -201,29 +172,29 @@ public class SupplierProductsController {
    }
 
    private void deleteProduct(SupplierProductDTO dto) {
-      var alert = new Alert(Alert.AlertType.CONFIRMATION,
-            "Delete “" + dto.getName() + "”?",
-            ButtonType.YES, ButtonType.NO);
-      alert.showAndWait().ifPresent(b -> {
-         if (b == ButtonType.YES) {
-            ServiceResponse<?> r = supplierService.removeProduct(dto.getProductId(), supplierId);
-            if (r.isSuccess())
+      Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+            "Delete “" + dto.getName() + "”?", ButtonType.YES, ButtonType.NO);
+      confirm.showAndWait().ifPresent(bt -> {
+         if (bt == ButtonType.YES) {
+            ServiceResponse<?> r = supplierService.removeProduct(dto.getProductId(), selectedSupplierId);
+            if (r.isSuccess()) {
                loadProducts();
-            else
+            } else {
                new Alert(Alert.AlertType.ERROR, String.join("\n", r.getErrors()))
                      .showAndWait();
+            }
          }
       });
    }
 
-   private void openForm(SupplierProductDTO existing, boolean creating) {
+   private void openProductForm(SupplierProductDTO existing, boolean creating) {
       try {
          FXMLLoader loader = new FXMLLoader(
                getClass().getResource("/GUI/SupplierScreen/Views/ProductForm.fxml"));
          Parent root = loader.load();
 
-         ProductFormController form = loader.getController();
-         form.init(creating, existing, supplierId, supplierService);
+         ProductFormController form = loader.getController(); // your ProductFormController
+         form.init(creating, existing, selectedSupplierId, supplierService);
 
          Stage stage = new Stage();
          stage.initModality(Modality.APPLICATION_MODAL);
@@ -231,15 +202,15 @@ public class SupplierProductsController {
          stage.setScene(new Scene(root));
          stage.showAndWait();
 
-         // after modal closes
          loadProducts();
       } catch (IOException ex) {
          ex.printStackTrace();
       }
    }
 
-   public void setSupplierIdAndLoadProducts(int supplierId2) {
-      this.supplierId = supplierId2;
-      loadProducts();
+   private void clearProductsSection() {
+      selectedSupplierId = -1;
+      selectedSupplierLabel.setText("(none)");
+      products.clear();
    }
 }

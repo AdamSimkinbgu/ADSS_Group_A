@@ -729,7 +729,6 @@ public final class Database {
                         ) VALUES
                             (1,1,1,100,0.95),  -- “Milk 3%” from supplier 1
                             (1,2,2,50,0.9),  -- “Cornflacks Cariot” from supplier 1
-                            (1,3,3,75,0.925),   -- “Cottage Cheese” from supplier 1
                             (2,1,3,75,0.925),   -- “Cottage Cheese” from supplier 2
                             (2,2,4,30,0.875),  -- “Pastrami Sandwich” from supplier 2
                             (3,1,5,   200,   0.9),  -- “Cottage Cheese” from supplier 2
@@ -763,6 +762,14 @@ public final class Database {
                             (3, 1, 5, 200),   -- “Cottage Cheese” from supplier 3
                             (3, 2, 6, 120)    -- “Pastrami Sandwich” from supplier 3
                         ;
+                    """);
+
+            st.executeUpdate("""
+                        INSERT OR IGNORE INTO orders(
+                            supplier_id, order_date, creation_date, delivery_date, status, order_catagory
+                        ) VALUES
+                            (1, '2025-06-01', '2025-05-30', '2025-06-02', 'PENDING', 'REGULAR'),
+                            (2, '2025-06-02', '2025-05-31', '2025-06-03', 'SENT', 'PERIODIC')
                     """);
 
             LOGGER.debug("Inserted default BOQ items");

@@ -37,13 +37,9 @@ public class SuppliersMainController {
       suppliersBtn.setOnAction(_ -> loadSection(
             "Suppliers List",
             ScreensEnum.SUPPLIERS_LIST.getFxmlPath()));
-      ordersBtn.setOnAction(_ -> {
-         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-         alert.setTitle("Not Implemented");
-         alert.setHeaderText("Orders Tab");
-         alert.setContentText("The Orders module is not implemented yet.");
-         alert.showAndWait();
-      });
+      ordersBtn.setOnAction(_ -> loadSection(
+            "Orders List",
+            ScreensEnum.SUPPLIERS_ORDERS.getFxmlPath()));
 
       // next buttons are not implemented yet, show an alert
       productsBtn.setOnAction(_ -> loadSection(
@@ -55,6 +51,7 @@ public class SuppliersMainController {
    private void loadSection(String title, String fxmlPath) {
       try {
          // 1) Grab the URL of the FXML on the classpath
+         System.out.println("Loading section: " + title);
          var url = getClass().getResource(fxmlPath);
          if (url == null) {
             throw new IllegalArgumentException("Cannot find FXML: " + fxmlPath);
@@ -80,8 +77,8 @@ public class SuppliersMainController {
                return ctrl;
             }
 
-            if (type == OrdersController.class) {
-               OrdersController ctrl = new OrdersController();
+            if (type == OrdersViewController.class) {
+               OrdersViewController ctrl = new OrdersViewController();
                ctrl.setOrderService(components.getOrderService());
                return ctrl;
             }

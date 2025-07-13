@@ -2,137 +2,104 @@ package PresentationLayer.GUI.SupplierScreen.Controllers;
 
 import DTOs.SuppliersModuleDTOs.CatalogProductDTO;
 import DTOs.SuppliersModuleDTOs.OrderInfoDTO;
-import DTOs.SuppliersModuleDTOs.OrderItemLineDTO;
+import DomainLayer.SystemFactory;
+import DomainLayer.SystemFactory.SupplierModuleComponents;
 import DTOs.SuppliersModuleDTOs.OrderDTO;
 import ServiceLayer.SuppliersServiceSubModule.OrderService;
-import ServiceLayer.SuppliersServiceSubModule.SupplierService;
 import ServiceLayer.SuppliersServiceSubModule.Interfaces_and_Abstracts.ServiceResponse;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+/**
+ * Dialog controller for creating/editing a single Order.
+ */
 public class OrderFormController {
-
    @FXML
-   private DatePicker datePicker;
+   private DatePicker orderDatePicker;
    @FXML
-   private ComboBox<CatalogProductDTO> productCombo;
+   private ListView<CatalogProductDTO> availableList;
    @FXML
-   private Spinner<Integer> qtySpinner;
+   private TableView<Picked> selectedTable;
    @FXML
-   private TableView<OrderItemLineDTO> linesTable;
-
-   private final ObservableList<OrderItemLineDTO> lines = FXCollections.observableArrayList();
-
-   private OrderService orderService;
-   private SupplierService supplierService; // to fetch catalog
-   private OrderDTO editing; // non-null if we’re editing
-
-   /** Call this before showing: */
-   public void setServices(OrderService os, SupplierService ss) {
-      this.orderService = os;
-      this.supplierService = ss;
-   }
-
-   /** Call this if you want to edit an existing order: */
-   public void setOrder(OrderDTO existing) {
-      this.editing = existing;
-   }
-
+   private TableColumn<Picked, Integer> selProdIdCol;
    @FXML
-   public void initialize() {
-      // 1) configure spinner
-      qtySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1_000, 1));
+   private TableColumn<Picked, String> selProdNameCol;
+   @FXML
+   private TableColumn<Picked, Integer> selQtyCol;
 
-      // 2) fetch catalog
-      ServiceResponse<?> resp = supplierService.getAllProducts();
-      if (resp.isSuccess()) {
-         @SuppressWarnings("unchecked")
-         var catalog = (java.util.List<CatalogProductDTO>) resp.getValue();
-         productCombo.getItems().setAll(catalog);
-      }
+   private OrderService service;
+   // private OrderInfoDTO editingDto; // null = new
+   private SystemFactory systemFactory = new SystemFactory();
+   SupplierModuleComponents components = systemFactory.getSupplierModule();
+   private final ObservableList<CatalogProductDTO> available = FXCollections.observableArrayList();
+   private final ObservableList<Picked> picked = FXCollections.observableArrayList();
 
-      // 3) set up table
-      linesTable.setItems(lines);
-      // linesTable.getColumns().get(0)
-      // .setCellValueFactory(c -> new ReadOnlyObjectWrapper<Integer>()
-      // .of(new Integer.valueOf(c.getValue().getProductId())));
+   public void init(OrderDTO existing, String mode) {
+      this.service = components.getOrderService();
+      // load catalog
+      ServiceResponse<List<CatalogProductDTO>> resp = components.getSupplierService().getAllProducts();
+      if (resp.isSuccess())
+         available.setAll(resp.getValue());
+      availableList.setItems(available);
 
-      // 4) if editing, preload
-      if (editing != null) {
-         datePicker.setValue(editing.getOrderDate());
-         for (var item : editing.getItems()) {
-            lines.add(item);
-         }
+      selProdIdCol.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().product.getProductId()).asObject());
+      selProdNameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().product.getProductName()));
+      selQtyCol.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().quantity).asObject());
+      selectedTable.setItems(picked);
+
+      if (existing != null) {
+         // editing: populate date + products
+         orderDatePicker.setValue(existing.getOrderDate());
+         existing.getItems().forEach(item -> picked.add(
+               new Picked(
+                     available.stream().filter(p -> p.getProductId() == item.getProductId()).findFirst().orElse(null),
+                     item.getQuantity(),
+                     null)));
+         // (we could map back to CatalogProductDTO by id)
       } else {
-         datePicker.setValue(LocalDate.now().plusDays(1));
+         orderDatePicker.setValue(LocalDate.now());
       }
    }
 
    @FXML
-   private void onAddLine() {
-      var prod = productCombo.getValue();
-      if (prod == null) {
-         alert("Select a product first");
+   private void onAddProduct() {
+      var sel = availableList.getSelectionModel().getSelectedItem();
+      if (sel == null)
          return;
-      }
-      int qty = qtySpinner.getValue();
-      lines.add(new OrderItemLineDTO(
-            prod.getProductId(), qty));
+      // add with qty=1
+      picked.add(new Picked(sel, 1, null));
    }
 
-   /** invoked by “Remove” button in each row */
-   private void removeLine(int idx) {
-      if (idx >= 0 && idx < lines.size()) {
-         lines.remove(idx);
-      }
+   @FXML
+   private void onRemoveProduct() {
+      var p = selectedTable.getSelectionModel().getSelectedItem();
+      if (p != null)
+         picked.remove(p);
    }
 
    @FXML
    private void onSave() {
-      LocalDate date = datePicker.getValue();
-      if (date == null || !date.isAfter(LocalDate.now().minusDays(1))) {
-         alert("Order date must be today or later");
-         return;
-      }
-      if (lines.isEmpty()) {
-         alert("Add at least one line");
-         return;
-      }
-
       // build DTO
-      HashMap<Integer, Integer> map = new HashMap<>();
-      lines.forEach(l -> map.put(l.getProductId(), l.getQuantity()));
-      OrderInfoDTO info = (editing != null)
-            ? new OrderInfoDTO(editing) // copies date & lines
-            : new OrderInfoDTO(date, map);
-
-      if (editing != null) {
-         info.setOrderDate(date);
-         info.setProducts(map);
-         ServiceResponse<?> r = orderService.updateOrder(info);
-         if (!r.isSuccess()) {
-            alert(String.join("\n", r.getErrors()));
-            return;
-         }
+      var items = new HashMap<Integer, Integer>();
+      for (var p : picked)
+         items.put(p.product.getProductId(), p.quantity);
+      var info = new OrderInfoDTO(orderDatePicker.getValue(), items);
+      ServiceResponse<?> resp;
+      // if editingDto != null => updateOrder else createOrder
+      resp = service.createOrder(info);
+      if (resp.isSuccess()) {
+         close();
       } else {
-         info.setOrderDate(date);
-         info.setProducts(map);
-         ServiceResponse<?> r = orderService.createOrder(info);
-         if (!r.isSuccess()) {
-            alert(String.join("\n", r.getErrors()));
-            return;
-         }
+         new Alert(Alert.AlertType.ERROR, String.join("\n", resp.getErrors())).showAndWait();
       }
-
-      close();
    }
 
    @FXML
@@ -140,11 +107,18 @@ public class OrderFormController {
       close();
    }
 
-   private void alert(String msg) {
-      new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK).showAndWait();
+   private void close() {
+      ((Stage) orderDatePicker.getScene().getWindow()).close();
    }
 
-   private void close() {
-      ((Stage) datePicker.getScene().getWindow()).close();
+   /** helper for table rows */
+   public static class Picked {
+      public final CatalogProductDTO product;
+      public int quantity;
+
+      public Picked(CatalogProductDTO p, int q, Object unused) {
+         this.product = p;
+         this.quantity = q;
+      }
    }
 }

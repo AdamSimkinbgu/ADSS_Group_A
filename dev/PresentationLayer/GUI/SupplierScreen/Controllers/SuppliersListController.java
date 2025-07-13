@@ -88,8 +88,9 @@ public class SuppliersListController {
 
       // Toolbar actions
       addBtn.setOnAction(_ -> onAddSupplier());
+      addBtn.getStyleClass().add("primary-button");
       refreshBtn.setOnAction(_ -> loadSuppliers());
-
+      refreshBtn.getStyleClass().add("secondary-button");
       // Initial data load
       loadSuppliers();
    }
@@ -104,6 +105,9 @@ public class SuppliersListController {
             viewBtn.setOnAction(_ -> onView(getTableView().getItems().get(getIndex())));
             editBtn.setOnAction(_ -> onEdit(getTableView().getItems().get(getIndex())));
             removeBtn.setOnAction(_ -> onRemove(getTableView().getItems().get(getIndex())));
+            viewBtn.getStyleClass().add("primary-button");
+            editBtn.getStyleClass().add("secondary-button");
+            removeBtn.getStyleClass().add("secondary-button");
          }
 
          @Override
