@@ -422,7 +422,7 @@ public class OrderHandler {
                   items.add(item);
                }
             } else {
-               LOGGER.warn("Product {} not found for supplier {}", productId, supplier.getSupplierId());
+               LOGGER.debug("Product {} not found for supplier {}", productId, supplier.getSupplierId());
             }
          }
 
@@ -432,7 +432,7 @@ public class OrderHandler {
          try {
             orderDTO.setOrderCatagory(orderCategory);
             OrderDTO createdOrder = ordersRepository.createRegularOrder(orderDTO);
-            LOGGER.info("Successfully created order {} for supplier {} with {} items",
+            LOGGER.debug("Successfully created order {} for supplier {} with {} items",
                   createdOrder.getOrderId(), supplier.getName(), items.size());
          } catch (Exception e) {
             LOGGER.error("Failed to persist order for supplier {}: {}",
@@ -490,7 +490,7 @@ public class OrderHandler {
       }
       OrderDTO order = ordersRepository.getRegularOrderById(orderID);
       if (order == null) {
-         LOGGER.warn("Order not found for ID: {}", orderID);
+         LOGGER.debug("Order not found for ID: {}", orderID);
          return null;
       }
 
@@ -507,14 +507,14 @@ public class OrderHandler {
             supplierFacade.getSupplierContactPhoneNumber(order.getSupplierId()));
       order.setAddress(supplierDTO != null ? supplierDTO.getAddress() : new AddressDTO());
 
-      LOGGER.info("Retrieved order with ID: {}", orderID);
+      LOGGER.debug("Retrieved order with ID: {}", orderID);
       return order;
    }
 
    public List<OrderDTO> getAllOrders() {
       List<OrderDTO> orders = ordersRepository.getAllRegularOrders();
       if (orders == null || orders.isEmpty()) {
-         LOGGER.info("No orders found");
+         LOGGER.debug("No orders found");
          return Collections.emptyList();
       }
       for (OrderDTO order : orders) {
@@ -528,7 +528,7 @@ public class OrderHandler {
                supplierFacade.getSupplierContactPhoneNumber(order.getSupplierId()));
          order.setAddress(supplierDTO != null ? supplierDTO.getAddress() : new AddressDTO());
       }
-      LOGGER.info("Retrieved {} orders", orders.size());
+      LOGGER.debug("Retrieved {} orders", orders.size());
       return orders;
    }
 
@@ -571,17 +571,17 @@ public class OrderHandler {
       }
       OrderDTO order = ordersRepository.getRegularOrderById(orderID);
       if (order == null) {
-         LOGGER.warn("Order not found for ID: {}", orderID);
+         LOGGER.debug("Order not found for ID: {}", orderID);
          return false;
       }
       if (order.getStatus() != OrderStatus.DELIVERED) {
-         LOGGER.warn("Order ID {} is not in DELIVERED status, cannot mark as COMPLETED", orderID);
+         LOGGER.debug("Order ID {} is not in DELIVERED status, cannot mark as COMPLETED", orderID);
          return false;
       }
       order.setStatus(OrderStatus.COMPLETED);
       boolean updated = ordersRepository.updateRegularOrder(order);
       if (updated) {
-         LOGGER.info("Order ID {} marked as collected successfully", orderID);
+         LOGGER.debug("Order ID {} marked as collected successfully", orderID);
       } else {
          LOGGER.error("Failed to mark order ID {} as collected", orderID);
       }
@@ -656,7 +656,7 @@ public class OrderHandler {
          if (catalogProducts.stream().anyMatch(p -> p.getProductId() == productId)) {
             filteredProducts.put(productId, entry.getValue());
          } else {
-            LOGGER.warn("Product ID {} not found in catalog, skipping", productId);
+            LOGGER.debug("Product ID {} not found in catalog, skipping", productId);
          }
       }
       return filteredProducts;
@@ -676,7 +676,7 @@ public class OrderHandler {
          if (supplierProducts.contains(item.getProductId())) {
             filteredItems.add(item);
          } else {
-            LOGGER.warn("Product ID {} not found for supplier ID {}, removing from order", item.getProductId(),
+            LOGGER.debug("Product ID {} not found for supplier ID {}, removing from order", item.getProductId(),
                   supplierId);
          }
       }
@@ -691,7 +691,7 @@ public class OrderHandler {
       List<OrderItemLineDTO> filteredProducts = filterItemsThatSupplierDoesntHave(orderDTO.getItems(),
             orderDTO.getSupplierId());
       if (filteredProducts.isEmpty()) {
-         LOGGER.warn("No valid products found for the order. Please check the product IDs.");
+         LOGGER.debug("No valid products found for the order. Please check the product IDs.");
          return null;
       }
 
@@ -761,12 +761,12 @@ public class OrderHandler {
    }
 
    public boolean deleteOrder(int orderId) {
-      LOGGER.info("Handler: deleteOrder called for ID: {}", orderId);
+      LOGGER.debug("Handler: deleteOrder called for ID: {}", orderId);
       boolean deleted = ordersRepository.deleteRegularOrder(orderId);
       if (deleted) {
-         LOGGER.info("Handler: deleteOrder successful for ID: {}", orderId);
+         LOGGER.debug("Handler: deleteOrder successful for ID: {}", orderId);
       } else {
-         LOGGER.warn("Handler: deleteOrder failed for ID: {}", orderId);
+         LOGGER.debug("Handler: deleteOrder failed for ID: {}", orderId);
       }
       return deleted;
    }
@@ -774,7 +774,7 @@ public class OrderHandler {
    public List<OrderDTO> getOrdersInDeliveredStatus() {
       List<OrderDTO> orders = ordersRepository.getOrdersByStatus(OrderStatus.DELIVERED);
       if (orders == null || orders.isEmpty()) {
-         LOGGER.info("No delivered orders found");
+         LOGGER.debug("No delivered orders found");
          return Collections.emptyList();
       }
       for (OrderDTO order : orders) {
@@ -788,7 +788,7 @@ public class OrderHandler {
                supplierFacade.getSupplierContactPhoneNumber(order.getSupplierId()));
          order.setAddress(supplierDTO != null ? supplierDTO.getAddress() : new AddressDTO());
       }
-      LOGGER.info("Retrieved {} delivered orders", orders.size());
+      LOGGER.debug("Retrieved {} delivered orders", orders.size());
       return orders;
    }
 }
@@ -1217,7 +1217,7 @@ public class OrderHandler {
 // items.add(item);
 // }
 // } else {
-// LOGGER.warn("Product {} not found for supplier {}", productId,
+// LOGGER.debug("Product {} not found for supplier {}", productId,
 // supplier.getSupplierId());
 // }
 // }
@@ -1227,7 +1227,7 @@ public class OrderHandler {
 // // Persist the order using the repository
 // try {
 // OrderDTO createdOrder = ordersRepository.createRegularOrder(orderDTO);
-// LOGGER.info("Successfully created order {} for supplier {} with {} items",
+// LOGGER.debug("Successfully created order {} for supplier {} with {} items",
 // createdOrder.getOrderId(), supplier.getName(), items.size());
 // } catch (Exception e) {
 // LOGGER.error("Failed to persist order for supplier {}: {}",
@@ -1306,7 +1306,7 @@ public class OrderHandler {
 // if (catalogProducts.stream().anyMatch(p -> p.getProductId() == productId)) {
 // filteredProducts.put(productId, entry.getValue());
 // } else {
-// LOGGER.warn("Product ID {} not found in catalog, skipping", productId);
+// LOGGER.debug("Product ID {} not found in catalog, skipping", productId);
 // }
 // }
 // return filteredProducts;
@@ -1329,7 +1329,7 @@ public class OrderHandler {
 // if (supplierProducts.contains(item.getProductId())) {
 // filteredItems.add(item);
 // } else {
-// LOGGER.warn("Product ID {} not found for supplier ID {}, removing from
+// LOGGER.debug("Product ID {} not found for supplier ID {}, removing from
 // order", item.getProductId(),
 // supplierId);
 // }
@@ -1347,7 +1347,7 @@ public class OrderHandler {
 // filterItemsThatSupplierDoesntHave(orderDTO.getItems(),
 // orderDTO.getSupplierId());
 // if (filteredProducts.isEmpty()) {
-// LOGGER.warn("No valid products found for the order. Please check the product
+// LOGGER.debug("No valid products found for the order. Please check the product
 // IDs.");
 // return null;
 // }

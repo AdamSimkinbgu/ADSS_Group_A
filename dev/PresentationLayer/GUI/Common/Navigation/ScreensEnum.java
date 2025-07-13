@@ -14,7 +14,8 @@ public enum ScreensEnum {
    SUPPLIER_ADD("/GUI/SupplierScreen/Views/SupplierAddView.fxml"),
    SUPPLIER_REMOVE("/GUI/SupplierScreen/Views/SupplierRemoveView.fxml"),
    SUPPLIERS_ORDERS("/GUI/SupplierScreen/Views/OrdersView.fxml"),
-   SUPPLIERS_PRODUCTS("/GUI/SupplierScreen/Views/ProductsView.fxml"),;
+   SUPPLIERS_PRODUCTS("/GUI/SupplierScreen/Views/ProductsView.fxml"),
+   SUPPLIERS_AGREEMENTS("/GUI/SupplierScreen/Views/AgreementsView.fxml"),;
 
    private final String fxmlPath;
 

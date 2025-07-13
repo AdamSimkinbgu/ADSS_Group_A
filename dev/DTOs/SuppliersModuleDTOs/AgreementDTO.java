@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import DomainLayer.SuppliersDomainSubModule.Classes.Agreement;
 
@@ -176,14 +177,14 @@ public class AgreementDTO {
    public boolean equals(Object obj) {
       if (this == obj)
          return true;
-      if (obj == null || getClass() != obj.getClass())
+      if (!(obj instanceof AgreementDTO that))
          return false;
-      AgreementDTO that = (AgreementDTO) obj;
-      return agreementId == that.agreementId &&
-            supplierId == that.supplierId &&
-            valid == that.valid &&
-            supplierName.equals(that.supplierName) &&
-            agreementStartDate.equals(that.agreementStartDate) &&
-            agreementEndDate.equals(that.agreementEndDate);
+      return agreementId == that.agreementId
+            && supplierId == that.supplierId
+            && valid == that.valid
+            && Objects.equals(supplierName, that.supplierName)
+            && Objects.equals(agreementStartDate, that.agreementStartDate)
+            && Objects.equals(agreementEndDate, that.agreementEndDate)
+            && Objects.equals(billOfQuantitiesItems, that.billOfQuantitiesItems);
    }
 }

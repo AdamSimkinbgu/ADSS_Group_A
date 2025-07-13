@@ -9,6 +9,7 @@ import javafx.beans.property.*;
 import javafx.collections.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -152,6 +153,7 @@ public class OrdersViewController {
    }
 
    private void loadOrders() {
+      System.out.println("Loading orders from service");
       if (orderService == null)
          return;
       ServiceResponse<List<OrderDTO>> resp = orderService.getAllOrders();
@@ -165,6 +167,7 @@ public class OrdersViewController {
    }
 
    private void openOrderDialog(int idx, boolean creating, String mode) {
+      System.out.println("Opening Order dialog: " + (creating ? "New Order" : "Edit Order"));
       try {
          var fxml = getClass().getResource("/GUI/SupplierScreen/Views/OrderFormView.fxml");
          FXMLLoader loader = new FXMLLoader(fxml);
@@ -183,6 +186,7 @@ public class OrdersViewController {
    }
 
    private void deleteOrder(int idx) {
+      System.out.println("Requesting deletion of order at index: " + idx);
       var o = ordersList.get(idx);
       var A = new Alert(Alert.AlertType.CONFIRMATION, "Delete Order #" + o.getOrderId() + "?", ButtonType.YES,
             ButtonType.NO);
@@ -209,6 +213,7 @@ public class OrdersViewController {
 
    @FXML
    private void onExecuteToday() {
+      System.out.println("Executing periodic orders for today");
       var resp = orderService.getAllPeriodicOrdersForToday();
       if (resp.isSuccess()) {
          StringBuilder sb = new StringBuilder();
@@ -222,6 +227,7 @@ public class OrdersViewController {
 
    @FXML
    private void onExecuteWeek() {
+      System.out.println("Executing periodic orders for this week");
       var resp = orderService.executePeriodicOrdersForThisWeek();
       if (resp.isSuccess())
          new Alert(Alert.AlertType.INFORMATION, resp.getValue().toString()).showAndWait();
@@ -232,6 +238,7 @@ public class OrdersViewController {
    private void loadPeriodic() {
       if (orderService == null)
          return;
+      System.out.println("Ateempting loading of periodic orders");
       var resp = orderService.getAllPeriodicOrders();
       if (resp.isSuccess())
          periodicList.setAll(resp.getValue());
@@ -240,6 +247,7 @@ public class OrdersViewController {
    }
 
    private void openPeriodicDialog(int idx, boolean creating) {
+      System.out.println("Opening Periodic Order dialog: " + (creating ? "New Periodic Order" : "Edit Periodic Order"));
       try {
          var fxml = getClass().getResource("/GUI/SupplierScreen/Views/PeriodicOrderForm.fxml");
          FXMLLoader loader = new FXMLLoader(fxml);
@@ -258,6 +266,7 @@ public class OrdersViewController {
    }
 
    private void deletePeriodic(int idx) {
+      System.out.println("Requesting deletion of periodic order at index: " + idx);
       var p = periodicList.get(idx);
       var A = new Alert(Alert.AlertType.CONFIRMATION, "Delete Periodic #" + p.getPeriodicOrderID() + "?",
             ButtonType.YES, ButtonType.NO);
@@ -271,6 +280,7 @@ public class OrdersViewController {
    }
 
    private void executeOnePeriodic(int idx) {
+      System.out.println("Executing periodic order at index: " + idx);
       var p = periodicList.get(idx);
       var resp = orderService.executePeriodicOrdersForDay(p.getDeliveryDay().name());
       if (resp.isSuccess()) {

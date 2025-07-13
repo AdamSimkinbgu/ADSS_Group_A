@@ -109,7 +109,7 @@ public class SupplierProductsController {
          {
             editBtn.getStyleClass().add("secondary-button");
             delBtn.getStyleClass().add("secondary-button");
-            editBtn.setOnAction(e -> openProductForm(getTableView().getItems().get(getIndex()), false));
+            editBtn.setOnAction(e -> openEditSupplierProductForm(getTableView().getItems().get(getIndex())));
             delBtn.setOnAction(e -> deleteProduct(getTableView().getItems().get(getIndex())));
          }
 
@@ -155,7 +155,28 @@ public class SupplierProductsController {
 
    @FXML
    private void onAddProduct() {
-      openProductForm(null, true);
+      openAddSupplierProductForm(null);
+   }
+
+   protected void openEditSupplierProductForm(SupplierProductDTO supplierProductDTO) {
+      try {
+         FXMLLoader loader = new FXMLLoader(
+               getClass().getResource("/GUI/SupplierScreen/Views/SupplierProductEditView.fxml"));
+         Parent root = loader.load();
+         SupplierProductEditController form = loader.getController();
+         form.init(supplierProductDTO);
+         Stage stage = new Stage();
+         stage.initModality(Modality.APPLICATION_MODAL);
+         stage.setTitle("Edit " + supplierProductDTO.getName() + ": " + supplierProductDTO.getManufacturerName()
+               + " (From Supplier " + selectedSupplierLabel.getText() + ")");
+         stage.setScene(new Scene(root));
+         stage.showAndWait();
+         loadProducts();
+      } catch (IOException ex) {
+         ex.printStackTrace();
+         new Alert(Alert.AlertType.ERROR, "Failed to open product edit form: " + ex.getMessage())
+               .showAndWait();
+      }
    }
 
    private void loadProducts() {
@@ -173,7 +194,13 @@ public class SupplierProductsController {
 
    private void deleteProduct(SupplierProductDTO dto) {
       Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-            "Delete “" + dto.getName() + "”?", ButtonType.YES, ButtonType.NO);
+            "Delete “" + dto.getName() + "” From Supplier “" + selectedSupplierLabel.getText() + "”?",
+            ButtonType.YES, ButtonType.NO);
+      confirm.setTitle("Delete Product");
+      confirm.setHeaderText("Are you sure you want to delete this product?");
+      confirm.setContentText(
+            "This action cannot be undone.\nThe product will be removed from the supplier (orders will not be affected).");
+      confirm.getDialogPane().setPrefSize(400, 200);
       confirm.showAndWait().ifPresent(bt -> {
          if (bt == ButtonType.YES) {
             ServiceResponse<?> r = supplierService.removeProduct(dto.getProductId(), selectedSupplierId);
@@ -187,18 +214,23 @@ public class SupplierProductsController {
       });
    }
 
-   private void openProductForm(SupplierProductDTO existing, boolean creating) {
+   private void openAddSupplierProductForm(SupplierProductDTO existing) {
       try {
          FXMLLoader loader = new FXMLLoader(
-               getClass().getResource("/GUI/SupplierScreen/Views/ProductForm.fxml"));
+               getClass().getResource("/GUI/SupplierScreen/Views/SupplierProductAddView.fxml"));
          Parent root = loader.load();
 
-         ProductFormController form = loader.getController(); // your ProductFormController
-         form.init(creating, existing, selectedSupplierId, supplierService);
+         if (selectedSupplierId < 0) {
+            new Alert(Alert.AlertType.INFORMATION, "Please select a supplier first.").showAndWait();
+            return;
+         }
+
+         SupplierProductAddController form = loader.getController();
+         form.init(selectedSupplierId);
 
          Stage stage = new Stage();
          stage.initModality(Modality.APPLICATION_MODAL);
-         stage.setTitle(creating ? "Add Product" : "Edit Product");
+         stage.setTitle("Add Product");
          stage.setScene(new Scene(root));
          stage.showAndWait();
 

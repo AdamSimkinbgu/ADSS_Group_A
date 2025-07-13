@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.AgreementDetailsController"
+            prefWidth="600" prefHeight="500">
+
+    <children>
+        <VBox spacing="15" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label fx:id="titleLabel" text="View Agreement" styleClass="dialog-title"/>
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Supplier:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="supplierCombo"
+                          GridPane.rowIndex="0" GridPane.columnIndex="1"
+                          disable="true"/>
+
+                <Label text="Agreement ID:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label fx:id="agreementIdLabel"
+                       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Start Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="startDatePicker"
+                            GridPane.rowIndex="2" GridPane.columnIndex="1"
+                            disable="true"/>
+
+                <Label text="End Date:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <DatePicker fx:id="endDatePicker"
+                            GridPane.rowIndex="3" GridPane.columnIndex="1"
+                            disable="true"/>
+            </GridPane>
+
+            <Label text="Bill of Quantities:" styleClass="section-subtitle"/>
+            <TableView fx:id="boqTable" VBox.vgrow="ALWAYS" prefHeight="200" editable="false">
+                <columns>
+                    <TableColumn fx:id="colLineId"   text="Line #"      prefWidth="60"/>
+                    <TableColumn fx:id="colProduct"  text="Product"     prefWidth="200"/>
+                    <TableColumn fx:id="colQuantity" text="Quantity"    prefWidth="80"/>
+                    <TableColumn fx:id="colDiscount" text="Discount %"  prefWidth="80"/>
+                </columns>
+                <placeholder>
+                    <Label text="No items in this agreement"/>
+                </placeholder>
+            </TableView>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="closeBtn"
+                        text="Close"
+                        styleClass="secondary-button"/>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

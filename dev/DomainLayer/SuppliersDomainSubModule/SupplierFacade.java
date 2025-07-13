@@ -47,7 +47,7 @@ public class SupplierFacade {
          LOGGER.debug("Supplier with ID {} removed successfully", supplierID);
          return true;
       } else {
-         LOGGER.warn("No supplier found with ID: {}", supplierID);
+         LOGGER.debug("No supplier found with ID: {}", supplierID);
          return false;
       }
 
@@ -70,7 +70,7 @@ public class SupplierFacade {
          LOGGER.debug("Supplier with ID {} updated successfully", supplierID);
          return true;
       } else {
-         LOGGER.warn("No changes made to supplier with ID: {}", supplierID);
+         LOGGER.debug("No changes made to supplier with ID: {}", supplierID);
          return false;
       }
    }
@@ -88,7 +88,7 @@ public class SupplierFacade {
 
       List<SupplierDTO> suppliersList = suppliersAgreementsRepo.getAllSuppliers();
       if (suppliersList == null || suppliersList.isEmpty()) {
-         LOGGER.warn("No suppliers found in the database");
+         LOGGER.debug("No suppliers found in the database");
          return Collections.emptyList();
       }
       return suppliersList.stream()
@@ -139,7 +139,7 @@ public class SupplierFacade {
    public List<SupplierProductDTO> getSupplierProducts(int supplierID) {
       List<SupplierProductDTO> products = suppliersAgreementsRepo.getAllSupplierProductsById(supplierID);
       if (products == null || products.isEmpty()) {
-         LOGGER.warn("No products found for supplier ID: {}", supplierID);
+         LOGGER.debug("No products found for supplier ID: {}", supplierID);
          return Collections.emptyList();
       }
       return products.stream()
@@ -179,7 +179,7 @@ public class SupplierFacade {
    public List<AgreementDTO> getAgreementsBySupplierId(int supplierId) {
       List<AgreementDTO> agreements = suppliersAgreementsRepo.getAllAgreementsForSupplier(supplierId);
       if (agreements == null || agreements.isEmpty()) {
-         LOGGER.warn("No agreements found for supplier ID: {}", supplierId);
+         LOGGER.debug("No agreements found for supplier ID: {}", supplierId);
          return Collections.emptyList();
       }
       return agreements.stream().sorted(Comparator.comparing(AgreementDTO::getAgreementId)).toList();
@@ -193,7 +193,7 @@ public class SupplierFacade {
       }
       Optional<AgreementDTO> agreement = suppliersAgreementsRepo.getAgreementById(agreementID);
       if (agreement == null) {
-         LOGGER.warn("No agreement found for ID: {}", agreementID);
+         LOGGER.debug("No agreement found for ID: {}", agreementID);
          return null;
       }
       return agreement.orElseThrow(() -> new IllegalArgumentException("Agreement not found for ID: " + agreementID));
@@ -222,12 +222,12 @@ public class SupplierFacade {
    public List<OrderItemLineDTO> setProductNameAndCategoryForOrderItems(List<OrderItemLineDTO> productsToProcess,
          int supplierId) {
       if (productsToProcess == null || productsToProcess.isEmpty()) {
-         LOGGER.warn("No products found for supplier ID: {}", supplierId);
+         LOGGER.debug("No products found for supplier ID: {}", supplierId);
          return Collections.emptyList();
       }
       List<SupplierProductDTO> supplierProducts = suppliersAgreementsRepo.getAllSupplierProductsById(supplierId);
       if (supplierProducts == null || supplierProducts.isEmpty()) {
-         LOGGER.warn("No products found for supplier ID: {}", supplierId);
+         LOGGER.debug("No products found for supplier ID: {}", supplierId);
          return Collections.emptyList();
       }
       for (OrderItemLineDTO item : productsToProcess) {
@@ -239,11 +239,11 @@ public class SupplierFacade {
             }
          }
          if (item.getProductName() == null) {
-            LOGGER.warn("Product name not found for product ID: {}", item.getProductId());
+            LOGGER.debug("Product name not found for product ID: {}", item.getProductId());
             item.setProductName("Unknown Product");
          }
          if (item.getSupplierProductCatalogNumber() == null) {
-            LOGGER.warn("Supplier catalog number not found for product ID: {}", item.getProductId());
+            LOGGER.debug("Supplier catalog number not found for product ID: {}", item.getProductId());
             item.setSupplierProductCatalogNumber("Unknown Category");
          }
       }
@@ -265,7 +265,7 @@ public class SupplierFacade {
       List<OrderItemLineDTO> updatedItems = new ArrayList<>();
       for (OrderItemLineDTO item : items) {
          if (item.getProductId() <= 0) {
-            LOGGER.warn("Invalid product ID {} in order item, skipping", item.getProductId());
+            LOGGER.debug("Invalid product ID {} in order item, skipping", item.getProductId());
             continue; // Skip invalid product IDs
          }
          SupplierProductDTO supplierProduct = supplierProducts.stream()
@@ -273,7 +273,7 @@ public class SupplierFacade {
                .findFirst()
                .orElse(null);
          if (supplierProduct == null) {
-            LOGGER.warn("No supplier product found for product ID: {} in supplier ID: {}", item.getProductId(),
+            LOGGER.debug("No supplier product found for product ID: {} in supplier ID: {}", item.getProductId(),
                   supplierId);
             continue; // Skip items with no matching supplier product
          }
@@ -305,7 +305,7 @@ public class SupplierFacade {
                List<BillofQuantitiesItemDTO> billOfQuantitiesItems = suppliersAgreementsRepo
                      .getBillOfQuantitiesItemsForAgreement(agreement.getAgreementId());
                if (billOfQuantitiesItems == null || billOfQuantitiesItems.isEmpty()) {
-                  LOGGER.warn("No Bill of Quantities items found for agreement ID: {}", agreement.getAgreementId());
+                  LOGGER.debug("No Bill of Quantities items found for agreement ID: {}", agreement.getAgreementId());
                   continue; // Skip this agreement if no items found
                }
                for (BillofQuantitiesItemDTO itemInBOQ : billOfQuantitiesItems) {
@@ -351,7 +351,7 @@ public class SupplierFacade {
          updatedItems.add(item);
       }
       if (updatedItems.isEmpty()) {
-         LOGGER.warn("No valid items found after setting prices and discounts for supplier ID: {}", supplierId);
+         LOGGER.debug("No valid items found after setting prices and discounts for supplier ID: {}", supplierId);
       } else {
          LOGGER.debug("Successfully set prices and discounts for {} items for supplier ID: {}", updatedItems.size(),
                supplierId);
@@ -369,7 +369,7 @@ public class SupplierFacade {
    public List<Supplier> getAllSuppliersForProduct(int productId) {
       List<Integer> supplierIds = suppliersAgreementsRepo.getAllSuppliersForProductId(productId);
       if (supplierIds == null || supplierIds.isEmpty()) {
-         LOGGER.warn("No suppliers found in the database for product ID: {}", productId);
+         LOGGER.debug("No suppliers found in the database for product ID: {}", productId);
          return Collections.emptyList();
       }
       return supplierIds.stream()
@@ -413,7 +413,7 @@ public class SupplierFacade {
    public String getProductName(int pid) {
       Optional<CatalogProductDTO> product = suppliersAgreementsRepo.getCatalogProductById(pid);
       if (product.isEmpty()) {
-         LOGGER.warn("No product found with ID: {}", pid);
+         LOGGER.debug("No product found with ID: {}", pid);
          return "Unknown Product";
       }
       return product.get().getProductName();
@@ -422,7 +422,7 @@ public class SupplierFacade {
    public String getSupplierContactPhoneNumber(int supplierId) {
       Optional<SupplierDTO> supplier = suppliersAgreementsRepo.getSupplierById(supplierId);
       if (supplier.isEmpty()) {
-         LOGGER.warn("No supplier found with ID: {}", supplierId);
+         LOGGER.debug("No supplier found with ID: {}", supplierId);
          return "Unknown Contact";
       }
       return supplier.get().getContactsInfoList().get(0).getPhone();
@@ -433,16 +433,35 @@ public class SupplierFacade {
       Optional<SupplierProductDTO> supplierProduct = suppliersAgreementsRepo.getSupplierProductById(supplierId,
             productId);
       if (supplierProduct.isEmpty()) {
-         LOGGER.warn("No supplier product found for product ID: {} and supplier ID: {}", productId, supplierId);
+         LOGGER.debug("No supplier product found for product ID: {} and supplier ID: {}", productId, supplierId);
          return null; // or throw an exception based on your design choice
       }
       Optional<SupplierProductDTO> product = suppliersAgreementsRepo.getSupplierProductById(supplierId, productId);
       if (product.isEmpty()) {
-         LOGGER.warn("No product found with ID: {} for supplier ID: {}", productId, supplierId);
+         LOGGER.debug("No product found with ID: {} for supplier ID: {}", productId, supplierId);
          return null; // or throw an exception based on your design choice
       }
       return product.get().getExpiresInDays();
 
+   }
+
+   public List<AgreementDTO> getAllAgreements() {
+      List<AgreementDTO> agreements = suppliersAgreementsRepo.getAllAgreements();
+      if (agreements == null || agreements.isEmpty()) {
+         LOGGER.debug("No agreements found in the database");
+         return Collections.emptyList();
+      }
+      return agreements.stream()
+            .sorted(Comparator.comparing(AgreementDTO::getAgreementId))
+            .toList();
+   }
+
+   public boolean checkAgreementExists(int agreementID) {
+      if (agreementID <= 0) {
+         LOGGER.error("Agreement ID must be greater than 0");
+         throw new InvalidParameterException("Agreement ID must be greater than 0");
+      }
+      return suppliersAgreementsRepo.agreementExists(agreementID);
    }
 
 }

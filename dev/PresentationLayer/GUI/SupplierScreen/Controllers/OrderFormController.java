@@ -2,6 +2,7 @@ package PresentationLayer.GUI.SupplierScreen.Controllers;
 
 import DTOs.SuppliersModuleDTOs.CatalogProductDTO;
 import DTOs.SuppliersModuleDTOs.OrderInfoDTO;
+import DTOs.SuppliersModuleDTOs.SupplierProductDTO;
 import DomainLayer.SystemFactory;
 import DomainLayer.SystemFactory.SupplierModuleComponents;
 import DTOs.SuppliersModuleDTOs.OrderDTO;
@@ -35,6 +36,9 @@ public class OrderFormController {
    @FXML
    private TableColumn<Picked, Integer> selQtyCol;
 
+   @FXML
+   private TextField quantityField;
+
    private OrderService service;
    // private OrderInfoDTO editingDto; // null = new
    private SystemFactory systemFactory = new SystemFactory();
@@ -43,6 +47,7 @@ public class OrderFormController {
    private final ObservableList<Picked> picked = FXCollections.observableArrayList();
 
    public void init(OrderDTO existing, String mode) {
+      System.out.println("Initializing OrderFormController with mode: " + mode);
       this.service = components.getOrderService();
       // load catalog
       ServiceResponse<List<CatalogProductDTO>> resp = components.getSupplierService().getAllProducts();
@@ -65,17 +70,37 @@ public class OrderFormController {
                      null)));
          // (we could map back to CatalogProductDTO by id)
       } else {
-         orderDatePicker.setValue(LocalDate.now());
+         orderDatePicker.setValue(LocalDate.now().plusDays(7)); // default to next week
       }
    }
 
    @FXML
    private void onAddProduct() {
-      var sel = availableList.getSelectionModel().getSelectedItem();
-      if (sel == null)
+      CatalogProductDTO selProd = availableList.getSelectionModel().getSelectedItem();
+      if (selProd == null)
          return;
-      // add with qty=1
-      picked.add(new Picked(sel, 1, null));
+
+      int qty = 1;
+      try {
+         qty = Integer.parseInt(quantityField.getText().trim());
+         if (qty < 1)
+            qty = 1;
+      } catch (NumberFormatException ignored) {
+      }
+
+      Picked existing = picked.stream()
+            .filter(p -> p.product.getProductId() == selProd.getProductId())
+            .findFirst()
+            .orElse(null);
+
+      if (existing == null) {
+         picked.add(new Picked(selProd, qty, null));
+      } else {
+         existing.quantity = qty;
+         selectedTable.refresh();
+      }
+
+      quantityField.clear();
    }
 
    @FXML

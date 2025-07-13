@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.AgreementEditController"
+            prefWidth="800" prefHeight="600">
+
+   <children>
+      <VBox spacing="15"
+            AnchorPane.topAnchor="0"
+            AnchorPane.bottomAnchor="0"
+            AnchorPane.leftAnchor="0"
+            AnchorPane.rightAnchor="0">
+         
+         <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+         </padding>
+
+         <!-- Title -->
+         <Label text="Edit Agreement" styleClass="dialog-title"/>
+
+         <!-- Two-column form + BOQ section -->
+         <GridPane hgap="10" vgap="10">
+            <columnConstraints>
+               <!-- labels column -->
+               <ColumnConstraints minWidth="120"/>
+               <!-- fields + BOQ section span -->
+               <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <!-- 1. Supplier (readonly) -->
+            <Label text="Supplier:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="supplierCombo" 
+                      GridPane.rowIndex="0" GridPane.columnIndex="1" 
+                      disable="true"/>
+
+            <!-- 2. Agreement ID (readonly) -->
+            <Label text="Agreement ID:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="agreementIdField"
+                       GridPane.rowIndex="1" GridPane.columnIndex="1"
+                       editable="false"/>
+
+            <!-- 3. Start Date -->
+            <Label text="Start Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="startDatePicker" 
+                        GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <!-- 4. End Date -->
+            <Label text="End Date:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="endDatePicker" 
+                        GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <!-- 5. BOQ Label -->
+            <Label text="Bill of Quantities:" 
+                   GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+
+            <!-- 6. BOQ HBox spanning both columns -->
+            <HBox spacing="10"
+                  GridPane.rowIndex="5" 
+                  GridPane.columnIndex="0" 
+                  GridPane.columnSpan="2"
+                  HBox.hgrow="ALWAYS">
+
+               <!-- a) Left pane: search + available products, grows -->
+               <VBox spacing="5" 
+                     VBox.vgrow="ALWAYS" 
+                     HBox.hgrow="ALWAYS">
+                  <TextField fx:id="productSearchField" 
+                             promptText="Search products…"/>
+                  <ListView fx:id="availableProductsList" 
+                            prefHeight="300" prefWidth="300"/>
+               </VBox>
+
+               <!-- b) Add/Remove buttons -->
+               <VBox spacing="10" alignment="CENTER">
+                  <Button fx:id="addLineBtn"    text="Add →"    onAction="#onAddLine"/>
+                  <Button fx:id="removeLineBtn" text="← Remove" onAction="#onRemoveLine"/>
+               </VBox>
+
+               <!-- c) BOQ table: fixed width -->
+               <TableView fx:id="selectedLinesTable"
+                          prefHeight="300" prefWidth="350"
+                          editable="true"
+                          HBox.hgrow="NEVER">
+                  <columns>
+                     <TableColumn fx:id="colLineId"   text="Line #"     prefWidth="50"  editable="false"/>
+                     <TableColumn fx:id="colProduct"  text="Product"    prefWidth="160" editable="false"/>
+                     <TableColumn fx:id="colQuantity" text="Qty"        prefWidth="50"/>
+                     <TableColumn fx:id="colDiscount" text="Discount %" prefWidth="70"/>
+                  </columns>
+               </TableView>
+
+               <!-- d) Spacer to push everything left -->
+               <Pane HBox.hgrow="ALWAYS"/>
+            </HBox>
+         </GridPane>
+
+         <!-- Save / Cancel -->
+         <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Cancel" onAction="#onCancel" styleClass="secondary-button"/>
+            <Button text="Save"   onAction="#onSave"   styleClass="primary-button"/>
+         </HBox>
+      </VBox>
+   </children>
+</AnchorPane>

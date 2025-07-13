@@ -22,6 +22,8 @@ public class SuppliersMainController {
    @FXML
    private Button suppliersBtn;
    @FXML
+   private Button agreementsBtn;
+   @FXML
    private Button ordersBtn;
    @FXML
    private Button productsBtn;
@@ -37,10 +39,12 @@ public class SuppliersMainController {
       suppliersBtn.setOnAction(_ -> loadSection(
             "Suppliers List",
             ScreensEnum.SUPPLIERS_LIST.getFxmlPath()));
+      agreementsBtn.setOnAction(_ -> loadSection(
+            "Agreements List",
+            ScreensEnum.SUPPLIERS_AGREEMENTS.getFxmlPath()));
       ordersBtn.setOnAction(_ -> loadSection(
             "Orders List",
             ScreensEnum.SUPPLIERS_ORDERS.getFxmlPath()));
-
       // next buttons are not implemented yet, show an alert
       productsBtn.setOnAction(_ -> loadSection(
             "Products List",
@@ -70,9 +74,16 @@ public class SuppliersMainController {
                controller.setAgreementService(components.getAgreementService());
                return controller;
             }
+
             if (type == SuppliersListController.class) {
                SuppliersListController ctrl = new SuppliersListController();
                ctrl.setSupplierService(components.getSupplierService());
+               ctrl.setAgreementService(components.getAgreementService());
+               return ctrl;
+            }
+
+            if (type == AgreementsController.class) {
+               AgreementsController ctrl = new AgreementsController();
                ctrl.setAgreementService(components.getAgreementService());
                return ctrl;
             }

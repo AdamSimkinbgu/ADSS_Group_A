@@ -82,12 +82,36 @@ public class AgreementService extends BaseService {
       }
    }
 
-   public ServiceResponse<?> getAllAgreements(String json) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<List<AgreementDTO>> getAllAgreements() {
+      try {
+         List<AgreementDTO> agreements = supplierController.getAllAgreements();
+         if (agreements.isEmpty()) {
+            return ServiceResponse.fail(List.of("No agreements found"));
+         }
+         return ServiceResponse.ok(agreements);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve agreements: " + e.getMessage()));
+      }
    }
 
-   public ServiceResponse<?> checkAgreementExists(String lookupJson) {
-      return ServiceResponse.fail(List.of("Not implemented"));
+   public ServiceResponse<?> checkAgreementExists(int agreementID) {
+      if (agreementID < 0) {
+         return ServiceResponse.fail(List.of("Agreement ID must be a positive integer"));
+      }
+      try {
+         boolean exists = supplierController.checkAgreementExists(agreementID);
+         if (exists) {
+            return ServiceResponse.ok("Agreement exists");
+         } else {
+            return ServiceResponse.fail(List.of("Agreement not found for ID: " + agreementID));
+         }
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to check agreement existence: " + e.getMessage()));
+      }
    }
 
    public ServiceResponse<List<AgreementDTO>> getAgreementsBySupplierId(int supplierId) {

@@ -30,6 +30,7 @@
       </padding>
       <Button fx:id="dashboardBtn"   text="Dashboard"     styleClass="nav-button"/>
       <Button fx:id="suppliersBtn"   text="Suppliers List" styleClass="nav-button"/>
+      <Button fx:id="agreementsBtn"  text="Agreements"    styleClass="nav-button"/>
       <Button fx:id="ordersBtn"      text="Orders"         styleClass="nav-button"/>
       <Button fx:id="productsBtn"    text="Products"       styleClass="nav-button"/>
       <Pane VBox.vgrow="ALWAYS"/>
@@ -51,7 +52,7 @@
   </center>
   <bottom>
     <HBox styleClass="footer-bar" spacing="10" alignment="CENTER">
-      <Label text="Suppliers Module by Adam Simkin &amp; Doron Barski" />
+      <Label text="Suppliers Module by Adam Simkin" />
       <Pane HBox.hgrow="ALWAYS" />
     </HBox>
   </bottom>

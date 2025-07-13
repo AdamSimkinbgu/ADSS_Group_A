@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SupplierProductsController"
       styleClass="content-container"
@@ -14,49 +14,51 @@
   </padding>
 
   <!-- Suppliers Section -->
-  <HBox spacing="10" alignment="CENTER_LEFT">
+  <VBox spacing="10" alignment="CENTER_LEFT">
     <Label text="Suppliers" styleClass="section-title"/>
     <Pane HBox.hgrow="ALWAYS"/>
     <Button fx:id="refreshSuppliersBtn"
             text="Refresh/Deselect"
             styleClass="secondary-button"
             onAction="#onRefreshSuppliers"/>
-  </HBox>
 
-  <TableView fx:id="suppliersTable" prefHeight="180">
-    <columns>
-      <TableColumn fx:id="supColId"     text="ID"     prefWidth="80"/>
-      <TableColumn fx:id="supColName"   text="Name"   prefWidth="200"/>
-      <TableColumn fx:id="supColAction" text="Action" prefWidth="120"/>
-    </columns>
-  </TableView>
+    <TableView fx:id="suppliersTable" prefHeight="600">
+      <columns>
+        <TableColumn fx:id="supColId"     text="ID"     prefWidth="80"/>
+        <TableColumn fx:id="supColName"   text="Name"   prefWidth="145"/>
+        <TableColumn fx:id="supColAction" text="Action" prefWidth="80"/>
+      </columns>
+    </TableView>
+  </VBox>
 
   <!-- Products Section -->
-  <HBox spacing="10" alignment="CENTER_LEFT">
-    <Label text="Products for Supplier:"/>
-    <Label fx:id="selectedSupplierLabel" text="(none)" styleClass="subtitle"/>
-    <Pane HBox.hgrow="ALWAYS"/>
-    <Button fx:id="refreshProductsBtn"
-            text="Refresh"
-            styleClass="secondary-button"
-            onAction="#onRefreshProducts"/>
-    <Button fx:id="addProductBtn"
-            text="Add Product"
-            styleClass="primary-button"
-            onAction="#onAddProduct"/>
-  </HBox>
+  <VBox spacing="10" alignment="CENTER_LEFT">
+    <HBox spacing="10" alignment="CENTER_LEFT">
+      <Label text="Products for Supplier:"/>
+      <Label fx:id="selectedSupplierLabel" text="(none)" styleClass="subtitle"/>
+      <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshProductsBtn"
+                text="Refresh"
+                styleClass="secondary-button"
+                onAction="#onRefreshProducts"/>
+        <Button fx:id="addProductBtn"
+                text="Add Product"
+                styleClass="primary-button"
+                onAction="#onAddProduct"/>
+    </HBox>
 
-  <TableView fx:id="productsTable" prefHeight="300">
-    <columns>
-      <TableColumn fx:id="colProductId"      text="Prod ID"       prefWidth="60"/>
-      <TableColumn fx:id="colCatalogNumber"  text="Catalog #"     prefWidth="100"/>
-      <TableColumn fx:id="colName"           text="Name"          prefWidth="180"/>
-      <TableColumn fx:id="colPrice"          text="Price"         prefWidth="80"/>
-      <TableColumn fx:id="colWeight"         text="Weight"        prefWidth="80"/>
-      <TableColumn fx:id="colExpires"        text="Expires"       prefWidth="80"/>
-      <TableColumn fx:id="colManufacturer"   text="Manufacturer"  prefWidth="120"/>
-      <TableColumn fx:id="colProdActions"    text="Actions"       prefWidth="150"/>
-    </columns>
-  </TableView>
+    <TableView fx:id="productsTable" prefHeight="643">
+      <columns>
+        <TableColumn fx:id="colProductId"      text="Prod ID"       prefWidth="60"/>
+        <TableColumn fx:id="colCatalogNumber"  text="Catalog #"     prefWidth="100"/>
+        <TableColumn fx:id="colName"           text="Name"          prefWidth="120"/>
+        <TableColumn fx:id="colPrice"          text="Price"         prefWidth="80"/>
+        <TableColumn fx:id="colWeight"         text="Weight"        prefWidth="80"/>
+        <TableColumn fx:id="colExpires"        text="Expires"       prefWidth="80"/>
+        <TableColumn fx:id="colManufacturer"   text="Manufacturer"  prefWidth="120"/>
+        <TableColumn fx:id="colProdActions"    text="Actions"       prefWidth="150"/>
+      </columns>
+    </TableView>
+  </VBox>
 
-</VBox>
+</HBox>
