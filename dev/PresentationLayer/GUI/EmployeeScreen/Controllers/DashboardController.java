@@ -67,12 +67,6 @@ public class DashboardController {
     private Label employeeTrendLabel;
 
     @FXML
-    private Label activeShiftsLabel;
-
-    @FXML
-    private Label shiftTrendLabel;
-
-    @FXML
     private Label branchesLabel;
 
     @FXML
@@ -83,21 +77,6 @@ public class DashboardController {
 
     @FXML
     private BarChart<String, Number> shiftCoverageChart;
-
-    @FXML
-    private TableView<ActivityEntry> recentActivityTable;
-
-    @FXML
-    private TableColumn<ActivityEntry, String> activityDateColumn;
-
-    @FXML
-    private TableColumn<ActivityEntry, String> activityTypeColumn;
-
-    @FXML
-    private TableColumn<ActivityEntry, String> activityDescriptionColumn;
-
-    @FXML
-    private TableColumn<ActivityEntry, String> activityUserColumn;
 
     /**
      * Initializes the controller.
@@ -111,12 +90,6 @@ public class DashboardController {
         periodSelector.getSelectionModel().selectFirst();
         periodSelector.setOnAction(event -> refreshDashboard());
 
-        // Initialize table columns
-        activityDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        activityTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        activityDescriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        activityUserColumn.setCellValueFactory(new PropertyValueFactory<>("user"));
-
         // Data will be loaded when services are set
     }
 
@@ -127,7 +100,6 @@ public class DashboardController {
     public void refreshDashboard() {
         loadStatistics();
         loadCharts();
-        loadRecentActivity();
     }
 
     /**
@@ -140,8 +112,6 @@ public class DashboardController {
                 // Use mock data if services are not set
                 totalEmployeesLabel.setText("42");
                 employeeTrendLabel.setText("+5% from last month");
-                activeShiftsLabel.setText("12");
-                shiftTrendLabel.setText("+2% from last month");
                 branchesLabel.setText("5");
                 rolesLabel.setText("8");
                 return;
@@ -166,23 +136,6 @@ public class DashboardController {
                 employeeTrendLabel.setText("New employees this month");
             }
 
-            // Get shift count from the database
-            String shiftData = shiftService.getAllShifts(doneBy);
-            // Parse the JSON to count shifts
-            int shiftCount = shiftData.split("\"id\"").length - 1;
-            activeShiftsLabel.setText(String.valueOf(shiftCount));
-
-            // Calculate shift trend (comparing to previous month)
-            // In a real implementation, we would query historical data to calculate this
-            // For now, we'll use a placeholder calculation
-            int previousMonthShiftCount = shiftCount - 1; // Placeholder calculation
-            if (previousMonthShiftCount > 0) {
-                double trend = ((double) shiftCount / previousMonthShiftCount - 1) * 100;
-                String trendText = String.format("%+.1f%% from last month", trend);
-                shiftTrendLabel.setText(trendText);
-            } else {
-                shiftTrendLabel.setText("New shifts this month");
-            }
 
             // Get branch count
             // In a real implementation, we would have a method to get all branches
@@ -223,8 +176,6 @@ public class DashboardController {
             // Use mock data if there's an error
             totalEmployeesLabel.setText("42");
             employeeTrendLabel.setText("+5% from last month");
-            activeShiftsLabel.setText("12");
-            shiftTrendLabel.setText("+2% from last month");
             branchesLabel.setText("5");
             rolesLabel.setText("8");
         }
@@ -372,170 +323,6 @@ public class DashboardController {
         shiftCoverageChart.getData().add(series);
     }
 
-    /**
-     * Loads recent activity data for the dashboard.
-     */
-    private void loadRecentActivity() {
-        try {
-            if (employeeService == null || shiftService == null) {
-                System.out.println("Services not set in DashboardController");
-                // Use mock data if services are not set
-                loadMockActivityData();
-                return;
-            }
-
-            // Load real data from the database
-            long doneBy = 123456789; // Using a default user ID
-
-            // Create a list to store activity entries
-            List<ActivityEntry> activityEntries = new ArrayList<>();
-
-            // Get recent employee changes
-            // In a real implementation, we would have a method to get recent changes
-            // For now, we'll extract some information from the employee data
-            String[] employeeData = employeeService.getAllEmployees();
-
-            // Sort employees by most recently updated (based on data in the JSON)
-            // This is a simplified approach - in a real implementation, we would parse the
-            // JSON properly
-            Arrays.sort(employeeData, (e1, e2) -> {
-                // Extract update date from employee JSON if available
-                // For simplicity, we'll just compare the length of the JSON as a proxy for
-                // recency
-                return e2.length() - e1.length();
-            });
-
-            // Add the most recent employee changes to the activity list
-            int employeeCount = Math.min(3, employeeData.length);
-            for (int i = 0; i < employeeCount; i++) {
-                String employeeJson = employeeData[i];
-
-                // Extract employee name from JSON
-                String employeeName = "Unknown Employee";
-                int nameIndex = employeeJson.indexOf("\"firstName\":");
-                if (nameIndex >= 0) {
-                    int startIndex = nameIndex + 13; // Length of "\"firstName\":"
-                    int endIndex = employeeJson.indexOf("\"", startIndex + 1);
-                    if (endIndex > startIndex) {
-                        String firstName = employeeJson.substring(startIndex + 1, endIndex);
-
-                        // Try to get last name too
-                        int lastNameIndex = employeeJson.indexOf("\"lastName\":");
-                        if (lastNameIndex >= 0) {
-                            int lastNameStartIndex = lastNameIndex + 12; // Length of "\"lastName\":"
-                            int lastNameEndIndex = employeeJson.indexOf("\"", lastNameStartIndex + 1);
-                            if (lastNameEndIndex > lastNameStartIndex) {
-                                String lastName = employeeJson.substring(lastNameStartIndex + 1, lastNameEndIndex);
-                                employeeName = firstName + " " + lastName;
-                            } else {
-                                employeeName = firstName;
-                            }
-                        } else {
-                            employeeName = firstName;
-                        }
-                    }
-                }
-
-                // Create an activity entry for this employee
-                // Use a random recent date for demonstration
-                LocalDateTime activityDate = LocalDateTime.now().minusDays(i);
-                activityEntries.add(new ActivityEntry(
-                        activityDate,
-                        "Employee",
-                        "Updated employee: " + employeeName,
-                        "Admin"));
-            }
-
-            // Get recent shift changes
-            String shiftData = shiftService.getAllShifts(doneBy);
-
-            // Parse shift data to extract recent shifts
-            // This is a simplified approach - in a real implementation, we would parse the
-            // JSON properly
-            String[] shiftEntries = shiftData.split("\\{\"id\":");
-
-            // Sort shifts by ID (assuming higher IDs are more recent)
-            // This is a simplified approach - in a real implementation, we would sort by
-            // date
-            Arrays.sort(shiftEntries, (s1, s2) -> {
-                try {
-                    // Extract ID from the beginning of each entry
-                    int id1 = s1.isEmpty() ? 0 : Integer.parseInt(s1.substring(0, s1.indexOf(",")));
-                    int id2 = s2.isEmpty() ? 0 : Integer.parseInt(s2.substring(0, s2.indexOf(",")));
-                    return id2 - id1; // Sort in descending order
-                } catch (Exception e) {
-                    return 0;
-                }
-            });
-
-            // Add the most recent shift changes to the activity list
-            int shiftCount = Math.min(3, shiftEntries.length - 1); // Skip the first empty entry
-            for (int i = 1; i <= shiftCount; i++) { // Start from 1 to skip the first empty entry
-                String shiftEntry = shiftEntries[i];
-
-                // Extract shift date from JSON
-                String shiftDate = "Unknown Date";
-                int dateIndex = shiftEntry.indexOf("\"shiftDate\":");
-                if (dateIndex >= 0) {
-                    int startIndex = dateIndex + 13; // Length of "\"shiftDate\":"
-                    int endIndex = shiftEntry.indexOf("\"", startIndex + 1);
-                    if (endIndex > startIndex) {
-                        shiftDate = shiftEntry.substring(startIndex + 1, endIndex);
-                    }
-                }
-
-                // Extract shift type from JSON
-                String shiftType = "Unknown Type";
-                int typeIndex = shiftEntry.indexOf("\"shiftType\":");
-                if (typeIndex >= 0) {
-                    int startIndex = typeIndex + 13; // Length of "\"shiftType\":"
-                    int endIndex = shiftEntry.indexOf("\"", startIndex + 1);
-                    if (endIndex > startIndex) {
-                        shiftType = shiftEntry.substring(startIndex + 1, endIndex);
-                    }
-                }
-
-                // Create an activity entry for this shift
-                // Use a random recent date for demonstration
-                LocalDateTime activityDate = LocalDateTime.now().minusDays(i + 2);
-                activityEntries.add(new ActivityEntry(
-                        activityDate,
-                        "Shift",
-                        "Created " + shiftType + " shift for " + shiftDate,
-                        "Manager"));
-            }
-
-            // Sort all activity entries by date (most recent first)
-            activityEntries.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
-
-            // Update the table with the activity entries
-            recentActivityTable.setItems(FXCollections.observableArrayList(activityEntries));
-
-        } catch (Exception e) {
-            System.err.println("Error loading activity data: " + e.getMessage());
-            e.printStackTrace();
-
-            // Use mock data if there's an error
-            loadMockActivityData();
-        }
-    }
-
-    /**
-     * Loads mock activity data for the dashboard.
-     */
-    private void loadMockActivityData() {
-        ObservableList<ActivityEntry> activityData = FXCollections.observableArrayList(
-                new ActivityEntry(LocalDateTime.now().minusDays(1), "Employee", "Added new employee: John Doe",
-                        "Admin"),
-                new ActivityEntry(LocalDateTime.now().minusDays(2), "Shift", "Created shift for Monday morning",
-                        "Manager"),
-                new ActivityEntry(LocalDateTime.now().minusDays(3), "Role", "Added new role: Cashier", "Admin"),
-                new ActivityEntry(LocalDateTime.now().minusDays(4), "Employee", "Updated employee: Jane Smith", "HR"),
-                new ActivityEntry(LocalDateTime.now().minusDays(5), "Shift", "Assigned 5 employees to shift",
-                        "Manager"));
-
-        recentActivityTable.setItems(activityData);
-    }
 
     /**
      * Shows the form to add a new employee.
@@ -927,38 +714,6 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Inner class to represent an activity entry in the recent activity table.
-     */
-    public static class ActivityEntry {
-        private final String date;
-        private final String type;
-        private final String description;
-        private final String user;
-
-        public ActivityEntry(LocalDateTime dateTime, String type, String description, String user) {
-            this.date = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-            this.type = type;
-            this.description = description;
-            this.user = user;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getUser() {
-            return user;
-        }
-    }
 
     /**
      * Inner class to represent a role entry in the roles table.

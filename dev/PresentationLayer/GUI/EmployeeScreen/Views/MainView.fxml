@@ -27,7 +27,6 @@
             <Button text="Shifts" onAction="#showShifts" styleClass="nav-button"/>
             <Button text="Availability" onAction="#showAvailability" styleClass="nav-button"/>
             <Button text="Roles" onAction="#showRoles" styleClass="nav-button"/>
-            <Button text="Reports" onAction="#showReports" styleClass="nav-button"/>
         </VBox>
     </left>
 

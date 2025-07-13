@@ -9,26 +9,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="">
+    <list default="true" id="889a066a-6ba6-4b5b-bac9-fce50c423b0a" name="Changes" comment="Enhance AvailabilityController with logging and branch loading improvements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/DTOs/BranchDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/DTOs/BranchDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/DomainLayer/EmployeeSubModule/EmployeeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/DomainLayer/EmployeeSubModule/EmployeeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/DomainLayer/EmployeeSubModule/ShiftController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/DomainLayer/EmployeeSubModule/ShiftController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/AvailabilityController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/AvailabilityController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/EmployeeListController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/EmployeeListController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/MainViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/MainViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/DashboardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/ShiftCalendarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/ShiftCalendarController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/AvailabilityView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/AvailabilityView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/EmployeeListView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/EmployeeListView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/DashboardView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/DashboardView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/MainView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/MainView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/ShiftCalendarView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Views/ShiftCalendarView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/ServiceLayer/EmployeeSubModule/EmployeeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/ServiceLayer/EmployeeSubModule/EmployeeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/ServiceLayer/EmployeeSubModule/ShiftService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dev/ServiceLayer/EmployeeSubModule/ShiftService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/superLee.db" beforeDir="false" afterPath="$PROJECT_DIR$/superLee.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/DomainLayer/AuthorisationControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/DomainLayer/EmployeeControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/DomainLayer/ShiftControllerTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/ServiceLayer/EmployeeServiceTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,7 +174,8 @@
       <updated>1742720480414</updated>
       <workItem from="1749193842918" duration="77000" />
       <workItem from="1749193935263" duration="52987000" />
-      <workItem from="1752332798555" duration="5821000" />
+      <workItem from="1752332798555" duration="6110000" />
+      <workItem from="1752417699515" duration="6287000" />
     </task>
     <task id="LOCAL-00001" summary="start the skeliton">
       <option name="closed" value="true" />
@@ -412,7 +401,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745697939691</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Enhance AvailabilityController with logging and branch loading improvements">
+      <option name="closed" value="true" />
+      <created>1752338733029</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1752338733029</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -474,7 +471,8 @@
     <MESSAGE value="jar1" />
     <MESSAGE value="test" />
     <MESSAGE value="jar" />
-    <option name="LAST_COMMIT_MESSAGE" value="jar" />
+    <MESSAGE value="Enhance AvailabilityController with logging and branch loading improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Enhance AvailabilityController with logging and branch loading improvements" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -491,13 +489,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/ShiftCalendarController.java</url>
-          <line>1099</line>
+          <line>1070</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/ShiftCalendarController.java</url>
-          <line>752</line>
-          <option name="timeStamp" value="24" />
+          <line>316</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/AvailabilityController.java</url>
+          <line>364</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/dev/PresentationLayer/GUI/EmployeeScreen/Controllers/AvailabilityController.java</url>
+          <line>363</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

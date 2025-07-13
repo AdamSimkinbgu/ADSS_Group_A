@@ -1,5 +1,6 @@
 package PresentationLayer.GUI.EmployeeScreen.Controllers;
 
+import DTOs.ShiftDTO;
 import ServiceLayer.EmployeeSubModule.EmployeeService;
 import ServiceLayer.EmployeeSubModule.ShiftService;
 import javafx.collections.FXCollections;
@@ -23,6 +24,8 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+
 
 /**
  * Controller for the Availability view.
@@ -91,7 +94,7 @@ public class AvailabilityController {
     private ShiftData selectedShift;
     private List<ShiftData> allShifts = new ArrayList<>();
     private List<ShiftData> filteredShifts = new ArrayList<>();
-    private String selectedBranch = "All Branches";
+    private String selectedBranch = "Select Branch";
     private long currentEmployeeId = 123456789; // Default employee ID, should be updated with actual logged-in user
 
     // Map to track pending availability changes: shift ID -> new availability state
@@ -317,80 +320,53 @@ public class AvailabilityController {
     }
 
     /**
-     * Creates sample shifts for demonstration purposes.
-     */
-    private void createSampleShifts() {
-        // Sample shifts for the current week
-        for (int day = 0; day < 7; day++) {
-            LocalDate date = currentWeekStart.plusDays(day);
-
-            // Morning shift
-            Map<String, Integer> morningRoles = new HashMap<>();
-            morningRoles.put("Cashier", 2);
-            morningRoles.put("Security", 1);
-
-            Map<String, Integer> morningAssignments = new HashMap<>();
-            morningAssignments.put("Cashier", 1);
-            morningAssignments.put("Security", 0);
-
-            Map<String, Set<Long>> morningEmployees = new HashMap<>();
-            morningEmployees.put("Cashier", new HashSet<>(Arrays.asList(123456789L)));
-            morningEmployees.put("Security", new HashSet<>());
-
-            ShiftData morningShift = new ShiftData(
-                    "1" + day,
-                    date,
-                    "Morning",
-                    "08:00 - 16:00",
-                    "Branch 1",
-                    "Open",
-                    1,
-                    morningRoles,
-                    morningAssignments,
-                    morningEmployees);
-
-            // Evening shift
-            Map<String, Integer> eveningRoles = new HashMap<>();
-            eveningRoles.put("Cashier", 2);
-            eveningRoles.put("Security", 1);
-
-            Map<String, Integer> eveningAssignments = new HashMap<>();
-            eveningAssignments.put("Cashier", 0);
-            eveningAssignments.put("Security", 1);
-
-            Map<String, Set<Long>> eveningEmployees = new HashMap<>();
-            eveningEmployees.put("Cashier", new HashSet<>());
-            eveningEmployees.put("Security", new HashSet<>(Arrays.asList(987654321L)));
-
-            ShiftData eveningShift = new ShiftData(
-                    "2" + day,
-                    date,
-                    "Evening",
-                    "16:00 - 00:00",
-                    "Branch 2",
-                    "Open",
-                    1,
-                    eveningRoles,
-                    eveningAssignments,
-                    eveningEmployees);
-
-            allShifts.add(morningShift);
-            allShifts.add(eveningShift);
-        }
-    }
-
-    /**
      * Filters shifts by branch.
      * 
      * @param branch The branch to filter by, or "All Branches" for no filtering
      */
     private void filterShiftsByBranch(String branch) {
         if (branch == null || branch.equals("All Branches")) {
+            if (allShifts.isEmpty()) {
+                logger.info("Showing all shifts (no branch filter applied)");
+                // Load all shifts from the service
+                try {
+                    String allShiftsDTO = shiftService.getAllShifts(currentEmployeeId);
+                    if (allShiftsDTO == null || allShiftsDTO.isEmpty()) {
+                        logger.info("No shifts available for the employee");
+                        allShifts = Collections.emptyList();
+                    } else {
+                        // Deserialize the shifts
+                        List<ShiftDTO> shiftList = Arrays.asList(ShiftDTO.deserialize(shiftService.getAllShifts(currentEmployeeId)));
+                        allShifts = shiftList.stream()
+                                .map(shiftDTO -> new ShiftData(
+                                        String.valueOf(shiftDTO.getId()),
+                                        shiftDTO.getShiftDate(),
+                                        String.valueOf(shiftDTO.getShiftType()),
+                                        shiftDTO.getHours(),
+                                        String.valueOf(shiftDTO.getBranchId()),
+                                        "",
+                                        0,
+                                        shiftDTO.getRolesRequired(),
+                                        null,
+                                        shiftDTO.getAssignedEmployees()))
+                                .collect(Collectors.toList());
+
+                    }
+                } catch (Exception e) {
+                    logger.severe("Failed to load shifts: " + e.getMessage());
+                    showError("Error", "Failed to load shifts: " + e.getMessage());
+                    return;
+                }
+            } else {
+                logger.info("Showing all shifts (" + allShifts.size() + " shifts in total)");
+            }
             filteredShifts = new ArrayList<>(allShifts);
         } else {
+            logger.info("Filtering shifts by branch: " + branch + " (" + allShifts.size() + " shifts in total)");
             filteredShifts = allShifts.stream()
-                    .filter(shift -> shift.getBranch().equals(branch))
+                    .filter(shift -> shift.getId().equals(branch.replace(" ","").split("-")[0]))
                     .collect(Collectors.toList());
+            logger.info("Filtered shifts count: " + filteredShifts.size());
         }
     }
 

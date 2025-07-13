@@ -1,5 +1,6 @@
 package PresentationLayer.GUI.EmployeeScreen.Controllers;
 
+import DTOs.EmployeeDTO;
 import DTOs.RoleDTO;
 import DTOs.ShiftDTO;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,6 +26,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,23 +238,6 @@ public class ShiftCalendarController {
             dayLabel.setMaxWidth(Double.MAX_VALUE);
             calendarGrid.add(dayLabel, col, 0);
         }
-
-        // Add row headers (shift types) - rotated 90 degrees counter-clockwise
-        String[] shiftTypes = { "Morning", "Evening" };
-        for (int row = 1; row <= shiftTypes.length; row++) {
-            Label typeLabel = new Label(shiftTypes[row - 1]);
-            typeLabel.getStyleClass().add("calendar-header");
-            typeLabel.setRotate(-90); // Rotate 90 degrees counter-clockwise for bottom-to-top text
-            calendarGrid.add(typeLabel, 0, row);
-        }
-
-        // Add empty cells
-        for (int col = 1; col <= 7; col++) {
-            for (int row = 1; row <= shiftTypes.length; row++) {
-                StackPane cell = createEmptyCell();
-                calendarGrid.add(cell, col, row);
-            }
-        }
     }
 
     /**
@@ -294,20 +279,22 @@ public class ShiftCalendarController {
 
         try {
             if (shiftService == null) {
+                log.error("ShiftService not set in ShiftCalendarController");
                 System.out.println("ShiftService not set in ShiftCalendarController");
-                // Don't use mock data, just show empty calendar
             } else {
-                // Get real data from the database
                 long doneBy = 123456789; // Using a default user ID
 
-                // Get shifts for the current week using the Week utility class
                 Util.Week currentWeek = Util.Week.from(currentWeekStart);
                 Set<ShiftDTO> shifts = shiftService.getShiftsByWeek(doneBy, currentWeek);
+
+                System.out.println("Retrieved " + shifts.size() + " shifts from database");
 
                 // Process each shift
                 for (ShiftDTO shiftDTO : shifts) {
                     LocalDate shiftDate = shiftDTO.getShiftDate();
                     if (shiftDate != null) {
+                        log.debug("Processing shift: ID=" + shiftDTO.getId() + ", Date=" + shiftDate + ", Type=" + shiftDTO.getShiftType());
+
                         // Map shift type to display type
                         String displayType;
                         String timeRange;
@@ -327,7 +314,7 @@ public class ShiftCalendarController {
 
                         // Map branch ID to branch name
                         long branchId = shiftDTO.getBranchId();
-                        String branchName = "Branch " + branchId;
+                        String branchIdstr = String.valueOf(branchId);
 
                         // Map open status to display status
                         String status = shiftDTO.isOpen() ? "Open" : "Closed";
@@ -351,7 +338,7 @@ public class ShiftCalendarController {
                                 shiftDate,
                                 displayType,
                                 timeRange,
-                                branchName,
+                                branchIdstr,
                                 status,
                                 employeeCount,
                                 shiftDTO.getRolesRequired(),
@@ -360,18 +347,23 @@ public class ShiftCalendarController {
 
                         // Add to shifts map
                         shiftsMap.put(shift.getId(), shift);
+                    } else {
+                        log.warn("Skipping shift with null date: ID=" + shiftDTO.getId());
                     }
                 }
+
+                log.info("Processed " + shiftsMap.size() + " valid shifts");
             }
         } catch (Exception e) {
-            System.err.println("Error loading shifts: " + e.getMessage());
+            log.error("Error loading shifts: " + e.getMessage(), e);
             e.printStackTrace();
         }
 
         // Apply branch filter if needed
         String selectedBranch = branchFilterComboBox.getSelectionModel().getSelectedItem();
         if (selectedBranch != null && !selectedBranch.isEmpty()) {
-            filterShiftsByBranch(selectedBranch);
+            int beforeFilter = shiftsMap.size();
+            filterShiftsByBranch(selectedBranch.trim().substring(0, 1));
         }
 
         // Update calendar grid with shifts
@@ -390,7 +382,7 @@ public class ShiftCalendarController {
         Iterator<Map.Entry<String, ShiftData>> iterator = shiftsMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, ShiftData> entry = iterator.next();
-            if (!entry.getValue().getBranch().equals(branch)) {
+            if (!entry.getValue().getBranch().trim().replace("Branch","").replace(" ","").equals(branch)) {
                 iterator.remove();
             }
         }
@@ -434,14 +426,10 @@ public class ShiftCalendarController {
             calendarGrid.add(typeLabel, 0, row);
         }
 
-        // Add empty cells
-        for (int col = 1; col <= 7; col++) {
-            for (int row = 1; row <= 2; row++) {
-                calendarGrid.add(createEmptyCell(), col, row);
-            }
-        }
+        // Create a 2D array to track which cells have shifts
+        boolean[][] hasShift = new boolean[8][3]; // [column][row], 1-indexed to match grid
 
-        // Add shifts to the grid
+        // Add shifts to the grid first
         for (ShiftData shift : shiftsMap.values()) {
             // Calculate column (day of week)
             // Map day of week to column: Sunday=1, Monday=2, ..., Saturday=7
@@ -488,9 +476,21 @@ public class ShiftCalendarController {
                     row = 1;
             }
 
+            // Mark this cell as having a shift
+            hasShift[column][row] = true;
+
             // Create shift cell
             StackPane cell = createShiftCell(shift);
             calendarGrid.add(cell, column, row);
+        }
+
+        // Add empty cells only where there are no shifts
+        for (int col = 1; col <= 7; col++) {
+            for (int row = 1; row <= 2; row++) {
+                if (!hasShift[col][row]) {
+                    calendarGrid.add(createEmptyCell(), col, row);
+                }
+            }
         }
     }
 
@@ -517,10 +517,6 @@ public class ShiftCalendarController {
         content.setPadding(new Insets(5));
         content.setAlignment(Pos.TOP_LEFT);
 
-        Label typeLabel = new Label(shift.getType());
-        typeLabel.getStyleClass().add("shift-type-label");
-        typeLabel.setStyle("-fx-font-weight: bold;");
-
         Label timeLabel = new Label(shift.getTimeRange());
         timeLabel.getStyleClass().add("shift-time-label");
 
@@ -533,38 +529,8 @@ public class ShiftCalendarController {
         Label employeesLabel = new Label(shift.getEmployeeCount() + " employees assigned");
         employeesLabel.getStyleClass().add("shift-employees-label");
 
-        // Add role information
-        VBox rolesBox = new VBox(2);
-        rolesBox.getStyleClass().add("shift-roles-box");
 
-        // Show up to 3 roles in the cell
-        int roleCount = 0;
-        for (Map.Entry<String, Integer> entry : shift.getRolesRequired().entrySet()) {
-            if (roleCount >= 3) {
-                Label moreLabel = new Label("... and more roles");
-                moreLabel.getStyleClass().add("shift-more-roles-label");
-                rolesBox.getChildren().add(moreLabel);
-                break;
-            }
-
-            String role = entry.getKey();
-            int required = entry.getValue();
-            int assigned = shift.getRoleAssignments().getOrDefault(role, 0);
-
-            Label roleLabel = new Label(role + ": " + assigned + "/" + required);
-            roleLabel.getStyleClass().add("shift-role-label");
-
-            if (assigned < required) {
-                roleLabel.setTextFill(Color.RED);
-            } else {
-                roleLabel.setTextFill(Color.GREEN);
-            }
-
-            rolesBox.getChildren().add(roleLabel);
-            roleCount++;
-        }
-
-        content.getChildren().addAll(typeLabel, timeLabel, branchLabel, statusLabel, employeesLabel, rolesBox);
+        content.getChildren().addAll(timeLabel, branchLabel, statusLabel, employeesLabel);
 
         cell.getChildren().addAll(background, content);
 
@@ -756,7 +722,6 @@ public class ShiftCalendarController {
                 }
             }
         }
-
         assignedEmployeesTable.setItems(employees);
     }
 
@@ -1685,18 +1650,27 @@ public class ShiftCalendarController {
             assignedEmployeeIds.addAll(assignedEmployees.get(role));
         }
 
-        // In a real implementation, get available employees from the service
-        // For now, use some mock data
-        List<EmployeeListItem> mockEmployees = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            long id = 100000000 + i;
-            String name = "Employee " + i;
-            boolean assigned = assignedEmployeeIds.contains(id);
+        List<EmployeeListItem> allEmployees = new ArrayList<>();
+        String[] allEmployeesDTO = employeeService.getAllEmployees();
+        log.info("Retrieved " + (allEmployeesDTO != null ? allEmployeesDTO.length : 0) + " employees");
+        if (allEmployeesDTO != null) {
+            for (String employeeData : allEmployeesDTO) {
+                try {
+                    EmployeeDTO employee = EmployeeDTO.deserialize(employeeData);
+                    long id = employee.getIsraeliId();
+                    String name = employee.getFullName();
+                    boolean assigned = assignedEmployeeIds.contains(id);
 
-            mockEmployees.add(new EmployeeListItem(id, name, assigned));
+                    allEmployees.add(new EmployeeListItem(id, name, assigned));
+                } catch (Exception e) {
+                    System.err.println("Error parsing employee data: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
         }
+        //allEmployees.add(new EmployeeListItem(id, name, assigned));
 
-        employees.addAll(mockEmployees);
+        employees.addAll(allEmployees);
         employeeListView.setItems(employees);
 
         // Set cell factory to show checkboxes
