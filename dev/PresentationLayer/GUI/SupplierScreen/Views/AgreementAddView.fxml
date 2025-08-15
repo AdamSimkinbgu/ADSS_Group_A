@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.AgreementAddController"
+      
+      spacing="15">
+   <padding>
+      <Insets top="20" right="20" bottom="20" left="20"/>
+   </padding>
+  <!-- Title -->
+  <Label text="New Agreement" styleClass="dialog-title"/>
+
+  <!-- Supplier chooser and dates -->
+  <GridPane hgap="10" vgap="10">
+    <columnConstraints>
+      <ColumnConstraints minWidth="100" />
+      <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+
+    <Label text="Supplier:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <ComboBox fx:id="supplierCombo" promptText="Select Supplier" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+    <Label text="Start Date:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <DatePicker fx:id="startDatePicker" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+    <Label text="End Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+    <DatePicker fx:id="endDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+  </GridPane>
+
+  <!-- Bill of Quantities dual-list -->
+  <VBox spacing="5">
+    <HBox spacing="10">
+      <!-- Left: Available products + search -->
+      <VBox spacing="5">
+        <TextField fx:id="prodSearchField" promptText="Search products…"/>
+        <ListView fx:id="availableList" prefWidth="200" prefHeight="200"/>
+      </VBox>
+      <!-- Middle: quantity & discount + buttons -->
+      <VBox spacing="5" alignment="CENTER">
+        <TextField fx:id="quantityField" promptText="Qty (≥1)"/>
+        <TextField fx:id="discountField" promptText="Discount % (0–100)"/>
+        <Button text="Add →" onAction="#onAddItem"/>
+        <Button text="← Remove" onAction="#onRemoveItem"/>
+      </VBox>
+      <!-- Right: Selected items table -->
+      <TableView fx:id="selectedTable" prefWidth="300" prefHeight="200">
+        <columns>
+          <TableColumn fx:id="colLineId" text="Line" prefWidth="50" />
+          <TableColumn fx:id="colProdName" text="Product" prefWidth="150" />
+          <TableColumn fx:id="colQuantity" text="Qty" prefWidth="60" editable="true" />
+          <TableColumn fx:id="colDiscount" text="Disc %" prefWidth="60" editable="true" />
+        </columns>
+      </TableView>
+    </HBox>
+  </VBox>
+
+  <!-- Actions -->
+  <HBox spacing="10" alignment="CENTER_RIGHT">
+    <Button text="Cancel" onAction="#onCancel" styleClass="secondary-button"/>
+    <Button text="Save"   onAction="#onSave"   styleClass="primary-button"/>
+  </HBox>
+</VBox>

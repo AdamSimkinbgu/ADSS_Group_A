@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SuppliersGridController"
+      spacing="10">
+  
+  <padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+  </padding>
+
+  <HBox spacing="10" alignment="CENTER_LEFT">
+    <Label text="Suppliers" styleClass="section-title"/>
+    <Pane HBox.hgrow="ALWAYS"/>
+    <Button fx:id="refreshBtn"
+            text="Refresh"
+            styleClass="secondary-button"
+            onAction="#onRefresh"/>
+  </HBox>
+
+  <TableView fx:id="suppliersTable" prefHeight="500">
+    <columns>
+      <TableColumn fx:id="colId"      text="ID"   prefWidth="80"/>
+      <TableColumn fx:id="colName"    text="Name" prefWidth="200"/>
+      <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
+    </columns>
+  </TableView>
+</VBox>

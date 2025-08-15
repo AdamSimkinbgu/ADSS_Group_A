@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.PeriodicOrderFormController"
+      spacing="15" padding="20">
+
+  <Label text="Periodic Order" styleClass="dialog-title"/>
+
+  <GridPane hgap="10" vgap="10">
+    <columnConstraints>
+      <ColumnConstraints minWidth="120"/>
+      <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
+
+    <Label text="Delivery Day:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <ComboBox fx:id="dayCombo" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+    <Label text="Active:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <CheckBox fx:id="activeCheck" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+    <Label text="Available Products:" GridPane.rowIndex="2" GridPane.columnIndex="0" valignment="TOP"/>
+    <VBox spacing="5" GridPane.rowIndex="2" GridPane.columnIndex="1">
+      <HBox spacing="10">
+        <ListView fx:id="availList" prefHeight="120"/>
+        <VBox spacing="5" alignment="CENTER">
+          <Button text="Add →" onAction="#onAdd"/>
+          <Button text="← Remove" onAction="#onRemove"/>
+        </VBox>
+        <TableView fx:id="selTable" prefHeight="120">
+          <columns>
+            <TableColumn fx:id="pIdCol"     text="ID"        prefWidth="50"/>
+            <TableColumn fx:id="pNameCol"   text="Name"      prefWidth="150"/>
+            <TableColumn fx:id="pQtyCol"    text="Quantity"  prefWidth="80"/>
+          </columns>
+        </TableView>
+      </HBox>
+    </VBox>
+  </GridPane>
+
+  <HBox spacing="10" alignment="CENTER_RIGHT">
+    <Button text="Cancel" onAction="#onCancel" styleClass="secondary-button"/>
+    <Button text="Save"   onAction="#onSave"   styleClass="primary-button"/>
+  </HBox>
+</VBox>

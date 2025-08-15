@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.OrderFormController"
+      spacing="15">
+
+  <padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+  </padding>
+  <Label text="Order Details" styleClass="dialog-title"/>
+  <Label text="WIP: PLEASE TAKE IN MIND THAT YOU NEED TO ORDER TO A LATER DATE THAN TODAY" styleClass="dialog-subtitle"/>
+
+  <GridPane hgap="10" vgap="10">
+    <columnConstraints>
+      <ColumnConstraints minWidth="100"/>
+      <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
+
+    <Label text="Order Date:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <DatePicker fx:id="orderDatePicker" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+    <!-- Dual-list product selector -->
+    <Label text="Available Products:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="1">
+      <HBox spacing="10">
+        <ListView fx:id="availableList" prefHeight="250" prefWidth="400"/>
+        <VBox spacing="10" alignment="CENTER">
+          <Label text="Qty:"/>
+          <TextField fx:id="quantityField"
+                    promptText="e.g. 10"
+                    prefWidth="65"/>
+          <Button text="Add →" onAction="#onAddProduct"/>
+          <Button text="← Remove" onAction="#onRemoveProduct"/>
+        </VBox>
+
+        <TableView fx:id="selectedTable" prefHeight="250" prefWidth="400">
+          <columns>
+            <TableColumn fx:id="selProdIdCol"    text="ID"        prefWidth="50"/>
+            <TableColumn fx:id="selProdNameCol"  text="Name"      prefWidth="150"/>
+            <TableColumn fx:id="selQtyCol"       text="Quantity"  prefWidth="80" editable="true"/>
+          </columns>
+        </TableView>
+      </HBox>
+    </VBox>
+  </GridPane>
+
+  <HBox spacing="10" alignment="CENTER_RIGHT">
+    <Button text="Cancel" onAction="#onCancel" styleClass="secondary-button"/>
+    <Button text="Save"   onAction="#onSave"   styleClass="primary-button"/>
+  </HBox>
+</VBox>

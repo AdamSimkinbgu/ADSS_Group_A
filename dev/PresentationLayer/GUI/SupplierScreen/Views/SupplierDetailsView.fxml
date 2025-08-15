@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SupplierDetailsController"
+            fitToWidth="true" prefWidth="700" prefHeight="850">
+  <content>
+    <VBox spacing="15" styleClass="content-container">
+      <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+      </padding>
+
+      <Label text="Supplier Details" styleClass="section-title"/>
+
+      <!-- Basic Info -->
+      <GridPane hgap="10" vgap="10">
+        <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="idLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="nameLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+      </GridPane>
+
+      <!-- Contacts Table -->
+      <Label text="Contacts" styleClass="section-subtitle"/>
+      <TableView fx:id="contactsTable" prefHeight="150">
+        <columns>
+          <TableColumn fx:id="contactNameColumn"   text="Name"   prefWidth="150"/>
+          <TableColumn fx:id="contactPhoneColumn"  text="Phone"  prefWidth="120"/>
+          <TableColumn fx:id="contactEmailColumn"  text="Email"  prefWidth="200"/>
+        </columns>
+      </TableView>
+
+      <!-- Agreements Table -->
+      <Label text="Agreements" styleClass="section-subtitle"/>
+      <TableView fx:id="agreementsTable" prefHeight="180">
+        <columns>
+          <TableColumn fx:id="agreementIdColumn"     text="ID"       prefWidth="60"/>
+          <TableColumn fx:id="agreementPeriodColumn" text="Period"   prefWidth="240"/>
+          <TableColumn fx:id="agreementValidColumn"  text="Valid"    prefWidth="80"/>
+        </columns>
+      </TableView>
+
+      <!-- BOQ Items Table -->
+      <Label text="Bill-of-Quantities Items" styleClass="section-subtitle"/>
+      <TableView fx:id="boqTable" prefHeight="200">
+        <columns>
+          <TableColumn fx:id="lineIdColumn"    text="Line ID" prefWidth="80"/>
+          <TableColumn fx:id="productNameColumn" text="Product" prefWidth="200"/>
+          <TableColumn fx:id="productIdColumn"   text="Prod ID" prefWidth="80"/>
+          <TableColumn fx:id="quantityColumn"    text="Qty"     prefWidth="60"/>
+          <TableColumn fx:id="discountColumn"    text="Discount" prefWidth="80"/>
+        </columns>
+      </TableView>
+
+      <!-- Close Button -->
+      <HBox alignment="CENTER_RIGHT">
+        <Button fx:id="closeBtn" text="Close"/>
+      </HBox>
+    </VBox>
+  </content>
+</ScrollPane>

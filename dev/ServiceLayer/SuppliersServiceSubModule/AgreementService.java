@@ -1,0 +1,134 @@
+package ServiceLayer.SuppliersServiceSubModule;
+
+import java.util.List;
+
+import DTOs.SuppliersModuleDTOs.AgreementDTO;
+import DataAccessLayer.SuppliersDAL.DAOs.DataAccessException;
+import DomainLayer.SuppliersDomainSubModule.SupplierFacade;
+import ServiceLayer.SuppliersServiceSubModule.Interfaces_and_Abstracts.ServiceResponse;
+import ServiceLayer.SuppliersServiceSubModule.Interfaces_and_Abstracts.Validators.AgreementValidator;
+
+public class AgreementService extends BaseService {
+   private final SupplierFacade supplierController;
+   private final AgreementValidator agreementValidator;
+
+   public AgreementService(SupplierFacade supplierController) {
+      this.supplierController = supplierController;
+      this.agreementValidator = new AgreementValidator();
+   }
+
+   public ServiceResponse<?> createAgreement(AgreementDTO agreementDTO) {
+      ServiceResponse<?> validationResponse = agreementValidator.validateCreateDTO(agreementDTO);
+      if (!validationResponse.isSuccess()) {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+      try {
+         AgreementDTO actualAgreementDTO = supplierController.createAgreement(agreementDTO);
+         return ServiceResponse.ok(actualAgreementDTO);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to create agreement: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<?> updateAgreement(int agreementID, AgreementDTO updatedAgreement) {
+      ServiceResponse<?> validationResponse = agreementValidator.validateUpdateDTO(updatedAgreement);
+      if (!validationResponse.isSuccess()) {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+      try {
+         supplierController.updateAgreement(agreementID, updatedAgreement);
+         return ServiceResponse.ok("Agreement updated successfully");
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to update agreement: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<?> removeAgreement(int agreementID, int supplierID) {
+      if (agreementID < 0) {
+         return ServiceResponse.fail(List.of("Agreement ID must be a positive integer"));
+      }
+      if (supplierID < 0) {
+         return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
+      }
+      try {
+         supplierController.removeAgreement(agreementID, supplierID);
+         return ServiceResponse.ok("Agreement removed successfully");
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to remove agreement: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<AgreementDTO> getAgreement(int agreementID) {
+      ServiceResponse<?> validationResponse = agreementValidator.validateGetDTO(agreementID);
+      if (!validationResponse.isSuccess()) {
+         return ServiceResponse.fail(validationResponse.getErrors());
+      }
+      try {
+         AgreementDTO agreement = supplierController.getAgreement(agreementID);
+         if (agreement == null) {
+            return ServiceResponse.fail(List.of("Agreement not found for ID: " + agreementID));
+         }
+         return ServiceResponse.ok(agreement);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve agreement: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<List<AgreementDTO>> getAllAgreements() {
+      try {
+         List<AgreementDTO> agreements = supplierController.getAllAgreements();
+         if (agreements.isEmpty()) {
+            return ServiceResponse.fail(List.of("No agreements found"));
+         }
+         return ServiceResponse.ok(agreements);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve agreements: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<?> checkAgreementExists(int agreementID) {
+      if (agreementID < 0) {
+         return ServiceResponse.fail(List.of("Agreement ID must be a positive integer"));
+      }
+      try {
+         boolean exists = supplierController.checkAgreementExists(agreementID);
+         if (exists) {
+            return ServiceResponse.ok("Agreement exists");
+         } else {
+            return ServiceResponse.fail(List.of("Agreement not found for ID: " + agreementID));
+         }
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to check agreement existence: " + e.getMessage()));
+      }
+   }
+
+   public ServiceResponse<List<AgreementDTO>> getAgreementsBySupplierId(int supplierId) {
+      if (supplierId < 0) {
+         return ServiceResponse.fail(List.of("Supplier ID must be a positive integer"));
+      }
+      try {
+         List<AgreementDTO> agreements = supplierController.getAgreementsBySupplierId(supplierId);
+         if (agreements.isEmpty()) {
+            return ServiceResponse.fail(List.of("No agreements found for supplier ID: " + supplierId));
+         }
+         return ServiceResponse.ok(agreements);
+      } catch (DataAccessException e) {
+         return ServiceResponse.fail(List.of("Error handling SQL exception: {}", e.getMessage()));
+      } catch (Exception e) {
+         return ServiceResponse.fail(List.of("Failed to retrieve agreements: " + e.getMessage()));
+      }
+   }
+
+}

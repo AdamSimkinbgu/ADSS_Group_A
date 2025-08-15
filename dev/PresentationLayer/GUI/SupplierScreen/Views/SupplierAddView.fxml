@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SupplierAddController"
+            fitToWidth="true"
+            prefWidth="500" prefHeight="810">
+
+  <content>
+    <VBox spacing="15">
+      <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+      </padding>
+
+      <Label text="Add New Supplier"/>
+
+      <!-- Name & Tax -->
+      <GridPane hgap="10" vgap="10">
+        <Label text="Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Tax Number:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="taxField"  GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+      </GridPane>
+
+      <!-- Address -->
+      <Label text="Address"/>
+      <GridPane hgap="10" vgap="10">
+        <Label text="Street:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="streetField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="City:"   GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="cityField"   GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Building No.:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="buildingField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+      </GridPane>
+
+      <!-- Self Supply -->
+      <HBox spacing="10" alignment="CENTER_LEFT">
+        <CheckBox fx:id="selfSupplyCheck" text="Self Supply"/>
+      </HBox>
+      <FlowPane fx:id="daysPane" hgap="10" vgap="10" visible="false">
+        <!-- DayOfWeek checkboxes added dynamically in controller -->
+      </FlowPane>
+
+      <!-- Lead Supply Days -->
+      <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Lead Supply Days:"/>
+        <Spinner fx:id="leadDaysSpinner" prefWidth="80"/>
+      </HBox>
+
+      <!-- Payment Details -->
+      <Label text="Payment Details"/>
+      <GridPane hgap="10" vgap="10">
+        <Label text="Bank Account:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="bankField" promptText="6-digit Account"
+                   GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Method:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="methodCombo" prefWidth="150"
+                  GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Term:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="termCombo" prefWidth="150"
+                  GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+      </GridPane>
+
+      <!-- Contacts -->
+      <Label text="Contacts"/>
+      <ListView fx:id="contactsList" prefHeight="120"/>
+      <HBox spacing="10" alignment="CENTER_LEFT">
+        <TextField fx:id="newContactField" promptText="Name,Email,Phone"
+                   HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addContactBtn" text="Add Contact"/>
+      </HBox>
+
+      <!-- Action Buttons -->
+      <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button fx:id="saveBtn"   text="Save"/>
+        <Button fx:id="cancelBtn" text="Cancel"/>
+      </HBox>
+
+    </VBox>
+  </content>
+</ScrollPane>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.EmployeeScreen.Controllers.AvailabilityController"
+      spacing="10" styleClass="content-container">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header with actions -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="My Availability" styleClass="section-title"/>
+        <Pane HBox.hgrow="ALWAYS" />
+        <DatePicker fx:id="calendarDatePicker" promptText="Jump to date"/>
+        <ComboBox fx:id="branchFilterComboBox" promptText="Select Branch"/>
+    </HBox>
+
+    <!-- Calendar Navigation -->
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="&lt; Previous Week" onAction="#showPreviousWeek" styleClass="secondary-button"/>
+        <Label fx:id="currentWeekLabel" text="Week of May 1, 2023" styleClass="week-label"/>
+        <Button text="Next Week &gt;" onAction="#showNextWeek" styleClass="secondary-button"/>
+        <Button text="Today" onAction="#showCurrentWeek" styleClass="secondary-button"/>
+    </HBox>
+
+    <!-- Calendar Grid - Made larger -->
+    <GridPane fx:id="calendarGrid" vgap="2" hgap="2" styleClass="calendar-grid" VBox.vgrow="ALWAYS">
+        <!-- Column headers (days of week) will be added programmatically -->
+        <!-- Row headers (shift types) will be added programmatically -->
+        <!-- Calendar cells will be added programmatically -->
+    </GridPane>
+
+    <!-- Shift Details Section -->
+    <TitledPane text="Shift Details" expanded="true" collapsible="true">
+        <VBox spacing="10">
+            <Label fx:id="selectedShiftLabel" text="No shift selected" styleClass="section-subtitle"/>
+
+            <GridPane hgap="10" vgap="5">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="100" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+
+                <Label text="Date:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <Label fx:id="shiftDateLabel" text="-" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+                <Label text="Type:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <Label fx:id="shiftTypeLabel" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+                <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <Label fx:id="shiftTimeLabel" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+                <Label text="Branch:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <Label fx:id="shiftBranchLabel" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+                <Label text="Status:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                <Label fx:id="shiftStatusLabel" text="-" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+            </GridPane>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ToggleButton fx:id="availabilityToggle" text="Mark as Available" disable="true" />
+            </HBox>
+
+            <Label text="Required Roles:" styleClass="section-subtitle" />
+            <TableView fx:id="rolesRequiredTable" prefHeight="150">
+                <columns>
+                    <TableColumn fx:id="roleNameColumn" text="Role" prefWidth="150" />
+                    <TableColumn fx:id="roleCountColumn" text="Required" prefWidth="100" />
+                    <TableColumn fx:id="roleAssignedColumn" text="Assigned" prefWidth="100" />
+                </columns>
+                <placeholder>
+                    <Label text="No roles defined for this shift" />
+                </placeholder>
+            </TableView>
+        </VBox>
+    </TitledPane>
+
+    <!-- Availability Summary -->
+    <HBox spacing="20" alignment="CENTER_LEFT">
+        <Label text="Total Available Shifts:" />
+        <Label fx:id="totalAvailableShiftsLabel" text="0" styleClass="count-label" />
+
+        <Label text="Assigned Shifts:" />
+        <Label fx:id="assignedShiftsLabel" text="0" styleClass="count-label" />
+
+        <Pane HBox.hgrow="ALWAYS" />
+
+        <!-- Save Button -->
+        <Button text="Save Availability" onAction="#saveAvailability" styleClass="primary-button"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,61 @@
+package DomainLayer.SuppliersDomainSubModule.Repositories.RepositoryIntefaces;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+import DTOs.SuppliersModuleDTOs.AgreementDTO;
+import DTOs.SuppliersModuleDTOs.BillofQuantitiesItemDTO;
+import DTOs.SuppliersModuleDTOs.CatalogProductDTO;
+import DTOs.SuppliersModuleDTOs.SupplierDTO;
+import DTOs.SuppliersModuleDTOs.SupplierProductDTO;
+
+public interface SuppliersAgreementsRepositoryInterface {
+   SupplierDTO createSupplier(SupplierDTO supplier) throws SQLException;
+
+   Optional<SupplierDTO> getSupplierById(int id) throws SQLException;
+
+   boolean updateSupplier(SupplierDTO supplier) throws SQLException;
+
+   boolean deleteSupplier(int id) throws SQLException;
+
+   boolean supplierExists(int id) throws SQLException;
+
+   List<SupplierDTO> getAllSuppliers() throws SQLException;
+
+   AgreementDTO addAgreementToSupplier(AgreementDTO agreement, int supplierId) throws SQLException;
+
+   Optional<AgreementDTO> getAgreementById(int agreementId) throws SQLException;
+
+   boolean updateAgreement(AgreementDTO agreement) throws SQLException;
+
+   boolean removeAgreementFromSupplier(int agreementId, int supplierId) throws SQLException;
+
+   boolean agreementExists(int agreementId) throws SQLException;
+
+   List<AgreementDTO> getAllAgreementsForSupplier(int supplierId) throws SQLException;
+
+   List<AgreementDTO> getAllAgreements() throws SQLException;
+
+   List<BillofQuantitiesItemDTO> getBillOfQuantitiesItemsForAgreement(int agreementId) throws SQLException;
+
+   SupplierProductDTO createSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
+
+   Optional<SupplierProductDTO> getSupplierProductById(int supplierId, int productId) throws SQLException;
+
+   boolean updateSupplierProduct(SupplierProductDTO supplierProduct) throws SQLException;
+
+   boolean deleteSupplierProduct(int supplierId, int productId) throws SQLException;
+
+   List<SupplierProductDTO> getAllSupplierProductsById(int supplierId) throws SQLException;
+
+   boolean supplierProductExists(int supplierId, int productId) throws SQLException;
+
+   List<SupplierProductDTO> getAllSupplierProducts() throws SQLException;
+
+   List<Integer> getAllSuppliersForProductId(int productId) throws SQLException;
+
+   List<Integer> getAllProductsForSupplierId(int supplierId) throws SQLException;
+
+   List<CatalogProductDTO> getCatalogProducts() throws SQLException;
+}

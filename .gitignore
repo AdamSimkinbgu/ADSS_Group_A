@@ -1,0 +1,68 @@
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# IntelliJ IDEA files
+.idea/
+.idea
+idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+out/
+
+ADSS_Group_A.iml
+ADSS_Group_A.imlv
+/.idea/
+/.junie/
+
+# Build artifacts and compiled files
+target/
+bin/
+lib/
+*.jar
+!src/main/resources/*.jar
+!release/*.jar
+*.class
+*.war
+*.ear
+*.zip
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*/.DS_Store
+**/.DS_Store
+
+# IDE specific files
+.vscode/
+.project
+.classpath
+.settings/
+
+# Maven specific
+dependency-reduced-pom.xml
+pom.xml.backup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,928 @@
+[
+  {
+    "id": 1,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-18",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "Cleaner": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 2,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-18",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 3,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-19",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "HR manager": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "HR manager": [444444444],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 4,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-19",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 5,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-20",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "Cleaner": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 6,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-20",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 7,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-21",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "HR manager": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "HR manager": [444444444],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  },
+  {
+    "id": 8,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-21",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 9,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-22",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "Cleaner": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 10,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-22",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 11,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-23",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "HR manager": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "HR manager": [444444444]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 12,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-23",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  }, {
+  "id": 13,
+  "shiftType": "MORNING",
+  "shiftDate": "2025-05-24",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 1,
+    "Driver": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "Driver": [555555555]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "09:00",
+  "endHour": "16:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+  {
+    "id": 14,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-24",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 15,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-25",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "Cleaner": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 16,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-25",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 17,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-26",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 2,
+      "HR manager": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "HR manager": [444444444],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 18,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-26",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },  {
+  "id": 19,
+  "shiftType": "MORNING",
+  "shiftDate": "2025-05-27",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 2,
+    "Cleaner": 1,
+    "Driver": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "Cleaner": [666666666],
+    "Driver": [555555555]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "09:00",
+  "endHour": "16:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+{
+  "id": 20,
+  "shiftType": "EVENING",
+  "shiftDate": "2025-05-27",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 1,
+    "Cleaner": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "Cleaner": [666666666]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "16:00",
+  "endHour": "20:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+{
+  "id": 21,
+  "shiftType": "MORNING",
+  "shiftDate": "2025-05-28",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 2,
+    "HR manager": 1,
+    "Driver": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "HR manager": [444444444],
+    "Driver": [555555555]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "09:00",
+  "endHour": "16:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+{
+  "id": 22,
+  "shiftType": "EVENING",
+  "shiftDate": "2025-05-28",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 1,
+    "Cleaner": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "Cleaner": [666666666]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "16:00",
+  "endHour": "20:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+{
+  "id": 23,
+  "shiftType": "MORNING",
+  "shiftDate": "2025-05-29",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 2,
+    "Cleaner": 1,
+    "Driver": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "Cleaner": [666666666],
+    "Driver": [555555555]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "09:00",
+  "endHour": "16:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+{
+  "id": 24,
+  "shiftType": "EVENING",
+  "shiftDate": "2025-05-29",
+  "rolesRequired": {
+    "Shift Manager": 1,
+    "Cashier": 2,
+    "Stocker": 1,
+    "Cleaner": 1
+  },
+  "assignedEmployees": {
+    "Shift Manager": [111111111],
+    "Cashier": [333333333],
+    "Stocker": [222222222],
+    "Cleaner": [666666666]
+  },
+  "AvailableEmployees": [
+    111111111,
+    222222222,
+    333333333,
+    444444444,
+    555555555,
+    666666666
+  ],
+  "isAssignedShitManager": true,
+  "isOpen": true,
+  "startHour": "16:00",
+  "endHour": "20:00",
+  "createDate": "2025-05-11",
+  "updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},  {
+"id": 25,
+"shiftType": "MORNING",
+"shiftDate": "2025-05-30",
+"rolesRequired": {
+  "Shift Manager": 1,
+  "Cashier": 2,
+  "Stocker": 2,
+  "HR manager": 1
+},
+"assignedEmployees": {
+  "Shift Manager": [111111111],
+  "Cashier": [333333333],
+  "Stocker": [222222222],
+  "HR manager": [444444444]
+},
+"AvailableEmployees": [
+  111111111,
+  222222222,
+  333333333,
+  444444444,
+  555555555,
+  666666666
+],
+"isAssignedShitManager": true,
+"isOpen": true,
+"startHour": "09:00",
+"endHour": "16:00",
+"createDate": "2025-05-11",
+"updateDate": "2025-05-11",
+  "branch": "Beer Shave"
+
+},
+  {
+    "id": 26,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-30",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 27,
+    "shiftType": "MORNING",
+    "shiftDate": "2025-05-31",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Driver": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Driver": [555555555]
+    },
+    "AvailableEmployees": [
+      111111111,
+      222222222,
+      333333333,
+      444444444,
+      555555555,
+      666666666
+    ],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "09:00",
+    "endHour": "16:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+
+  },
+  {
+    "id": 28,
+    "shiftType": "EVENING",
+    "shiftDate": "2025-05-31",
+    "rolesRequired": {
+      "Shift Manager": 1,
+      "Cashier": 2,
+      "Stocker": 1,
+      "Cleaner": 1
+    },
+    "assignedEmployees": {
+      "Shift Manager": [111111111],
+      "Cashier": [333333333],
+      "Stocker": [222222222],
+      "Cleaner": [666666666]
+    },
+    "AvailableEmployees": [],
+    "isAssignedShitManager": true,
+    "isOpen": true,
+    "startHour": "16:00",
+    "endHour": "20:00",
+    "createDate": "2025-05-11",
+    "updateDate": "2025-05-11",
+    "branch": "Beer Shave"
+  }
+]

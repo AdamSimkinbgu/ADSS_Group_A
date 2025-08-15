@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.AgreementsController"
+      spacing="10"
+      styleClass="content-container">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Toolbar -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="🤝 Agreements" styleClass="section-title"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="newAgreementBtn"
+                text="New Agreement"
+                styleClass="primary-button"
+                onAction="#onNewAgreement"/>
+        <Button fx:id="refreshBtn"
+                text="Refresh"
+                styleClass="secondary-button"
+                onAction="#onRefresh"/>
+    </HBox>
+
+    <!-- Search -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Search:"/>
+        <TextField fx:id="searchField"
+                   promptText="Search agreements…"
+                   styleClass="modern-field"
+                   onKeyReleased="#onSearch"/>
+    </HBox>
+
+    <!-- Agreements Table -->
+    <TableView fx:id="agreementsTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+        <columns>
+            <TableColumn fx:id="idCol"             text="ID"              prefWidth="80"/>
+            <TableColumn fx:id="supplierIdCol"     text="Supplier ID"     prefWidth="100"/>
+            <TableColumn fx:id="supplierName"      text="Supplier Name"  prefWidth="150"/>
+            <TableColumn fx:id="startDateCol"      text="Start Date"      prefWidth="120"/>
+            <TableColumn fx:id="endDateCol"        text="End Date"        prefWidth="120"/>
+            <TableColumn fx:id="statusCol"         text="Status"          prefWidth="100"/>
+            <TableColumn fx:id="actionsCol"        text="Actions"         prefWidth="200"/>
+        </columns>
+    </TableView>
+</VBox>

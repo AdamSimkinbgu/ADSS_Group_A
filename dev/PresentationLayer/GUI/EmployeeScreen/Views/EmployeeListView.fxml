@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="PresentationLayer.GUI.EmployeeScreen.Controllers.EmployeeListController"
+      spacing="10" styleClass="content-container">
+
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="toolbar">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+        <TextField fx:id="searchField" promptText="Search employees..." HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="filterComboBox" promptText="Filter by..."/>
+        <Button text="Add Employee" onAction="#showAddEmployeeDialog" styleClass="primary-button"/>
+    </HBox>
+
+    <TableView fx:id="employeeTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" minWidth="80" prefWidth="12"/>
+            <TableColumn fx:id="firstNameColumn" text="First Name" minWidth="100" prefWidth="15"/>
+            <TableColumn fx:id="lastNameColumn" text="Last Name" minWidth="100" prefWidth="15"/>
+            <TableColumn fx:id="rolesColumn" text="Roles" minWidth="150" prefWidth="25"/>
+            <TableColumn fx:id="branchIdColumn" text="Branch ID" minWidth="80" prefWidth="12"/>
+            <TableColumn fx:id="statusColumn" text="Status" minWidth="60" prefWidth="10"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" minWidth="120" prefWidth="15"/>
+        </columns>
+        <placeholder>
+            <Label text="No employees found" />
+        </placeholder>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+        <Button text="Export" onAction="#exportEmployeeData" styleClass="secondary-button"/>
+        <Button text="Refresh" onAction="#refreshEmployeeList" styleClass="secondary-button"/>
+    </HBox>
+
+</VBox>

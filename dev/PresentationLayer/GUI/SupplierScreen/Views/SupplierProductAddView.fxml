@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="PresentationLayer.GUI.SupplierScreen.Controllers.SupplierProductAddController"
+            prefWidth="500" prefHeight="300">
+
+    <children>
+        <VBox spacing="15" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Label text="Add New Product" styleClass="dialog-title"/>
+
+            <GridPane hgap="10" vgap="10">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+
+                <Label text="Catalog #:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="catalogField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="nameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                <Label text="Price:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="priceField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                <Label text="Weight:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="weightField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                <Label text="Expires In (days):" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <TextField fx:id="expiresField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                <Label text="Manufacturer:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <TextField fx:id="manufacturerField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            </GridPane>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="Cancel" onAction="#onCancel" styleClass="secondary-button"/>
+                <Button text="Save"   onAction="#onSave"   styleClass="primary-button"/>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>
