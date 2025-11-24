@@ -71,10 +71,11 @@ and integration across all parts of the system.
 ---
 
 ## 📂 Project Structure (General)
-/domain – Business entities and validation logic
-/service – Application workflows and business rules
-/controller – REST API endpoints (if implemented)
-/utils – Shared utility components
+project/
+├── domain/        # Entities, value objects, validations  
+├── service/       # Business logic, workflows  
+├── controller/    # REST endpoints  
+└── utils/         # Shared utilities
 
 Each subsystem follows this structure within its own dedicated package/module.
 
