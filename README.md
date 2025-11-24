@@ -1,8 +1,8 @@
 # ADSS – Advanced Distributed Software System
 
 This repository contains a multi-module distributed information system developed
-as part of the *Advanced Distributed Software Systems* course at Ben-Gurion University.
-The project models the full digital transformation of the “Super-Li” retail chain,
+as part of the *Software System Analysis and Design* course at Ben-Gurion University.
+The project models the full digital transformation of the “Super-Lee” retail chain,
 transitioning from manual, paper-based workflows to a unified, scalable software platform.
 
 ---
@@ -67,17 +67,6 @@ and integration across all parts of the system.
 - REST architectural concepts  
 - Object-Oriented Design  
 - Layered system structure  
-
----
-
-## 📂 Project Structure (General)
-project/
-├── domain/        # Entities, value objects, validations  
-├── service/       # Business logic, workflows  
-├── controller/    # REST endpoints  
-└── utils/         # Shared utilities
-
-Each subsystem follows this structure within its own dedicated package/module.
 
 ---
 
